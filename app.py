@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS แคปซูลชิ้นเดียวสไตล์ Google AI Studio และโลโก้ปฏิกรณ์ขนาดใหญ่ ---
+# --- ดีไซน์ CSS สมบูรณ์แบบ ---
 st.markdown("""
     <style>
     .stApp {
@@ -81,33 +81,6 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
 
-    [data-testid="stForm"] {
-        background-color: #ffffff;
-        border: 1px solid #dadce0 !important;
-        border-radius: 24px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.1), 0 1px 4px rgba(0, 0, 0, 0.04);
-        transition: all 0.3s ease;
-    }
-    [data-testid="stForm"]:hover {
-        box-shadow: 0 6px 24px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
-        border-color: #bdc1c6 !important;
-    }
-
-    [data-testid="stForm"] textarea {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-        font-size: 15px !important;
-        color: #1f1f1f !important;
-        resize: none !important;
-        padding: 0px !important;
-    }
-    [data-testid="stForm"] textarea:focus {
-        border: none !important;
-        box-shadow: none !important;
-    }
-
     .user-profile-card {
         background-color: #ffffff;
         border: 1px solid #e0e0e0;
@@ -136,6 +109,8 @@ if "verified_name" not in st.session_state:
     st.session_state.verified_name = ""
 if "voice_active" not in st.session_state:
     st.session_state.voice_active = False
+if "user_query" not in st.session_state:
+    st.session_state.user_query = ""
 
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
@@ -218,7 +193,6 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# แสดงเครื่องเล่นเสียงพูดสังเคราะห์ทันทีที่มีการตอบกลับ
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.markdown("🔊 **Zyphere Voice Synthesis Output:**")
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
@@ -296,7 +270,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- FLOATING CENTRAL COMMAND CAPSULE ---
+# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED RESPONSIVE SUBMIT) ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -304,28 +278,39 @@ if st.session_state.voice_active:
         if audio_data is not None:
             st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผล")
 
-default_input = st.session_state.pop("pending_prompt", "")
+if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
+    st.session_state.user_query = st.session_state.pop("pending_prompt")
 
-with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
-    user_input = st.text_area("Describe an app and let Zyphere do the rest", value=default_input, height=80, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
-    
-    c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
-    with c1:
-        st.form_submit_button("⊕")
-    with c2:
-        st.write("")
-    with c3:
-        st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed")
-    with c4:
-        col_m, col_r = st.columns([1, 2.2])
-        with col_m:
-            mic_btn = st.form_submit_button("🎙️")
-        with col_r:
-            submitted = st.form_submit_button("✦ I'm feeling lucky", type="primary")
+# ช่องรับข้อความหลัก (อิสระจากฟอร์ม ตอบสนองไวทันที)
+user_input = st.text_area(
+    "Describe an app and let Zyphere do the rest", 
+    value=st.session_state.user_query, 
+    height=80, 
+    label_visibility="collapsed", 
+    placeholder="Describe an app and let Zyphere do the rest"
+)
+st.session_state.user_query = user_input
 
-    if submitted and user_input.strip():
-        process_command(user_input.strip())
-        st.rerun()
+c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
+with c1:
+    if st.button("⊕", key="btn_add", use_container_width=True):
+        pass
+with c2:
+    st.write("")
+with c3:
+    st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed", key="sb_mode")
+with c4:
+    col_m, col_r = st.columns([1, 2.2])
+    with col_m:
+        mic_btn = st.button("🎙️", key="btn_mic", use_container_width=True)
+    with col_r:
+        submitted = st.button("✦ I'm feeling lucky", type="primary", key="btn_run", use_container_width=True)
+
+if submitted and st.session_state.user_query.strip():
+    query_to_process = st.session_state.user_query.strip()
+    st.session_state.user_query = "" # เคลียร์ช่องพิมพ์
+    process_command(query_to_process)
+    st.rerun()
 
 if mic_btn:
     st.session_state.voice_active = not st.session_state.voice_active
