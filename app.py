@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. World-Class Enterprise UI & Bulletproof Contrast CSS ---
+# --- 2. World-Class Enterprise UI & Modern Chat Box CSS ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -33,7 +33,7 @@ st.markdown("""
     /* Auth Input Styling */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
         border: 2px solid #00f3ff !important;
     }
     
@@ -43,17 +43,32 @@ st.markdown("""
         background-color: transparent !important;
         font-weight: 700 !important;
     }
-    
-    /* Chat Input Styling */
-    .stChatInput {
-        background-color: #0e1117 !important;
+
+    /* --- WORLD-CLASS MODERN CHAT INPUT (Google AI Style) --- */
+    div[data-testid="stChatInput"] {
+        background-color: transparent !important;
+        padding-bottom: 15px !important;
     }
     
-    .stChatInput textarea {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        background-color: #ffffff !important;
-        font-weight: 600 !important;
+    div[data-testid="stChatInput"] > div {
+        background-color: #161b22 !important;
+        border: 1px solid #30363d !important;
+        border-radius: 24px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+        padding: 4px 10px !important;
+    }
+    
+    div[data-testid="stChatInput"] > div:focus-within {
+        border: 1px solid #00f3ff !important;
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.35) !important;
+    }
+    
+    div[data-testid="stChatInput"] textarea {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        background-color: transparent !important;
+        font-size: 15px !important;
+        font-family: inherit !important;
     }
 
     /* Chat Messages */
@@ -61,7 +76,7 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* --- WORLD-CLASS CODE BLOCK FIX (Dark Terminal Style) --- */
+    /* Code Block Theme (Dark Terminal) */
     pre, code, .stCodeBlock, div[data-testid="stCode"] {
         background-color: #050505 !important;
         color: #00f3ff !important;
@@ -79,7 +94,7 @@ st.markdown("""
         background-color: #ffffff !important;
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
         font-weight: 700 !important;
         border: 2px solid #00f3ff !important;
         width: 100% !important;
@@ -101,12 +116,12 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 15px;
+        margin-bottom: 15px;
     }
     
     .neon-atom {
-        font-size: 60px;
+        font-size: 55px;
         animation: pulse 2s infinite;
         text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
     }
