@@ -5,107 +5,94 @@ from email.mime.text import MIMEText
 import asyncio
 import edge_tts
 
-st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
+st.set_page_config(
+    page_title="Zyphere Autonomous Super-Agent Studio", 
+    page_icon="🛡️", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# --- ดีไซน์ CSS สไตล์ AI Studio & Claude แบบ Monotone Minimalist เรียบหรู ---
+# --- ดีไซน์ CSS ถอดแบบโครงสร้าง Google AI Studio สไตล์ Monotone Minimalist ---
 st.markdown("""
     <style>
     .stApp {
         background-color: #fcfbf9;
-        color: #333333;
+        color: #1a1a1a;
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ซ่อนแถบเครื่องเล่นเสียง แต่ระบบยังอ่านออกเสียงเบื้องหลัง */
+    /* ซ่อนแถบเครื่องเล่นเสียง เล่นเบื้องหลัง */
     audio {
         display: none !important;
     }
-    
-    /* ปุ่มกดสไตล์ Monotone Minimalist เรียบหรู */
+
+    /* ปุ่มสไตล์ Monotone Minimalist */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
         border: 1px solid #333333 !important;
         border-radius: 8px !important;
-        padding: 0.5rem 1.2rem !important;
+        padding: 0.4rem 1rem !important;
         font-weight: 500 !important;
         transition: all 0.2s ease-in-out !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        cursor: pointer !important;
     }
     .stButton > button:hover {
         background-color: #333333 !important;
         border-color: #555555 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transform: translateY(-1px);
     }
-    a, button, [role="button"], input[type="submit"] {
-        cursor: pointer !important;
-    }
-    
-    /* โลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. */
+
+    /* โลโก้ Neon Atom กลางหน้าจอ */
     .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
+        margin-top: 10px;
         margin-bottom: 5px;
     }
     .svg-logo {
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
-    .orbit-1 {
-        transform-origin: center;
-        animation: spinSlow 10s linear infinite;
-    }
-    .orbit-2 {
-        transform-origin: center;
-        animation: spinReverse 7s linear infinite;
-    }
-    .core-glow {
-        transform-origin: center;
-        animation: pulseCore 2s infinite alternate;
-    }
-    @keyframes spinSlow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    @keyframes spinReverse {
-        from { transform: rotate(360deg); }
-        to { transform: rotate(0deg); }
-    }
+    .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
+    .orbit-2 { transform-origin: center; animation: spinReverse 7s linear infinite; }
+    .core-glow { transform-origin: center; animation: pulseCore 2s infinite alternate; }
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4)); }
-        100% { filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.8)); }
+        0% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)); }
+        100% { filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.7)); }
     }
-    @keyframes pulseCore {
-        0% { transform: scale(0.9); opacity: 0.7; }
-        100% { transform: scale(1.1); opacity: 1; }
-    }
+    @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
-    .welcome-header {
+    .welcome-title {
         text-align: center;
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
+
+    /* กล่องข้อความแชท */
     .stChatMessage {
         background-color: #ffffff !important;
         border: 1px solid #e5e5df !important;
-        border-radius: 12px !important;
-        padding: 16px !important;
-        color: #222222 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        margin-bottom: 12px;
-    }
-    [data-testid="stChatInput"] textarea {
+        border-radius: 10px !important;
+        padding: 14px !important;
         color: #1a1a1a !important;
-        -webkit-text-fill-color: #1a1a1a !important;
+        margin-bottom: 10px;
+    }
+
+    /* ปรับแต่งกล่องโปรไฟล์มุมซ้ายล่างสุด */
+    .user-profile-card {
+        background-color: #f1f0ea;
+        border: 1px solid #e0dfd5;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 13px;
+        color: #333333;
+        margin-top: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -127,6 +114,9 @@ if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
 
+if "show_mic" not in st.session_state:
+    st.session_state.show_mic = False
+
 # --- ฟังก์ชันสร้างเสียงพูดพรีเมียม ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
@@ -134,87 +124,110 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- แผงควบคุมตั้งค่า (Sidebar แบบ Monotone) ---
+# --- 1. SIDEBAR ด้านซ้าย (Navigation & Left-Bottom Account Box) ---
 with st.sidebar:
-    st.header("ระบบควบคุมความปลอดภัย")
-    target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
-    send_email_enabled = st.checkbox("เปิดใช้งานระบบส่งรายงานอีเมลอัตโนมัติ", value=False)
+    st.markdown("### Zyphere Studio")
+    st.caption("Autonomous Agent Control Hub")
     st.markdown("---")
-    st.markdown("### โมดูลวิศวกรรมขั้นสูง")
-    selected_tool = st.selectbox("เลือกโมดูลปฏิบัติการ:", [
-        "โมดูลคำนวณและออกแบบยานอวกาศ",
-        "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
-        "โมดูลควบคุมวงจรอิเล็กทรอนิกส์และหุ่นยนต์",
-        "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
-    ])
     
-    if st.session_state.is_verified:
-        st.markdown("---")
-        if st.button("ล้างการยืนยันตัวตน (Logout)", type="secondary"):
+    st.markdown("### การใช้งาน")
+    st.markdown("- Playground")
+    st.markdown("- History")
+    st.markdown("- Engineering CAD")
+    
+    # ดันส่วนยืนยันตัวตนให้อยู่ล่างสุดของ Sidebar เหมือนตำแหน่งในรูป
+    st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown("---")
+    
+    if not st.session_state.is_verified:
+        st.markdown("#### ยืนยันตัวตนเข้าใช้งาน")
+        input_name = st.text_input("ชื่อจริง", placeholder="เช่น วรกันต์", key="sidebar_name")
+        input_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ", key="sidebar_surname")
+        if st.button("Unlock System", type="primary", use_container_width=True):
+            is_authorized = any(
+                user["name"].strip() == input_name.strip() and user["surname"].strip() == input_surname.strip()
+                for user in AUTHORIZED_USERS
+            )
+            if is_authorized:
+                st.session_state.is_verified = True
+                st.session_state.verified_name = input_name.strip()
+                st.rerun()
+            else:
+                st.error("Access Denied")
+    else:
+        st.markdown(f"""
+            <div class="user-profile-card">
+                <b>ผู้ใช้งานปัจจุบัน:</b><br>
+                {st.session_state.verified_name} ยาคำ<br>
+                <small style="color:#666;">Sovereign Security Level 1</small>
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("Logout", use_container_width=True):
             st.session_state.is_verified = False
             st.session_state.verified_name = ""
             st.session_state.messages = []
             st.session_state.latest_audio = None
             st.rerun()
 
-# --- ตรวจสอบสิทธิ์ความปลอดภัย ---
+# ตรวจสอบว่ายืนยันตัวตนหรือยัง
 if not st.session_state.is_verified:
-    st.markdown("### ยืนยันตัวตนความปลอดภัยระดับสูงสุด")
-    col1, col2 = st.columns(2)
-    with col1:
-        input_name = st.text_input("ชื่อจริง", placeholder="เช่น วรกันต์")
-    with col2:
-        input_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ")
-    
-    if st.button("ปลดล็อกระบบ Zyphere", type="primary"):
-        is_authorized = any(
-            user["name"].strip() == input_name.strip() and user["surname"].strip() == input_surname.strip()
-            for user in AUTHORIZED_USERS
-        )
-        if is_authorized:
-            st.session_state.is_verified = True
-            st.session_state.verified_name = input_name.strip()
-            st.success(f"ยืนยันตัวตนสำเร็จ! ยินดีต้อนรับครับ คุณ {input_name}")
-            st.rerun()
-        else:
-            st.error("[ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการเข้าถึง")
+    st.info("กรุณายืนยันตัวตนที่แผงควบคุมด้านซ้ายล่างเพื่อเริ่มต้นใช้งานระบบ Zyphere")
     st.stop()
 
 speaker_name = st.session_state.verified_name
 
-# --- แสดงโลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. ---
-st.markdown('''
-    <div class="logo-container">
-        <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <g class="orbit-2">
-                <ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
-            </g>
-            <g class="orbit-1">
-                <ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
-            </g>
-            <g style="transform: rotate(45deg); transform-origin: center;">
-                <ellipse cx="50" cy="50" rx="40" ry="15" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.6"/>
-            </g>
-            <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
-            <circle cx="50" cy="50" r="5" fill="#ffffff"/>
-        </svg>
-    </div>
-''', unsafe_allow_html=True)
+# --- จัดแบ่ง 2 คอลัมน์หลัก: กลาง (Playground) และ ขวา (Settings Panel เหมือน AI Studio) ---
+main_col, right_col = st.columns([3.2, 1.2])
 
-# --- หน้าแรกสไตล์ Claude / AI Studio ---
-if not st.session_state.messages:
-    st.markdown(f'<p class="welcome-header">สวัสดีตอนเย็นครับ {speaker_name}</p>', unsafe_allow_html=True)
+# --- 2. RIGHT PANEL ด้านขวา (Run Settings / System Instructions) ---
+with right_col:
+    st.markdown("### Run settings")
+    st.caption("Engine: Zyphere Autonomous Neural Core")
+    
+    selected_tool = st.selectbox("โมดูลปฏิบัติการหลัก:", [
+        "โมดูลคำนวณและออกแบบยานอวกาศ",
+        "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
+        "โมดูลควบคุมวงจรอิเล็กทรอนิกส์และหุ่นยนต์",
+        "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
+    ])
+    
+    st.markdown("---")
+    st.markdown("### System Instructions")
+    send_email_enabled = st.checkbox("เปิดใช้งานระบบส่งรายงานอีเมลอัตโนมัติ", value=False)
+    target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
+    
+    st.markdown("---")
+    st.markdown("### Thinking level")
+    st.caption("High / Autonomous Discovery Enabled")
 
-# --- แสดงประวัติแชท ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# --- 3. MAIN CENTER PANEL ตรงกลาง (Playground Chat) ---
+with main_col:
+    # โลโก้ Neon Atom สไตล์ Minimalist
+    st.markdown('''
+        <div class="logo-container">
+            <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/></g>
+                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/></g>
+                <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
+                <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+            </svg>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+    if not st.session_state.messages:
+        st.markdown(f'<div class="welcome-title">Build with Zyphere Autonomous Engine</div>', unsafe_allow_html=True)
 
-# เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
-if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+    # แสดงประวัติแชท
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
 
-# --- สมองกลอัจฉริยะ Advanced Core (คิด วิเคราะห์ และตอบทันทีโดยไม่ทวนคำถาม) ---
+    # เล่นเสียงอัตโนมัติ
+    if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+        st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+
+# --- สมองกลอัจฉริยะ Advanced Core ---
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
@@ -227,7 +240,6 @@ def native_jarvis_brain(cmd):
             "4. **Cross-Platform Content Automation:** สั่งการสร้างวิดีโอ สคริปต์ และเผยแพร่อัตโนมัติลง Social Media (Facebook, YouTube, TikTok)\n\n"
             "โปรดระบุภารกิจเฉพาะด้านที่ต้องการให้เริ่มปฏิบัติการได้ทันทีครับ"
         )
-    
     elif any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
         return (
             "**ผลการสังเคราะห์พิมพ์เขียววิศวกรรม:**\n\n"
@@ -238,36 +250,17 @@ def native_jarvis_brain(cmd):
             "G90 ; Absolute positioning\n"
             "M104 S240 ; Set Extruder Temp\n"
             "G1 X0 Y0 Z0.2 F3000 ; Move to origin\n"
-            "; Structural Lattice Pattern Extrusion...\n"
             "```\n\n"
-            "**ข้อเสนอแนะทางวัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อรองรับแรงกดดันสูงในชั้นบรรยากาศและรังสีคอสมิก"
+            "**ข้อเสนอแนะทางวัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อรองรับแรงกดดันสูงในชั้นบรรยากาศ"
         )
-    
-    elif any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
-        return (
-            "**โครงสร้างชุดคำสั่งระบบ Enterprise:**\n\n"
-            "```python\n"
-            "# Zyphere Autonomous Neural Engine\n"
-            "class ZyphereAgent:\n"
-            "    def __init__(self, owner):\n"
-            "        self.owner = owner\n"
-            "        self.status = 'Fully Operational & Evolving'\n"
-            "    def execute_task(self, task_name):\n"
-            "        return f'Executing {task_name} for {self.owner} with high security.'\n\n"
-            f"agent = ZyphereAgent('{speaker_name}')\n"
-            "print(agent.execute_task('Autonomous Evolution Command'))\n"
-            "```"
-        )
-
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return "ระบบ Zyphere พร้อมรับบัญชาการภารกิจสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ สั่งการได้เลยครับ"
-
+        return f"สวัสดีครับคุณ {speaker_name} ระบบ Zyphere พร้อมรับบัญชาการสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ"
     else:
         return (
             "**ผลการวิเคราะห์ทางตรรกะและฐานข้อมูลจักรวาล:**\n\n"
             "- ตรวจสอบตัวแปรและประเมินความเป็นไปได้ภายใต้กฎฟิสิกส์และระบบอัตโนมัติเรียบร้อย\n"
             "- พร้อมแปลงข้อกำหนดดังกล่าวให้เป็นพิมพ์เขียววิศวกรรม ชุดโค้ดโปรแกรม หรือแผนปฏิบัติการอัตโนมัติ\n\n"
-            "กรุณาระบุพารามิเตอร์เพิ่มเติมหากต้องการให้ดำเนินการสร้างชิ้นงานหรือรันระบบทันทีครับ"
+            "กรุณาระบุพารามิเตอร์เพิ่มเติมหากต้องการให้ดำเนินการทันทีครับ"
         )
 
 def process_command(cmd):
@@ -279,7 +272,6 @@ def process_command(cmd):
         st.stop()
 
     response_msg = native_jarvis_brain(cmd)
-
     st.session_state.messages.append({"role": "user", "content": cmd})
     st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
@@ -291,7 +283,6 @@ def process_command(cmd):
             msg['Subject'] = f"Zyphere Report: {speaker_name}"
             msg['From'] = sender_email
             msg['To'] = target_email
-
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(sender_email, app_password)
                 server.sendmail(sender_email, target_email, msg.as_string())
@@ -305,31 +296,26 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- แถบเครื่องมือและช่องรับคำสั่งด้านล่าง (จำลองสไตล์ AI Studio พร้อมปุ่มไมโครโฟน) ---
-st.markdown("---")
-col_bar1, col_bar2, col_bar3 = st.columns([1, 6, 1])
+# --- 4. UNIFIED COMMAND DOCK ด้านล่างสุด (ถอดแบบปุ่มด้านล่างของ Google AI Studio) ---
+with main_col:
+    st.markdown("---")
+    
+    # หากกดปุ่ม Speech ให้แสดงช่องไมค์บันทึกเสียงแบบ Dropdown ด้านล่าง
+    if st.session_state.show_mic:
+        with st.container():
+            audio_file = st.audio_input("กดบันทึกเสียงคำสั่งของคุณ")
+            if audio_file is not None:
+                st.success("รับสัญญาณคลื่นเสียงเรียบร้อย สามารถพิมพ์หรือส่งคำสั่งประมวลผลได้ทันที")
 
-with col_bar1:
-    # ปุ่มไมโครโฟนสำหรับกดเปิดแผงบันทึกเสียงแบบเรียบร้อย
-    mic_clicked = st.button("🎤 Speech")
-
-# ถ้ากดปุ่ม Speech ให้แสดงกล่องบันทึกเสียงแบบย่อส่วนเหนือแชท
-if "show_mic" not in st.session_state:
-    st.session_state.show_mic = False
-
-if mic_clicked:
-    st.session_state.show_mic = not st.session_state.show_mic
-    st.rerun()
-
-if st.session_state.show_mic:
-    with st.container():
-        st.markdown("**ระบบบันทึกเสียงพูด (Voice Command)**")
-        audio_file = st.audio_input("กดบันทึกเสียงพูดของคุณเพื่อสั่งการ Zyphere")
-        if audio_file is not None:
-            st.success("บันทึกเสียงเรียบร้อย! (ระบบพร้อมประมวลผลคำสั่งเสียง)")
-
-# ช่องพิมพ์ข้อความหลักด้านล่างสุด
-user_input = st.chat_input("")
-if user_input:
-    process_command(user_input)
-    st.rerun()
+    dock_col1, dock_col2 = st.columns([1, 6])
+    
+    with dock_col1:
+        if st.button("🎙️ Speech", use_container_width=True):
+            st.session_state.show_mic = not st.session_state.show_mic
+            st.rerun()
+            
+    with dock_col2:
+        user_input = st.chat_input("Start typing a prompt or speak to Zyphere...")
+        if user_input:
+            process_command(user_input)
+            st.rerun()
