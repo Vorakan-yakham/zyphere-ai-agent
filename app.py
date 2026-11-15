@@ -51,13 +51,28 @@ with col2:
     speaker_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ")
 
 st.markdown("---")
-st.subheader("🎙️ บันทึกเสียงคำสั่ง")
-audio_file = st.file_uploader("อัปโหลดไฟล์เสียงคำสั่งของคุณ (.wav, .mp3)", type=["wav", "mp3", "m4a"])
+st.subheader("💬 เลือกวิธีป้อนคำสั่ง (พิมพ์ หรือ อัปโหลดเสียง)")
+
+# เพิ่มตัวเลือกให้เลือกได้ทั้ง พิมพ์ข้อความ หรือ อัปโหลดเสียง
+input_method = st.radio("เลือกวิธีการสั่งการของคุณ:", ["พิมพ์ข้อความคำสั่ง", "อัปโหลดไฟล์เสียง"], horizontal=True)
+
+command_text = ""
+audio_file = None
+text_input = ""
+
+if input_method == "พิมพ์ข้อความคำสั่ง":
+    text_input = st.text_input("พิมพ์คำสั่งของคุณที่นี่:", placeholder="เช่น สวัสดีระบบ, สรุปรายงาน, หรือ ปิดระบบ")
+else:
+    audio_file = st.file_uploader("อัปโหลดไฟล์เสียงคำสั่งของคุณ (.wav, .mp3, .m4a)", type=["wav", "mp3", "m4a"])
+
+st.markdown("---")
 
 if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", type="primary"):
     if not speaker_name or not speaker_surname:
         st.error("⚠️ กรุณากรอกชื่อและนามสกุลให้ครบถ้วนก่อนส่งคำสั่ง")
-    elif not audio_file:
+    elif input_method == "พิมพ์ข้อความคำสั่ง" and not text_input:
+        st.error("⚠️ กรุณาพิมพ์ข้อความคำสั่งก่อนครับ")
+    elif input_method == "อัปโหลดไฟล์เสียง" and not audio_file:
         st.error("⚠️ กรุณาอัปโหลดไฟล์เสียงคำสั่งก่อนครับ")
     else:
         # ตรวจสอบตัวตน
@@ -69,28 +84,34 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
         if not is_authorized:
             st.error("🚨 [ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการประมวลผลทันที")
         else:
-            with st.spinner("กำลังแปลงเสียงและประมวลผลระบบอัตโนมัติ..."):
-                try:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
-                        tmp_file.write(audio_file.getvalue())
-                        tmp_path = tmp_file.name
+            with st.spinner("กำลังประมวลผลระบบอัตโนมัติ..."):
+                # กรณีเลือกใช้วิธีพิมพ์ข้อความ
+                if input_method == "พิมพ์ข้อความคำสั่ง":
+                    command_text = text_input
+                
+                # กรณีเลือกใช้วิธีอัปโหลดเสียง
+                else:
+                    try:
+                        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
+                            tmp_file.write(audio_file.getvalue())
+                            tmp_path = tmp_file.name
 
-                    r = sr.Recognizer()
-                    with sr.AudioFile(tmp_path) as source:
-                        audio_data = r.record(source)
-                        command_text = r.recognize_google(audio_data, language="th-TH")
+                        r = sr.Recognizer()
+                        with sr.AudioFile(tmp_path) as source:
+                            audio_data = r.record(source)
+                            command_text = r.recognize_google(audio_data, language="th-TH")
 
-                    if os.path.exists(tmp_path):
-                        os.remove(tmp_path)
+                        if os.path.exists(tmp_path):
+                            os.remove(tmp_path)
 
-                except sr.UnknownValueError:
-                    command_text = ""
-                    st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ให้ออก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
-                except Exception as e:
-                    command_text = ""
-                    st.error(f"⚠️ เกิดข้อผิดพลาดในการประมวลผล: {str(e)}")
+                    except sr.UnknownValueError:
+                        command_text = ""
+                        st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ให้ออก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
+                    except Exception as e:
+                        command_text = ""
+                        st.error(f"⚠️ เกิดข้อผิดพลาดในการประมวลผลเสียง: {str(e)}")
 
-                if 'command_text' in locals() and command_text:
+                if command_text:
                     # ตรวจสอบ Kill-Switch
                     kill_keywords = ["ปิดระบบ", "หยุดการทำงาน", "kill switch", "shutdown"]
                     if any(keyword in command_text.lower() for keyword in kill_keywords):
@@ -102,7 +123,7 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     st.session_state.memory_logs.append(log_entry)
 
                     st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
-                    st.write(f"**ข้อความจากเสียงของคุณ:** {command_text}")
+                    st.write(f"**คำสั่งของคุณ:** {command_text}")
                     
                     response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้ว"
                     st.info(f"🤖 [AI Response]: {response_msg}")
@@ -110,9 +131,9 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     # ส่งอีเมลแจ้งเตือนอัตโนมัติผ่าน Gmail SMTP
                     try:
                         sender_email = "vorakangm@gmail.com"
-                        app_password = "pygo tfga zubw xqca"  # <--- แทนที่ด้วยรหัสผ่านแอป 16 หลักของคุณที่นี่
+                        app_password = "pygo tfga zubw xqca"  # รหัสผ่านแอป Gmail ของคุณ
                         
-                        msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบด้วยเสียง:\n\nคำสั่ง: {command_text}")
+                        msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบ:\n\nคำสั่ง: {command_text}")
                         msg['Subject'] = f"🛡️ Zyphere Agent Alert: คำสั่งจาก {speaker_name}"
                         msg['From'] = sender_email
                         msg['To'] = target_email
