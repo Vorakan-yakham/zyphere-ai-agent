@@ -5,9 +5,9 @@ from email.mime.text import MIMEText
 import asyncio
 import edge_tts
 
-st.set_page_config(page_title="Zyphere Claude Edition", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI แท้ๆ (Clean Light Minimalist, โทนอุ่นสบายตา) ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสานโลโก้เคลื่อนไหว J.A.R.V.I.S. ---
 st.markdown("""
     <style>
     .stApp {
@@ -17,12 +17,37 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
+    /* เอฟเฟกต์โลโก้เคลื่อนไหว (Rotating & Glowing Hologram) */
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .pulsing-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+        animation: pulseGlow 3s infinite alternate, rotateLogo 20s linear infinite;
+    }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.4); }
+        100% { box-shadow: 0 0 35px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.8); }
+    }
+    @keyframes rotateLogo {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
     .welcome-header {
         text-align: center;
         font-size: 26px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 30px;
+        margin-top: 10px;
         margin-bottom: 20px;
     }
     .stChatMessage {
@@ -109,7 +134,15 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- หน้าแรกสไตล์ Claude (แสดงข้อความต้อนรับเมื่อยังไม่มีแชท) ---
+# --- แสดงโลโก้เคลื่อนไหวสไตล์ J.A.R.V.I.S. (Hologram Effect) ---
+logo_url = "https://raw.githubusercontent.com/vorakangm/zyphere-ai-agent/main/zyphere_cutout.jpg" # หรือใช้ลิงก์ภาพโลโก้ของคุณ
+st.markdown(f'''
+    <div class="logo-container">
+        <img src="{logo_url}" class="pulsing-logo" alt="Zyphere AI">
+    </div>
+''', unsafe_allow_html=True)
+
+# --- หน้าแรกสไตล์ Claude ---
 if not st.session_state.messages:
     st.markdown(f'<p class="welcome-header">✨ สวัสดีตอนเย็นค่ะ {speaker_name}</p>', unsafe_allow_html=True)
 
@@ -126,7 +159,7 @@ def native_jarvis_brain(cmd):
     # 2. คำนวณทางธุรกิจและทำเงิน (Micro-SaaS Tool)
     elif any(k in cmd_lower for k in ["คำนวณ", "เงินกู้", "สินเชื่อ", "ธุรกิจ", "กำไร"]):
         return (f"📊 **ระบบวิเคราะห์และสร้างรายได้อัตโนมัติ (Native Business Engine):**\n\n"
-                f"เรียนคุณ {speaker_name} โมดูลสร้างเครื่องมือคำนวณพร้อมใช้งานแล้วครับ ท่านสามารถนำระบบนี้ไปเปิดให้บริการหรือรับจ้างลูกค้าเพื่อสร้างกระแสเงินสด (Cash Flow) ได้ทันทีโดยไม่ต้องพึ่งพาบริการภายนอก มีตัวเลขหรือโจทย์ธุรกิจที่ต้องการให้ผมคำนวณระบุเพิ่มเติมไหมครับ?")
+                f"เรียนคุณ {speaker_name} โมดูลสร้างเครื่องมือคำนวณพร้อมใช้งานแล้วครับ ท่านสามารถนำระบบนี้ไปเปิดให้บริการหรือรับจ้างลูกค้าเพื่อสร้างกระแสเงินสด (Cash Flow) ได้ทันที มีตัวเลขหรือโจทย์ธุรกิจที่ต้องการให้ผมคำนวณไหมครับ?")
     
     # 3. ค้นคว้าความรู้ทุกศาสตร์แขนง
     elif any(k in cmd_lower for k in ["ค้นหา", "คืออะไร", "วิเคราะห์", "อธิบาย", "ความรู้"]):
@@ -138,7 +171,7 @@ def native_jarvis_brain(cmd):
 
     # 4. ทักทาย
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการครับ มีภารกิจใดให้ผมดูแล ไม่ว่าจะเป็นการเขียนโค้ด วิเคราะห์ธุรกิจ หรือสร้างระบบอัตโนมัติ สั่งการได้เลยครับ"
+        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการครับ มีภารกิจใดให้ผมดูแล สั่งการได้เลยครับ"
 
     # 5. ตอบกลับทั่วไป
     else:
