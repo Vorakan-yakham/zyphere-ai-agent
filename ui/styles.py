@@ -1,104 +1,131 @@
-"""Strict Dark-Neon CSS with contrast overrides."""
+"""Dark-neon design system with strict contrast rules."""
 import streamlit as st
 
 CSS = """
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-.stApp { background-color: #0b0f19; color: #ffffff !important; }
-
-label, p, span, div, h1, h2, h3, h4, h5, h6, .stMarkdown { color: #ffffff !important; }
-
-section[data-testid="stSidebar"] {
-    background-color: #0e1117 !important;
-    border-right: 1px solid #30363d !important;
-}
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] span,
-section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] h3,
-section[data-testid="stSidebar"] small { color: #ffffff !important; }
-
-div[data-testid="stFileUploader"] {
-    background-color: #161b22 !important;
-    border: 2px dashed #00f3ff !important;
-    border-radius: 10px !important;
-    padding: 10px !important;
-}
-div[data-testid="stFileUploader"] section { background-color: #161b22 !important; }
-div[data-testid="stFileUploader"] span,
-div[data-testid="stFileUploader"] small,
-div[data-testid="stFileUploader"] div {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-}
-div[data-testid="stFileUploader"] button {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
-    font-weight: 700 !important;
-    border-radius: 6px !important;
+:root {
+    --bg: #070b14;
+    --bg-soft: #0e1422;
+    --card: rgba(22, 30, 48, 0.72);
+    --border: rgba(120, 160, 255, 0.16);
+    --accent: #00f3ff;
+    --accent-2: #7c5cff;
+    --text: #f5f8ff;
+    --muted: #93a0b8;
 }
 
-div[data-baseweb="input"] {
-    background-color: #ffffff !important;
-    border-radius: 8px !important;
-    border: 2px solid #00f3ff !important;
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
 }
-div[data-baseweb="input"] input {
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
-    background-color: transparent !important;
-    font-weight: 700 !important;
+.stApp {
+    background:
+        radial-gradient(900px 500px at 12% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+        radial-gradient(800px 480px at 95% 0%, rgba(0, 243, 255, 0.12), transparent 55%),
+        var(--bg);
+    color: var(--text);
 }
 
-div[data-testid="stChatInput"] { background-color: transparent !important; padding-bottom: 20px !important; }
+/* Keep the header (sidebar toggle lives there) but make it invisible chrome */
+header[data-testid="stHeader"] { background: transparent !important; }
+div[data-testid="stToolbar"], div[data-testid="stDecoration"], #MainMenu, footer { visibility: hidden; }
+
+/* Text contrast */
+.stApp p, .stApp li, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4,
+.stApp span, .stMarkdown { color: var(--text); }
+.block-container { padding-top: 1.5rem; max-width: 1100px; }
+
+/* Bottom chat bar: remove the default white band */
+div[data-testid="stBottom"], div[data-testid="stBottom"] > div,
+div[data-testid="stBottomBlockContainer"] { background: transparent !important; }
+div[data-testid="stChatInput"] { background: transparent !important; padding-bottom: 12px !important; }
 div[data-testid="stChatInput"] > div {
-    background-color: #161b22 !important;
-    border: 1px solid #00f3ff !important;
-    border-radius: 24px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
-    padding: 6px 14px !important;
+    background: var(--bg-soft) !important;
+    border: 1px solid rgba(0, 243, 255, 0.55) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55) !important;
 }
 div[data-testid="stChatInput"] > div:focus-within {
-    border: 1px solid #00f3ff !important;
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.5) !important;
+    box-shadow: 0 0 0 1px var(--accent), 0 0 28px rgba(0, 243, 255, 0.35) !important;
 }
 div[data-testid="stChatInput"] textarea {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-    background-color: transparent !important;
-    font-size: 15px !important;
+    color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;
+    background: transparent !important; font-size: 15px !important;
+}
+div[data-testid="stChatInput"] textarea::placeholder { color: var(--muted) !important; -webkit-text-fill-color: var(--muted) !important; }
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0b1120 0%, #080c17 100%) !important;
+    border-right: 1px solid var(--border) !important;
+}
+section[data-testid="stSidebar"] * { color: var(--text); }
+section[data-testid="stSidebar"] small, .zy-muted { color: var(--muted) !important; }
+
+/* File uploader */
+div[data-testid="stFileUploader"] section {
+    background: var(--card) !important; border: 1.5px dashed rgba(0, 243, 255, 0.6) !important; border-radius: 12px !important;
+}
+div[data-testid="stFileUploader"] span, div[data-testid="stFileUploader"] small,
+div[data-testid="stFileUploader"] div { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+div[data-testid="stFileUploader"] button {
+    background: #ffffff !important; color: #000000 !important; -webkit-text-fill-color: #000000 !important;
+    font-weight: 700 !important; border-radius: 8px !important;
 }
 
-pre, code, .stCodeBlock, div[data-testid="stCode"] {
-    background-color: #030712 !important;
-    color: #00f3ff !important;
-    border: 1px solid #1f2937 !important;
-    border-radius: 10px !important;
-    font-family: 'Fira Code', 'Courier New', Courier, monospace !important;
+/* Inputs (login) */
+div[data-baseweb="input"] { background: #ffffff !important; border-radius: 10px !important; border: 2px solid var(--accent) !important; }
+div[data-baseweb="input"] input {
+    color: #000000 !important; -webkit-text-fill-color: #000000 !important;
+    background: transparent !important; font-weight: 600 !important;
 }
-pre code span { color: #38bdf8 !important; }
+div[data-baseweb="select"] > div { background: var(--bg-soft) !important; border-color: var(--border) !important; }
+div[data-baseweb="select"] * { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
 
-div.stButton > button {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-    border: 2px solid #00f3ff !important;
-    width: 100% !important;
-    transition: all 0.3s ease;
+/* Buttons */
+div.stButton > button, div.stDownloadButton > button {
+    background: #ffffff !important; color: #000000 !important; -webkit-text-fill-color: #000000 !important;
+    border: 1.5px solid var(--accent) !important; border-radius: 10px !important; font-weight: 700 !important;
+    width: 100% !important; transition: all .2s ease;
 }
-div.stButton > button:hover {
-    background-color: #00f3ff !important;
-    color: #000000 !important;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+div.stButton > button:hover, div.stDownloadButton > button:hover {
+    background: var(--accent) !important; box-shadow: 0 0 18px rgba(0, 243, 255, 0.55);
 }
 
-.neon-glow { text-shadow: 0 0 20px rgba(0, 243, 255, 0.6); }
+/* Chat messages as glass cards */
+div[data-testid="stChatMessage"] {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 14px 18px; margin-bottom: 12px; backdrop-filter: blur(10px);
+}
+
+/* Code */
+pre, code, div[data-testid="stCode"] {
+    background: #030712 !important; color: #8be9ff !important; border-radius: 10px !important;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace !important;
+}
+pre { border: 1px solid #1f2937 !important; }
+
+/* Expander (reasoning) */
+div[data-testid="stExpander"] { background: rgba(124, 92, 255, 0.07); border: 1px solid rgba(124, 92, 255, 0.3); border-radius: 12px; }
+
+/* Brand pieces */
+.zy-title {
+    font-weight: 700; letter-spacing: 1.5px; text-align: center; margin: 0;
+    background: linear-gradient(90deg, #ffffff 0%, var(--accent) 45%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent !important; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 18px rgba(0, 243, 255, 0.35));
+}
+.zy-sub { text-align: center; color: var(--muted) !important; font-size: 14px; margin: 6px 0 22px; }
+.zy-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    background: rgba(0, 243, 255, 0.1); border: 1px solid rgba(0, 243, 255, 0.45); color: var(--accent) !important; margin-right: 6px;
+}
+.zy-badge.deep { background: rgba(124, 92, 255, 0.14); border-color: rgba(124, 92, 255, 0.6); color: #b9a8ff !important; }
+.zy-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
+}
+.zy-mem { background: var(--card); padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 11px; border-left: 3px solid var(--accent); }
 </style>
 """
 

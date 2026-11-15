@@ -25,7 +25,6 @@ class MemoryBank:
             return []
 
     def _save(self) -> None:
-        # Atomic write: write to temp file then replace, so a crash can't corrupt the store.
         fd, tmp = tempfile.mkstemp(dir=os.path.dirname(self.path), suffix=".tmp")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
@@ -42,6 +41,15 @@ class MemoryBank:
 
     def recent(self, n: int = 6) -> List[dict]:
         return self.records[-n:]
+
+    def context_block(self, n: int = 5) -> str:
+        """Compact text of recent operations, injected into the system prompt."""
+        rows = self.recent(n)
+        if not rows:
+            return ""
+        lines = [f"- [{r.get('timestamp', '')}] ({r.get('axis', '')}) {r.get('goal', '')[:160]}"
+                 + (f" -> {r['summary']}" if r.get("summary") else "") for r in rows]
+        return "MEMORY (earlier operations by this user, may be relevant):\n" + "\n".join(lines)
 
     def clear(self) -> None:
         self.records = []
