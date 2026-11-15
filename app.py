@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS สมบูรณ์แบบ (เพิ่มตัวหนังสือ ZYPHERE ใต้โลโก้ปฏิกรณ์ที่กำลังหมุน) ---
+# --- ดีไซน์ CSS สมบูรณ์แบบ ---
 st.markdown("""
     <style>
     .stApp {
@@ -24,22 +24,19 @@ st.markdown("""
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปรับแต่ง Sidebar ให้พอดีสายตา */
     [data-testid="stSidebar"] {
         background-color: #f8f9fa;
         border-right: 1px solid #e9ecef;
         padding-top: 0.5rem;
     }
 
-    /* จัดกลุ่มเนื้อหาหลักให้อยู่กึ่งกลางหน้าจออย่างสมบูรณ์แบบ */
     .block-container {
-        padding-top: 5vh !important;
+        padding-top: 4vh !important;
         padding-bottom: 2rem !important;
         max-width: 850px !important;
         margin: 0 auto;
     }
 
-    /* โลโก้ปฏิกรณ์ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. พร้อมข้อความ ZYPHERE ด้านล่าง */
     .logo-container {
         display: flex;
         flex-direction: column;
@@ -85,7 +82,6 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
 
-    /* การ์ดโปรไฟล์ผู้ใช้มุมซ้ายล่าง */
     .user-profile-card {
         background-color: #ffffff;
         border: 1px solid #e0e0e0;
@@ -99,7 +95,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด
 AUTHORIZED_USERS = [
     {"name": "วรกันต์ ยาคำ", "email": "vorakangm@gmail.com", "role": "Sovereign Administrator"},
     {"name": "การัณยภาส ยาคำ", "email": "karanyapas@yakham.com", "role": "Authorized Executive"}
@@ -121,7 +116,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.markdown("### Google AI Studio")
     st.caption("Zyphere Sovereign Core Engine")
@@ -177,7 +172,7 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. MAIN CENTER CONTAINER (โลโก้ปฏิกรณ์หมุนวน + ข้อความ ZYPHERE ด้านล่าง) ---
+# --- MAIN CENTER ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -199,7 +194,6 @@ for message in st.session_state.messages:
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# สมองกลอัจฉริยะขั้นสูง
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
@@ -273,7 +267,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING CENTRAL COMMAND CAPSULE ---
+# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED ENTER & SUBMIT) ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -283,6 +277,7 @@ if st.session_state.voice_active:
 
 default_input = st.session_state.pop("pending_prompt", "")
 
+# ใช้ฟอร์มรับค่าที่สมบูรณ์ กด Enter หรือคลิกปุ่มส่งได้ทันที
 with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
     user_input = st.text_input("Describe an app and let Zyphere do the rest", value=default_input, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
     
@@ -300,6 +295,7 @@ with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
         with col_r:
             submitted = st.form_submit_button("✦ I'm feeling lucky", type="primary")
 
+    # ตรวจสอบการกด Submit หรือกด Enter ใน text_input
     if submitted and user_input:
         process_command(user_input)
         st.rerun()
@@ -308,7 +304,7 @@ if mic_btn:
     st.session_state.voice_active = not st.session_state.voice_active
     st.rerun()
 
-# --- 4. QUICK SHORTCUT PILLS ด้านล่าง ---
+# --- QUICK SHORTCUT PILLS ด้านล่าง ---
 st.markdown("<br>", unsafe_allow_html=True)
 p1, p2, p3, p4, p5 = st.columns(5)
 with p1:
