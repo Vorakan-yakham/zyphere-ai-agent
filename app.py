@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # =====================================================================
-# 2. ENTERPRISE UI & BULLETPROOF STYLING (DARK NEON THEME)
+# 2. ENTERPRISE UI & BULLETPROOF STYLING (FIXED ALL SIDEBAR & TEXT CONTRAST)
 # =====================================================================
 st.markdown("""
     <style>
@@ -27,13 +27,27 @@ st.markdown("""
     
     .stApp {
         background-color: #0b0f19;
-        color: #f0f6fc !important;
+        color: #ffffff !important;
     }
     
-    label, p, span, div[data-baseweb="typography"], h1, h2, h3, h4, h5, h6 {
-        color: #f0f6fc !important;
+    /* Global Typography & Sidebar Text Enforcement */
+    label, p, span, div, h1, h2, h3, h4, h5, h6, .stMarkdown, .streamlit-expanderHeader {
+        color: #ffffff !important;
     }
     
+    /* Sidebar Background & Text Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #0e1117 !important;
+        border-right: 1px solid #30363d !important;
+    }
+    
+    section[data-testid="stSidebar"] p, 
+    section[data-testid="stSidebar"] span, 
+    section[data-testid="stSidebar"] label, 
+    section[data-testid="stSidebar"] h3 {
+        color: #ffffff !important;
+    }
+
     /* Authentication Input Field */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
@@ -48,7 +62,7 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Modern Chat Input Box */
+    /* Modern Chat Input Box (Visible Text & Clean Styling) */
     div[data-testid="stChatInput"] {
         background-color: transparent !important;
         padding-bottom: 20px !important;
@@ -56,7 +70,7 @@ st.markdown("""
     
     div[data-testid="stChatInput"] > div {
         background-color: #161b22 !important;
-        border: 1px solid #30363d !important;
+        border: 1px solid #00f3ff !important;
         border-radius: 24px !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
         padding: 6px 14px !important;
@@ -64,7 +78,7 @@ st.markdown("""
     
     div[data-testid="stChatInput"] > div:focus-within {
         border: 1px solid #00f3ff !important;
-        box-shadow: 0 0 25px rgba(0, 243, 255, 0.4) !important;
+        box-shadow: 0 0 25px rgba(0, 243, 255, 0.5) !important;
     }
     
     div[data-testid="stChatInput"] textarea {
@@ -149,7 +163,7 @@ if admin_secret and admin_secret not in ALLOWED_EMAILS:
     ALLOWED_EMAILS.append(admin_secret)
 
 if not st.session_state.authenticated:
-    st.markdown("<div style='text-align: center; margin-top: 120px;'><h1 class='neon-glow'>⚡ ZYPHERE SECURITY CORE</h1><p>Authorized Personnel Only</p></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin-top: 120px;'><h1 class='neon-glow'>⚡ ZYPHERE SECURITY CORE</h1><p style='color: #ffffff;'>Authorized Personnel Only</p></div>", unsafe_allow_html=True)
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
         user_email = st.text_input("Enter Authorized Email", placeholder="")
@@ -219,7 +233,7 @@ class ZyphereAdvancedEngine:
         
         code_template = (
             "# ===================================================\n"
-            "# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.7)\n"
+            "# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.8)\n"
             "# Target Intent: {intent}\n"
             "# Processing Axis: {axis}\n"
             "# ===================================================\n\n"
@@ -299,7 +313,7 @@ with st.sidebar:
     st.write(f"Total Stored Operations: {len(st.session_state.memory_bank)}")
     if st.session_state.memory_bank:
         for m in st.session_state.memory_bank[-6:]:
-            st.markdown(f"<div style='background:#161b22; padding:8px; border-radius:6px; margin-bottom:6px; font-size:11px; border-left:3px solid #00f3ff;'><b>{m['timestamp']}</b><br>{m['goal']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='background:#161b22; padding:8px; border-radius:6px; margin-bottom:6px; font-size:11px; border-left:3px solid #00f3ff; color: #ffffff;'><b>{m['timestamp']}</b><br>{m['goal']}</div>", unsafe_allow_html=True)
     if st.button("Purge Memory Bank"):
         st.session_state.memory_bank = []
         st.session_state.messages = []
