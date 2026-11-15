@@ -151,15 +151,10 @@ if not st.session_state.authenticated:
 
 # --- 5. PERSISTENT MEMORY & AUTONOMOUS REASONING CORE ---
 class ZyphereAutonomousEngine:
-    """
-    ระบบสมองกลอัจฉริยะที่ทำหน้าที่จดจำสถานะ (State) วิเคราะห์เป้าหมาย
-    และสังเคราะห์ผลลัพธ์แบบอัตโนมัติ 100%
-    """
     def __init__(self, memory_store):
         self.memory = memory_store
 
     def process_goal(self, user_goal: str):
-        # บันทึกเป้าหมายลงในหน่วยความจำระยะยาวของระบบ
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         memory_entry = {
             "timestamp": timestamp,
@@ -168,7 +163,6 @@ class ZyphereAutonomousEngine:
         }
         self.memory.append(memory_entry)
         
-        # จำแนกแกนการทำงาน (4-Axis Engine)
         goal_lower = user_goal.lower()
         if any(kw in goal_lower for kw in ["cad", "aerospace", "drone", "3d", "part"]):
             axis = "Aerospace & CAD Engine"
@@ -190,14 +184,12 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# จัดการ Session State สำหรับความจำระยะยาว (Persistent Context Memory)
 if "memory_bank" not in st.session_state:
     st.session_state.memory_bank = []
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Sidebar แสดงหน่วยความจำและความคิดของ AI (Memory & Context Inspection)
 with st.sidebar:
     st.markdown("### 🧠 Autonomous Memory")
     st.write(f"Total Memorized Goals: {len(st.session_state.memory_bank)}")
@@ -209,12 +201,10 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-# แสดงประวัติการสนทนา
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# รับบรีฟเป้าหมายจากผู้ใช้
 user_prompt = st.chat_input("")
 
 if user_prompt:
@@ -227,25 +217,32 @@ if user_prompt:
             engine = ZyphereAutonomousEngine(st.session_state.memory_bank)
             axis, current_memory = engine.process_goal(user_prompt)
             
-            # สังเคราะห์ผลลัพธ์โครงสร้างและโค้ดแบบสมบูรณ์
-            response_output = f"""รับทราบและบันทึกเป้าหมายของคุณวรกันต์ลงใน **Autonomous Memory Bank**เรียบร้อยแล้ว ระบบได้ประมวลผลผ่านแกน **{axis}** โดยอิงจากบริบทและความต้องการทั้งหมดที่คุณเคยสั่งการมา:
+            response_output = (
+                f"รับทราบและบันทึกเป้าหมายของคุณวรกันต์ลงใน **Autonomous Memory Bank** เรียบร้อยแล้ว "
+                f"ระบบได้ประมวลผลผ่านแกน **{axis}** โดยอิงจากบริบทและความต้องการทั้งหมด:\n\n"
+                "```python\n"
+                "# --- ZYPHERE AUTONOMOUS EXECUTOR ---\n"
+                f"# Memorized Goal ID: #{len(st.session_state.memory_bank)}\n"
+                f"# Target Intent: {user_prompt}\n"
+                f"# Assigned Axis: {axis}\n\n"
+                "class ExecutiveTargetPipeline:\n"
+                "    def __init__(self):\n"
+                f"        self.intent = \"{user_prompt}\"\n"
+                "        self.memory_state = \"SYNCED\"\n"
+                "        \n"
+                "    def execute_action(self):\n"
+                "        print(f\"Executing autonomous task for intent: {self.intent}\")\n"
+                "        return \"OUTPUT_READY: Complete architectural package generated.\"\n\n"
+                "if __name__ == '__main__':\n"
+                "    pipeline = ExecutiveTargetPipeline()\n"
+                "    print(pipeline.execute_action())\n"
+                "```\n\n"
+                "ระบบพร้อมตอบสนองและต่อยอดคำสั่งถัดไปทันทีครับ บรีฟเป้าหมายหรือข้อมูลที่คุณต้องการให้สร้างสรรค์ต่อได้เลยครับคุณวรกันต์!"
+            )
 
-```python
-# --- ZYPHERE AUTONOMOUS EXECUTOR ---
-# Memorized Goal ID: #{len(st.session_state.memory_bank)}
-# Target Intent: {user_prompt}
-# Assigned Axis: {axis}
-
-class ExecutiveTargetPipeline:
-    def __init__(self):
-        self.intent = "{user_prompt}"
-        self.memory_state = "SYNCED"
-        
-    def execute_action(self):
-        print(f"Executing autonomous task for intent: {{self.intent}}")
-        # สร้างโค้ด โครงสร้าง หรือระบบปฏิบัติการตามความต้องการอัตโนมัติ
-        return "OUTPUT_READY: Complete architectural package generated."
-
-if __name__ == '__main__':
-    pipeline = ExecutiveTargetPipeline()
-    print(pipeline.execute_action())
+            st.markdown(response_output)
+            
+            audio_path = generate_male_voice("บันทึกเป้าหมายและประมวลผลระบบเรียบร้อยแล้วครับคุณวรกันต์")
+            play_audio_invisible(audio_path)
+            
+            st.session_state.messages.append({"role": "assistant", "content": response_output})
