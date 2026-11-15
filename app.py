@@ -12,45 +12,44 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ฉบับ Ultra-Compact & Luxury Monotone (กระชับ หรูหรา ไร้ช่องว่างส่วนเกิน) ---
+# --- ดีไซน์ CSS ระดับ Elite Studio (ลบช่องว่างส่วนเกิน จัด Grid และ Capsule Prompt ให้เป๊ะตามแบบต้นฉบับ) ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #faf9f6;
+        background-color: #f8f9fa;
         color: #1a1a1a;
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปรับแต่ง Sidebar ให้กระชับ */
+    /* ปรับแต่ง Sidebar ให้ดูหรูหราสะอาดตา */
     [data-testid="stSidebar"] {
-        background-color: #f3f2ee;
-        border-right: 1px solid #e5e4de;
+        background-color: #f1f3f5;
+        border-right: 1px solid #e9ecef;
         padding-top: 1rem;
     }
 
-    /* บีบช่องว่างด้านบนและระยะห่างของ Block หลักให้ชิดสวยงาม */
+    /* บีบช่องว่างตู้คอนเทนเนอร์หลักให้กระชับสมส่วน */
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 2rem !important;
+        padding-top: 1.2rem !important;
+        padding-bottom: 1.5rem !important;
         max-width: 98% !important;
     }
 
-    /* กล่อง Prompt แคปซูลชิ้นเดียวไร้รอยต่อ ลบเส้นขอบแดงกวนใจ */
+    /* กล่อง Prompt แคปซูลชิ้นเดียวไร้รอยต่อ จำลองแบบ AI Studio */
     [data-testid="stForm"] {
         background-color: #ffffff;
-        border: 1px solid #dcdad2 !important;
-        border-radius: 12px;
-        padding: 6px 10px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        border: 1px solid #ced4da !important;
+        border-radius: 14px;
+        padding: 6px 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.03);
     }
-
-    /* ซ่อนขอบและปรับแต่งช่อง Input ภายในฟอร์มให้เนียนตา */
     [data-testid="stForm"] input {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
+        font-size: 14px !important;
     }
 
     /* ปุ่มกดสไตล์ Monotone Minimalist พรีเมียม */
@@ -59,7 +58,7 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid #333333 !important;
         border-radius: 6px !important;
-        padding: 0.3rem 0.7rem !important;
+        padding: 0.35rem 0.8rem !important;
         font-weight: 500 !important;
         font-size: 12px !important;
         transition: all 0.2s ease;
@@ -75,11 +74,11 @@ st.markdown("""
         justify-content: center;
         align-items: center;
         margin-top: 0px;
-        margin-bottom: 0px;
+        margin-bottom: 2px;
     }
     .svg-logo {
-        width: 45px;
-        height: 45px;
+        width: 48px;
+        height: 48px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 12s linear infinite; }
@@ -95,29 +94,52 @@ st.markdown("""
 
     .welcome-title {
         text-align: center;
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-top: 2px;
+        margin-bottom: 12px;
         letter-spacing: -0.3px;
     }
 
-    /* กล่องข้อความแชทพรีเมียม กระชับ */
+    /* การ์ด Template ตัวอย่างสไตล์ AI Studio (Interactive Cards) */
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .template-card {
+        background-color: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 14px;
+        font-size: 13px;
+        color: #333333;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .template-card:hover {
+        border-color: #adb5bd;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* กล่องข้อความแชทพรีเมียม */
     .stChatMessage {
         background-color: #ffffff !important;
-        border: 1px solid #e5e4de !important;
+        border: 1px solid #e9ecef !important;
         border-radius: 10px !important;
-        padding: 10px 14px !important;
+        padding: 12px 16px !important;
         color: #1a1a1a !important;
         box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
 
     /* การ์ดข้อมูลผู้ใช้งานมุมซ้ายล่าง */
     .user-profile-card {
         background-color: #ffffff;
-        border: 1px solid #e5e4de;
+        border: 1px solid #dee2e6;
         border-radius: 8px;
         padding: 8px 10px;
         font-size: 11px;
@@ -150,15 +172,24 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย ---
+# --- 1. SIDEBAR ด้านซ้าย (Explore, Build, Manage ตามแบบ AI Studio) ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
     st.markdown("---")
-    st.markdown("**Workspace**")
+    
+    st.markdown("**EXPLORE**")
     st.markdown("- Playground")
     st.markdown("- History")
-    st.markdown("- Engineering CAD")
+    
+    st.markdown("**BUILD**")
+    st.markdown("- + New agent")
+    st.markdown("- My agents")
+    st.markdown("- Gallery")
+    
+    st.markdown("**MANAGE**")
+    st.markdown("- Dashboard")
+    st.markdown("- Documentation")
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
@@ -199,13 +230,14 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. LAYOUT: แบ่งสัดส่วนคอลัมน์ใหม่ให้กระชับสมส่วน (3.8 : 1.1) ---
+# --- 2. LAYOUT: แบ่ง 2 คอลัมน์สมส่วน (3.8 : 1.1) เหมือน AI Studio ---
 main_col, right_col = st.columns([3.8, 1.1], gap="medium")
 
+# --- แผงควบคุมด้านขวา (Run Settings, System Instructions, Thinking Level, Advanced Tools) ---
 with right_col:
     st.markdown("##### Run settings")
     st.caption("Engine: Zyphere Neural Core v4.2")
-    selected_tool = st.selectbox("Model & Core:", [
+    selected_model = st.selectbox("Model & Core:", [
         "Zyphere 4 Hydrogen (Omni-Science)",
         "Zyphere Aerospace & CAD Synthesizer",
         "Zyphere Quantum Physics Engine",
@@ -228,6 +260,7 @@ with right_col:
     function_calling = st.checkbox("Function calling (IoT/Hardware)", value=True)
     grounding_search = st.checkbox("Grounding with Sovereign Web Search", value=True)
 
+# --- พื้นที่ทำงานตรงกลาง (Playground & Chat) ---
 with main_col:
     st.markdown('''
         <div class="logo-container">
@@ -241,7 +274,29 @@ with main_col:
     ''', unsafe_allow_html=True)
     
     if not st.session_state.messages:
-        st.markdown(f'<div class="welcome-title">Build with Zyphere Autonomous Engine</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="welcome-title">Build with Zyphere 4 Hydrogen</div>', unsafe_allow_html=True)
+        
+        # แสดง Prompt Templates แบบ Interactive สไตล์ AI Studio[cite: 13]
+        st.markdown("""
+            <div style="font-size:13px; color:#555; margin-bottom:8px; font-weight:500;">Quick Prompt Suggestions:</div>
+        """, unsafe_allow_html=True)
+        
+        t1, t2 = st.columns(2)
+        with t1:
+            if st.button("🛰️ ออกแบบโครงสร้างชิ้นส่วนยานอวกาศ Titanium-Graphene", use_container_width=True):
+                st.session_state.pending_prompt = "ออกแบบโครงสร้างชิ้นส่วนยานอวกาศ Titanium-Graphene"
+                st.rerun()
+            if st.button("🌲 สร้างวิดีโอเรื่องเล่าคนเดินป่า พร้อมโพสต์ลง Social", use_container_width=True):
+                st.session_state.pending_prompt = "สร้างวิดีโอเรื่องเล่าคนเดินป่า แล้วโพสต์ลง Facebook, YouTube และ TikTok ให้หน่อย"
+                st.rerun()
+        with t2:
+            if st.button("⚡ เขียนโค้ดระบบควบคุมแขนกล IoT Autonomous", use_container_width=True):
+                st.session_state.pending_prompt = "เขียนโค้ดระบบควบคุมแขนกล IoT Autonomous"
+                st.rerun()
+            if st.button("📊 วิเคราะห์จุดคุ้มทุนธุรกิจอัจฉริยะอัตโนมัติ", use_container_width=True):
+                st.session_state.pending_prompt = "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
+                st.rerun()
+        st.markdown("<br>", unsafe_allow_html=True)
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -250,7 +305,7 @@ with main_col:
     if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
         st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# สมองกลอัจฉริยะ
+# สมองกลอัจฉริยะขั้นสูง (คิด วิเคราะห์ และตอบทันทีโดยไม่ทวนคำถาม)
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
@@ -274,6 +329,14 @@ def native_jarvis_brain(cmd):
             "G1 X0 Y0 Z0.2 F3000 ; Move to origin\n"
             "```\n\n"
             "**ข้อเสนอแนะทางวัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อรองรับแรงกดดันสูงในชั้นบรรยากาศ"
+        )
+    elif any(k in cmd_lower for k in ["เดินป่า", "วิดีโอ", "facebook", "tiktok", "youtube"]):
+        return (
+            "**ระบบอัตโนมัติ Cross-Platform Content Automation กำลังทำงาน:**\n\n"
+            "1. **Scripting:** สร้างบทเรื่องเล่าคนเดินป่าบรรยากาศลึกลับน่าติดตามเรียบร้อย\n"
+            "2. **Voice Synthesis:** สังเคราะห์เสียงบรรยายพรีเมียมโทนทุ้มนุ่มนวล\n"
+            "3. **Video Production:** ตัดต่อฟุตเทจป่าเขาพร้อมซับไตเติลออโต้\n"
+            "4. **API Deployment:** ส่งข้อมูลและเผยแพร่อัตโนมัติไปยัง Facebook, YouTube และ TikTok เรียบร้อยแล้วครับ"
         )
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
         return f"สวัสดีครับคุณ {speaker_name} ระบบ Zyphere พร้อมรับบัญชาการสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ"
@@ -317,7 +380,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดฟอร์มแคปซูลให้ชิด สวยงาม ไร้รอยต่อ) ---
+# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (ถอดแบบปุ่ม AI Studio ในภาพเป๊ะๆ)[cite: 13] ---
 with main_col:
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -328,8 +391,11 @@ with main_col:
             if audio_data is not None:
                 st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผลคำสั่ง")
 
+    # ตรวจสอบหากมีการคลิก Quick Prompt
+    default_input = st.session_state.pop("pending_prompt", "")
+
     with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
-        user_input = st.text_input("Start typing a prompt to see what our models can do", label_visibility="collapsed")
+        user_input = st.text_input("Start typing a prompt to see what our models can do", value=default_input, label_visibility="collapsed")
         
         c1, c2, c3, c4, c5, c6 = st.columns([0.4, 0.4, 0.9, 3.8, 0.6, 1.0])
         with c1:
