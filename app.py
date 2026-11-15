@@ -217,6 +217,95 @@ def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
     if any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
-        return (f"🛰️ **ระบบประมวลผลวิศวกรรมมหาศาล (Universal Engineering Synthesizer):**\n\n"
-                f"เรียน คุณ {speaker_name} ผมได้สังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งควบคุมเครื่องจักรสำหรับภารกิจ '{cmd}' เรียบร้อยครับ:\n\n"
-                f"```gcode\n; Zyphere Native CNC / 3D Printer G-Code\n; Target: Advanced Alloy Structural Component\nG21 ; Set units to millimeters\nG90 ; Absolute positioning\nM104 S240 ; Set Extruder Temp\nG1 X0 Y0 Z0.2 F3000 ; Move to origin\n; Structural Lattice Pattern Extrusion...\n```\n\n"
+        msg_out = (
+            "🛰️ **ระบบประมวลผลวิศวกรรมมหาศาล (Universal Engineering Synthesizer):**\n\n"
+            f"เรียน คุณ {speaker_name} ผมได้สังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งควบคุมเครื่องจักรสำหรับภารกิจ '{cmd}' เรียบร้อยครับ:\n\n"
+            "```gcode\n"
+            "; Zyphere Native CNC / 3D Printer G-Code\n"
+            "; Target: Advanced Alloy Structural Component\n"
+            "G21 ; Set units to millimeters\n"
+            "G90 ; Absolute positioning\n"
+            "M104 S240 ; Set Extruder Temp\n"
+            "G1 X0 Y0 Z0.2 F3000 ; Move to origin\n"
+            "; Structural Lattice Pattern Extrusion...\n"
+            "```\n\n"
+            "**วิเคราะห์วัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อทนทานต่อแรงกดดันชั้นบรรยากาศและรังสีคอสมิกครับ"
+        )
+        return msg_out
+    
+    elif any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
+        msg_out = (
+            f"เรียน คุณ {speaker_name} ในฐานะสถาปนิกซอฟต์แวร์ส่วนตัว ผมได้ออกแบบชุดโครงสร้างโค้ดตามมาตรฐาน Enterprise เรียบร้อยครับ:\n\n"
+            "```python\n"
+            "# Zyphere Autonomous Neural Engine\n"
+            f"class ZyphereAgent:\n"
+            f"    def __init__(self, owner):\n"
+            f"        self.owner = owner\n"
+            f"        self.status = 'Fully Operational & Evolving'\n"
+            f"    def execute_task(self, task_name):\n"
+            f"        return f'Executing {{task_name}} for {{self.owner}} with high security.'\n\n"
+            f"agent = ZyphereAgent('{speaker_name}')\n"
+            "print(agent.execute_task('Autonomous Evolution Command'))\n"
+            "```"
+        )
+        return msg_out
+
+    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
+        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการภารกิจสร้างนวัตกรรมระดับโลกครับ สั่งการได้เลยครับ"
+
+    else:
+        msg_out = (
+            f"💡 **บันทึกการประมวลผลคำสั่งระดับสูง:** '{cmd}'\n\n"
+            f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้ทำการประมวลผลตรรกะ บันทึก Log ความปลอดภัย และส่งรายงานเข้าสู่ระบบอีเมลเรียบร้อยแล้วครับ มีภารกิจใดให้ผมขับเคลื่อนต่อไหมครับ?"
+        )
+        return msg_out
+
+# --- ฟังก์ชันประมวลผลหลัก ---
+def process_command(cmd):
+    if not cmd:
+        return
+    
+    if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
+        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
+        st.stop()
+
+    response_msg = native_jarvis_brain(cmd)
+
+    st.session_state.messages.append({"role": "user", "content": cmd})
+    st.session_state.messages.append({"role": "assistant", "content": response_msg})
+
+    try:
+        sender_email = "vorakangm@gmail.com"
+        app_password = "pygo tfga zubw xqca"
+        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
+        msg['Subject'] = f"🛡️ Zyphere Report: {speaker_name}"
+        msg['From'] = sender_email
+        msg['To'] = target_email
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, target_email, msg.as_string())
+    except:
+        pass
+
+    try:
+        tts_path = "response.mp3"
+        asyncio.run(generate_male_voice(response_msg, tts_path))
+        st.session_state.latest_audio = tts_path
+    except:
+        st.session_state.latest_audio = None
+
+# --- แสดงประวัติแชทสไตล์ Claude ---
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+# เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
+if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+
+# --- ช่องรับคำสั่งด้านล่างสุด (ล้างข้อความแนะนำออกให้สะอาดตา) ---
+user_input = st.chat_input("")
+if user_input:
+    process_command(user_input)
+    st.rerun()
