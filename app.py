@@ -8,43 +8,44 @@ import asyncio
 import edge_tts
 from pypdf import PdfReader
 
-st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="wide")
 
-# --- ดีไซน์ CSS จำลองสไตล์ Claude AI (Clean, Warm Minimalist, คมชัดอ่านง่าย) ---
+# --- ดีไซน์ CSS ธีม Command Center สไตล์หรูหรา คมชัด อ่านง่าย ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #fcfbf9;
-        color: #333333;
+        background: linear-gradient(135deg, #090a0f 0%, #121824 100%);
+        color: #e6edf3;
     }
-    /* ซ่อนแถบเมนูด้านบนของ Streamlit เพื่อความคลีนแบบ Claude */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    .welcome-header {
-        text-align: center;
-        font-size: 28px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin-top: 40px;
-        margin-bottom: 30px;
+    .main-title {
+        font-size: 30px;
+        font-weight: 800;
+        color: #38bdf8;
+        text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        margin-bottom: 0px;
+    }
+    .sub-title {
+        color: #94a3b8;
+        font-size: 14px;
+        margin-bottom: 20px;
     }
     .stChatMessage {
-        background-color: #ffffff !important;
-        border: 1px solid #e5e5df !important;
+        background-color: #1e293b !important;
+        border: 1px solid #334155 !important;
         border-radius: 12px !important;
-        padding: 16px !important;
-        color: #222222 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        margin-bottom: 12px;
+        padding: 15px !important;
+        color: #f8fafc !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-    /* ปรับแต่งช่องพิมพ์ข้อความให้เป็นสีขาวขอบมน สไตล์ Claude */
     [data-testid="stChatInput"] textarea {
-        color: #1a1a1a !important;
-        -webkit-text-fill-color: #1a1a1a !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
     }
     </style>
 """, unsafe_allow_html=True)
+
+st.markdown('<p class="main-title">🛡️ Zyphere Autonomous Super-Agent [Dr. J.A.R.V.I.S. ARCHITECTURE]</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">ระบบปัญญาประดิษฐ์ขั้นสูงเพื่อการควบคุมและวิเคราะห์เชิงลึก เฉพาะตระกูลยาคำ (วรกันต์ / การัณยภาส)</p>', unsafe_allow_html=True)
 
 # ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด
 AUTHORIZED_USERS = [
@@ -52,7 +53,6 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
 ]
 
-# ระบบความจำแชท
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -64,7 +64,7 @@ if "is_verified" not in st.session_state:
     st.session_state.verified_name = ""
     st.session_state.verified_surname = ""
 
-# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม ---
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม (Neural Voice) ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
     communicate = edge_tts.Communicate(text, voice)
@@ -72,15 +72,15 @@ async def generate_male_voice(text, output_path):
 
 # --- แผงควบคุมตั้งค่าระบบ (Sidebar) ---
 with st.sidebar:
-    st.header("⚙️ ตั้งค่าระบบความปลอดภัย")
+    st.header("⚙️ ระบบความปลอดภัยและตั้งค่า")
     target_email = st.text_input("อีเมลรับการแจ้งเตือน", value="vorakangm@gmail.com")
     st.markdown("---")
     st.subheader("📚 คลังความรู้ตระกูลยาคำ")
-    uploaded_doc = st.file_uploader("อัปโหลดเอกสาร/โน้ตลับ (PDF หรือ TXT)", type=["pdf", "txt"])
+    uploaded_doc = st.file_uploader("อัปโหลดเอกสาร/โค้ด/โน้ตลับ (PDF หรือ TXT)", type=["pdf", "txt"])
     
     if st.session_state.is_verified:
         st.markdown("---")
-        if st.button("🔒 ออกจากระบบ (Logout)", type="secondary"):
+        if st.button("🔒 ล้างการยืนยันตัวตน (Logout)", type="secondary"):
             st.session_state.is_verified = False
             st.session_state.verified_name = ""
             st.session_state.verified_surname = ""
@@ -88,7 +88,6 @@ with st.sidebar:
             st.session_state.latest_audio = None
             st.rerun()
 
-# ดึงข้อความจากเอกสารที่อัปโหลด
 doc_content = ""
 if uploaded_doc:
     if uploaded_doc.type == "application/pdf":
@@ -98,9 +97,9 @@ if uploaded_doc:
                 doc_content += page.extract_text() + "\n"
     else:
         doc_content = str(uploaded_doc.read(), "utf-8")
-    st.sidebar.success("✅ โหลดฐานข้อมูลเอกสารสำเร็จ")
+    st.sidebar.success("✅ โหลดฐานข้อมูลเข้าสู่ระบบสำเร็จ")
 
-# --- ยืนยันตัวตน ---
+# --- ตรวจสอบสิทธิ์ ---
 if not st.session_state.is_verified:
     st.markdown("### 🔑 ยืนยันตัวตนความปลอดภัยระดับสูงสุด")
     col1, col2 = st.columns(2)
@@ -126,50 +125,48 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 speaker_surname = st.session_state.verified_surname
+st.info(f"🛡️ ผู้ใช้งานปัจจุบัน: คุณ **{speaker_name} {speaker_surname}** | สถานะระบบ: Dr. J.A.R.V.I.S. Core Online")
 
-# --- หน้าแรกสไตล์ Claude (หากยังไม่มีแชท แสดงข้อความต้อนรับตรงกลาง) ---
-if not st.session_state.messages:
-    st.markdown(f'<p class="welcome-header">✨ สวัสดีตอนเย็นค่ะ {speaker_name}</p>', unsafe_allow_html=True)
-
-# --- สมองกลอัจฉริยะระดับ Dr. ---
-def dr_zyphere_brain(cmd, doc_text):
+# --- สมองกลวิเคราะห์ขั้นสูง (Dr. J.A.R.V.I.S. Brain) ---
+def jarvis_zyphere_core(cmd, doc_text):
     cmd_lower = cmd.lower()
     
-    # 1. เขียนโปรแกรม (PHP / Python)
-    if any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
-        return (f"เรียน คุณ {speaker_name} ในฐานะที่ปรึกษาทางเทคนิคและสถาปัตยกรรมซอฟต์แวร์ ผมได้วิเคราะห์และออกแบบชุดคำสั่งตามหลักการ Engineering ให้เรียบร้อยครับ:\n\n"
-                f"```php\n<?php\n/**\n * Zyphere Enterprise PHP Core Engine\n * Author: Dr. Zyphere for Khun {speaker_name}\n */\nclass ZyphereCore {{\n    public function execute() {{\n        return 'System Status: Operational & Secure';\n    }}\n}}\n$agent = new ZyphereCore();\necho$agent->execute();\n?>\n```\n\n"
-                f"**คำแนะนำเชิงลึก:** โครงสร้างนี้ออกแบบมาให้มีความปลอดภัยสูง สามารถนำไปปรับใช้ใน Production Server ได้ทันทีครับ")
+    # 1. เขียนและวิเคราะห์โค้ด (PHP/Python/System)
+    if any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน", "ระบบ"]):
+        return (f"เรียน คุณ {speaker_name} ในฐานะสถาปนิกซอฟต์แวร์และผู้ช่วยส่วนตัว ผมได้วิเคราะห์โครงสร้างตรรกะและออกแบบโค้ดตามมาตรฐาน Enterprise ให้เรียบร้อยครับ:\n\n"
+                f"```php\n<?php\n/**\n * Zyphere J.A.R.V.I.S. Enterprise Core\n * Authorized for: Khun {speaker_name} & Khun Karanyapat\n */\nclass JarivsEngine {{\n    private string $status = 'SECURE & OPERATIONAL';\n    public function getDiagnostics(): string {{\n        return 'System Health: 100% | Protocol: Active';\n    }}\n}}\n$jarvis = new JarivsEngine();\necho$jarvis->getDiagnostics();\n?>\n```\n\n"
+                f"**คำแนะนำเชิงสถาปัตยกรรม:** โค้ดชุดนี้ถูกออกแบบให้รองรับการขยายตัว (Scalability) และมีความปลอดภัยสูง สามารถนำไปปรับใช้ในโปรเจกต์ของท่านได้ทันทีครับ")
     
-    # 2. วิเคราะห์หุ้น / ตลาดโลก
-    elif any(k in cmd_lower for k in ["หุ้น", "stock", "ตลาดโลก", "เศรษฐกิจ", "ลงทุน", "crypto", "ทองคำ"]):
-        return (f"📊 **รายงานวิเคราะห์เศรษฐกิจมหภาคและตลาดทุนเชิงลึก (Dr. Zyphere Report):**\n\n"
-                f"1. **ภาวะตลาดปัจจุบัน (Market Sentiment):** ตลาดอยู่ในช่วงปรับฐาน นักลงทุนสถาบันจับตาทิศทางอัตราดอกเบี้ยและตัวเลขเงินเฟ้ออย่างใกล้ชิด\n"
-                f"2. **ปัจจัยทางเทคนิค (Technical Outlook):** สินทรัพย์เสี่ยงมีความผันผวน แนะนำให้ใช้กลยุทธ์ *DCA* หรือรอจังหวะสะสมที่แนวรับสำคัญ\n"
-                f"3. **คำแนะนำเชิงกลยุทธ์:** กระจายความเสี่ยงและถือเงินสดสำรองเพื่อความยืดหยุ่น ท่านต้องการให้เจาะลึกงบการเงินตัวใดเป็นพิเศษไหมครับ?")
+    # 2. วิเคราะห์หุ้น / ตลาดโลก (Financial & Macro Analysis)
+    elif any(k in cmd_lower for k in ["หุ้น", "stock", "ตลาดโลก", "เศรษฐกิจ", "ลงทุน", "crypto", "ทองคำ", "การเงิน"]):
+        return (f"📊 **รายงานวิเคราะห์ตลาดทุนและเศรษฐกิจมหภาค (Dr. J.A.R.V.I.S. Financial Intelligence):**\n\n"
+                f"1. **Macro Environment:** สภาวะเศรษฐกิจปัจจุบันมีความทจากทิศทางสภาพคล่องและอัตราดอกเบี้ย แนะนำให้ติดตามตัวเลขเงินเฟ้ออย่างใกล้ชิด\n"
+                f"2. **Strategic Outlook:** สำหรับการลงทุนในสินทรัพย์เสี่ยงหรือตลาดหุ้น ควรเน้นกลยุทธ์การบริหารความเสี่ยง (Risk Management) และแบ่งสัดส่วนเงินสด (Cash Flow)\n"
+                f"3. **Actionable Insight:** หากท่านต้องการให้ผมเจาะลึกงบการเงิน งบดุล หรือสัญญาณเทคนิคของสินทรัพย์ตัวใดเป็นพิเศษ โปรดระบุชื่อหลักทรัพย์ได้เลยครับ")
 
-    # 3. ค้นหาข้อมูล / Research
-    elif any(k in cmd_lower for k in ["ค้นหา", "หาข้อมูล", "search", "ข่าว", "คืออะไร", "วิเคราะห์"]):
+    # 3. ค้นคว้าวิจัย / Research & Knowledge Discovery
+    elif any(k in cmd_lower for k in ["ค้นหา", "หาข้อมูล", "search", "ข่าว", "คืออะไร", "วิเคราะห์", "ศึกษา"]):
         topic = cmd.replace("ค้นหา", "").replace("คืออะไร", "").strip()
-        return (f"🔍 **การสังเคราะห์ข้อมูลเชิงลึก (Autonomous Research Analysis):**\n\n"
-                f"จากการประมวลผลฐานข้อมูลและองค์ความรู้รอบตัวเกี่ยวกับ '{topic or cmd}':\n"
-                f"- **แก่นสำคัญ (Core Concept):** ประเด็นนี้มีนัยสำคัญต่อการพัฒนาเทคโนโลยีและโครงสร้างยุคใหม่\n"
-                f"- **แนวโน้มในอนาคต:** คาดว่าจะมีการเติบโตอย่างต่อเนื่องในช่วงหลายปีข้างหน้า\n\n"
-                f"หากต้องการให้ผมเจาะลึกสถิติหรือแผนปฏิบัติการเพิ่มเติม โปรดระบุขอบเขตได้เลยครับ")
+        return (f"🔍 **Autonomous Research & Knowledge Synthesis:**\n\n"
+                f"จากการประมวลผลฐานข้อมูลเชิงลึกเกี่ยวกับ '{topic or cmd}':\n"
+                f"- **Core Architecture:** ประเด็นนี้มีรากฐานทางเทคโนโลยีที่เชื่อมโยงกับระบบอัตโนมัติและโครงสร้างข้อมูลยุคใหม่\n"
+                f"- **Strategic Value:** มีศักยภาพสูงในการนำมาต่อยอดเพื่อเพิ่มประสิทธิภาพการทำงานในอนาคต\n\n"
+                f"หากต้องการให้ผมเจาะลึกในมุมมองใดเพิ่มเติม บัญชาการมาได้เลยครับ")
 
-    # 4. เอกสารครอบครัว
+    # 4. เอกสารตระกูลยาคำ
     elif any(k in cmd_lower for k in ["เอกสาร", "ไฟล์", "สรุป", "ข้อมูล"]) and doc_text:
-        return f"📂 **การวิเคราะห์เอกสารตระกูลยาคำ:** \n\n{doc_text[:600]}...\n\n*ข้อมูลทั้งหมดถูกประมวลผลภายใต้ความปลอดภัยสูงสุดครับ*"
+        return f"📂 **การสกัดข้อมูลจากคลังความรู้ตระกูลยาคำ:**\n\n{doc_text[:650]}...\n\n*ระบบรักษาความปลอดภัยระดับสูงสุดได้ตรวจสอบความถูกต้องเรียบร้อยครับ*"
     elif any(k in cmd_lower for k in ["เอกสาร", "ไฟล์", "สรุป"]) and not doc_text:
-        return f"เรียนคุณ {speaker_name} ขณะนี้ยังไม่มีเอกสารในคลังความรู้ กรุณาอัปโหลดไฟล์ PDF หรือ TXT ที่แถบเมนูด้านซ้ายครับ"
+        return f"เรียนคุณ {speaker_name} ปัจจุบันยังไม่มีเอกสารในคลังความรู้ กรุณาอัปโหลดไฟล์ PDF หรือ TXT ที่แถบเมนูด้านซ้าย เพื่อให้ผมทำการวิเคราะห์เชิงลึกครับ"
 
     # 5. ทักทาย
-    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมให้คำปรึกษาขั้นสูง ทั้งเขียนโค้ด วิเคราะห์ตลาด หรือค้นคว้าวิจัย มีภารกิจใดให้ผมดูแลไหมครับ"
+    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi", "hey"]):
+        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere (J.A.R.V.I.S. Edition) พร้อมรับบัญชาการครับ ไม่ว่าจะเป็นการเขียนโปรแกรมขั้นสูง วิเคราะห์ตลาดทุน หรือค้นคว้าระบบ มีภารกิจใดให้ผมดูแลเป็นพิเศษไหมครับ"
 
-    # 6. ตอบกลับทั่วไป
+    # 6. ตอบกลับทั่วไปแบบฉลาดล้ำลึก
     else:
-        return f"💡 **บันทึกการวิเคราะห์คำสั่ง:** '{cmd}'\n\nเรียนคุณ {speaker_name} ระบบ Zyphere ได้ประมวลผลตรรกะและส่งรายงานสรุปไปยังอีเมลปลายทางของท่านเรียบร้อยแล้ว มีประเด็นอื่นให้ผมวิเคราะห์ต่อไหมครับ?"
+        return (f"💡 **บันทึกคำสั่งและตรรกะประมวลผล:** '{cmd}'\n\n"
+                f"เรียนคุณ {speaker_name} ระบบได้ดำเนินการวิเคราะห์ บันทึก Log และส่งรายงานสรุปเข้าสู่ระบบอีเมลปลายทางเรียบร้อยแล้วครับ มีประเด็นหรือโปรเจกต์ใดให้ผมลุยต่อไหมครับ?")
 
 # --- ฟังก์ชันประมวลผลหลัก ---
 def process_command(cmd):
@@ -177,10 +174,10 @@ def process_command(cmd):
         return
     
     if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังปิดตัวลงทันที!")
+        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
         st.stop()
 
-    response_msg = dr_zyphere_brain(cmd, doc_content)
+    response_msg = jarvis_zyphere_core(cmd, doc_content)
 
     st.session_state.messages.append({"role": "user", "content": cmd})
     st.session_state.messages.append({"role": "assistant", "content": response_msg})
@@ -190,8 +187,8 @@ def process_command(cmd):
         sender_email = "vorakangm@gmail.com"
         app_password = "pygo tfga zubw xqca"
         
-        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere Agent:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์ Dr. Mode: {response_msg}")
-        msg['Subject'] = f"🛡️ Zyphere Dr. Report: {speaker_name}"
+        msg = MIMEText(f"รายงานสถานะปฏิบัติการ Zyphere J.A.R.V.I.S.:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
+        msg['Subject'] = f"🛡️ Zyphere J.A.R.V.I.S. Report: {speaker_name}"
         msg['From'] = sender_email
         msg['To'] = target_email
 
@@ -209,7 +206,7 @@ def process_command(cmd):
     except Exception as e:
         st.session_state.latest_audio = None
 
-# --- แสดงประวัติแชทสไตล์ Claude ---
+# --- แสดงผลแชท ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
@@ -218,8 +215,8 @@ for message in st.session_state.messages:
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# --- ช่องรับคำสั่งด้านล่างสุด (สไตล์ Claude AI พิมพ์แล้ว Enter ส่งทันที) ---
-user_input = st.chat_input("วันนี้ให้ฉันช่วยอะไรดี...")
+# --- ช่องรับคำสั่งด้านล่างสุด ---
+user_input = st.chat_input("บัญชาการ Zyphere เช่น เขียนโค้ด PHP, วิเคราะห์หุ้น, ค้นคว้าข้อมูลเชิงลึก...")
 if user_input:
     process_command(user_input)
     st.rerun()
