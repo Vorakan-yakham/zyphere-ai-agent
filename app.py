@@ -95,8 +95,6 @@ st.subheader("💬 สนทนากับ Zyphere Autonomous Super-Agent")
 
 input_method = st.radio("เลือกวิธีการสั่งการของคุณ:", ["พิมพ์ข้อความคำสั่ง (กด Enter เพื่อส่ง)", "อัปโหลดไฟล์เสียง"], horizontal=True)
 
-command_text = ""
-
 # ฟังก์ชันประมวลผลคำสั่งหลัก
 def process_command(cmd):
     if not cmd:
@@ -140,27 +138,4 @@ def process_command(cmd):
         tts_path = "response.mp3"
         asyncio.run(generate_male_voice(response_msg, tts_path))
         st.audio(tts_path, format="audio/mp3", autoplay=True)
-    except Exception as tts_err:
-        st.warning(f"⚠️ ไม่สามารถสร้างเสียงพูดได้: {str(tts_err)}")
-
-
-if input_method == "พิมพ์ข้อความคำสั่ง (กด Enter เพื่อส่ง)":
-    # ใช้ on_change และ key เพื่อให้กด Enter แล้วทำงานทันทีโดยไม่ต้องกดปุ่มส่ง
-    text_input = st.text_input("พิมพ์คำสั่งของคุณที่นี่ แล้วกด Enter:", placeholder="เช่น สวัสดี Zyphere, สรุปรายงาน", key="user_input_box")
-    
-    if text_input:
-        with st.spinner("กำลังประมวลผลระบบอัตโนมัติด้วยเสียงสายลมอันทรงพลัง..."):
-            process_command(text_input)
-            # เคลียร์ช่องพิมพ์หลังจากทำงานเสร็จ
-            st.session_state.user_input_box = ""
-else:
-    audio_file = st.file_uploader("อัปโหลดไฟล์เสียงคำสั่งของคุณ (.wav, .mp3, .m4a)", type=["wav", "mp3", "m4a"])
-    if st.button("🚀 ส่งไฟล์เสียงไปยัง AI Super-Agent", type="primary"):
-        if not audio_file:
-            st.warning("⚠️ กรุณาอัปโหลดไฟล์เสียงคำสั่งก่อนครับ")
-        else:
-            with st.spinner("กำลังถอดรหัสเสียงและประมวลผลระบบ..."):
-                try:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
-                        tmp_file.write(audio_file.getvalue())
-                        tmp_path =
+    except Exception as tts_
