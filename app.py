@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS จำลองกล่อง Prompt Box สไตล์ Google AI Studio แบบเป๊ะๆ ---
+# --- ดีไซน์ CSS Monotone Minimalist ฉบับสมบูรณ์ ---
 st.markdown("""
     <style>
     .stApp {
@@ -23,17 +23,19 @@ st.markdown("""
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปุ่มสไตล์ Monotone Minimalist */
+    /* ปุ่มสไตล์ Monotone Minimalist เรียบหรู */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
         border: 1px solid #333333 !important;
-        border-radius: 8px !important;
-        padding: 0.4rem 1rem !important;
-        font-weight: 500 !important;
+        border-radius: 6px !important;
+        padding: 0.35rem 0.9rem !important;
+        font-weight: 400 !important;
+        font-size: 13px !important;
     }
     .stButton > button:hover {
         background-color: #333333 !important;
+        border-color: #555555 !important;
     }
 
     /* โลโก้ Neon Atom กลางหน้าจอ */
@@ -41,12 +43,12 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 10px;
-        margin-bottom: 5px;
+        margin-top: 5px;
+        margin-bottom: 2px;
     }
     .svg-logo {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
@@ -55,26 +57,26 @@ st.markdown("""
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)); }
-        100% { filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.7)); }
+        0% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.3)); }
+        100% { filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .welcome-title {
         text-align: center;
-        font-size: 26px;
+        font-size: 22px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .stChatMessage {
         background-color: #ffffff !important;
         border: 1px solid #e5e5df !important;
-        border-radius: 10px !important;
-        padding: 14px !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
         color: #1a1a1a !important;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .user-profile-card {
@@ -89,10 +91,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด
+# ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด (ล็อกอินด้วยอีเมลและชื่อที่ปลอดภัย)
 AUTHORIZED_USERS = [
-    {"name": "วรกันต์", "surname": "ยาคำ", "role": "Father"},
-    {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
+    {"name": "วรกันต์ ยาคำ", "email": "vorakangm@gmail.com", "role": "Sovereign Administrator"},
+    {"name": "การัณยภาส ยาคำ", "email": "karanyapas@yakham.com", "role": "Authorized Executive"}
 ]
 
 if "messages" not in st.session_state:
@@ -111,7 +113,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย ---
+# --- 1. SIDEBAR ด้านซ้าย (ระบบ Login ด้วยอีเมลผู้มีสิทธิ์) ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
@@ -121,31 +123,29 @@ with st.sidebar:
     st.markdown("- History")
     st.markdown("- Engineering CAD")
     
-    st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.markdown("---")
     
     if not st.session_state.is_verified:
-        st.markdown("#### ยืนยันตัวตนเข้าใช้งาน")
-        input_name = st.text_input("ชื่อจริง", placeholder="เช่น วรกันต์", key="sidebar_name")
-        input_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ", key="sidebar_surname")
+        st.markdown("#### Sovereign Login")
+        selected_user_name = st.selectbox("เลือกผู้มีสิทธิ์เข้าถึง:", [u["name"] for u in AUTHORIZED_USERS])
+        input_email = st.text_input("ยืนยันอีเมลส่วนตัว", placeholder="input email...")
+        
         if st.button("Unlock System", type="primary", use_container_width=True):
-            is_authorized = any(
-                user["name"].strip() == input_name.strip() and user["surname"].strip() == input_surname.strip()
-                for user in AUTHORIZED_USERS
-            )
-            if is_authorized:
+            matched_user = next((u for u in AUTHORIZED_USERS if u["name"] == selected_user_name and u["email"].strip().lower() == input_email.strip().lower()), None)
+            if matched_user:
                 st.session_state.is_verified = True
-                st.session_state.verified_name = input_name.strip()
+                st.session_state.verified_name = matched_user["name"]
                 st.rerun()
             else:
-                st.error("Access Denied")
+                st.error("Access Denied: อีเมลไม่ตรงกับสิทธิ์เด็ดขาด")
     else:
         speaker_name = st.session_state.verified_name
         st.markdown(f"""
             <div class="user-profile-card">
-                <b>ผู้ใช้งานปัจจุบัน:</b><br>
-                {speaker_name} ยาคำ<br>
-                <small style="color:#666;">Sovereign Security Level 1</small>
+                <b>Active Session:</b><br>
+                {speaker_name}<br>
+                <small style="color:#555;">Sovereign Security Level 1</small>
             </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -157,17 +157,17 @@ with st.sidebar:
             st.rerun()
 
 if not st.session_state.is_verified:
-    st.info("กรุณายืนยันตัวตนที่แผงควบคุมด้านซ้ายล่างเพื่อเริ่มต้นใช้งานระบบ Zyphere")
+    st.info("กรุณายืนยันตัวตนด้วยอีเมลที่แผงควบคุมด้านซ้ายล่าง เพื่อเริ่มใช้งานระบบ Zyphere")
     st.stop()
 
 speaker_name = st.session_state.verified_name
 
 # --- 2. RIGHT PANEL ด้านขวา (Settings) ---
-main_col, right_col = st.columns([3.2, 1.2])
+main_col, right_col = st.columns([3.4, 1.2])
 
 with right_col:
     st.markdown("### Run settings")
-    st.caption("Engine: Zyphere Autonomous Neural Core")
+    st.caption("Engine: Zyphere Neural Core")
     selected_tool = st.selectbox("โมดูลปฏิบัติการหลัก:", [
         "โมดูลคำนวณและออกแบบยานอวกาศ",
         "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
@@ -187,10 +187,10 @@ with main_col:
     st.markdown('''
         <div class="logo-container">
             <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/></g>
-                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/></g>
-                <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
-                <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#666666" stroke-width="1.5" opacity="0.7"/></g>
+                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#333333" stroke-width="1.5" opacity="0.7"/></g>
+                <circle class="core-glow" cx="50" cy="50" r="10" fill="#1a1a1a" opacity="0.4"/>
+                <circle cx="50" cy="50" r="4" fill="#1a1a1a"/>
             </svg>
         </div>
     ''', unsafe_allow_html=True)
@@ -272,33 +272,31 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 4. FLOATING COMMAND BOX ด้านล่างสุด (ถอดแบบปุ่ม AI Studio ในภาพเป๊ะๆ)[cite: 6] ---
+# --- 4. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบ Monotone 100%) ---
 with main_col:
     st.markdown("---")
     
-    # หากกดปุ่มไมโครโฟน ให้เปิดแผงบันทึกเสียง
     if st.session_state.voice_active:
         with st.container():
-            st.markdown("🎙️ **ระบบบันทึกเสียงสนทนา (Voice Input Active)**")
+            st.markdown("**Voice Input Active**")
             audio_data = st.audio_input("พูดคำสั่งของคุณเพื่อคุยกับ Zyphere")
             if audio_data is not None:
-                st.success("บันทึกเสียงสำเร็จ! (พร้อมประมวลผลคำสั่งเสียง)")
+                st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผลคำสั่ง")
 
-    # ใช้ Form เพื่อจำลองกล่องแคปซูล Prompt Box ด้านล่าง
     with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
         user_input = st.text_input("Start typing a prompt to see what our models can do", label_visibility="collapsed")
         
         c1, c2, c3, c4, c5, c6 = st.columns([0.6, 0.6, 1.2, 3.2, 0.8, 1.4])
         with c1:
-            st.form_submit_button("➕")
+            st.form_submit_button("+")
         with c2:
-            st.form_submit_button("👁️‍🗨️")
+            st.form_submit_button("⊙")
         with c3:
-            st.form_submit_button("🛠️ Tools")
+            st.form_submit_button("Tools")
         with c4:
-            st.markdown("<span style='font-size:12px; color:#555;'>✨ Zyphere Core Engine</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:12px; color:#666;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
         with c5:
-            mic_btn = st.form_submit_button("🎙️")
+            mic_btn = st.form_submit_button("🎤")
         with c6:
             submitted = st.form_submit_button("Run Ctrl ↵", type="primary")
             
@@ -306,7 +304,6 @@ with main_col:
             process_command(user_input)
             st.rerun()
 
-    # ถ้าผู้ใช้กดปุ่มไอคอนไมโครโฟน (🎙️) ในฟอร์ม
     if mic_btn:
         st.session_state.voice_active = not st.session_state.voice_active
         st.rerun()
