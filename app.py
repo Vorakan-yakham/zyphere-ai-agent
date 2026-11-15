@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS สมบูรณ์แบบ (ซ่อนกล่องแชทและซ่อนเครื่องเล่นเสียงทั้งหมด) ---
+# --- ดีไซน์ CSS ซ่อนเฉพาะข้อความตอบกลับของ AI แต่ยังให้แสดงข้อความคำถามของผู้ใช้ได้ ---
 st.markdown("""
     <style>
     .stApp {
@@ -24,8 +24,11 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ซ่อนกล่องแสดงข้อความแชทและเครื่องเล่นเสียงทั้งหมดไม่ให้เกะกะสายตา */
-    [data-testid="stChatMessage"], .stAudio {
+    /* ซ่อนกล่องข้อความตอบกลับของ AI และซ่อนเครื่องเล่นเสียงโดยสมบูรณ์ */
+    [data-testid="stChatMessage"]:nth-child(even) {
+        display: none !important;
+    }
+    .stAudio {
         display: none !important;
     }
 
@@ -193,7 +196,12 @@ st.markdown('''
     <div class="hero-title">Build your ideas with Zyphere</div>
 ''', unsafe_allow_html=True)
 
-# เล่นเสียงอัตโนมัติแบบซ่อน (Invisible Autoplay Audio)
+# แสดงเฉพาะข้อความคำถามของผู้ใช้
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+# เล่นเสียงตอบกลับอัตโนมัติแบบซ่อน (Invisible Autoplay Audio)
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     with open(st.session_state.latest_audio, "rb") as f:
         audio_bytes = f.read()
@@ -222,6 +230,7 @@ def process_command(cmd):
 
     response_msg = native_jarvis_brain(cmd)
     st.session_state.messages.append({"role": "user", "content": cmd})
+    st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
     try:
         sender_email = "vorakangm@gmail.com"
