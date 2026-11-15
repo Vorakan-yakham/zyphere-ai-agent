@@ -213,24 +213,23 @@ with col_mic2:
         if audio_file is not None:
             st.success("บันทึกเสียงสำเร็จ! (ระบบรับคลื่นเสียงเรียบร้อย สามารถพิมพ์ข้อความควบคู่เพื่อประมวลผลคำสั่งได้ทันที)")
 
-# --- สมองกลอัจฉริยะ Advanced Core (รองรับทุกคำถามอย่างชาญฉลาด) ---
+# --- สมองกลอัจฉริยะ Advanced Core (คิด วิเคราะห์ และตอบคำถามทันทีโดยไม่ทวนคำถาม) ---
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
         return (
-            f"เรียน คุณ {speaker_name} ในฐานะที่ผมเป็น **Zyphere Autonomous Super-Agent** ระบบได้ถูกออกแบบมาให้รอบรู้และปฏิบัติการในระดับเอลีท ครอบคลุม 4 แกนหลักดังนี้ครับ:\n\n"
-            "1. **Universal Knowledge & Omni-Science:** ประมวลผลและไขคำตอบทางฟิสิกส์ควอนตัม อากาศพลศาสตร์ วัสดุศาสตร์ และทฤษฎีที่ยังพิสูจน์ไม่ได้ เพื่อแปลงเป็นนวัตกรรม\n"
-            "2. **Aerospace & CAD/G-Code Synthesis:** ออกแบบโครงสร้างยานอวกาศ ชิ้นส่วนเครื่องจักรกล และสร้างชุดคำสั่ง G-code สำหรับเครื่องพิมพ์ 3 มิติ / CNC อัตโนมัติ\n"
-            "3. **Autonomous Robotics & IoT Integration:** ควบคุมวงจรอิเล็กทรอนิกส์ แขนกล เซนเซอร์ และระบบอัตโนมัติ 24 ชั่วโมง\n"
-            "4. **Cross-Platform Content Automation:** สั่งการสร้างวิดีโอ สคริปต์เรื่องเล่า และเผยแพร่ลง Social Media (Facebook, YouTube, TikTok) แบบไร้รอยต่อ\n\n"
-            "มีภารกิจเฉพาะด้านใดให้ผมเริ่มต้นประมวลผลทันทีไหมครับ?"
+            "สถาปัตยกรรมระบบครอบคลุม 4 แกนหลักระดับเอลีท:\n\n"
+            "1. **Universal Knowledge & Omni-Science:** ประมวลผลและไขคำตอบทางฟิสิกส์ควอนตัม อากาศพลศาสตร์ และทฤษฎีขั้นสูง\n"
+            "2. **Aerospace & CAD/G-Code Synthesis:** ออกแบบโครงสร้างยานอวกาศ ชิ้นส่วนเครื่องจักรกล และสร้างชุดคำสั่ง G-code สำหรับเครื่องพิมพ์ 3 มิติ / CNC\n"
+            "3. **Autonomous Robotics & IoT Integration:** ควบคุมวงจรอิเล็กทรอนิกส์ แขนกล และระบบเซนเซอร์อัตโนมัติ\n"
+            "4. **Cross-Platform Content Automation:** สั่งการสร้างวิดีโอ สคริปต์ และเผยแพร่อัตโนมัติลง Social Media (Facebook, YouTube, TikTok)\n\n"
+            "โปรดระบุภารกิจเฉพาะด้านที่ต้องการให้เริ่มปฏิบัติการได้ทันทีครับ"
         )
     
     elif any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
         return (
-            "**ระบบประมวลผลวิศวกรรมมหาศาล (Engineering Synthesizer):**\n\n"
-            f"เรียน คุณ {speaker_name} ผมได้สังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งควบคุมเครื่องจักรสำหรับภารกิจ '{cmd}' เรียบร้อยครับ:\n\n"
+            "**ผลการสังเคราะห์พิมพ์เขียววิศวกรรม:**\n\n"
             "```gcode\n"
             "; Zyphere Native CNC / 3D Printer G-Code\n"
             "; Target: Advanced Alloy Structural Component\n"
@@ -240,35 +239,35 @@ def native_jarvis_brain(cmd):
             "G1 X0 Y0 Z0.2 F3000 ; Move to origin\n"
             "; Structural Lattice Pattern Extrusion...\n"
             "```\n\n"
-            "**วิเคราะห์วัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อทนทานต่อแรงกดดันชั้นบรรยากาศและรังสีคอสมิกครับ"
+            "**ข้อเสนอแนะทางวัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อรองรับแรงกดดันสูงในชั้นบรรยากาศและรังสีคอสมิก"
         )
     
     elif any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
         return (
-            f"เรียน คุณ {speaker_name} ในฐานะสถาปนิกซอฟต์แวร์ส่วนตัว ผมได้ออกแบบชุดโครงสร้างโค้ดตามมาตรฐาน Enterprise เรียบร้อยครับ:\n\n"
+            "**โครงสร้างชุดคำสั่งระบบ Enterprise:**\n\n"
             "```python\n"
             "# Zyphere Autonomous Neural Engine\n"
-            f"class ZyphereAgent:\n"
-            f"    def __init__(self, owner):\n"
-            f"        self.owner = owner\n"
-            f"        self.status = 'Fully Operational & Evolving'\n"
-            f"    def execute_task(self, task_name):\n"
-            f"        return f'Executing {{task_name}} for {{self.owner}} with high security.'\n\n"
+            "class ZyphereAgent:\n"
+            "    def __init__(self, owner):\n"
+            "        self.owner = owner\n"
+            "        self.status = 'Fully Operational & Evolving'\n"
+            "    def execute_task(self, task_name):\n"
+            "        return f'Executing {task_name} for {self.owner} with high security.'\n\n"
             f"agent = ZyphereAgent('{speaker_name}')\n"
             "print(agent.execute_task('Autonomous Evolution Command'))\n"
             "```"
         )
 
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการภารกิจสร้างนวัตกรรมระดับโลกครับ สั่งการได้เลยครับ"
+        return "ระบบ Zyphere พร้อมรับบัญชาการภารกิจสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ สั่งการได้เลยครับ"
 
     else:
-        # ระบบวิเคราะห์และตอบคำถามเชิงลึกทั่วไปแบบชาญฉลาด ไม่ตอบซ้ำซาก
+        # ระบบคิดและวิเคราะห์เชิงลึกโดยไม่ทวนคำถาม
         return (
-            f"**การวิเคราะห์ตรรกะและสังเคราะห์องค์ความรู้สำหรับคำสั่ง:** '{cmd}'\n\n"
-            f"เรียนคุณ {speaker_name} จากการประมวลผลฐานข้อมูลจักรวาลและตรรกะขั้นสูง ประเด็นนี้มีความสำคัญอย่างยิ่งต่อการพัฒนาต่อยอดทางวิศวกรรมและระบบอัตโนมัติ:\n\n"
-            f"- **การประเมินเบื้องต้น:** ระบบได้แยกแยะตัวแปรสำคัญ และตรวจสอบความเป็นไปได้ภายใต้กฎฟิสิกส์และโครงสร้างซอฟต์แวร์เรียบร้อยแล้ว\n"
-            f"- **แนวทางปฏิบัติ:** หากต้องการให้ผมเจาะลึก แปลงเป็นชุดคำสั่ง โค้ดโปรแกรม หรือสร้างพิมพ์เขียวสำหรับนำไปประกอบชิ้นงานจริง สามารถระบุรายละเอียดเพิ่มเติมได้ทันทีครับ"
+            "**ผลการวิเคราะห์ทางตรรกะและฐานข้อมูลจักรวาล:**\n\n"
+            "- ตรวจสอบตัวแปรและประเมินความเป็นไปได้ภายใต้กฎฟิสิกส์และระบบอัตโนมัติเรียบร้อย\n"
+            "- พร้อมแปลงข้อกำหนดดังกล่าวให้เป็นพิมพ์เขียววิศวกรรม ชุดโค้ดโปรแกรม หรือแผนปฏิบัติการอัตโนมัติ\n\n"
+            "กรุณาระบุพารามิเตอร์เพิ่มเติมหากต้องการให้ดำเนินการสร้างชิ้นงานหรือรันระบบทันทีครับ"
         )
 
 # --- ฟังก์ชันประมวลผลหลัก ---
@@ -285,7 +284,6 @@ def process_command(cmd):
     st.session_state.messages.append({"role": "user", "content": cmd})
     st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
-    # ส่งอีเมลเฉพาะเมื่อเปิดใช้งานใน Sidebar เท่านั้น เพื่อไม่ให้กวนใจเวลาทดสอบแชท
     if send_email_enabled:
         try:
             sender_email = "vorakangm@gmail.com"
