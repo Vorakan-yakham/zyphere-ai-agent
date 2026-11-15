@@ -1,7 +1,0 @@
-__pycache__/
-*.pyc
-venv/
-.venv/
-.streamlit/secrets.toml
-data/memory.json
-assets/audio/*.mp3
