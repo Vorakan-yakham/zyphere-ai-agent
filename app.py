@@ -53,7 +53,6 @@ with col2:
 st.markdown("---")
 st.subheader("💬 เลือกวิธีป้อนคำสั่ง (พิมพ์ หรือ อัปโหลดเสียง)")
 
-# เพิ่มตัวเลือกให้เลือกได้ทั้ง พิมพ์ข้อความ หรือ อัปโหลดเสียง
 input_method = st.radio("เลือกวิธีการสั่งการของคุณ:", ["พิมพ์ข้อความคำสั่ง", "อัปโหลดไฟล์เสียง"], horizontal=True)
 
 command_text = ""
@@ -85,11 +84,8 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
             st.error("🚨 [ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการประมวลผลทันที")
         else:
             with st.spinner("กำลังประมวลผลระบบอัตโนมัติ..."):
-                # กรณีเลือกใช้วิธีพิมพ์ข้อความ
                 if input_method == "พิมพ์ข้อความคำสั่ง":
                     command_text = text_input
-                
-                # กรณีเลือกใช้วิธีอัปโหลดเสียง
                 else:
                     try:
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
@@ -125,13 +121,13 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
                     st.write(f"**คำสั่งของคุณ:** {command_text}")
                     
-                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้ว"
+                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้วครับ"
                     st.info(f"🤖 [AI Response]: {response_msg}")
 
                     # ส่งอีเมลแจ้งเตือนอัตโนมัติผ่าน Gmail SMTP
                     try:
                         sender_email = "vorakangm@gmail.com"
-                        app_password = "pygo tfga zubw xqca"  # รหัสผ่านแอป Gmail ของคุณ
+                        app_password = "pygo tfga zubw xqca"
                         
                         msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบ:\n\nคำสั่ง: {command_text}")
                         msg['Subject'] = f"🛡️ Zyphere Agent Alert: คำสั่งจาก {speaker_name}"
@@ -145,14 +141,8 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     except Exception as mail_err:
                         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
-                    # สังเคราะห์เสียงพูดตอบกลับ (TTS)
-                    tts = gTTS(text=response_msg, lang='th')
-                    tts_path = "response.mp3"
-                    tts.save(tts_path)
-                    st.audio(tts_path, format="audio/mp3", autoplay=True)
-
-# แสดงความจำระบบทั้งหมด
-if st.session_state.memory_logs:
-    with st.expander("📂 ดูประวัติคำสั่งและความจำส่วนตัวของระบบ"):
-        for log in st.session_state.memory_logs:
-            st.text(log)
+                    # ปรับปรุงเสียงพูดตอบกลับ (TTS) ให้ชัดเจนและฟังเป็นธรรมชาติขึ้น (ใช้ slow=False เพื่อจังหวะการพูดที่สมูทขึ้น)
+                    try:
+                        tts = gTTS(text=response_msg, lang='th', slow=False)
+                        tts_path = "response.mp3"
+                        tts.save(tts
