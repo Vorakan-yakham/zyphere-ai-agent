@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Production-Grade CSS (Strict Contrast Enforcement) ---
+# --- 2. Bulletproof Contrast CSS (Hard Override All Elements) ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -22,36 +22,46 @@ st.markdown("""
     
     .stApp {
         background-color: #0e1117;
-        color: #ffffff;
-    }
-    
-    /* Global Typography */
-    label, p, span, div[data-baseweb="typography"], h1, h2, h3 {
         color: #ffffff !important;
     }
     
-    /* Strict Input Box Styling: White Background & Pitch Black Text */
+    /* บังคับตัวหนังสือทั่วไปให้เป็นสีขาวสว่างบนพื้นมืด */
+    label, p, span, div[data-baseweb="typography"], h1, h2, h3, h4 {
+        color: #ffffff !important;
+    }
+    
+    /* บังคับช่องกรอกอีเมล (Auth Input) ให้พื้นหลังขาว ตัวหนังสือดำสนิท */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
         border-radius: 6px !important;
-        border: 1px solid #00f3ff !important;
+        border: 2px solid #00f3ff !important;
     }
     
     div[data-baseweb="input"] input {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        background-color: #transparent !important;
-        font-weight: 600 !important;
+        background-color: transparent !important;
+        font-weight: 700 !important;
     }
     
-    /* Chat Input Styling */
+    /* บังคับช่อง Chat Input ด้านล่างให้พื้นหลังขาว ตัวหนังสือดำสนิท 100% */
+    .stChatInput {
+        background-color: #0e1117 !important;
+    }
+    
     .stChatInput textarea {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
         background-color: #ffffff !important;
+        font-weight: 600 !important;
     }
 
-    /* Authentication & Action Buttons */
+    /* บังคับข้อความในกล่องแชท (Chat Message Text) ให้เป็นสีขาวอ่านง่าย */
+    .stChatMessage p, .stChatMessage div {
+        color: #ffffff !important;
+    }
+
+    /* ปุ่ม Authenticate & Action Buttons */
     div.stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
