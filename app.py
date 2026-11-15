@@ -12,86 +12,98 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS Monotone Minimalist ฉบับสมบูรณ์ ---
+# --- ดีไซน์ CSS ระดับ Luxury Monotone Minimalist (Obsidian Style) ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #fcfbf9;
+        background-color: #f8f9fa;
         color: #1a1a1a;
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปุ่มสไตล์ Monotone Minimalist เรียบหรู */
+    /* ปรับแต่ง Sidebar ให้ดูหรูหราเรียบเนียน */
+    [data-testid="stSidebar"] {
+        background-color: #f1f3f5;
+        border-right: 1px solid #e9ecef;
+    }
+
+    /* ปุ่มสไตล์ Monotone Minimalist พรีเมียม */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
         border: 1px solid #333333 !important;
-        border-radius: 6px !important;
-        padding: 0.35rem 0.9rem !important;
-        font-weight: 400 !important;
+        border-radius: 8px !important;
+        padding: 0.45rem 1rem !important;
+        font-weight: 500 !important;
         font-size: 13px !important;
+        transition: all 0.2s ease;
     }
     .stButton > button:hover {
         background-color: #333333 !important;
         border-color: #555555 !important;
     }
 
-    /* โลโก้ Neon Atom กลางหน้าจอ */
+    /* โลโก้ Neon Atom กลางหน้าจอแบบโมเดิร์น */
     .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 2px;
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
     .svg-logo {
-        width: 70px;
-        height: 70px;
+        width: 65px;
+        height: 65px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
-    .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
-    .orbit-2 { transform-origin: center; animation: spinReverse 7s linear infinite; }
+    .orbit-1 { transform-origin: center; animation: spinSlow 12s linear infinite; }
+    .orbit-2 { transform-origin: center; animation: spinReverse 8s linear infinite; }
     .core-glow { transform-origin: center; animation: pulseCore 2s infinite alternate; }
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.3)); }
-        100% { filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6)); }
+        0% { filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2)); }
+        100% { filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .welcome-title {
         text-align: center;
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 600;
-        color: #1a1a1a;
-        margin-bottom: 15px;
+        color: #111111;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
     }
 
+    /* กล่องข้อความแชทพรีเมียม */
     .stChatMessage {
         background-color: #ffffff !important;
-        border: 1px solid #e5e5df !important;
-        border-radius: 8px !important;
-        padding: 12px !important;
-        color: #1a1a1a !important;
-        margin-bottom: 8px;
+        border: 1px solid #e9ecef !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        color: #212529 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        margin-bottom: 12px;
     }
 
+    /* การ์ดข้อมูลผู้ใช้งานมุมซ้ายล่าง */
     .user-profile-card {
-        background-color: #f1f0ea;
-        border: 1px solid #e0dfd5;
-        border-radius: 8px;
-        padding: 10px;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 12px;
         font-size: 13px;
-        color: #333333;
+        color: #212529;
         margin-top: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     </style>
 """, unsafe_allow_html=True)
 
-# ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด (ล็อกอินด้วยอีเมลและชื่อที่ปลอดภัย)
+# ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด
 AUTHORIZED_USERS = [
     {"name": "วรกันต์ ยาคำ", "email": "vorakangm@gmail.com", "role": "Sovereign Administrator"},
     {"name": "การัณยภาส ยาคำ", "email": "karanyapas@yakham.com", "role": "Authorized Executive"}
@@ -113,12 +125,12 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย (ระบบ Login ด้วยอีเมลผู้มีสิทธิ์) ---
+# --- 1. SIDEBAR ด้านซ้าย (ระบบ Login ด้วยอีเมลที่ปลอดภัย) ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
     st.markdown("---")
-    st.markdown("### การใช้งาน")
+    st.markdown("**Workspace**")
     st.markdown("- Playground")
     st.markdown("- History")
     st.markdown("- Engineering CAD")
@@ -127,7 +139,7 @@ with st.sidebar:
     st.markdown("---")
     
     if not st.session_state.is_verified:
-        st.markdown("#### Sovereign Login")
+        st.markdown("**Sovereign Login**")
         selected_user_name = st.selectbox("เลือกผู้มีสิทธิ์เข้าถึง:", [u["name"] for u in AUTHORIZED_USERS])
         input_email = st.text_input("ยืนยันอีเมลส่วนตัว", placeholder="input email...")
         
@@ -145,7 +157,7 @@ with st.sidebar:
             <div class="user-profile-card">
                 <b>Active Session:</b><br>
                 {speaker_name}<br>
-                <small style="color:#555;">Sovereign Security Level 1</small>
+                <small style="color:#6c757d;">Sovereign Security Level 1</small>
             </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -162,8 +174,8 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. RIGHT PANEL ด้านขวา (Settings) ---
-main_col, right_col = st.columns([3.4, 1.2])
+# --- 2. LAYOUT: แบ่ง 2 คอลัมน์ (แชทตรงกลาง และตั้งค่าด้านขวา) ---
+main_col, right_col = st.columns([3.5, 1.3])
 
 with right_col:
     st.markdown("### Run settings")
@@ -182,15 +194,14 @@ with right_col:
     st.markdown("### Thinking level")
     st.caption("High / Autonomous Discovery Enabled")
 
-# --- 3. MAIN CENTER PANEL ตรงกลาง ---
 with main_col:
     st.markdown('''
         <div class="logo-container">
             <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#666666" stroke-width="1.5" opacity="0.7"/></g>
-                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#333333" stroke-width="1.5" opacity="0.7"/></g>
-                <circle class="core-glow" cx="50" cy="50" r="10" fill="#1a1a1a" opacity="0.4"/>
-                <circle cx="50" cy="50" r="4" fill="#1a1a1a"/>
+                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#212529" stroke-width="1.5" opacity="0.7"/></g>
+                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#495057" stroke-width="1.5" opacity="0.7"/></g>
+                <circle class="core-glow" cx="50" cy="50" r="10" fill="#212529" opacity="0.4"/>
+                <circle cx="50" cy="50" r="4" fill="#212529"/>
             </svg>
         </div>
     ''', unsafe_allow_html=True)
@@ -272,14 +283,14 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 4. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบ Monotone 100%) ---
+# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบใหม่ให้สวยงาม หรูหรา ไร้รอยต่อ) ---
 with main_col:
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
     
     if st.session_state.voice_active:
         with st.container():
-            st.markdown("**Voice Input Active**")
-            audio_data = st.audio_input("พูดคำสั่งของคุณเพื่อคุยกับ Zyphere")
+            st.markdown("🎙️ **Voice Input Active (พูดคำสั่งของคุณ)**")
+            audio_data = st.audio_input("บันทึกเสียงพูดเพื่อสั่งการ Zyphere")
             if audio_data is not None:
                 st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผลคำสั่ง")
 
@@ -294,7 +305,7 @@ with main_col:
         with c3:
             st.form_submit_button("Tools")
         with c4:
-            st.markdown("<span style='font-size:12px; color:#666;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:12px; color:#6c757d; font-weight:500;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
         with c5:
             mic_btn = st.form_submit_button("🎤")
         with c6:
