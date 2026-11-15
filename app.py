@@ -277,4 +277,11 @@ for message in st.session_state.messages:
         st.write(message["content"])
 
 # เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
-if st.session_state.latest_audio and
+if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+
+# --- ช่องรับคำสั่งด้านล่างสุด ---
+user_input = st.chat_input("วันนี้ให้ฉันช่วยอะไรดี...")
+if user_input:
+    process_command(user_input)
+    st.rerun()
