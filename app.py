@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ผสานกล่องแคปซูลชิ้นเดียวและโลโก้ J.A.R.V.I.S. แบบเป๊ะทุกกระเบียดนิ้ว ---
+# --- ดีไซน์ CSS ปรับแต่งตำแหน่งกึ่งกลางหน้าจอ และบีบ Sidebar ให้แสดงผล Login ครบถ้วน ---
 st.markdown("""
     <style>
     .stApp {
@@ -24,16 +24,16 @@ st.markdown("""
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปรับแต่ง Sidebar ให้ถอดแบบ Google AI Studio */
+    /* ปรับแต่ง Sidebar ให้พอดีสายตา */
     [data-testid="stSidebar"] {
         background-color: #f8f9fa;
         border-right: 1px solid #e9ecef;
         padding-top: 0.5rem;
     }
 
-    /* จัดหน้าจอตรงกลางให้กะทัดรัดสวยงาม */
+    /* จัดกลุ่มเนื้อหาหลักให้อยู่กึ่งกลางหน้าจออย่างสมบูรณ์แบบ */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 8vh !important;
         padding-bottom: 2rem !important;
         max-width: 850px !important;
         margin: 0 auto;
@@ -44,12 +44,12 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 0px;
+        margin-top: 10px;
+        margin-bottom: 5px;
     }
     .svg-logo {
-        width: 75px;
-        height: 75px;
+        width: 80px;
+        height: 80px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
@@ -65,38 +65,23 @@ st.markdown("""
 
     .hero-title {
         text-align: center;
-        font-size: 34px;
+        font-size: 36px;
         font-weight: 400;
         color: #1f1f1f;
-        margin-top: 5px;
-        margin-bottom: 25px;
+        margin-top: 8px;
+        margin-bottom: 28px;
         letter-spacing: -0.5px;
-    }
-
-    /* กล่องแคปซูล Prompt หลัก (จำลองโครงสร้างเดียวกับภาพต้นแบบ) */
-    .custom-capsule-box {
-        background-color: #ffffff;
-        border: 1px solid #dadce0;
-        border-radius: 24px;
-        padding: 12px 18px;
-        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03);
-        margin-bottom: 15px;
-        transition: all 0.3s ease;
-    }
-    .custom-capsule-box:hover {
-        box-shadow: 0 6px 24px rgba(66, 133, 244, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
-        border-color: #bdc1c6;
     }
 
     /* การ์ดโปรไฟล์ผู้ใช้มุมซ้ายล่าง */
     .user-profile-card {
         background-color: #ffffff;
         border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 12px;
+        border-radius: 10px;
+        padding: 10px;
         font-size: 12px;
         color: #3c4043;
-        margin-top: 15px;
+        margin-bottom: 15px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     </style>
@@ -124,12 +109,43 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย ---
+# --- 1. SIDEBAR ด้านซ้าย (ย้ายส่วน LOGIN ขึ้นด้านบน ไม่ล้นจออีกต่อไป) ---
 with st.sidebar:
     st.markdown("### Google AI Studio")
     st.caption("Zyphere Sovereign Core Engine")
     st.markdown("---")
     
+    if not st.session_state.is_verified:
+        st.markdown("#### Sovereign Access")
+        selected_user_name = st.selectbox("เลือกผู้มีสิทธิ์เข้าถึง:", [u["name"] for u in AUTHORIZED_USERS])
+        input_email = st.text_input("ยืนยันอีเมลส่วนตัว", placeholder="user@gmail.com")
+        
+        if st.button("Unlock System", type="primary", use_container_width=True):
+            matched_user = next((u for u in AUTHORIZED_USERS if u["name"] == selected_user_name and u["email"].strip().lower() == input_email.strip().lower()), None)
+            if matched_user:
+                st.session_state.is_verified = True
+                st.session_state.verified_name = matched_user["name"]
+                st.rerun()
+            else:
+                st.error("Access Denied: อีเมลไม่ตรงกับสิทธิ์เด็ดขาด")
+        st.markdown("---")
+    else:
+        speaker_name = st.session_state.verified_name
+        st.markdown(f"""
+            <div class="user-profile-card">
+                <b>Active Session:</b><br>
+                {speaker_name}<br>
+                <small style="color:#70757a;">Sovereign Security Level 1</small>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Logout", use_container_width=True):
+            st.session_state.is_verified = False
+            st.session_state.verified_name = ""
+            st.session_state.messages = []
+            st.session_state.latest_audio = None
+            st.rerun()
+        st.markdown("---")
+
     st.markdown("**EXPLORE**")
     st.markdown("📄 Playground")
     st.markdown("🕒 History")
@@ -142,39 +158,6 @@ with st.sidebar:
     st.markdown("**MANAGE**")
     st.markdown("📈 Dashboard")
     st.markdown("📑 Documentation")
-    
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("---")
-    
-    if not st.session_state.is_verified:
-        st.markdown("**Sovereign Access**")
-        selected_user_name = st.selectbox("เลือกบัญชี:", [u["name"] for u in AUTHORIZED_USERS])
-        input_email = st.text_input("ยืนยันอีเมล", placeholder="user@gmail.com")
-        
-        if st.button("Unlock System", type="primary", use_container_width=True):
-            matched_user = next((u for u in AUTHORIZED_USERS if u["name"] == selected_user_name and u["email"].strip().lower() == input_email.strip().lower()), None)
-            if matched_user:
-                st.session_state.is_verified = True
-                st.session_state.verified_name = matched_user["name"]
-                st.rerun()
-            else:
-                st.error("Access Denied: อีเมลไม่ตรงกับสิทธิ์")
-    else:
-        speaker_name = st.session_state.verified_name
-        st.markdown(f"""
-            <div class="user-profile-card">
-                <b>Active Session:</b><br>
-                {speaker_name}<br>
-                <small style="color:#70757a;">Sovereign Security Level 1</small>
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Logout", use_container_width=True):
-            st.session_state.is_verified = False
-            st.session_state.verified_name = ""
-            st.session_state.messages = []
-            st.session_state.latest_audio = None
-            st.rerun()
 
 if not st.session_state.is_verified:
     st.info("กรุณายืนยันตัวตนด้วยอีเมลที่แถบควบคุมด้านซ้ายเพื่อเปิดใช้งาน Zyphere Studio")
@@ -182,8 +165,7 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. MAIN CENTER CONTAINER ---
-# โลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. กลับมาอยู่ตรงกลาง
+# --- 2. MAIN CENTER CONTAINER (จัดวางกึ่งกลางหน้าจอสวยงาม) ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -278,7 +260,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING CENTRAL COMMAND CAPSULE (จำลองกล่องแคปซูลชิ้นเดียวแบบ AI Studio)[cite: 14] ---
+# --- 3. FLOATING CENTRAL COMMAND CAPSULE ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
