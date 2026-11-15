@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CSS ปรับปรุงขนาดโลโก้ และขยาย Textbox แคปซูลเป็น 2 บรรทัด ---
+# --- ดีไซน์ CSS แคปซูลชิ้นเดียวสไตล์ Google AI Studio และโลโก้ปฏิกรณ์ขนาดใหญ่ ---
 st.markdown("""
     <style>
     .stApp {
@@ -22,7 +22,6 @@ st.markdown("""
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    audio { display: none !important; }
 
     [data-testid="stSidebar"] {
         background-color: #f8f9fa;
@@ -37,7 +36,6 @@ st.markdown("""
         margin: 0 auto;
     }
 
-    /* โลโก้ปฏิกรณ์ Neon Atom ปรับขยายใหญ่ทรงพลัง (110px) */
     .logo-container {
         display: flex;
         flex-direction: column;
@@ -83,19 +81,31 @@ st.markdown("""
         letter-spacing: -0.5px;
     }
 
-    /* ตกแต่ง Text Area ขยายกว้างเป็น 2 บรรทัด ไร้ขอบแดง */
-    .stTextArea textarea {
+    [data-testid="stForm"] {
+        background-color: #ffffff;
         border: 1px solid #dadce0 !important;
-        border-radius: 16px !important;
-        padding: 14px 18px !important;
-        font-size: 15px !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
-        background-color: #ffffff !important;
-        resize: none !important;
+        border-radius: 24px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.1), 0 1px 4px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
     }
-    .stTextArea textarea:focus {
-        border-color: #1a73e8 !important;
-        box-shadow: 0 4px 16px rgba(26, 115, 232, 0.15) !important;
+    [data-testid="stForm"]:hover {
+        box-shadow: 0 6px 24px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-color: #bdc1c6 !important;
+    }
+
+    [data-testid="stForm"] textarea {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        font-size: 15px !important;
+        color: #1f1f1f !important;
+        resize: none !important;
+        padding: 0px !important;
+    }
+    [data-testid="stForm"] textarea:focus {
+        border: none !important;
+        box-shadow: none !important;
     }
 
     .user-profile-card {
@@ -189,7 +199,7 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- MAIN CENTER (โลโก้ใหญ่พิเศษ 110px + ข้อความ ZYPHERE) ---
+# --- MAIN CENTER ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -208,7 +218,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+# แสดงเครื่องเล่นเสียงพูดสังเคราะห์ทันทีที่มีการตอบกลับ
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.markdown("🔊 **Zyphere Voice Synthesis Output:**")
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
 def native_jarvis_brain(cmd):
@@ -284,7 +296,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- TEXT BOX 2 บรรทัด และแถบปุ่มกดแคปซูล ---
+# --- FLOATING CENTRAL COMMAND CAPSULE ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -294,26 +306,26 @@ if st.session_state.voice_active:
 
 default_input = st.session_state.pop("pending_prompt", "")
 
-# กล่องรับคำสั่งขยายเป็น 2 บรรทัด (height=90)
-user_input = st.text_area("Describe an app and let Zyphere do the rest", value=default_input, height=90, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
+with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
+    user_input = st.text_area("Describe an app and let Zyphere do the rest", value=default_input, height=80, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
+    
+    c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
+    with c1:
+        st.form_submit_button("⊕")
+    with c2:
+        st.write("")
+    with c3:
+        st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed")
+    with c4:
+        col_m, col_r = st.columns([1, 2.2])
+        with col_m:
+            mic_btn = st.form_submit_button("🎙️")
+        with col_r:
+            submitted = st.form_submit_button("✦ I'm feeling lucky", type="primary")
 
-c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
-with c1:
-    st.button("⊕", key="btn_add")
-with c2:
-    st.write("")
-with c3:
-    st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed", key="sb_mode")
-with c4:
-    col_m, col_r = st.columns([1, 2.2])
-    with col_m:
-        mic_btn = st.button("🎙️", key="btn_mic")
-    with col_r:
-        submitted = st.button("✦ I'm feeling lucky", type="primary", key="btn_run")
-
-if submitted and user_input.strip():
-    process_command(user_input.strip())
-    st.rerun()
+    if submitted and user_input.strip():
+        process_command(user_input.strip())
+        st.rerun()
 
 if mic_btn:
     st.session_state.voice_active = not st.session_state.voice_active
