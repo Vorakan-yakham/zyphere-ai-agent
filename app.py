@@ -127,10 +127,12 @@ if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
 
-# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม ---
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม (แปลง Zyphere เป็น ไซเฟอร์ ให้ออกเสียงชัดเจน) ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
-    communicate = edge_tts.Communicate(text, voice)
+    # แทนที่คำว่า Zyphere ด้วยคำอ่านภาษาไทยที่ชัดเจนสำหรับการสังเคราะห์เสียง
+    tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
+    communicate = edge_tts.Communicate(tts_text, voice)
     await communicate.save(output_path)
 
 # --- แผงควบคุมตั้งค่า (Sidebar) ---
