@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS แต่ง UI, ซ่อนเมนู และแก้สีตัวหนังสือในกล่องแชทให้ชัดเจน ---
+# --- 2. Custom CSS แต่ง UI และแก้สีตัวหนังสือในช่องกรอกทุกช่องให้อ่านง่ายชัดเจน ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -44,14 +44,17 @@ st.markdown("""
         100% { transform: scale(1); opacity: 0.8; }
     }
 
-    /* บังคับสีตัวหนังสือในช่องแชท input ให้เป็นสีขาว อ่านง่าย ชัดเจน */
-    .stChatInput input {
-        color: #ffffff !important;
+    /* บังคับให้ช่องกรอกข้อความทุกช่อง (รวมถึงหน้า Login) แสดงตัวหนังสือเป็นสีดำคมชัด */
+    input, textarea, div[data-baseweb="input"] input {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
     }
     
-    /* ปรับแต่งสไตล์กล่องแชทให้มีความพรีเมียมเข้ากับธีม Neon */
-    .stChatInput textarea {
-        color: #ffffff !important;
+    /* ตกแต่งกล่องข้อความให้มีความพรีเมียม */
+    .stTextInput input {
+        background-color: #ffffff !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
     }
     </style>
 """, unsafe_allow_html=True)
