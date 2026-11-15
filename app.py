@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสานเคอร์เซอร์เมาส์และโลโก้เวกเตอร์ ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Neon Atom Logo และซ่อนแถบเสียง ---
 st.markdown("""
     <style>
     .stApp {
@@ -17,7 +17,12 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ปรับแต่งปุ่มกดให้เรียบหรู และเปลี่ยนเคอร์เซอร์เมาส์เมื่อชี้ */
+    /* ซ่อนแถบเครื่องเล่นเสียง (Audio Player) แต่ระบบยังเล่นเสียงเบื้องหลังได้ */
+    audio {
+        display: none !important;
+    }
+    
+    /* ปุ่มกดสไตล์ Monotone Minimalist เรียบหรู */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
@@ -35,13 +40,11 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         transform: translateY(-1px);
     }
-    
-    /* เปลี่ยนเคอร์เซอร์เมาส์เมื่อชี้ลิงก์หรือปุ่มทั้งหมดในหน้าเว็บ */
     a, button, [role="button"], input[type="submit"] {
         cursor: pointer !important;
     }
     
-    /* โลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (Monotone SVG) */
+    /* โลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. */
     .logo-container {
         display: flex;
         justify-content: center;
@@ -50,19 +53,19 @@ st.markdown("""
         margin-bottom: 10px;
     }
     .svg-logo {
-        width: 110px;
-        height: 110px;
+        width: 120px;
+        height: 120px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 {
         transform-origin: center;
-        animation: spinSlow 12s linear infinite;
+        animation: spinSlow 10s linear infinite;
     }
     .orbit-2 {
         transform-origin: center;
-        animation: spinReverse 8s linear infinite;
+        animation: spinReverse 7s linear infinite;
     }
-    .core-dot {
+    .core-glow {
         transform-origin: center;
         animation: pulseCore 2s infinite alternate;
     }
@@ -75,8 +78,8 @@ st.markdown("""
         to { transform: rotate(0deg); }
     }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 5px rgba(0,0,0,0.1)); }
-        100% { filter: drop-shadow(0 0 15px rgba(0,0,0,0.3)); }
+        0% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4)); }
+        100% { filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.8)); }
     }
     @keyframes pulseCore {
         0% { transform: scale(0.9); opacity: 0.7; }
@@ -175,23 +178,23 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- แสดงโลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (Monotone SVG) ---
+# --- แสดงโลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- วงแหวนรอบนอกหมุนทวนเข็ม -->
+            <!-- วงแหวนนีออนม่วง-ฟ้า -->
             <g class="orbit-2">
-                <ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#222222" stroke-width="1.5" stroke-dasharray="6 4"/>
+                <ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/>
             </g>
-            <!-- วงแหวนรอบนอกหมุนตามเข็ม -->
             <g class="orbit-1">
-                <ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#111111" stroke-width="2"/>
+                <ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
             </g>
-            <!-- วงแหวนกลาง -->
-            <circle cx="50" cy="50" r="28" fill="none" stroke="#444444" stroke-width="1" stroke-dasharray="4 2"/>
-            <!-- แกนกลางพลังงานกระพริบ -->
-            <circle class="core-dot" cx="50" cy="50" r="10" fill="#1a1a1a"/>
-            <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+            <g style="transform: rotate(45deg); transform-origin: center;">
+                <ellipse cx="50" cy="50" rx="40" ry="15" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.6"/>
+            </g>
+            <!-- แกนกลางเรืองแสง -->
+            <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
+            <circle cx="50" cy="50" r="5" fill="#ffffff"/>
         </svg>
     </div>
 ''', unsafe_allow_html=True)
@@ -267,6 +270,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+# เล่นเสียงเบื้องหลังอัตโนมัติ (แต่ถูกซ่อนแถบ Player ไว้ไม่ให้เกะกะสายตา)
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
