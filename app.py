@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI แบบ Monotone Minimalist เรียบหรู ---
+# --- ดีไซน์ CSS สไตล์ AI Studio & Claude แบบ Monotone Minimalist เรียบหรู ---
 st.markdown("""
     <style>
     .stApp {
@@ -49,12 +49,12 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
-        margin-bottom: 10px;
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
     .svg-logo {
-        width: 110px;
-        height: 110px;
+        width: 90px;
+        height: 90px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 {
@@ -88,11 +88,11 @@ st.markdown("""
 
     .welcome-header {
         text-align: center;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 10px;
-        margin-bottom: 15px;
+        margin-top: 5px;
+        margin-bottom: 10px;
     }
     .stChatMessage {
         background-color: #ffffff !important;
@@ -201,19 +201,20 @@ st.markdown('''
     </div>
 ''', unsafe_allow_html=True)
 
-# --- หน้าแรกสไตล์ Claude ---
+# --- หน้าแรกสไตล์ Claude / AI Studio ---
 if not st.session_state.messages:
     st.markdown(f'<p class="welcome-header">สวัสดีตอนเย็นครับ {speaker_name}</p>', unsafe_allow_html=True)
 
-# --- ช่องบันทึกเสียงแบบเรียบหรูไร้ไอคอนกวนตา ---
-col_mic1, col_mic2, col_mic3 = st.columns([1, 2, 1])
-with col_mic2:
-    with st.expander("สั่งการด้วยเสียง (Voice Command)"):
-        audio_file = st.audio_input("กดปุ่มเพื่อบันทึกเสียงคำสั่งของคุณ")
-        if audio_file is not None:
-            st.success("บันทึกเสียงสำเร็จ! (ระบบรับคลื่นเสียงเรียบร้อย สามารถพิมพ์ข้อความควบคู่เพื่อประมวลผลคำสั่งได้ทันที)")
+# --- แสดงประวัติแชท ---
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
 
-# --- สมองกลอัจฉริยะ Advanced Core (คิด วิเคราะห์ และตอบคำถามทันทีโดยไม่ทวนคำถาม) ---
+# เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
+if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+
+# --- สมองกลอัจฉริยะ Advanced Core (คิด วิเคราะห์ และตอบทันทีโดยไม่ทวนคำถาม) ---
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
@@ -262,7 +263,6 @@ def native_jarvis_brain(cmd):
         return "ระบบ Zyphere พร้อมรับบัญชาการภารกิจสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ สั่งการได้เลยครับ"
 
     else:
-        # ระบบคิดและวิเคราะห์เชิงลึกโดยไม่ทวนคำถาม
         return (
             "**ผลการวิเคราะห์ทางตรรกะและฐานข้อมูลจักรวาล:**\n\n"
             "- ตรวจสอบตัวแปรและประเมินความเป็นไปได้ภายใต้กฎฟิสิกส์และระบบอัตโนมัติเรียบร้อย\n"
@@ -270,7 +270,6 @@ def native_jarvis_brain(cmd):
             "กรุณาระบุพารามิเตอร์เพิ่มเติมหากต้องการให้ดำเนินการสร้างชิ้นงานหรือรันระบบทันทีครับ"
         )
 
-# --- ฟังก์ชันประมวลผลหลัก ---
 def process_command(cmd):
     if not cmd:
         return
@@ -306,16 +305,30 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- แสดงประวัติแชทสไตล์ Claude ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# --- แถบเครื่องมือและช่องรับคำสั่งด้านล่าง (จำลองสไตล์ AI Studio พร้อมปุ่มไมโครโฟน) ---
+st.markdown("---")
+col_bar1, col_bar2, col_bar3 = st.columns([1, 6, 1])
 
-# เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
-if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+with col_bar1:
+    # ปุ่มไมโครโฟนสำหรับกดเปิดแผงบันทึกเสียงแบบเรียบร้อย
+    mic_clicked = st.button("🎤 Speech")
 
-# --- ช่องรับคำสั่งด้านล่างสุด (คลีนสะอาดตา) ---
+# ถ้ากดปุ่ม Speech ให้แสดงกล่องบันทึกเสียงแบบย่อส่วนเหนือแชท
+if "show_mic" not in st.session_state:
+    st.session_state.show_mic = False
+
+if mic_clicked:
+    st.session_state.show_mic = not st.session_state.show_mic
+    st.rerun()
+
+if st.session_state.show_mic:
+    with st.container():
+        st.markdown("**ระบบบันทึกเสียงพูด (Voice Command)**")
+        audio_file = st.audio_input("กดบันทึกเสียงพูดของคุณเพื่อสั่งการ Zyphere")
+        if audio_file is not None:
+            st.success("บันทึกเสียงเรียบร้อย! (ระบบพร้อมประมวลผลคำสั่งเสียง)")
+
+# ช่องพิมพ์ข้อความหลักด้านล่างสุด
 user_input = st.chat_input("")
 if user_input:
     process_command(user_input)
