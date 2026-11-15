@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS แต่ง UI และกำหนดสีตอนไฮไลต์ข้อความ (Selection) ให้ชัดเจน ---
+# --- 2. Custom CSS ปรับแต่ง UI และสีตัวหนังสือให้อ่านชัดเจนทุกจุด ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -22,6 +22,11 @@ st.markdown("""
     .stApp {
         background-color: #0e1117;
         color: #ffffff;
+    }
+    
+    /* บังคับให้ข้อความ Label, ข้อความทั่วไป และพารากราฟเป็นสีขาวสว่างบนพื้นมืด */
+    label, p, span, div[data-baseweb="typography"] {
+        color: #ffffff !important;
     }
     
     /* กำหนดสีเวลาเอาเมาส์ไฮไลต์ลากคลุมข้อความ */
