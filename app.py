@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Neon Atom Logo และปุ่มไมโครโฟน ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Neon Atom Logo และซ่อน Input Placeholder ---
 st.markdown("""
     <style>
     .stApp {
@@ -139,10 +139,12 @@ with st.sidebar:
     st.header("⚙️ ระบบควบคุมความปลอดภัย")
     target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
     st.markdown("---")
-    st.markdown("### 💼 โมดูลสร้างเงิน (Micro-SaaS)")
-    selected_tool = st.selectbox("เลือกเครื่องมือธุรกิจ:", [
-        "ระบบคำนวณสินเชื่อและวางแผนการเงิน",
-        "ระบบประเมินจุดคุ้มทุนร้านค้าออนไลน์"
+    st.markdown("### 🚀 โมดูลวิศวกรรมขั้นสูง (Omni-Engineering)")
+    selected_tool = st.selectbox("เลือกโมดูลปฏิบัติการ:", [
+        "โมดูลคำนวณและออกแบบยานอวกาศ",
+        "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
+        "โมดูลควบคุมวงจรอิเล็กทรอนิกส์และหุ่นยนต์",
+        "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
     ])
     
     if st.session_state.is_verified:
@@ -210,79 +212,11 @@ with col_mic2:
         if audio_file is not None:
             st.success("🎙️ บันทึกเสียงสำเร็จ! (ระบบรับคลื่นเสียงเรียบร้อย สามารถพิมพ์ข้อความควบคู่เพื่อประมวลผลคำสั่งได้ทันที)")
 
-# --- สมองกลอัจฉริยะ Native Core ---
+# --- สมองกลอัจฉริยะ Native Core (วิวัฒนาการรอบด้าน) ---
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
-    if any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
-        return (f"เรียน คุณ {speaker_name} ในฐานะสถาปนิกซอฟต์แวร์ส่วนตัว ผมได้ออกแบบชุดโครงสร้างโค้ดตามมาตรฐาน Enterprise เรียบร้อยครับ:\n\n"
-                f"```python\n# Zyphere Native Core Engine\nclass ZyphereAgent:\n    def __init__(self, owner):\n        self.owner = owner\n        self.status = 'Fully Operational'\n    \n    def execute_task(self, task_name):\n        return f'Executing {{task_name}} for {{self.owner}} with high security.'\n\nagent = ZyphereAgent('{speaker_name}')\nprint(agent.execute_task('Automated Business Logic'))\n```\n\n"
-                f"**คำแนะนำเชิงสถาปัตยกรรม:** โค้ดนี้มีความปลอดภัยสูง รันบนระบบภายใน 100% สามารถนำไปต่อยอดได้ทันทีครับ")
-    
-    elif any(k in cmd_lower for k in ["คำนวณ", "เงินกู้", "สินเชื่อ", "ธุรกิจ", "กำไร"]):
-        return (f"📊 **ระบบวิเคราะห์และสร้างรายได้อัตโนมัติ (Native Business Engine):**\n\n"
-                f"เรียนคุณ {speaker_name} โมดูลสร้างเครื่องมือคำนวณพร้อมใช้งานแล้วครับ ท่านสามารถนำระบบนี้ไปเปิดให้บริการหรือรับจ้างลูกค้าเพื่อสร้างกระแสเงินสด (Cash Flow) ได้ทันที มีตัวเลขหรือโจทย์ธุรกิจที่ต้องการให้ผมคำนวณไหมครับ?")
-    
-    elif any(k in cmd_lower for k in ["ค้นหา", "คืออะไร", "วิเคราะห์", "อธิบาย", "ความรู้"]):
-        return (f"🔍 **การสังเคราะห์ข้อมูลเชิงลึก (Universal Knowledge Synthesis):**\n\n"
-                f"จากการประมวลผลฐานข้อมูลตรรกะขั้นสูงเกี่ยวกับคำสั่ง '{cmd}':\n"
-                f"- **แก่นสำคัญ:** ประเด็นนี้มีความซับซ้อนและมีผลกระทบโดยตรงต่อการพัฒนาเทคโนโลยีและระบบอัตโนมัติ\n"
-                f"- **แนวทางปฏิบัติ:** สามารถนำมาประยุกต์ใช้กับโปรเจกต์ของตระกูลยาคำได้อย่างมีประสิทธิภาพ\n\n"
-                f"หากต้องการให้ผมเจาะลึกในมุมมองทางวิทยาศาสตร์ เศรษฐศาสตร์ หรือเทคโนโลยีส่วนใดเพิ่มเติม แจ้งได้เลยครับ")
-
-    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการครับ มีภารกิจใดให้ผมดูแล สั่งการได้เลยครับ"
-
-    else:
-        return (f"💡 **บันทึกการประมวลผลคำสั่ง:** '{cmd}'\n\n"
-                f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้วิเคราะห์ข้อมูล บันทึก Log ความปลอดภัย และส่งรายงานเข้าสู่ระบบอีเมลเรียบร้อยแล้วครับ มีประเด็นใดให้ผมปฏิบัติการต่อไหมครับ?")
-
-# --- ฟังก์ชันประมวลผลหลัก ---
-def process_command(cmd):
-    if not cmd:
-        return
-    
-    if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
-        st.stop()
-
-    response_msg = native_jarvis_brain(cmd)
-
-    st.session_state.messages.append({"role": "user", "content": cmd})
-    st.session_state.messages.append({"role": "assistant", "content": response_msg})
-
-    try:
-        sender_email = "vorakangm@gmail.com"
-        app_password = "pygo tfga zubw xqca"
-        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
-        msg['Subject'] = f"🛡️ Zyphere Report: {speaker_name}"
-        msg['From'] = sender_email
-        msg['To'] = target_email
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, app_password)
-            server.sendmail(sender_email, target_email, msg.as_string())
-    except:
-        pass
-
-    try:
-        tts_path = "response.mp3"
-        asyncio.run(generate_male_voice(response_msg, tts_path))
-        st.session_state.latest_audio = tts_path
-    except:
-        st.session_state.latest_audio = None
-
-# --- แสดงประวัติแชทสไตล์ Claude ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
-# เล่นเสียงเบื้องหลังอัตโนมัติ (ซ่อน Player bar)
-if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
-
-# --- ช่องรับคำสั่งด้านล่างสุด (เอาข้อความแนะนำออกให้เกลี้ยงเกลาแบบ Meta AI / Claude) ---
-user_input = st.chat_input("")
-if user_input:
-    process_command(user_input)
-    st.rerun()
+    if any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
+        return (f"🛰️ **ระบบประมวลผลวิศวกรรมมหาศาล (Universal Engineering Synthesizer):**\n\n"
+                f"เรียน คุณ {speaker_name} ผมได้สังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งควบคุมเครื่องจักรสำหรับภารกิจ '{cmd}' เรียบร้อยครับ:\n\n"
+                f"```gcode\n; Zyphere Native CNC / 3D Printer G-Code\n; Target: Advanced Alloy Structural Component\nG21 ; Set units to millimeters\nG90 ; Absolute positioning\nM104 S240 ; Set Extruder Temp\nG1 X0 Y0 Z0.2 F3000 ; Move to origin\n; Structural Lattice Pattern Extrusion...\n```\n\n"
