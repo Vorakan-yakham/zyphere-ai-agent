@@ -141,8 +141,17 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     except Exception as mail_err:
                         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
-                    # ปรับปรุงเสียงพูดตอบกลับ (TTS) ให้ชัดเจนและฟังเป็นธรรมชาติขึ้น (ใช้ slow=False เพื่อจังหวะการพูดที่สมูทขึ้น)
+                    # สังเคราะห์เสียงพูดตอบกลับ (TTS) แบบปรับปรุงให้สมบูรณ์
                     try:
                         tts = gTTS(text=response_msg, lang='th', slow=False)
                         tts_path = "response.mp3"
-                        tts.save(tts
+                        tts.save(tts_path)
+                        st.audio(tts_path, format="audio/mp3", autoplay=True)
+                    except Exception as tts_err:
+                        st.warning(f"⚠️ ไม่สามารถสร้างเสียงพูดได้: {str(tts_err)}")
+
+# แสดงความจำระบบทั้งหมด
+if st.session_state.memory_logs:
+    with st.expander("📂 ดูประวัติคำสั่งและความจำส่วนตัวของระบบ"):
+        for log in st.session_state.memory_logs:
+            st
