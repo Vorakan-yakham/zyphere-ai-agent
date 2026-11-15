@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Neon Atom Logo และซ่อน Input Placeholder ---
+# --- ดีไซน์ CSS สไตล์ Claude AI แบบ Monotone Minimalist เรียบหรู ไร้ไอคอนสีสันรบกวน ---
 st.markdown("""
     <style>
     .stApp {
@@ -127,21 +127,19 @@ if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
 
-# --- ฟังก์ชันสร้างเสียงพูดพรีเมียม (ปรับแต่ง Pitch และ Rate ให้เสียงทุ้มนุ่มน่าฟังยิ่งขึ้น) ---
+# --- ฟังก์ชันสร้างเสียงพูดพรีเมียม (ปรับแต่ง Pitch ให้เสียงทุ้มนุ่มนวล) ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
     tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
-    
-    # ปรับแต่งพารามิเตอร์เสียงพูด (ลด pitch ลงเล็กน้อยเพื่อให้เสียงทุ้มและดูเป็นธรรมชาติ/อบอุ่นขึ้น)
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- แผงควบคุมตั้งค่า (Sidebar) ---
+# --- แผงควบคุมตั้งค่า (Sidebar แบบ Monotone) ---
 with st.sidebar:
-    st.header("⚙️ ระบบควบคุมความปลอดภัย")
+    st.header("ระบบควบคุมความปลอดภัย")
     target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
     st.markdown("---")
-    st.markdown("### 🚀 โมดูลวิศวกรรมขั้นสูง (Omni-Engineering)")
+    st.markdown("### โมดูลวิศวกรรมขั้นสูง")
     selected_tool = st.selectbox("เลือกโมดูลปฏิบัติการ:", [
         "โมดูลคำนวณและออกแบบยานอวกาศ",
         "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
@@ -151,7 +149,7 @@ with st.sidebar:
     
     if st.session_state.is_verified:
         st.markdown("---")
-        if st.button("🔒 ล้างการยืนยันตัวตน (Logout)", type="secondary"):
+        if st.button("ล้างการยืนยันตัวตน (Logout)", type="secondary"):
             st.session_state.is_verified = False
             st.session_state.verified_name = ""
             st.session_state.messages = []
@@ -160,14 +158,14 @@ with st.sidebar:
 
 # --- ตรวจสอบสิทธิ์ความปลอดภัย ---
 if not st.session_state.is_verified:
-    st.markdown("### 🔑 ยืนยันตัวตนความปลอดภัยระดับสูงสุด")
+    st.markdown("### ยืนยันตัวตนความปลอดภัยระดับสูงสุด")
     col1, col2 = st.columns(2)
     with col1:
         input_name = st.text_input("ชื่อจริง", placeholder="เช่น วรกันต์")
     with col2:
         input_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ")
     
-    if st.button("🔓 ปลดล็อกระบบ Zyphere", type="primary"):
+    if st.button("ปลดล็อกระบบ Zyphere", type="primary"):
         is_authorized = any(
             user["name"].strip() == input_name.strip() and user["surname"].strip() == input_surname.strip()
             for user in AUTHORIZED_USERS
@@ -175,10 +173,10 @@ if not st.session_state.is_verified:
         if is_authorized:
             st.session_state.is_verified = True
             st.session_state.verified_name = input_name.strip()
-            st.success(f"✅ ยืนยันตัวตนสำเร็จ! ยินดีต้อนรับครับ คุณ {input_name}")
+            st.success(f"ยืนยันตัวตนสำเร็จ! ยินดีต้อนรับครับ คุณ {input_name}")
             st.rerun()
         else:
-            st.error("🚨 [ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการเข้าถึง")
+            st.error("[ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการเข้าถึง")
     st.stop()
 
 speaker_name = st.session_state.verified_name
@@ -204,23 +202,23 @@ st.markdown('''
 
 # --- หน้าแรกสไตล์ Claude ---
 if not st.session_state.messages:
-    st.markdown(f'<p class="welcome-header">✨ สวัสดีตอนเย็นค่ะ {speaker_name}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="welcome-header">สวัสดีตอนเย็นครับ {speaker_name}</p>', unsafe_allow_html=True)
 
-# --- เพิ่มไอคอนไมโครโฟนสำหรับสั่งงานด้วยเสียง ---
+# --- ช่องบันทึกเสียงแบบเรียบหรูไร้ไอคอนกวนตา ---
 col_mic1, col_mic2, col_mic3 = st.columns([1, 2, 1])
 with col_mic2:
-    with st.expander("🎙️ สั่งการด้วยเสียง (Voice Command Micro-Input)"):
+    with st.expander("สั่งการด้วยเสียง (Voice Command)"):
         audio_file = st.audio_input("กดปุ่มเพื่อบันทึกเสียงคำสั่งของคุณ")
         if audio_file is not None:
-            st.success("🎙️ บันทึกเสียงสำเร็จ! (ระบบรับคลื่นเสียงเรียบร้อย สามารถพิมพ์ข้อความควบคู่เพื่อประมวลผลคำสั่งได้ทันที)")
+            st.success("บันทึกเสียงสำเร็จ! (ระบบรับคลื่นเสียงเรียบร้อย สามารถพิมพ์ข้อความควบคู่เพื่อประมวลผลคำสั่งได้ทันที)")
 
-# --- สมองกลอัจฉริยะ Native Core (วิวัฒนาการรอบด้าน) ---
+# --- สมองกลอัจฉริยะ Native Core ---
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     
     if any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
         msg_out = (
-            "🛰️ **ระบบประมวลผลวิศวกรรมมหาศาล (Universal Engineering Synthesizer):**\n\n"
+            "ระบบประมวลผลวิศวกรรมมหาศาล:\n\n"
             f"เรียน คุณ {speaker_name} ผมได้สังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งควบคุมเครื่องจักรสำหรับภารกิจ '{cmd}' เรียบร้อยครับ:\n\n"
             "```gcode\n"
             "; Zyphere Native CNC / 3D Printer G-Code\n"
@@ -257,7 +255,7 @@ def native_jarvis_brain(cmd):
 
     else:
         msg_out = (
-            f"💡 **บันทึกการประมวลผลคำสั่งระดับสูง:** '{cmd}'\n\n"
+            f"บันทึกการประมวลผลคำสั่งระดับสูง: '{cmd}'\n\n"
             f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้ทำการประมวลผลตรรกะ บันทึก Log ความปลอดภัย และส่งรายงานเข้าสู่ระบบอีเมลเรียบร้อยแล้วครับ มีภารกิจใดให้ผมขับเคลื่อนต่อไหมครับ?"
         )
         return msg_out
@@ -268,7 +266,7 @@ def process_command(cmd):
         return
     
     if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
+        st.error(f"[KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
         st.stop()
 
     response_msg = native_jarvis_brain(cmd)
@@ -280,7 +278,7 @@ def process_command(cmd):
         sender_email = "vorakangm@gmail.com"
         app_password = "pygo tfga zubw xqca"
         msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
-        msg['Subject'] = f"🛡️ Zyphere Report: {speaker_name}"
+        msg['Subject'] = f"Zyphere Report: {speaker_name}"
         msg['From'] = sender_email
         msg['To'] = target_email
 
@@ -306,7 +304,7 @@ for message in st.session_state.messages:
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# --- ช่องรับคำสั่งด้านล่างสุด (ล้างข้อความแนะนำออกให้สะอาดตา) ---
+# --- ช่องรับคำสั่งด้านล่างสุด (คลีนสะอาดตา) ---
 user_input = st.chat_input("")
 if user_input:
     process_command(user_input)
