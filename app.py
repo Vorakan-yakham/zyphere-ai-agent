@@ -85,7 +85,7 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
 
                 except sr.UnknownValueError:
                     command_text = ""
-                    st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ใหอก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
+                    st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ให้ออก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
                 except Exception as e:
                     command_text = ""
                     st.error(f"⚠️ เกิดข้อผิดพลาดในการประมวลผล: {str(e)}")
@@ -106,6 +106,23 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     
                     response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้ว"
                     st.info(f"🤖 [AI Response]: {response_msg}")
+
+                    # ส่งอีเมลแจ้งเตือนอัตโนมัติผ่าน Gmail SMTP
+                    try:
+                        sender_email = "vorakangm@gmail.com"
+                        app_password = "pygo tfga zubw xqca"  # <--- แทนที่ด้วยรหัสผ่านแอป 16 หลักของคุณที่นี่
+                        
+                        msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบด้วยเสียง:\n\nคำสั่ง: {command_text}")
+                        msg['Subject'] = f"🛡️ Zyphere Agent Alert: คำสั่งจาก {speaker_name}"
+                        msg['From'] = sender_email
+                        msg['To'] = target_email
+
+                        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                            server.login(sender_email, app_password)
+                            server.sendmail(sender_email, target_email, msg.as_string())
+                        st.toast("📧 ส่งอีเมลแจ้งเตือนสำเร็จ!", icon="🚀")
+                    except Exception as mail_err:
+                        st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
                     # สังเคราะห์เสียงพูดตอบกลับ (TTS)
                     tts = gTTS(text=response_msg, lang='th')
