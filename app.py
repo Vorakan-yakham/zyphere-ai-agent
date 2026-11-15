@@ -93,9 +93,13 @@ st.success(f"🛡️ ผู้ใช้งานปัจจุบัน: คุ
 st.markdown("---")
 st.subheader("💬 สนทนากับ Zyphere Autonomous Super-Agent")
 
-input_method = st.radio("เลือกวิธีการสั่งการของคุณ:", ["พิมพ์ข้อความคำสั่ง (กด Enter เพื่อส่ง)", "อัปโหลดไฟล์เสียง"], horizontal=True)
+# แสดงประวัติการสนทนาในรูปแบบแชทจำลอง
+for log in st.session_state.memory_logs:
+    st.write(f"💬 {log}")
 
-# ฟังก์ชันประมวลผลคำสั่งหลัก
+st.markdown("---")
+
+# --- ฟังก์ชันประมวลผลคำสั่งหลัก ---
 def process_command(cmd):
     if not cmd:
         return
@@ -111,7 +115,6 @@ def process_command(cmd):
     st.session_state.memory_logs.append(log_entry)
 
     st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
-    st.write(f"**คำสั่งของคุณ:** {cmd}")
     
     response_msg = f"รับทราบคำสั่งครับคุณ {speaker_name} ระบบ Zyphere AI สายลมพิทักษ์ บันทึกและปฏิบัติการเรียบร้อยแล้วครับ"
     st.info(f"🤖 [AI Response]: {response_msg}")
@@ -133,4 +136,15 @@ def process_command(cmd):
     except Exception as mail_err:
         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
-    # ส
+    # สังเคราะห์เสียงพูดตอบกลับ (TTS) เป็นเสียงผู้ชาย
+    try:
+        tts_path = "response.mp3"
+        asyncio.run(generate_male_voice(response_msg, tts_path))
+        st.audio(tts_path, format="audio/mp3", autoplay=True)
+    except Exception as tts_err:
+        st.warning(f"⚠️ ไม่สามารถสร้างเสียงพูดได้: {str(tts_err)}")
+
+# --- ช่องรับคำสั่งสไตล์ Claude AI (พิมพ์แล้วกด Enter ส่งได้ทันที) ---
+user_input = st.chat_input("พิมพ์ข้อความคุยกับ Zyphere แล้วกด Enter...")
+if user_input:
+    process_command(user_input)
