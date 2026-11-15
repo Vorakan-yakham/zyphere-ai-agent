@@ -19,9 +19,12 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
 ]
 
-# ระบบความจำภายในเซสชัน
-if "memory_logs" not in st.session_state:
-    st.session_state.memory_logs = []
+# ระบบความจำแชทแบบสมบูรณ์ (เก็บทั้งบทสนทนาและไฟล์เสียงล่าสุด)
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "latest_audio" not in st.session_state:
+    st.session_state.latest_audio = None
 
 if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
@@ -48,6 +51,8 @@ with st.sidebar:
             st.session_state.is_verified = False
             st.session_state.verified_name = ""
             st.session_state.verified_surname = ""
+            st.session_state.messages = []
+            st.session_state.latest_audio = None
             st.rerun()
 
 # ดึงข้อความจากเอกสารที่อัปโหลด
@@ -93,12 +98,6 @@ st.success(f"🛡️ ผู้ใช้งานปัจจุบัน: คุ
 st.markdown("---")
 st.subheader("💬 สนทนากับ Zyphere Autonomous Super-Agent")
 
-# แสดงประวัติการสนทนาในรูปแบบแชทจำลอง
-for log in st.session_state.memory_logs:
-    st.write(f"💬 {log}")
-
-st.markdown("---")
-
 # --- ฟังก์ชันประมวลผลคำสั่งหลัก ---
 def process_command(cmd):
     if not cmd:
@@ -110,14 +109,11 @@ def process_command(cmd):
         st.error(f"🛑 [KILL-SWITCH ACTIVATED]: ได้รับคำสั่งปิดระบบฉุกเฉินจากคุณ {speaker_name} {speaker_surname} ระบบกำลังตัดการทำงานทันที!")
         st.stop()
 
-    # บันทึกคำสั่งลงหน่วยความจำ
-    log_entry = f"คุณ {speaker_name}: {cmd}"
-    st.session_state.memory_logs.append(log_entry)
-
-    st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
-    
     response_msg = f"รับทราบคำสั่งครับคุณ {speaker_name} ระบบ Zyphere AI สายลมพิทักษ์ บันทึกและปฏิบัติการเรียบร้อยแล้วครับ"
-    st.info(f"🤖 [AI Response]: {response_msg}")
+
+    # บันทึกประวัติลงแชท
+    st.session_state.messages.append({"role": "user", "content": cmd})
+    st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
     # ส่งอีเมลแจ้งเตือนผ่าน Gmail SMTP
     try:
@@ -132,7 +128,6 @@ def process_command(cmd):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, app_password)
             server.sendmail(sender_email, target_email, msg.as_string())
-        st.toast("📧 ส่งอีเมลแจ้งเตือนสำเร็จ!", icon="🚀")
     except Exception as mail_err:
         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
@@ -140,11 +135,21 @@ def process_command(cmd):
     try:
         tts_path = "response.mp3"
         asyncio.run(generate_male_voice(response_msg, tts_path))
-        st.audio(tts_path, format="audio/mp3", autoplay=True)
+        st.session_state.latest_audio = tts_path
     except Exception as tts_err:
-        st.warning(f"⚠️ ไม่สามารถสร้างเสียงพูดได้: {str(tts_err)}")
+        st.session_state.latest_audio = None
 
-# --- ช่องรับคำสั่งสไตล์ Claude AI (พิมพ์แล้วกด Enter ส่งได้ทันที) ---
+# --- แสดงประวัติแชททั้งหมดต่อเนื่องเหมือน Claude AI ---
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+# เล่นเสียงล่าสุด (ถ้ามี)
+if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+
+# --- ช่องรับคำสั่งด้านล่างสุด (สไตล์ Claude AI พิมพ์แล้ว Enter ส่งได้ทันที) ---
 user_input = st.chat_input("พิมพ์ข้อความคุยกับ Zyphere แล้วกด Enter...")
 if user_input:
     process_command(user_input)
+    st.rerun()
