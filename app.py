@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ถอดแบบ Google AI Studio (Build Page) 100% ---
+# --- ดีไซน์ CSS ผสานกล่องแคปซูลชิ้นเดียวและโลโก้ J.A.R.V.I.S. แบบเป๊ะทุกกระเบียดนิ้ว ---
 st.markdown("""
     <style>
     .stApp {
@@ -31,89 +31,61 @@ st.markdown("""
         padding-top: 0.5rem;
     }
 
-    /* บีบโครงสร้างตรงกลางให้จัดวางกึ่งกลางหน้าจออย่างสวยงาม */
+    /* จัดหน้าจอตรงกลางให้กะทัดรัดสวยงาม */
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
-        max-width: 900px !important;
+        max-width: 850px !important;
         margin: 0 auto;
     }
 
-    /* Badge หัวข้อบนสุด */
-    .badge-container {
+    /* โลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. ตรงกลาง */
+    .logo-container {
         display: flex;
         justify-content: center;
-        margin-bottom: 16px;
-    }
-    .version-badge {
-        background-color: #f1f3f4;
-        border: 1px solid #e0e0e0;
-        border-radius: 20px;
-        padding: 4px 16px;
-        font-size: 13px;
-        color: #3c4043;
-        font-weight: 500;
-        display: inline-flex;
         align-items: center;
-        gap: 8px;
+        margin-top: 5px;
+        margin-bottom: 0px;
     }
-    .badge-number {
-        background-color: #1a73e8;
-        color: #ffffff;
-        border-radius: 50%;
-        width: 18px;
-        height: 18px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        font-weight: 600;
+    .svg-logo {
+        width: 75px;
+        height: 75px;
+        animation: pulseLogo 3s infinite alternate ease-in-out;
     }
+    .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
+    .orbit-2 { transform-origin: center; animation: spinReverse 7s linear infinite; }
+    .core-glow { transform-origin: center; animation: pulseCore 2s infinite alternate; }
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+    @keyframes pulseLogo {
+        0% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)); }
+        100% { filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8)); }
+    }
+    @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
-    /* หัวข้อหลัก */
     .hero-title {
         text-align: center;
-        font-size: 38px;
+        font-size: 34px;
         font-weight: 400;
         color: #1f1f1f;
-        margin-bottom: 32px;
+        margin-top: 5px;
+        margin-bottom: 25px;
         letter-spacing: -0.5px;
     }
 
-    /* กล่อง Prompt แคปซูลหลักตรงกลาง พร้อมแสง Glow สไตล์ Google AI Studio */
-    [data-testid="stForm"] {
+    /* กล่องแคปซูล Prompt หลัก (จำลองโครงสร้างเดียวกับภาพต้นแบบ) */
+    .custom-capsule-box {
         background-color: #ffffff;
-        border: 1px solid #e0e0e0 !important;
+        border: 1px solid #dadce0;
         border-radius: 24px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 24px rgba(66, 133, 244, 0.12), 0 1px 6px rgba(0, 0, 0, 0.04);
+        padding: 12px 18px;
+        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.08), 0 1px 4px rgba(0, 0, 0, 0.03);
+        margin-bottom: 15px;
         transition: all 0.3s ease;
     }
-    [data-testid="stForm"]:hover {
-        box-shadow: 0 6px 30px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
-    [data-testid="stForm"] input {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-        font-size: 15px !important;
-        color: #1f1f1f !important;
-    }
-
-    /* ปุ่มในฟอร์ม */
-    .stButton > button {
-        background-color: #ffffff !important;
-        color: #3c4043 !important;
-        border: 1px solid #dadce0 !important;
-        border-radius: 18px !important;
-        padding: 0.4rem 0.9rem !important;
-        font-weight: 500 !important;
-        font-size: 13px !important;
-        transition: all 0.2s ease;
-    }
-    .stButton > button:hover {
-        background-color: #f8f9fa !important;
-        border-color: #bdc1c6 !important;
+    .custom-capsule-box:hover {
+        box-shadow: 0 6px 24px rgba(66, 133, 244, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
+        border-color: #bdc1c6;
     }
 
     /* การ์ดโปรไฟล์ผู้ใช้มุมซ้ายล่าง */
@@ -152,7 +124,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย (ถอดแบบ Google AI Studio) ---
+# --- 1. SIDEBAR ด้านซ้าย ---
 with st.sidebar:
     st.markdown("### Google AI Studio")
     st.caption("Zyphere Sovereign Core Engine")
@@ -210,18 +182,21 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. MAIN CENTER CONTAINER (Build Your Ideas) ---
-st.markdown("""
-    <div class="badge-container">
-        <div class="version-badge">
-            <span class="badge-number">4</span>
-            Introducing Zyphere 4 Hydrogen
-        </div>
+# --- 2. MAIN CENTER CONTAINER ---
+# โลโก้ Neon Atom เคลื่อนไหวสไตล์ J.A.R.V.I.S. กลับมาอยู่ตรงกลาง
+st.markdown('''
+    <div class="logo-container">
+        <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/></g>
+            <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/></g>
+            <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
+            <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+        </svg>
     </div>
     <div class="hero-title">Build your ideas with Zyphere</div>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
-# แสดงแชทหากมีประวัติการคุย
+# แสดงประวัติแชท
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
@@ -303,7 +278,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING CENTRAL CAPSULE PROMPT BOX ---
+# --- 3. FLOATING CENTRAL COMMAND CAPSULE (จำลองกล่องแคปซูลชิ้นเดียวแบบ AI Studio)[cite: 14] ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -313,10 +288,10 @@ if st.session_state.voice_active:
 
 default_input = st.session_state.pop("pending_prompt", "")
 
-with st.form(key="google_ai_studio_form", clear_on_submit=True):
+with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
     user_input = st.text_input("Describe an app and let Zyphere do the rest", value=default_input, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
     
-    c1, c2, c3, c4 = st.columns([0.6, 4.0, 1.6, 2.2])
+    c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
     with c1:
         st.form_submit_button("⊕")
     with c2:
