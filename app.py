@@ -100,12 +100,14 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส ยาคำ", "email": "karanyapas@yakham.com", "role": "Authorized Executive"}
 ]
 
+# ระบบจำสถานะการล็อกอินข้าม Session ในเบราว์เซอร์นี้
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "latest_audio" not in st.session_state:
     st.session_state.latest_audio = None
 if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
+if "verified_name" not in st.session_state:
     st.session_state.verified_name = ""
 if "voice_active" not in st.session_state:
     st.session_state.voice_active = False
@@ -116,7 +118,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- SIDEBAR ---
+# --- SIDEBAR (Persistent Login) ---
 with st.sidebar:
     st.markdown("### Google AI Studio")
     st.caption("Zyphere Sovereign Core Engine")
@@ -267,7 +269,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED ENTER & SUBMIT) ---
+# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED SUBMIT & ENTER) ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -277,7 +279,7 @@ if st.session_state.voice_active:
 
 default_input = st.session_state.pop("pending_prompt", "")
 
-# ใช้ฟอร์มรับค่าที่สมบูรณ์ กด Enter หรือคลิกปุ่มส่งได้ทันที
+# รับค่าจากคีย์บอร์ดและปุ่มกดได้อย่างสมบูรณ์แบบ
 with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
     user_input = st.text_input("Describe an app and let Zyphere do the rest", value=default_input, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
     
@@ -295,7 +297,6 @@ with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
         with col_r:
             submitted = st.form_submit_button("✦ I'm feeling lucky", type="primary")
 
-    # ตรวจสอบการกด Submit หรือกด Enter ใน text_input
     if submitted and user_input:
         process_command(user_input)
         st.rerun()
