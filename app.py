@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS ซ่อน UI ที่ไม่จำเป็น เพื่อให้โฟกัสที่เสียงและความสะอาดตา ---
+# --- 2. Custom CSS ซ่อน UI และแต่งธีม Neon ให้พรีเมียม ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -24,13 +24,12 @@ st.markdown("""
         color: #ffffff;
     }
     
-    /* จัดกึ่งกลางสำหรับ Neon Atom Logo */
     .neon-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 60vh;
+        height: 50vh;
     }
     
     .neon-atom {
@@ -47,7 +46,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. ฟังก์ชันสร้างเสียงและเล่นเสียงแบบซ่อน (Audio-first Feedback) ---
+# --- 3. ฟังก์ชันเสียงพรีเมียม (Edge TTS - ปรับความทุ้มและจังหวะธรรมชาติ) ---
 def generate_male_voice(text, output_path="temp_audio.mp3"):
     voice = "th-TH-NiwatNeural"
     tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
@@ -68,12 +67,15 @@ def play_audio_invisible(audio_file_path):
         """
         st.markdown(audio_html, unsafe_allow_html=True)
 
-# --- 4. ระบบจัดการสถานะการเข้าสู่ระบบ (Email-based Auth) ---
+# --- 4. ระบบจัดการสถานะการเข้าสู่ระบบ & Email Authentication ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# ตรวจสอบ Secrets สำหรับอีเมลแอดมิน
-ADMIN_EMAIL = st.secrets.get("admin_email", "admin@zyphere.com")
+# อนุญาตอีเมลหลักของคุณวรกันต์และแอดมิน
+ALLOWED_EMAILS = ["vorakangm@gmail.com", "admin@zyphere.com"]
+admin_secret = st.secrets.get("admin_email", None)
+if admin_secret and admin_secret not in ALLOWED_EMAILS:
+    ALLOWED_EMAILS.append(admin_secret)
 
 if not st.session_state.authenticated:
     st.markdown("<div style='text-align: center; margin-top: 100px;'><h2>⚡ ZYPHERE ACCESS</h2></div>", unsafe_allow_html=True)
@@ -81,30 +83,29 @@ if not st.session_state.authenticated:
     with col2:
         user_email = st.text_input("Enter authorized email:")
         if st.button("Authenticate"):
-            if user_email == ADMIN_EMAIL:
+            if user_email.strip().lower() in ALLOWED_EMAILS:
                 st.session_state.authenticated = True
                 st.rerun()
             else:
-                st.error("Access Denied.")
+                st.error("Access Denied. Invalid email.")
     st.stop()
 
-# --- 5. UI หลักของ Zyphere ---
+# --- 5. สถาปัตยกรรมหลักของ Zyphere (4-Axis Engine & UI) ---
 st.markdown("""
     <div class="neon-container">
         <div class="neon-atom">⚛️</div>
         <h3 style="letter-spacing: 2px; color: #00f3ff; margin-top: 20px;">ZYPHERE</h3>
+        <p style="color: #8b949e; font-size: 14px;">4-Axis Intelligence & Audio-First Assistant</p>
     </div>
 """, unsafe_allow_html=True)
 
-# ช่องรับข้อความแบบมินิมอล
-user_input = st.chat_input("พูดคุยกับ Zyphere...")
+# ช่องรับข้อความสนทนา
+user_input = st.chat_input("พูดคุยกับ Zyphere (Knowledge / Aerospace / Robotics / Content)...")
 
 if user_input:
-    # ตรรกะการตอบสนองแบบ stochastic / conversational mirroring
-    response_text = f"รับทราบครับคุณวรกันต์ ผมกำลังดำเนินการในส่วนของ {user_input} ให้ทันทีครับ"
+    # ตรรกะการตอบสนองแบบ Stochastic / Conversational Mirroring
+    response_text = f"รับทราบครับคุณวรกันต์ ระบบกำลังประมวลผลคำขอเกี่ยวกับ {user_input} ให้ทันทีครับ"
     
-    # สร้างไฟล์เสียงทุ้มนุ่มนวล
+    # สร้างและเล่นเสียงพูดทุ้มนุ่มนวลอัตโนมัติ
     audio_path = generate_male_voice(response_text)
-    
-    # เล่นเสียงอัตโนมัติแบบไร้รอยต่อ
     play_audio_invisible(audio_path)
