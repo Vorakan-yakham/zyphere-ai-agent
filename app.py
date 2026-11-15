@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Bulletproof Contrast CSS (Hard Override All Elements) ---
+# --- 2. World-Class Enterprise UI & Bulletproof Contrast CSS ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -25,12 +25,12 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    /* บังคับตัวหนังสือทั่วไปให้เป็นสีขาวสว่างบนพื้นมืด */
+    /* Global Typography */
     label, p, span, div[data-baseweb="typography"], h1, h2, h3, h4 {
         color: #ffffff !important;
     }
     
-    /* บังคับช่องกรอกอีเมล (Auth Input) ให้พื้นหลังขาว ตัวหนังสือดำสนิท */
+    /* Auth Input Styling */
     div[data-baseweb="input"] {
         background-color: #ffffff !important;
         border-radius: 6px !important;
@@ -44,7 +44,7 @@ st.markdown("""
         font-weight: 700 !important;
     }
     
-    /* บังคับช่อง Chat Input ด้านล่างให้พื้นหลังขาว ตัวหนังสือดำสนิท 100% */
+    /* Chat Input Styling */
     .stChatInput {
         background-color: #0e1117 !important;
     }
@@ -56,12 +56,25 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* บังคับข้อความในกล่องแชท (Chat Message Text) ให้เป็นสีขาวอ่านง่าย */
+    /* Chat Messages */
     .stChatMessage p, .stChatMessage div {
         color: #ffffff !important;
     }
 
-    /* ปุ่ม Authenticate & Action Buttons */
+    /* --- WORLD-CLASS CODE BLOCK FIX (Dark Terminal Style) --- */
+    pre, code, .stCodeBlock, div[data-testid="stCode"] {
+        background-color: #050505 !important;
+        color: #00f3ff !important;
+        border: 1px solid #00f3ff33 !important;
+        border-radius: 8px !important;
+        font-family: 'Courier New', Courier, monospace !important;
+    }
+    
+    pre code span {
+        color: #79c0ff !important;
+    }
+
+    /* Buttons */
     div.stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
