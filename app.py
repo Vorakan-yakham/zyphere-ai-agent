@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS แก้ไขคอนทราสต์ช่องแชทและปุ่มให้ถูกต้องสมบูรณ์ ---
+# --- 2. Custom CSS ปรับแต่ง UI, ความสะอาดตา และสีตัวหนังสือในช่องแชท ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -65,7 +65,7 @@ st.markdown("""
         -webkit-text-fill-color: #000000 !important;
     }
 
-    /* เจาะจงช่อง Chat Input ด้านล่างให้ตัวหนังสือเป็นสีดำและมองเห็นชัดเจน */
+    /* ช่อง Chat Input ด้านล่าง ให้ตัวหนังสือเป็นสีดำและมองเห็นชัดเจน */
     .stChatInput textarea {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
@@ -147,8 +147,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# ช่องรับข้อความสนทนา
-user_input = st.chat_input("พูดคุยกับ Zyphere (Knowledge / Aerospace / Robotics / Content)...")
+# ช่องรับข้อความแบบปล่อยว่างคลีนๆ ไม่มีข้อความรกตา
+user_input = st.chat_input("")
 
 if user_input:
     response_text = f"รับทราบครับคุณวรกันต์ ระบบกำลังประมวลผลคำขอเกี่ยวกับ {user_input} ให้ทันทีครับ"
