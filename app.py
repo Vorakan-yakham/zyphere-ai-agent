@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS ปรับแต่ง UI และปุ่ม Login ให้แสดงผลชัดเจน 100% ---
+# --- 2. Custom CSS แก้ไขคอนทราสต์ช่องแชทและปุ่มให้ถูกต้องสมบูรณ์ ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -24,12 +24,12 @@ st.markdown("""
         color: #ffffff;
     }
     
-    /* บังคับข้อความทั่วไปและ Label เป็นสีขาวสว่าง */
+    /* บังคับข้อความทั่วไปและ Label เป็นสีขาวสว่างบนพื้นมืด */
     label, p, span, div[data-baseweb="typography"] {
         color: #ffffff !important;
     }
     
-    /* กำหนดสีตอนไฮไลต์ข้อความ */
+    /* สีไฮไลต์ข้อความ */
     ::selection {
         background: #00f3ff;
         color: #000000;
@@ -59,14 +59,19 @@ st.markdown("""
         100% { transform: scale(1); opacity: 0.8; }
     }
 
-    /* บังคับตัวอักษรในช่อง input ให้เป็นสีดำเข้ม พื้นหลังขาว */
-    input, div[data-baseweb="input"] input {
+    /* บังคับตัวอักษรในช่อง input ทุกชนิดให้เป็นสีดำเข้มชัดเจนบนพื้นหลังขาว */
+    input, textarea, div[data-baseweb="input"] input, div[data-baseweb="base-input"] textarea {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        background-color: #ffffff !important;
     }
 
-    /* แก้ไขปุ่ม Authenticate ให้แสดงผลชัดเจน ตัวหนังสือสีดำ พื้นหลังขาวขอบฟ้า ตลอดเวลา */
+    /* เจาะจงช่อง Chat Input ด้านล่างให้ตัวหนังสือเป็นสีดำและมองเห็นชัดเจน */
+    .stChatInput textarea {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+
+    /* ปุ่ม Login / Authenticate */
     div.stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -81,7 +86,6 @@ st.markdown("""
         background-color: #00f3ff !important;
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        border: 2px solid #ffffff !important;
     }
     
     div.stButton > button p {
