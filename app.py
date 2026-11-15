@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Monotone Minimalist Logo ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Monotone Minimalist Button & UI ---
 st.markdown("""
     <style>
     .stApp {
@@ -17,7 +17,24 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ไอคอน / โลโก้สไตล์ Monotone Minimalist เรืองแสงนุ่มๆ */
+    /* ปรับแต่งปุ่มกด (Buttons) ให้เรียบหรู สไตล์ Monotone Minimalist */
+    .stButton > button {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        border: 1px solid #333333 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1.2rem !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .stButton > button:hover {
+        background-color: #333333 !important;
+        border-color: #555555 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    /* ไอคอน / โลโก้ Monotone เรืองแสงนุ่มๆ */
     .logo-container {
         display: flex;
         justify-content: center;
