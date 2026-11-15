@@ -1,7 +1,8 @@
 import streamlit as st
 import os
 import tempfile
-import requests
+import smtplib
+from email.mime.text import MIMEText
 import speech_recognition as sr
 from gtts import gTTS
 from pypdf import PdfReader
@@ -21,10 +22,10 @@ AUTHORIZED_USERS = [
 if "memory_logs" not in st.session_state:
     st.session_state.memory_logs = []
 
-# --- แผงควบคุมตั้งค่าระบบลับ (Sidebar) ---
+# --- แผงควบคุมตั้งค่าระบบ (Sidebar) ---
 with st.sidebar:
-    st.header("⚙️ ตั้งค่าระบบขั้นสูง")
-    line_token = st.text_input("LINE Notify Token (ถ้ามี)", type="password", placeholder="ใส่ Token สำหรับแจ้งเตือนเข้าไลน์")
+    st.header("⚙️ ตั้งค่าการแจ้งเตือน")
+    target_email = st.text_input("อีเมลรับการแจ้งเตือน", value="vorakangm@gmail.com")
     st.markdown("---")
     st.subheader("📚 คลังความรู้เฉพาะครอบครัว")
     uploaded_doc = st.file_uploader("อัปโหลดเอกสาร/โน้ตลับ (PDF หรือ TXT)", type=["pdf", "txt"])
@@ -84,7 +85,7 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
 
                 except sr.UnknownValueError:
                     command_text = ""
-                    st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ให้ออก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
+                    st.warning("⚠️ ระบบไม่สามารถฟังเสียงพูดในไฟล์ใหอก กรุณาลองอัปโหลดไฟล์เสียงที่ชัดเจนขึ้น")
                 except Exception as e:
                     command_text = ""
                     st.error(f"⚠️ เกิดข้อผิดพลาดในการประมวลผล: {str(e)}")
@@ -96,11 +97,6 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                         st.error(f"🛑 [KILL-SWITCH ACTIVATED]: ได้รับคำสั่งปิดระบบฉุกเฉินจากคุณ {speaker_name} {speaker_surname} ระบบกำลังตัดการทำงานทันที!")
                         st.stop()
 
-                    # ค้นหาข้อมูลจากเอกสารลับ (ถ้ามีอัปโหลดไว้)
-                    answer_extra = ""
-                    if doc_content and any(kw in command_text.lower() for kw in ["เนื้อหา", "เอกสาร", "สรุป", "ในไฟล์", "ข้อมูล"]):
-                        answer_extra = f"\n📄 [วิเคราะห์จากเอกสารของคุณ]: พบข้อมูลเกี่ยวข้องในคลังความรู้ที่อัปโหลดไว้เรียบร้อย"
-
                     # บันทึกคำสั่งลงหน่วยความจำ
                     log_entry = f"คุณ {speaker_name}: {command_text}"
                     st.session_state.memory_logs.append(log_entry)
@@ -108,19 +104,8 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
                     st.write(f"**ข้อความจากเสียงของคุณ:** {command_text}")
                     
-                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI ปฏิบัติการสำเร็จ {answer_extra}"
+                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้ว"
                     st.info(f"🤖 [AI Response]: {response_msg}")
-
-                    # ส่งแจ้งเตือนเข้า LINE Notify อัตโนมัติ (ถ้าใส่ Token ไว้)
-                    if line_token:
-                        try:
-                            line_url = "https://notify-api.line.me/api/notify"
-                            headers = {"Authorization": f"Bearer {line_token}"}
-                            payload = {"message": f"\n🛡️ Zyphere Agent Alert:\nผู้สั่ง: คุณ {speaker_name}\nคำสั่ง: {command_text}"}
-                            requests.post(line_url, headers=headers, data=payload)
-                            st.toast("📲 ส่งแจ้งเตือนเข้า LINE สำเร็จ!", icon="🚀")
-                        except Exception:
-                            pass
 
                     # สังเคราะห์เสียงพูดตอบกลับ (TTS)
                     tts = gTTS(text=response_msg, lang='th')
