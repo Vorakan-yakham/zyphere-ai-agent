@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS ปรับแต่ง UI สีตัวหนังสือ และปุ่มให้คมชัดทุกสถานะ ---
+# --- 2. Custom CSS ปรับแต่ง UI และปุ่ม Login ให้แสดงผลชัดเจน 100% ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -66,18 +66,27 @@ st.markdown("""
         background-color: #ffffff !important;
     }
 
-    /* ปรับแต่งปุ่ม Authenticate ให้ตัวหนังสือเป็นสีดำและมองเห็นชัดเจนตลอดเวลา */
-    .stButton button {
+    /* แก้ไขปุ่ม Authenticate ให้แสดงผลชัดเจน ตัวหนังสือสีดำ พื้นหลังขาวขอบฟ้า ตลอดเวลา */
+    div.stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
         border-radius: 8px !important;
-        font-weight: 600 !important;
-        border: 1px solid #00f3ff !important;
+        font-weight: 700 !important;
+        border: 2px solid #00f3ff !important;
+        width: 100% !important;
     }
     
-    .stButton button:hover {
+    div.stButton > button:hover {
         background-color: #00f3ff !important;
         color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        border: 2px solid #ffffff !important;
+    }
+    
+    div.stButton > button p {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
     }
     </style>
 """, unsafe_allow_html=True)
