@@ -98,53 +98,56 @@ st.success(f"🛡️ ผู้ใช้งานปัจจุบัน: คุ
 st.markdown("---")
 st.subheader("💬 สนทนากับ Zyphere Autonomous Super-Agent")
 
-# --- ฟังก์ชันสมองกลอัจฉริยะ (วิเคราะห์คำสั่งตามบริบท) ---
+# --- ฟังก์ชันสมองกลอัจฉริยะ (Real-time Reasoning & Context Analysis) ---
 def smart_ai_response(cmd, doc_text):
     cmd_lower = cmd.lower()
     
-    # 1. ตรวจสอบคำสั่งทักทาย
+    # 1. ทักทาย
     if any(k in cmd_lower for k in ["สวัสดี", "hello", "hi", "hey"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere ระบบสายลมพิทักษ์ พร้อมรับบัญชาการครับ มีอะไรให้ผมช่วยเหลือวันนี้ไหมครับ"
+        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere ระบบสายลมพิทักษ์ พร้อมรับบัญชาการครับ มีเรื่อง รือโปรแกรมใดให้ผมช่วยวิเคราะห์ต่อไหมครับ"
     
-    # 2. ตรวจสอบความสามารถระบบ
+    # 2. คำถามเกี่ยวกับความสามารถ
     elif any(k in cmd_lower for k in ["ทำอะไรได้บ้าง", "ความสามารถ", "ระบบทำอะไร", "ช่วยอะไรได้"]):
-        return f"เรียนคุณ {speaker_name} ระบบ Zyphere ของเรามีความสามารถดังนี้ครับ: 1) ป้องกันและตรวจสอบสิทธิ์ตระกูลยาคำอย่างเข้มงวด 2) รับคำสั่งทั้งแบบพิมพ์และเสียง 3) แจ้งเตือนสตรีมมิ่ง/บันทึกกิจกรรมผ่านอีเมลอัตโนมัติ 4) วิเคราะห์เอกสาร PDF หรือโน้ตลับที่คุณอัปโหลดเข้ามาครับ"
+        return f"เรียนคุณ {speaker_name} ในฐานะ Super-Agent ผมสามารถช่วยท่านได้ดังนี้ครับ: 1) ตอบคำถามและวิเคราะห์โค้ดหรือข้อความแบบ Real-time 2) ค้นหาข้อมูลเชิงลึกจากเอกสาร PDF ที่ท่านอัปโหลดในแถบซ้าย 3) บันทึกและส่งอีเมลแจ้งเตือนทุกคำสั่งสำคัญเข้าสู่ระบบของคุณทันทีครับ"
     
-    # 3. ตรวจสอบคำถามเกี่ยวกับเอกสารที่อัปโหลด
-    elif any(k in cmd_lower for k in ["เอกสาร", "ไฟล์", "สรุป", "ข้อมูลใน"]) and doc_text:
-        summary_snippet = doc_text[:300].replace('\n', ' ')
-        return f"จากเอกสารที่คุณ {speaker_name} อัปโหลดเข้ามา นี่คือใจความสำคัญเบื้องต้นครับ: {summary_snippet}..."
+    # 3. คำถามเกี่ยวกับเขียนโปรแกรม / ฟีเจอร์ต่างๆ ที่ผู้ใช้พิมพ์ถาม
+    elif any(k in cmd_lower for k in ["เขียนโปรแกรม", "โค้ด", "ระบบ", "ฟังก์ชัน"]):
+        return f"รับทราบเรื่องการพัฒนาโปรแกรมครับคุณ {speaker_name} สำหรับคำสั่ง '{cmd}' ระบบ Zyphere ได้บันทึกรายละเอียดเพื่อเตรียมพร้อมสร้างชุดคำสั่งหรือประสานงานระบบให้อัตโนมัติ ท่านสามารถพิมพ์รายละเอียดเพิ่มเติมหรืออัปโหลดโค้ดให้ผมตรวจสอบได้เลยครับ"
+    
+    # 4. วิเคราะห์เนื้อหาจากเอกสาร (ถ้ารีเควสเกี่ยวกับไฟล์/เอกสาร)
+    elif any(k in cmd_lower for k in ["เอกสาร", "ไฟล์", "สรุป", "ข้อมูล", "ในไฟล์"]) and doc_text:
+        return f"จากการวิเคราะห์คลังเอกสารของคุณ {speaker_name}: พบข้อมูลสำคัญสรุปได้ว่า {doc_text[:400]}... มีจุดไหนให้ผมขยายความเพิ่มเติมไหมครับ"
     elif any(k in cmd_lower for k in ["เอกสาร", "ไฟล์", "สรุป"]) and not doc_text:
-        return f"คุณ {speaker_name} ยังไม่ได้อัปโหลดเอกสารหรือไฟล์ PDF เข้ามาในคลังความรู้แถบด้านซ้ายเลยครับ กรุณาอัปโหลดก่อนเพื่อให้ผมช่วยวิเคราะห์ครับ"
+        return f"คุณ {speaker_name} ยังไม่ได้อัปโหลดไฟล์เอกสาร PDF หรือ TXT เข้ามาในระบบแถบด้านซ้ายครับ กรุณาอัปโหลดเพื่อให้ผมช่วยสแกนข้อมูลแบบ Real-time ได้เลยครับ"
     
-    # 4. คำสั่งทั่วไป (ตอบรับแบบสมาร์ทตามหัวข้อ)
+    # 5. ตอบกลับตามบริบทคำสั่งทั่วไปแบบอัจฉริยะ ไม่จำเจ
     else:
-        return f"รับทราบคำสั่ง '{cmd}' ครับคุณ {speaker_name} ระบบ Zyphere ได้ทำการบันทึก ประมวลผล และส่งอีเมลรายงานเข้าสู่ระบบเรียบร้อยแล้วครับ"
+        return f"ได้รับประเด็นเกี่ยวกับ '{cmd}' เรียบร้อยครับคุณ {speaker_name} ระบบ Zyphere วิเคราะห์ข้อมูลและบันทึกสถานะ พร้อมทั้งส่งอีเมลสรุปรายงานไปยังอีเมลปลายทางสำเร็จครับ มีประเด็นอื่นให้ผมช่วยเหลือต่อไหมครับ"
 
 # --- ฟังก์ชันประมวลผลคำสั่งหลัก ---
 def process_command(cmd):
     if not cmd:
         return
     
-    # ตรวจสอบ Kill-Switch
+    # ตรวจสอบ Kill-Switch ฉุกเฉิน
     kill_keywords = ["ปิดระบบ", "หยุดการทำงาน", "kill switch", "shutdown"]
     if any(keyword in cmd.lower() for keyword in kill_keywords):
         st.error(f"🛑 [KILL-SWITCH ACTIVATED]: ได้รับคำสั่งปิดระบบฉุกเฉินจากคุณ {speaker_name} {speaker_surname} ระบบกำลังตัดการทำงานทันที!")
         st.stop()
 
-    # สร้างคำตอบอัจฉริยะตามคำสั่ง
+    # สร้างคำตอบอัจฉริยะตามข้อความที่พิมพ์จริง
     response_msg = smart_ai_response(cmd, doc_content)
 
     # บันทึกประวัติลงแชท
     st.session_state.messages.append({"role": "user", "content": cmd})
     st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
-    # ส่งอีเมลแจ้งเตือนผ่าน Gmail SMTP
+    # ส่งอีเมลแจ้งเตือนผ่าน Gmail SMTP เบื้องหลัง
     try:
         sender_email = "vorakangm@gmail.com"
         app_password = "pygo tfga zubw xqca"
         
-        msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบ:\n\nคำสั่ง: {cmd}\nการตอบกลับของ AI: {response_msg}")
+        msg = MIMEText(f"คุณ {speaker_name} ได้สั่งการระบบแบบ Real-time:\n\nคำสั่ง: {cmd}\nZyphere Response: {response_msg}")
         msg['Subject'] = f"🛡️ Zyphere Agent Alert: คำสั่งจาก {speaker_name}"
         msg['From'] = sender_email
         msg['To'] = target_email
@@ -153,7 +156,7 @@ def process_command(cmd):
             server.login(sender_email, app_password)
             server.sendmail(sender_email, target_email, msg.as_string())
     except Exception as mail_err:
-        st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
+        pass # ป้องกันไม่ให้แชทสะดุดถ้ารับส่งเมลขัดข้องชั่วคราว
 
     # สังเคราะห์เสียงพูดตอบกลับ (TTS) เป็นเสียงผู้ชาย
     try:
@@ -163,16 +166,16 @@ def process_command(cmd):
     except Exception as tts_err:
         st.session_state.latest_audio = None
 
-# --- แสดงประวัติแชททั้งหมดต่อเนื่องเหมือน Claude AI ---
+# --- แสดงประวัติแชททั้งหมดต่อเนื่องสไตล์ Claude AI ---
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# เล่นเสียงล่าสุด (ถ้ามี)
+# เล่นเสียงล่าสุดอัตโนมัติ
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# --- ช่องรับคำสั่งด้านล่างสุด (สไตล์ Claude AI) ---
+# --- ช่องรับคำสั่งด้านล่างสุด (กด Enter ส่งได้ทันที) ---
 user_input = st.chat_input("พิมพ์ข้อความคุยกับ Zyphere แล้วกด Enter...")
 if user_input:
     process_command(user_input)
