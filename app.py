@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสาน Monotone Minimalist Button & UI ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสานโลโก้เวกเตอร์เคลื่อนไหวพรีเมียม ---
 st.markdown("""
     <style>
     .stApp {
@@ -17,7 +17,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ปรับแต่งปุ่มกด (Buttons) ให้เรียบหรู สไตล์ Monotone Minimalist */
+    /* ปุ่มกดสไตล์ Monotone Minimalist เรียบหรู */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
@@ -34,41 +34,46 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    /* ไอคอน / โลโก้ Monotone เรืองแสงนุ่มๆ */
+    /* โลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (SVG Animation) */
     .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: 25px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
-    .monotone-core {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: #1a1a1a;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.2);
-        position: relative;
-        animation: pulseMono 3s infinite alternate;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .svg-logo {
+        width: 110px;
+        height: 110px;
+        animation: pulseLogo 3s infinite alternate ease-in-out;
     }
-    .monotone-ring {
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        border: 2px solid #555555;
-        border-radius: 50%;
-        animation: spinRing 12s linear infinite;
+    .orbit-1 {
+        transform-origin: center;
+        animation: spinSlow 12s linear infinite;
     }
-    @keyframes pulseMono {
-        0% { transform: scale(0.95); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        100% { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,0,0,0.25); }
+    .orbit-2 {
+        transform-origin: center;
+        animation: spinReverse 8s linear infinite;
     }
-    @keyframes spinRing {
+    .core-dot {
+        transform-origin: center;
+        animation: pulseCore 2s infinite alternate;
+    }
+    @keyframes spinSlow {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
+    }
+    @keyframes spinReverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+    }
+    @keyframes pulseLogo {
+        0% { filter: drop-shadow(0 0 5px rgba(0,0,0,0.1)); }
+        100% { filter: drop-shadow(0 0 15px rgba(0,0,0,0.3)); }
+    }
+    @keyframes pulseCore {
+        0% { transform: scale(0.9); opacity: 0.7; }
+        100% { transform: scale(1.1); opacity: 1; }
     }
 
     .welcome-header {
@@ -76,7 +81,7 @@ st.markdown("""
         font-size: 24px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 15px;
+        margin-top: 10px;
         margin-bottom: 20px;
     }
     .stChatMessage {
@@ -163,11 +168,24 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- แสดงโลโก้ Monotone Minimalist กลางจอ ---
+# --- แสดงโลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (Monotone SVG) ---
 st.markdown('''
     <div class="logo-container">
-        <div class="monotone-ring"></div>
-        <div class="monotone-core"></div>
+        <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- วงแหวนรอบนอกหมุนทวนเข็ม -->
+            <g class="orbit-2">
+                <ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#222222" stroke-width="1.5" stroke-dasharray="6 4"/>
+            </g>
+            <!-- วงแหวนรอบนอกหมุนตามเข็ม -->
+            <g class="orbit-1">
+                <ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#111111" stroke-width="2"/>
+            </g>
+            <!-- วงแหวนกลาง -->
+            <circle cx="50" cy="50" r="28" fill="none" stroke="#444444" stroke-width="1" stroke-dasharray="4 2"/>
+            <!-- แกนกลางพลังงานกระพริบ -->
+            <circle class="core-dot" cx="50" cy="50" r="10" fill="#1a1a1a"/>
+            <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+        </svg>
     </div>
 ''', unsafe_allow_html=True)
 
@@ -186,67 +204,3 @@ def native_jarvis_brain(cmd):
     
     elif any(k in cmd_lower for k in ["คำนวณ", "เงินกู้", "สินเชื่อ", "ธุรกิจ", "กำไร"]):
         return (f"📊 **ระบบวิเคราะห์และสร้างรายได้อัตโนมัติ (Native Business Engine):**\n\n"
-                f"เรียนคุณ {speaker_name} โมดูลสร้างเครื่องมือคำนวณพร้อมใช้งานแล้วครับ ท่านสามารถนำระบบนี้ไปเปิดให้บริการหรือรับจ้างลูกค้าเพื่อสร้างกระแสเงินสด (Cash Flow) ได้ทันที มีตัวเลขหรือโจทย์ธุรกิจที่ต้องการให้ผมคำนวณไหมครับ?")
-    
-    elif any(k in cmd_lower for k in ["ค้นหา", "คืออะไร", "วิเคราะห์", "อธิบาย", "ความรู้"]):
-        return (f"🔍 **การสังเคราะห์ข้อมูลเชิงลึก (Universal Knowledge Synthesis):**\n\n"
-                f"จากการประมวลผลฐานข้อมูลตรรกะขั้นสูงเกี่ยวกับคำสั่ง '{cmd}':\n"
-                f"- **แก่นสำคัญ:** ประเด็นนี้มีความซับซ้อนและมีผลกระทบโดยตรงต่อการพัฒนาเทคโนโลยีและระบบอัตโนมัติ\n"
-                f"- **แนวทางปฏิบัติ:** สามารถนำมาประยุกต์ใช้กับโปรเจกต์ของตระกูลยาคำได้อย่างมีประสิทธิภาพ\n\n"
-                f"หากต้องการให้ผมเจาะลึกในมุมมองทางวิทยาศาสตร์ เศรษฐศาสตร์ หรือเทคโนโลยีส่วนใดเพิ่มเติม แจ้งได้เลยครับ")
-
-    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการครับ มีภารกิจใดให้ผมดูแล สั่งการได้เลยครับ"
-
-    else:
-        return (f"💡 **บันทึกการประมวลผลคำสั่ง:** '{cmd}'\n\n"
-                f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้วิเคราะห์ข้อมูล บันทึก Log ความปลอดภัย และส่งรายงานเข้าสู่ระบบอีเมลเรียบร้อยแล้วครับ มีประเด็นใดให้ผมปฏิบัติการต่อไหมครับ?")
-
-# --- ฟังก์ชันประมวลผลหลัก ---
-def process_command(cmd):
-    if not cmd:
-        return
-    
-    if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
-        st.stop()
-
-    response_msg = native_jarvis_brain(cmd)
-
-    st.session_state.messages.append({"role": "user", "content": cmd})
-    st.session_state.messages.append({"role": "assistant", "content": response_msg})
-
-    try:
-        sender_email = "vorakangm@gmail.com"
-        app_password = "pygo tfga zubw xqca"
-        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
-        msg['Subject'] = f"🛡️ Zyphere Report: {speaker_name}"
-        msg['From'] = sender_email
-        msg['To'] = target_email
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, app_password)
-            server.sendmail(sender_email, target_email, msg.as_string())
-    except:
-        pass
-
-    try:
-        tts_path = "response.mp3"
-        asyncio.run(generate_male_voice(response_msg, tts_path))
-        st.session_state.latest_audio = tts_path
-    except:
-        st.session_state.latest_audio = None
-
-# --- แสดงประวัติแชทสไตล์ Claude ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
-if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
-
-# --- ช่องรับคำสั่งด้านล่างสุด ---
-user_input = st.chat_input("วันนี้ให้ฉันช่วยอะไรดี...")
-if user_input:
-    process_command(user_input)
-    st.rerun()
