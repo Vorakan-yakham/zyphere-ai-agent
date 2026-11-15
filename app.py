@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS ปรับแต่ง UI และสีตัวหนังสือให้อ่านชัดเจนทุกจุด ---
+# --- 2. Custom CSS ปรับแต่ง UI สีตัวหนังสือ และปุ่มให้คมชัดทุกสถานะ ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -24,12 +24,12 @@ st.markdown("""
         color: #ffffff;
     }
     
-    /* บังคับให้ข้อความ Label, ข้อความทั่วไป และพารากราฟเป็นสีขาวสว่างบนพื้นมืด */
+    /* บังคับข้อความทั่วไปและ Label เป็นสีขาวสว่าง */
     label, p, span, div[data-baseweb="typography"] {
         color: #ffffff !important;
     }
     
-    /* กำหนดสีเวลาเอาเมาส์ไฮไลต์ลากคลุมข้อความ */
+    /* กำหนดสีตอนไฮไลต์ข้อความ */
     ::selection {
         background: #00f3ff;
         color: #000000;
@@ -59,16 +59,25 @@ st.markdown("""
         100% { transform: scale(1); opacity: 0.8; }
     }
 
-    /* บังคับตัวอักษรข้างในช่อง input ให้เป็นสีดำเข้ม และพื้นหลังช่องเป็นสีขาว */
-    input {
+    /* บังคับตัวอักษรในช่อง input ให้เป็นสีดำเข้ม พื้นหลังขาว */
+    input, div[data-baseweb="input"] input {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
         background-color: #ffffff !important;
     }
-    
-    div[data-baseweb="input"] input {
+
+    /* ปรับแต่งปุ่ม Authenticate ให้ตัวหนังสือเป็นสีดำและมองเห็นชัดเจนตลอดเวลา */
+    .stButton button {
+        background-color: #ffffff !important;
         color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        border: 1px solid #00f3ff !important;
+    }
+    
+    .stButton button:hover {
+        background-color: #00f3ff !important;
+        color: #000000 !important;
     }
     </style>
 """, unsafe_allow_html=True)
