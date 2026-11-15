@@ -12,30 +12,45 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ระดับ Elite Monotone Minimalist (Obsidian & Pearl Studio) ---
+# --- ดีไซน์ CSS ฉบับ Ultra-Compact & Luxury Monotone (กระชับ หรูหรา ไร้ช่องว่างส่วนเกิน) ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #f8f9fa;
+        background-color: #faf9f6;
         color: #1a1a1a;
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปรับแต่ง Sidebar ให้ดูเรียบหรู */
+    /* ปรับแต่ง Sidebar ให้กระชับ */
     [data-testid="stSidebar"] {
-        background-color: #f1f3f5;
-        border-right: 1px solid #e9ecef;
+        background-color: #f3f2ee;
+        border-right: 1px solid #e5e4de;
+        padding-top: 1rem;
     }
 
-    /* กล่อง Prompt แคปซูลชิ้นเดียวไร้รอยต่อ */
+    /* บีบช่องว่างด้านบนและระยะห่างของ Block หลักให้ชิดสวยงาม */
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 98% !important;
+    }
+
+    /* กล่อง Prompt แคปซูลชิ้นเดียวไร้รอยต่อ ลบเส้นขอบแดงกวนใจ */
     [data-testid="stForm"] {
         background-color: #ffffff;
-        border: 1px solid #ced4da !important;
+        border: 1px solid #dcdad2 !important;
         border-radius: 12px;
-        padding: 10px 14px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        padding: 6px 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+
+    /* ซ่อนขอบและปรับแต่งช่อง Input ภายในฟอร์มให้เนียนตา */
+    [data-testid="stForm"] input {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
     }
 
     /* ปุ่มกดสไตล์ Monotone Minimalist พรีเมียม */
@@ -44,7 +59,7 @@ st.markdown("""
         color: #ffffff !important;
         border: 1px solid #333333 !important;
         border-radius: 6px !important;
-        padding: 0.35rem 0.8rem !important;
+        padding: 0.3rem 0.7rem !important;
         font-weight: 500 !important;
         font-size: 12px !important;
         transition: all 0.2s ease;
@@ -54,17 +69,17 @@ st.markdown("""
         border-color: #555555 !important;
     }
 
-    /* โลโก้ Neon Atom กลางหน้าจอแบบโมเดิร์น */
+    /* โลโก้ Neon Atom กลางหน้าจอแบบกะทัดรัด */
     .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 10px;
-        margin-bottom: 2px;
+        margin-top: 0px;
+        margin-bottom: 0px;
     }
     .svg-logo {
-        width: 55px;
-        height: 55px;
+        width: 45px;
+        height: 45px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 12s linear infinite; }
@@ -73,41 +88,42 @@ st.markdown("""
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15)); }
-        100% { filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3)); }
+        0% { filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); }
+        100% { filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.25)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .welcome-title {
         text-align: center;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 15px;
+        margin-top: 5px;
+        margin-bottom: 10px;
         letter-spacing: -0.3px;
     }
 
-    /* กล่องข้อความแชทพรีเมียม */
+    /* กล่องข้อความแชทพรีเมียม กระชับ */
     .stChatMessage {
         background-color: #ffffff !important;
-        border: 1px solid #e9ecef !important;
+        border: 1px solid #e5e4de !important;
         border-radius: 10px !important;
-        padding: 12px 16px !important;
-        color: #212529 !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        margin-bottom: 10px;
+        padding: 10px 14px !important;
+        color: #1a1a1a !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        margin-bottom: 8px;
     }
 
     /* การ์ดข้อมูลผู้ใช้งานมุมซ้ายล่าง */
     .user-profile-card {
         background-color: #ffffff;
-        border: 1px solid #dee2e6;
+        border: 1px solid #e5e4de;
         border-radius: 8px;
-        padding: 10px;
-        font-size: 12px;
-        color: #212529;
-        margin-top: 15px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        padding: 8px 10px;
+        font-size: 11px;
+        color: #1a1a1a;
+        margin-top: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -144,7 +160,7 @@ with st.sidebar:
     st.markdown("- History")
     st.markdown("- Engineering CAD")
     
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
     
     if not st.session_state.is_verified:
@@ -166,7 +182,7 @@ with st.sidebar:
             <div class="user-profile-card">
                 <b>Active Session:</b><br>
                 {speaker_name}<br>
-                <small style="color:#6c757d;">Sovereign Security Level 1</small>
+                <small style="color:#666;">Sovereign Security Level 1</small>
             </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -183,11 +199,11 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. LAYOUT: แบ่ง 2 คอลัมน์ (แชทตรงกลาง และแผงควบคุมขั้นสูงด้านขวา) ---
-main_col, right_col = st.columns([3.6, 1.3])
+# --- 2. LAYOUT: แบ่งสัดส่วนคอลัมน์ใหม่ให้กระชับสมส่วน (3.8 : 1.1) ---
+main_col, right_col = st.columns([3.8, 1.1], gap="medium")
 
 with right_col:
-    st.markdown("### Run settings")
+    st.markdown("##### Run settings")
     st.caption("Engine: Zyphere Neural Core v4.2")
     selected_tool = st.selectbox("Model & Core:", [
         "Zyphere 4 Hydrogen (Omni-Science)",
@@ -197,16 +213,16 @@ with right_col:
     ])
     
     st.markdown("---")
-    st.markdown("### System Instructions")
+    st.markdown("##### System Instructions")
     send_email_enabled = st.checkbox("เปิดใช้งานระบบส่งรายงานอีเมลอัตโนมัติ", value=False)
     target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
     
     st.markdown("---")
-    st.markdown("### Thinking level")
+    st.markdown("##### Thinking level")
     thinking_level = st.select_slider("Select depth:", options=["Low", "Medium", "High", "Autonomous Maximum"], value="Autonomous Maximum")
     
     st.markdown("---")
-    st.markdown("### Advanced Tools")
+    st.markdown("##### Advanced Tools")
     structured_outputs = st.checkbox("Structured outputs", value=True)
     code_execution = st.checkbox("Code execution (Python/G-Code)", value=True)
     function_calling = st.checkbox("Function calling (IoT/Hardware)", value=True)
@@ -216,10 +232,10 @@ with main_col:
     st.markdown('''
         <div class="logo-container">
             <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#212529" stroke-width="1.5" opacity="0.7"/></g>
-                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#495057" stroke-width="1.5" opacity="0.7"/></g>
-                <circle class="core-glow" cx="50" cy="50" r="10" fill="#212529" opacity="0.4"/>
-                <circle cx="50" cy="50" r="4" fill="#212529"/>
+                <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#1a1a1a" stroke-width="1.5" opacity="0.7"/></g>
+                <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#666666" stroke-width="1.5" opacity="0.7"/></g>
+                <circle class="core-glow" cx="50" cy="50" r="10" fill="#1a1a1a" opacity="0.4"/>
+                <circle cx="50" cy="50" r="4" fill="#1a1a1a"/>
             </svg>
         </div>
     ''', unsafe_allow_html=True)
@@ -234,7 +250,7 @@ with main_col:
     if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
         st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# สมองกลอัจฉริยะขั้นสูง
+# สมองกลอัจฉริยะ
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
@@ -301,7 +317,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบองค์ประกอบแคปซูลให้หรูหราสมบูรณ์แบบ) ---
+# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดฟอร์มแคปซูลให้ชิด สวยงาม ไร้รอยต่อ) ---
 with main_col:
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -315,7 +331,7 @@ with main_col:
     with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
         user_input = st.text_input("Start typing a prompt to see what our models can do", label_visibility="collapsed")
         
-        c1, c2, c3, c4, c5, c6 = st.columns([0.5, 0.5, 1.0, 3.5, 0.7, 1.2])
+        c1, c2, c3, c4, c5, c6 = st.columns([0.4, 0.4, 0.9, 3.8, 0.6, 1.0])
         with c1:
             st.form_submit_button("+")
         with c2:
@@ -323,11 +339,11 @@ with main_col:
         with c3:
             st.form_submit_button("Tools")
         with c4:
-            st.markdown("<span style='font-size:11px; color:#6c757d; font-weight:500;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:11px; color:#666;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
         with c5:
             mic_btn = st.form_submit_button("🎤")
         with c6:
-            submitted = st.form_submit_button("Run Ctrl ↵", type="primary")
+            submitted = st.form_submit_button("Run ↵", type="primary")
             
         if submitted and user_input:
             process_command(user_input)
