@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS สมบูรณ์แบบ ---
+# --- ดีไซน์ CSS ขยาย ViewBox โลโก้ และดันตำแหน่งให้อยู่กึ่งกลางสวยงาม ---
 st.markdown("""
     <style>
     .stApp {
@@ -30,23 +30,25 @@ st.markdown("""
     }
 
     .block-container {
-        padding-top: 3vh !important;
+        padding-top: 6vh !important;
         padding-bottom: 2rem !important;
         max-width: 880px !important;
         margin: 0 auto;
     }
 
+    /* ขยายกรอบโลโก้ปฏิกรณ์ไม่ให้โดนตัดขอบเวลาหมุน */
     .logo-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin-top: 5px;
-        margin-bottom: 0px;
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
     .svg-logo {
-        width: 110px;
-        height: 110px;
+        width: 120px;
+        height: 120px;
+        overflow: visible !important;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
@@ -56,17 +58,17 @@ st.markdown("""
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
         0% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5)); }
-        100% { filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.9)); }
+        100% { filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.9)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .logo-text {
         font-size: 16px;
         font-weight: 700;
-        letter-spacing: 5px;
+        letter-spacing: 6px;
         color: #38bdf8;
-        margin-top: 6px;
-        margin-bottom: 4px;
+        margin-top: 8px;
+        margin-bottom: 6px;
         text-transform: uppercase;
         text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
     }
@@ -76,8 +78,8 @@ st.markdown("""
         font-size: 36px;
         font-weight: 400;
         color: #1f1f1f;
-        margin-top: 5px;
-        margin-bottom: 25px;
+        margin-top: 10px;
+        margin-bottom: 30px;
         letter-spacing: -0.5px;
     }
 
@@ -109,8 +111,6 @@ if "verified_name" not in st.session_state:
     st.session_state.verified_name = ""
 if "voice_active" not in st.session_state:
     st.session_state.voice_active = False
-if "user_query" not in st.session_state:
-    st.session_state.user_query = ""
 
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
@@ -174,14 +174,14 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- MAIN CENTER ---
+# --- MAIN CENTER (ขยาย viewBox เป็น 140x140 ป้องกันโลโก้แหว่ง) ---
 st.markdown('''
     <div class="logo-container">
-        <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <g class="orbit-2"><ellipse cx="50" cy="50" rx="42" ry="16" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8"/></g>
-            <g class="orbit-1"><ellipse cx="50" cy="50" rx="16" ry="42" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/></g>
-            <circle class="core-glow" cx="50" cy="50" r="12" fill="#38bdf8" opacity="0.5"/>
-            <circle cx="50" cy="50" r="5" fill="#ffffff"/>
+        <svg class="svg-logo" viewBox="-20 -20 140 140" xmlns="http://www.w3.org/2000/svg">
+            <g class="orbit-2"><ellipse cx="50" cy="50" rx="46" ry="18" fill="none" stroke="#a855f7" stroke-width="2.5" opacity="0.85"/></g>
+            <g class="orbit-1"><ellipse cx="50" cy="50" rx="18" ry="46" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.85"/></g>
+            <circle class="core-glow" cx="50" cy="50" r="14" fill="#38bdf8" opacity="0.5"/>
+            <circle cx="50" cy="50" r="6" fill="#ffffff"/>
         </svg>
         <div class="logo-text">ZYPHERE</div>
     </div>
@@ -270,50 +270,15 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED RESPONSIVE SUBMIT) ---
-if st.session_state.voice_active:
-    with st.container():
-        st.markdown("🎙️ **Voice Command Active**")
-        audio_data = st.audio_input("พูดคำสั่งของคุณเพื่อสั่งการ Zyphere")
-        if audio_data is not None:
-            st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผล")
-
+# --- CHAT INPUT (กด Enter ส่งข้อความทันที 100%) ---
 if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
-    st.session_state.user_query = st.session_state.pop("pending_prompt")
-
-# ช่องรับข้อความหลัก (อิสระจากฟอร์ม ตอบสนองไวทันที)
-user_input = st.text_area(
-    "Describe an app and let Zyphere do the rest", 
-    value=st.session_state.user_query, 
-    height=80, 
-    label_visibility="collapsed", 
-    placeholder="Describe an app and let Zyphere do the rest"
-)
-st.session_state.user_query = user_input
-
-c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
-with c1:
-    if st.button("⊕", key="btn_add", use_container_width=True):
-        pass
-with c2:
-    st.write("")
-with c3:
-    st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed", key="sb_mode")
-with c4:
-    col_m, col_r = st.columns([1, 2.2])
-    with col_m:
-        mic_btn = st.button("🎙️", key="btn_mic", use_container_width=True)
-    with col_r:
-        submitted = st.button("✦ I'm feeling lucky", type="primary", key="btn_run", use_container_width=True)
-
-if submitted and st.session_state.user_query.strip():
-    query_to_process = st.session_state.user_query.strip()
-    st.session_state.user_query = "" # เคลียร์ช่องพิมพ์
-    process_command(query_to_process)
+    prompt = st.session_state.pop("pending_prompt")
+    process_command(prompt)
     st.rerun()
 
-if mic_btn:
-    st.session_state.voice_active = not st.session_state.voice_active
+user_input = st.chat_input("Describe an app and let Zyphere do the rest")
+if user_input:
+    process_command(user_input)
     st.rerun()
 
 # --- QUICK SHORTCUT PILLS ด้านล่าง ---
