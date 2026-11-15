@@ -127,10 +127,9 @@ if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
 
-# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม (แปลง Zyphere เป็น ไซเฟอร์ ให้ออกเสียงชัดเจน) ---
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม (แปลง Zyphere เป็น ไซเฟอร์) ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
-    # แทนที่คำว่า Zyphere ด้วยคำอ่านภาษาไทยที่ชัดเจนสำหรับการสังเคราะห์เสียง
     tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
     communicate = edge_tts.Communicate(tts_text, voice)
     await communicate.save(output_path)
@@ -282,8 +281,8 @@ for message in st.session_state.messages:
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# --- ช่องรับคำสั่งด้านล่างสุด ---
-user_input = st.chat_input("วันนี้ให้ฉันช่วยอะไรดี...")
+# --- ช่องรับคำสั่งด้านล่างสุด (เอาข้อความแนะนำออกให้เกลี้ยงเกลาแบบ Meta AI / Claude) ---
+user_input = st.chat_input("")
 if user_input:
     process_command(user_input)
     st.rerun()
