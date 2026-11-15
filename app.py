@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # =====================================================================
-# 2. ENTERPRISE UI & BULLETPROOF STYLING (FIXED ALL SIDEBAR & TEXT CONTRAST)
+# 2. ENTERPRISE UI & BULLETPROOF STYLING (FIXED UPLOADER & CONTRAST)
 # =====================================================================
 st.markdown("""
     <style>
@@ -30,8 +30,8 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    /* Global Typography & Sidebar Text Enforcement */
-    label, p, span, div, h1, h2, h3, h4, h5, h6, .stMarkdown, .streamlit-expanderHeader {
+    /* Global Typography & Sidebar Enforcement */
+    label, p, span, div, h1, h2, h3, h4, h5, h6, .stMarkdown {
         color: #ffffff !important;
     }
     
@@ -44,8 +44,36 @@ st.markdown("""
     section[data-testid="stSidebar"] p, 
     section[data-testid="stSidebar"] span, 
     section[data-testid="stSidebar"] label, 
-    section[data-testid="stSidebar"] h3 {
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] small {
         color: #ffffff !important;
+    }
+
+    /* --- FIXED FILE UPLOADER CONTRAST --- */
+    div[data-testid="stFileUploader"] {
+        background-color: #161b22 !important;
+        border: 2px dashed #00f3ff !important;
+        border-radius: 10px !important;
+        padding: 10px !important;
+    }
+    
+    div[data-testid="stFileUploader"] section {
+        background-color: #161b22 !important;
+    }
+    
+    div[data-testid="stFileUploader"] span, 
+    div[data-testid="stFileUploader"] small, 
+    div[data-testid="stFileUploader"] div {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+    
+    div[data-testid="stFileUploader"] button {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
     }
 
     /* Authentication Input Field */
@@ -62,7 +90,7 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Modern Chat Input Box (Visible Text & Clean Styling) */
+    /* Modern Chat Input Box */
     div[data-testid="stChatInput"] {
         background-color: transparent !important;
         padding-bottom: 20px !important;
@@ -233,7 +261,7 @@ class ZyphereAdvancedEngine:
         
         code_template = (
             "# ===================================================\n"
-            "# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.8)\n"
+            "# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.9)\n"
             "# Target Intent: {intent}\n"
             "# Processing Axis: {axis}\n"
             "# ===================================================\n\n"
