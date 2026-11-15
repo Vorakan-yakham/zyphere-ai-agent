@@ -48,7 +48,7 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Modern Chat Input Box (Google AI / Gemini Style) */
+    /* Modern Chat Input Box */
     div[data-testid="stChatInput"] {
         background-color: transparent !important;
         padding-bottom: 20px !important;
@@ -162,13 +162,9 @@ if not st.session_state.authenticated:
     st.stop()
 
 # =====================================================================
-# 5. CORE AUTONOMOUS ENGINE & REASONING LOGIC (4-AXIS DISPATCHER)
+# 5. CORE AUTONOMOUS ENGINE (4-AXIS DISPATCHER)
 # =====================================================================
 class ZyphereAdvancedEngine:
-    """
-    แกนสมองกลวิเคราะห์เชิงลึก แยกแยะ 4 แกนหลัก (Knowledge, Aerospace/CAD, Robotics, Content)
-    และสังเคราะห์โค้ดสถาปัตยกรรมแบบไดนามิกตามโจทย์จริง
-    """
     def __init__(self, memory_bank):
         self.memory = memory_bank
 
@@ -176,7 +172,6 @@ class ZyphereAdvancedEngine:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         axis = self._classify_axis(prompt)
         
-        # บันทึกสถานะลง Memory Bank
         memory_record = {
             "timestamp": timestamp,
             "goal": prompt,
@@ -185,13 +180,13 @@ class ZyphereAdvancedEngine:
         }
         self.memory.append(memory_record)
         
-        # สังเคราะห์โค้ดโมดูลจริงตามโจทย์ที่ได้รับ
         artifact_code = self._synthesize_code(prompt, axis)
+        summary_text = f"ระบบได้วิเคราะห์เจตนาผ่านแกน **{axis}** และสังเคราะห์โครงสร้างฟังก์ชันปฏิบัติการสำหรับโจทย์ของคุณเรียบร้อยแล้วครับ"
         
         return {
             "axis": axis,
             "code": artifact_code,
-            "summary": f"ระบบได้วิเคราะห์เจตนาผ่านแกน **{axis}** และสังเคราะห์โครงสร้างฟังก์ชันปฏิบัติการสำหรับโจทย์ของคุณเรียบร้อยแล้วครับ"
+            "summary": summary_text
         }
 
     def _classify_axis(self, text: str) -> str:
@@ -206,52 +201,53 @@ class ZyphereAdvancedEngine:
             return "Knowledge & Full-Stack Architecture"
 
     def _synthesize_code(self, prompt: str, axis: str) -> str:
-        return f'''
-# ===================================================
-# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.5)
-# Target Intent: {prompt}
-# Processing Axis: {axis}
-# ===================================================
-
-import sys
-import os
-import json
-import logging
-from datetime import datetime
-
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
-
-class EnterpriseExecutionPipeline:
-    def __init__(self):
-        self.intent = "{prompt}"
-        self.engine_axis = "{axis}"
-        self.execution_id = os.urandom(4).hex()
-        
-    def initialize_runtime(self):
-        logging.info(f"Initializing runtime environment for axis: {{self.engine_axis}}")
-        logging.info(f"Execution ID: {{self.execution_id}}")
-        return True
-
-    def compute_autonomous_payload(self):
-        # โครงสร้างตรรกะการประมวลผลเชิงลึกตามเป้าหมาย
-        payload = {{
-            "status": "SUCCESS",
-            "target_intent": self.intent,
-            "axis_target": self.engine_axis,
-            "timestamp": datetime.now().isoformat(),
-            "execution_metrics": {{
-                "efficiency": "99.98%",
-                "latency_ms": 14.2
-            }}
-        }}
-        return json.dumps(payload, indent=4)
-
-if __name__ == "__main__":
-    pipeline = EnterpriseExecutionPipeline()
-    if pipeline.initialize_runtime():
-        result = pipeline.compute_autonomous_payload()
-        print(result)
-'''.strip()
+        # ใช้การประกอบสตริงแบบปลอดภัย หลีกเลี่ยงปัญหา f-string ซ้อนทับ
+        code_template = (
+            "# ===================================================\n"
+            "# ZYPHERE AUTONOMOUS PRODUCTION MODULE (v2.6)\n"
+            "# Target Intent: {intent}\n"
+            "# Processing Axis: {axis}\n"
+            "# ===================================================\n\n"
+            "import sys\n"
+            "import os\n"
+            "import json\n"
+            "import logging\n"
+            "from datetime import datetime\n\n"
+            "logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')\n\n"
+            "class EnterpriseExecutionPipeline:\n"
+            "    def __init__(self):\n"
+            "        self.intent = {intent_repr}\n"
+            "        self.engine_axis = {axis_repr}\n"
+            "        self.execution_id = os.urandom(4).hex()\n"
+            "        \n"
+            "    def initialize_runtime(self):\n"
+            "        logging.info('Initializing runtime environment for axis: ' + self.engine_axis)\n"
+            "        logging.info('Execution ID: ' + self.execution_id)\n"
+            "        return True\n\n"
+            "    def compute_autonomous_payload(self):\n"
+            "        payload = {{\n"
+            "            'status': 'SUCCESS',\n"
+            "            'target_intent': self.intent,\n"
+            "            'axis_target': self.engine_axis,\n"
+            "            'timestamp': datetime.now().isoformat(),\n"
+            "            'execution_metrics': {{\n"
+            "                'efficiency': '99.98%',\n"
+            "                'latency_ms': 14.2\n"
+            "            }}\n"
+            "        }}\n"
+            "        return json.dumps(payload, indent=4)\n\n"
+            "if __name__ == '__main__':\n"
+            "    pipeline = EnterpriseExecutionPipeline()\n"
+            "    if pipeline.initialize_runtime():\n"
+            "        result = pipeline.compute_autonomous_payload()\n"
+            "        print(result)\n"
+        )
+        return code_template.format(
+            intent=prompt,
+            axis=axis,
+            intent_repr=repr(prompt),
+            axis_repr=repr(axis)
+        )
 
 # =====================================================================
 # 6. STATE & MEMORY INITIALIZATION
@@ -304,7 +300,17 @@ if user_input:
             engine = ZyphereAdvancedEngine(st.session_state.memory_bank)
             result = engine.execute_pipeline(user_input)
             
-            output_message = f"""{result['summary']}
+            output_message = (
+                f"{result['summary']}\n\n"
+                "```python\n"
+                f"{result['code']}\n"
+                "```\n\n"
+                "ระบบพร้อมรับบรีฟหรือคำสั่งขยายผลในขั้นต่อไปแล้วครับ บรีฟงานถัดมาได้เลยครับคุณวรกันต์!"
+            )
 
-```python
-{result['code']}
+            st.markdown(output_message)
+            
+            audio_path = generate_audio_response("ประมวลผลและสร้างฟังก์ชันระดับโปรดักชันเรียบร้อยแล้วครับ")
+            render_audio_player(audio_path)
+            
+            st.session_state.messages.append({"role": "assistant", "content": output_message})
