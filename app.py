@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ระดับ Luxury Monotone Minimalist (Obsidian Style) ---
+# --- ดีไซน์ CSS ระดับ Elite Monotone Minimalist (Obsidian & Pearl Studio) ---
 st.markdown("""
     <style>
     .stApp {
@@ -23,21 +23,30 @@ st.markdown("""
     footer {visibility: hidden;}
     audio { display: none !important; }
 
-    /* ปรับแต่ง Sidebar ให้ดูหรูหราเรียบเนียน */
+    /* ปรับแต่ง Sidebar ให้ดูเรียบหรู */
     [data-testid="stSidebar"] {
         background-color: #f1f3f5;
         border-right: 1px solid #e9ecef;
     }
 
-    /* ปุ่มสไตล์ Monotone Minimalist พรีเมียม */
+    /* กล่อง Prompt แคปซูลชิ้นเดียวไร้รอยต่อ */
+    [data-testid="stForm"] {
+        background-color: #ffffff;
+        border: 1px solid #ced4da !important;
+        border-radius: 12px;
+        padding: 10px 14px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    /* ปุ่มกดสไตล์ Monotone Minimalist พรีเมียม */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
         border: 1px solid #333333 !important;
-        border-radius: 8px !important;
-        padding: 0.45rem 1rem !important;
+        border-radius: 6px !important;
+        padding: 0.35rem 0.8rem !important;
         font-weight: 500 !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
         transition: all 0.2s ease;
     }
     .stButton > button:hover {
@@ -50,12 +59,12 @@ st.markdown("""
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
-        margin-bottom: 5px;
+        margin-top: 10px;
+        margin-bottom: 2px;
     }
     .svg-logo {
-        width: 65px;
-        height: 65px;
+        width: 55px;
+        height: 55px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 12s linear infinite; }
@@ -64,40 +73,40 @@ st.markdown("""
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2)); }
-        100% { filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4)); }
+        0% { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15)); }
+        100% { filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.3)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .welcome-title {
         text-align: center;
-        font-size: 24px;
+        font-size: 20px;
         font-weight: 600;
-        color: #111111;
-        margin-bottom: 20px;
-        letter-spacing: -0.5px;
+        color: #1a1a1a;
+        margin-bottom: 15px;
+        letter-spacing: -0.3px;
     }
 
     /* กล่องข้อความแชทพรีเมียม */
     .stChatMessage {
         background-color: #ffffff !important;
         border: 1px solid #e9ecef !important;
-        border-radius: 12px !important;
-        padding: 16px !important;
+        border-radius: 10px !important;
+        padding: 12px 16px !important;
         color: #212529 !important;
         box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
 
     /* การ์ดข้อมูลผู้ใช้งานมุมซ้ายล่าง */
     .user-profile-card {
         background-color: #ffffff;
         border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 12px;
-        font-size: 13px;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 12px;
         color: #212529;
-        margin-top: 20px;
+        margin-top: 15px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     </style>
@@ -125,7 +134,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย (ระบบ Login ด้วยอีเมลที่ปลอดภัย) ---
+# --- 1. SIDEBAR ด้านซ้าย ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
@@ -135,7 +144,7 @@ with st.sidebar:
     st.markdown("- History")
     st.markdown("- Engineering CAD")
     
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
     st.markdown("---")
     
     if not st.session_state.is_verified:
@@ -174,25 +183,34 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. LAYOUT: แบ่ง 2 คอลัมน์ (แชทตรงกลาง และตั้งค่าด้านขวา) ---
-main_col, right_col = st.columns([3.5, 1.3])
+# --- 2. LAYOUT: แบ่ง 2 คอลัมน์ (แชทตรงกลาง และแผงควบคุมขั้นสูงด้านขวา) ---
+main_col, right_col = st.columns([3.6, 1.3])
 
 with right_col:
     st.markdown("### Run settings")
-    st.caption("Engine: Zyphere Neural Core")
-    selected_tool = st.selectbox("โมดูลปฏิบัติการหลัก:", [
-        "โมดูลคำนวณและออกแบบยานอวกาศ",
-        "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
-        "โมดูลควบคุมวงจรอิเล็กทรอนิกส์และหุ่นยนต์",
-        "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
+    st.caption("Engine: Zyphere Neural Core v4.2")
+    selected_tool = st.selectbox("Model & Core:", [
+        "Zyphere 4 Hydrogen (Omni-Science)",
+        "Zyphere Aerospace & CAD Synthesizer",
+        "Zyphere Quantum Physics Engine",
+        "Zyphere Multi-Platform Publisher"
     ])
+    
     st.markdown("---")
     st.markdown("### System Instructions")
     send_email_enabled = st.checkbox("เปิดใช้งานระบบส่งรายงานอีเมลอัตโนมัติ", value=False)
     target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
+    
     st.markdown("---")
     st.markdown("### Thinking level")
-    st.caption("High / Autonomous Discovery Enabled")
+    thinking_level = st.select_slider("Select depth:", options=["Low", "Medium", "High", "Autonomous Maximum"], value="Autonomous Maximum")
+    
+    st.markdown("---")
+    st.markdown("### Advanced Tools")
+    structured_outputs = st.checkbox("Structured outputs", value=True)
+    code_execution = st.checkbox("Code execution (Python/G-Code)", value=True)
+    function_calling = st.checkbox("Function calling (IoT/Hardware)", value=True)
+    grounding_search = st.checkbox("Grounding with Sovereign Web Search", value=True)
 
 with main_col:
     st.markdown('''
@@ -216,7 +234,7 @@ with main_col:
     if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
         st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# สมองกลอัจฉริยะ
+# สมองกลอัจฉริยะขั้นสูง
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
@@ -283,7 +301,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบใหม่ให้สวยงาม หรูหรา ไร้รอยต่อ) ---
+# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (จัดระเบียบองค์ประกอบแคปซูลให้หรูหราสมบูรณ์แบบ) ---
 with main_col:
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -297,7 +315,7 @@ with main_col:
     with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
         user_input = st.text_input("Start typing a prompt to see what our models can do", label_visibility="collapsed")
         
-        c1, c2, c3, c4, c5, c6 = st.columns([0.6, 0.6, 1.2, 3.2, 0.8, 1.4])
+        c1, c2, c3, c4, c5, c6 = st.columns([0.5, 0.5, 1.0, 3.5, 0.7, 1.2])
         with c1:
             st.form_submit_button("+")
         with c2:
@@ -305,7 +323,7 @@ with main_col:
         with c3:
             st.form_submit_button("Tools")
         with c4:
-            st.markdown("<span style='font-size:12px; color:#6c757d; font-weight:500;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
+            st.markdown("<span style='font-size:11px; color:#6c757d; font-weight:500;'>Zyphere Core Engine</span>", unsafe_allow_html=True)
         with c5:
             mic_btn = st.form_submit_button("🎤")
         with c6:
