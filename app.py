@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import tempfile
 import speech_recognition as sr
+from gtts import gTTS
 
 st.set_page_config(page_title="Private Super-Agent", page_icon="🛡️", layout="centered")
 
@@ -13,6 +14,10 @@ AUTHORIZED_USERS = [
     {"name": "วรกันต์", "surname": "ยาคำ", "role": "Father"},
     {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
 ]
+
+# ช่องเก็บความจำภายในระบบ (Session State)
+if "memory_logs" not in st.session_state:
+    st.session_state.memory_logs = []
 
 st.subheader("🔑 ยืนยันตัวตนผู้มีสิทธิ์")
 col1, col2 = st.columns(2)
@@ -42,12 +47,10 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI", type="primary
         else:
             with st.spinner("กำลังแปลงเสียงและประมวลผล..."):
                 try:
-                    # บันทึกไฟล์เสียงชั่วคราว
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_file:
                         tmp_file.write(audio_file.getvalue())
                         tmp_path = tmp_file.name
 
-                    # แปลงเสียงเป็นข้อความด้วย SpeechRecognition (รองรับภาษาไทย th-TH)
                     r = sr.Recognizer()
                     with sr.AudioFile(tmp_path) as source:
                         audio_data = r.record(source)
@@ -70,6 +73,23 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI", type="primary
                         st.error(f"🛑 [KILL-SWITCH ACTIVATED]: ได้รับคำสั่งปิดระบบฉุกเฉินจากคุณ {speaker_name} {speaker_surname} ระบบกำลังตัดการทำงานทันที!")
                         st.stop()
 
+                    # บันทึกคำสั่งลงหน่วยความจำ
+                    st.session_state.memory_logs.append(f"คุณ {speaker_name}: {command_text}")
+
                     st.success("✅ ผ่านการตรวจสอบความปลอดภัยเรียบร้อย")
                     st.write(f"**ข้อความจากเสียงของคุณ:** {command_text}")
-                    st.info(f"🤖 [AI Response]: รับทราบคำสั่งจากคุณ {speaker_name} พร้อมปฏิบัติการและเรียนรู้ข้อมูลเรียบร้อยครับ!")
+                    
+                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบได้บันทึกและพร้อมปฏิบัติการตามคำสั่งเรียบร้อยครับ"
+                    st.info(f"🤖 [AI Response]: {response_msg}")
+
+                    # สร้างเสียงพูดตอบกลับอัตโนมัติ (Text-to-Speech)
+                    tts = gTTS(text=response_msg, lang='th')
+                    tts_path = "response.mp3"
+                    tts.save(tts_path)
+                    st.audio(tts_path, format="audio/mp3", autoplay=True)
+
+# แสดงบันทึกความจำระบบส่วนตัว
+if st.session_state.memory_logs:
+    with st.expander("📂 ดูประวัติคำสั่งและความจำส่วนตัวของระบบ"):
+        for log in st.session_state.memory_logs:
+            st.text(log)
