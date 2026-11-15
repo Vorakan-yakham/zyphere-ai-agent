@@ -7,7 +7,7 @@ import edge_tts
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์ CSS สไตล์ Claude AI ผสานโลโก้เวกเตอร์เคลื่อนไหวพรีเมียม ---
+# --- ดีไซน์ CSS สไตล์ Claude AI ผสานเคอร์เซอร์เมาส์และโลโก้เวกเตอร์ ---
 st.markdown("""
     <style>
     .stApp {
@@ -17,7 +17,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ปุ่มกดสไตล์ Monotone Minimalist เรียบหรู */
+    /* ปรับแต่งปุ่มกดให้เรียบหรู และเปลี่ยนเคอร์เซอร์เมาส์เมื่อชี้ */
     .stButton > button {
         background-color: #1a1a1a !important;
         color: #ffffff !important;
@@ -27,14 +27,21 @@ st.markdown("""
         font-weight: 500 !important;
         transition: all 0.2s ease-in-out !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        cursor: pointer !important;
     }
     .stButton > button:hover {
         background-color: #333333 !important;
         border-color: #555555 !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
     }
     
-    /* โลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (SVG Animation) */
+    /* เปลี่ยนเคอร์เซอร์เมาส์เมื่อชี้ลิงก์หรือปุ่มทั้งหมดในหน้าเว็บ */
+    a, button, [role="button"], input[type="submit"] {
+        cursor: pointer !important;
+    }
+    
+    /* โลโก้เวกเตอร์เคลื่อนไหวสไตล์ J.A.R.V.I.S. (Monotone SVG) */
     .logo-container {
         display: flex;
         justify-content: center;
