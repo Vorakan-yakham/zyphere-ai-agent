@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ถอดแบบโครงสร้าง Google AI Studio สไตล์ Monotone Minimalist ---
+# --- ดีไซน์ CSS จำลองกล่อง Prompt Box สไตล์ Google AI Studio แบบเป๊ะๆ ---
 st.markdown("""
     <style>
     .stApp {
@@ -21,11 +21,7 @@ st.markdown("""
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    
-    /* ซ่อนแถบเครื่องเล่นเสียง เล่นเบื้องหลัง */
-    audio {
-        display: none !important;
-    }
+    audio { display: none !important; }
 
     /* ปุ่มสไตล์ Monotone Minimalist */
     .stButton > button {
@@ -35,11 +31,9 @@ st.markdown("""
         border-radius: 8px !important;
         padding: 0.4rem 1rem !important;
         font-weight: 500 !important;
-        transition: all 0.2s ease-in-out !important;
     }
     .stButton > button:hover {
         background-color: #333333 !important;
-        border-color: #555555 !important;
     }
 
     /* โลโก้ Neon Atom กลางหน้าจอ */
@@ -74,7 +68,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* กล่องข้อความแชท */
     .stChatMessage {
         background-color: #ffffff !important;
         border: 1px solid #e5e5df !important;
@@ -84,7 +77,6 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* ปรับแต่งกล่องโปรไฟล์มุมซ้ายล่างสุด */
     .user-profile-card {
         background-color: #f1f0ea;
         border: 1px solid #e0dfd5;
@@ -103,39 +95,32 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
 ]
 
-# ระบบความจำแชท
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
 if "latest_audio" not in st.session_state:
     st.session_state.latest_audio = None
-
 if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
+if "voice_active" not in st.session_state:
+    st.session_state.voice_active = False
 
-if "show_mic" not in st.session_state:
-    st.session_state.show_mic = False
-
-# --- ฟังก์ชันสร้างเสียงพูดพรีเมียม ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
     tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย (Navigation & Left-Bottom Account Box) ---
+# --- 1. SIDEBAR ด้านซ้าย ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
     st.markdown("---")
-    
     st.markdown("### การใช้งาน")
     st.markdown("- Playground")
     st.markdown("- History")
     st.markdown("- Engineering CAD")
     
-    # ดันส่วนยืนยันตัวตนให้อยู่ล่างสุดของ Sidebar เหมือนตำแหน่งในรูป
     st.markdown("<br><br><br><br>", unsafe_allow_html=True)
     st.markdown("---")
     
@@ -155,10 +140,11 @@ with st.sidebar:
             else:
                 st.error("Access Denied")
     else:
+        speaker_name = st.session_state.verified_name
         st.markdown(f"""
             <div class="user-profile-card">
                 <b>ผู้ใช้งานปัจจุบัน:</b><br>
-                {st.session_state.verified_name} ยาคำ<br>
+                {speaker_name} ยาคำ<br>
                 <small style="color:#666;">Sovereign Security Level 1</small>
             </div>
         """, unsafe_allow_html=True)
@@ -170,40 +156,34 @@ with st.sidebar:
             st.session_state.latest_audio = None
             st.rerun()
 
-# ตรวจสอบว่ายืนยันตัวตนหรือยัง
 if not st.session_state.is_verified:
     st.info("กรุณายืนยันตัวตนที่แผงควบคุมด้านซ้ายล่างเพื่อเริ่มต้นใช้งานระบบ Zyphere")
     st.stop()
 
 speaker_name = st.session_state.verified_name
 
-# --- จัดแบ่ง 2 คอลัมน์หลัก: กลาง (Playground) และ ขวา (Settings Panel เหมือน AI Studio) ---
+# --- 2. RIGHT PANEL ด้านขวา (Settings) ---
 main_col, right_col = st.columns([3.2, 1.2])
 
-# --- 2. RIGHT PANEL ด้านขวา (Run Settings / System Instructions) ---
 with right_col:
     st.markdown("### Run settings")
     st.caption("Engine: Zyphere Autonomous Neural Core")
-    
     selected_tool = st.selectbox("โมดูลปฏิบัติการหลัก:", [
         "โมดูลคำนวณและออกแบบยานอวกาศ",
         "โมดูลสังเคราะห์ G-Code & CAD ชิ้นส่วน",
         "โมดูลควบคุมวงจรอิเล็กทรอนิกส์และหุ่นยนต์",
         "ระบบประเมินจุดคุ้มทุนธุรกิจอัตโนมัติ"
     ])
-    
     st.markdown("---")
     st.markdown("### System Instructions")
     send_email_enabled = st.checkbox("เปิดใช้งานระบบส่งรายงานอีเมลอัตโนมัติ", value=False)
     target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
-    
     st.markdown("---")
     st.markdown("### Thinking level")
     st.caption("High / Autonomous Discovery Enabled")
 
-# --- 3. MAIN CENTER PANEL ตรงกลาง (Playground Chat) ---
+# --- 3. MAIN CENTER PANEL ตรงกลาง ---
 with main_col:
-    # โลโก้ Neon Atom สไตล์ Minimalist
     st.markdown('''
         <div class="logo-container">
             <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -218,19 +198,16 @@ with main_col:
     if not st.session_state.messages:
         st.markdown(f'<div class="welcome-title">Build with Zyphere Autonomous Engine</div>', unsafe_allow_html=True)
 
-    # แสดงประวัติแชท
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-    # เล่นเสียงอัตโนมัติ
     if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
         st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# --- สมองกลอัจฉริยะ Advanced Core ---
+# สมองกลอัจฉริยะ
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
-    
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
         return (
             "สถาปัตยกรรมระบบครอบคลุม 4 แกนหลักระดับเอลีท:\n\n"
@@ -266,7 +243,6 @@ def native_jarvis_brain(cmd):
 def process_command(cmd):
     if not cmd:
         return
-    
     if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
         st.error(f"[KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
         st.stop()
@@ -296,26 +272,41 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 4. UNIFIED COMMAND DOCK ด้านล่างสุด (ถอดแบบปุ่มด้านล่างของ Google AI Studio) ---
+# --- 4. FLOATING COMMAND BOX ด้านล่างสุด (ถอดแบบปุ่ม AI Studio ในภาพเป๊ะๆ)[cite: 6] ---
 with main_col:
     st.markdown("---")
     
-    # หากกดปุ่ม Speech ให้แสดงช่องไมค์บันทึกเสียงแบบ Dropdown ด้านล่าง
-    if st.session_state.show_mic:
+    # หากกดปุ่มไมโครโฟน ให้เปิดแผงบันทึกเสียง
+    if st.session_state.voice_active:
         with st.container():
-            audio_file = st.audio_input("กดบันทึกเสียงคำสั่งของคุณ")
-            if audio_file is not None:
-                st.success("รับสัญญาณคลื่นเสียงเรียบร้อย สามารถพิมพ์หรือส่งคำสั่งประมวลผลได้ทันที")
+            st.markdown("🎙️ **ระบบบันทึกเสียงสนทนา (Voice Input Active)**")
+            audio_data = st.audio_input("พูดคำสั่งของคุณเพื่อคุยกับ Zyphere")
+            if audio_data is not None:
+                st.success("บันทึกเสียงสำเร็จ! (พร้อมประมวลผลคำสั่งเสียง)")
 
-    dock_col1, dock_col2 = st.columns([1, 6])
-    
-    with dock_col1:
-        if st.button("🎙️ Speech", use_container_width=True):
-            st.session_state.show_mic = not st.session_state.show_mic
-            st.rerun()
+    # ใช้ Form เพื่อจำลองกล่องแคปซูล Prompt Box ด้านล่าง
+    with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
+        user_input = st.text_input("Start typing a prompt to see what our models can do", label_visibility="collapsed")
+        
+        c1, c2, c3, c4, c5, c6 = st.columns([0.6, 0.6, 1.2, 3.2, 0.8, 1.4])
+        with c1:
+            st.form_submit_button("➕")
+        with c2:
+            st.form_submit_button("👁️‍🗨️")
+        with c3:
+            st.form_submit_button("🛠️ Tools")
+        with c4:
+            st.markdown("<span style='font-size:12px; color:#555;'>✨ Zyphere Core Engine</span>", unsafe_allow_html=True)
+        with c5:
+            mic_btn = st.form_submit_button("🎙️")
+        with c6:
+            submitted = st.form_submit_button("Run Ctrl ↵", type="primary")
             
-    with dock_col2:
-        user_input = st.chat_input("Start typing a prompt or speak to Zyphere...")
-        if user_input:
+        if submitted and user_input:
             process_command(user_input)
             st.rerun()
+
+    # ถ้าผู้ใช้กดปุ่มไอคอนไมโครโฟน (🎙️) ในฟอร์ม
+    if mic_btn:
+        st.session_state.voice_active = not st.session_state.voice_active
+        st.rerun()
