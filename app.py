@@ -133,9 +133,4 @@ def process_command(cmd):
     except Exception as mail_err:
         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
-    # สังเคราะห์เสียงพูดตอบกลับ (TTS) เป็นเสียงผู้ชาย
-    try:
-        tts_path = "response.mp3"
-        asyncio.run(generate_male_voice(response_msg, tts_path))
-        st.audio(tts_path, format="audio/mp3", autoplay=True)
-    except Exception as tts_
+    # ส
