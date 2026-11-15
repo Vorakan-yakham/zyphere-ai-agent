@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ระดับ Elite Studio (ลบช่องว่างส่วนเกิน จัด Grid และ Capsule Prompt ให้เป๊ะตามแบบต้นฉบับ) ---
+# --- ดีไซน์ CSS แก้ไขตำแหน่งโลโก้และจัดเลย์เอาต์ให้สวยงามสมบูรณ์แบบ ---
 st.markdown("""
     <style>
     .stApp {
@@ -32,7 +32,7 @@ st.markdown("""
 
     /* บีบช่องว่างตู้คอนเทนเนอร์หลักให้กระชับสมส่วน */
     .block-container {
-        padding-top: 1.2rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 1.5rem !important;
         max-width: 98% !important;
     }
@@ -68,17 +68,17 @@ st.markdown("""
         border-color: #555555 !important;
     }
 
-    /* โลโก้ Neon Atom กลางหน้าจอแบบกะทัดรัด */
+    /* โลโก้ Neon Atom กลางหน้าจอ จัดระยะห่างให้สง่างาม */
     .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 0px;
-        margin-bottom: 2px;
+        margin-top: 10px;
+        margin-bottom: 5px;
     }
     .svg-logo {
-        width: 48px;
-        height: 48px;
+        width: 60px;
+        height: 60px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 12s linear infinite; }
@@ -87,42 +87,19 @@ st.markdown("""
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1)); }
-        100% { filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.25)); }
+        0% { filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15)); }
+        100% { filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.35)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .welcome-title {
         text-align: center;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-top: 2px;
-        margin-bottom: 12px;
+        margin-top: 5px;
+        margin-bottom: 15px;
         letter-spacing: -0.3px;
-    }
-
-    /* การ์ด Template ตัวอย่างสไตล์ AI Studio (Interactive Cards) */
-    .template-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-    .template-card {
-        background-color: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        padding: 14px;
-        font-size: 13px;
-        color: #333333;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .template-card:hover {
-        border-color: #adb5bd;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     /* กล่องข้อความแชทพรีเมียม */
@@ -172,7 +149,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- 1. SIDEBAR ด้านซ้าย (Explore, Build, Manage ตามแบบ AI Studio) ---
+# --- 1. SIDEBAR ด้านซ้าย ---
 with st.sidebar:
     st.markdown("### Zyphere Studio")
     st.caption("Autonomous Agent Control Hub")
@@ -230,10 +207,9 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- 2. LAYOUT: แบ่ง 2 คอลัมน์สมส่วน (3.8 : 1.1) เหมือน AI Studio ---
+# --- 2. LAYOUT: แบ่ง 2 คอลัมน์สมส่วน (3.8 : 1.1) ---
 main_col, right_col = st.columns([3.8, 1.1], gap="medium")
 
-# --- แผงควบคุมด้านขวา (Run Settings, System Instructions, Thinking Level, Advanced Tools) ---
 with right_col:
     st.markdown("##### Run settings")
     st.caption("Engine: Zyphere Neural Core v4.2")
@@ -260,8 +236,8 @@ with right_col:
     function_calling = st.checkbox("Function calling (IoT/Hardware)", value=True)
     grounding_search = st.checkbox("Grounding with Sovereign Web Search", value=True)
 
-# --- พื้นที่ทำงานตรงกลาง (Playground & Chat) ---
 with main_col:
+    # โลโก้ Neon Atom กลับมาอยู่ตรงกลางสง่างาม
     st.markdown('''
         <div class="logo-container">
             <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -276,9 +252,8 @@ with main_col:
     if not st.session_state.messages:
         st.markdown(f'<div class="welcome-title">Build with Zyphere 4 Hydrogen</div>', unsafe_allow_html=True)
         
-        # แสดง Prompt Templates แบบ Interactive สไตล์ AI Studio[cite: 13]
         st.markdown("""
-            <div style="font-size:13px; color:#555; margin-bottom:8px; font-weight:500;">Quick Prompt Suggestions:</div>
+            <div style="font-size:13px; color:#555; margin-bottom:8px; font-weight:500;">Quick Prompt Suggestions:[cite: 13]</div>
         """, unsafe_allow_html=True)
         
         t1, t2 = st.columns(2)
@@ -305,7 +280,6 @@ with main_col:
     if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
         st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-# สมองกลอัจฉริยะขั้นสูง (คิด วิเคราะห์ และตอบทันทีโดยไม่ทวนคำถาม)
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
@@ -380,7 +354,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- 3. FLOATING COMMAND BOX ด้านล่างสุด (ถอดแบบปุ่ม AI Studio ในภาพเป๊ะๆ)[cite: 13] ---
+# --- 3. FLOATING COMMAND BOX ด้านล่างสุด ---
 with main_col:
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -391,7 +365,6 @@ with main_col:
             if audio_data is not None:
                 st.success("บันทึกเสียงสำเร็จ! พร้อมประมวลผลคำสั่ง")
 
-    # ตรวจสอบหากมีการคลิก Quick Prompt
     default_input = st.session_state.pop("pending_prompt", "")
 
     with st.form(key="ai_studio_prompt_box", clear_on_submit=True):
