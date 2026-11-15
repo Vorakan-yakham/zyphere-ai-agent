@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 import asyncio
 import edge_tts
 import base64
+import random
 
 st.set_page_config(
     page_title="Build | Zyphere Studio", 
@@ -13,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ซ่อนเฉพาะข้อความตอบกลับของ AI แต่ยังให้แสดงข้อความคำถามของผู้ใช้ได้ ---
+# --- ดีไซน์ CSS สมบูรณ์แบบ ---
 st.markdown("""
     <style>
     .stApp {
@@ -24,7 +25,7 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* ซ่อนกล่องข้อความตอบกลับของ AI และซ่อนเครื่องเล่นเสียงโดยสมบูรณ์ */
+    /* ซ่อนกล่องข้อความตอบกลับของ AI และเครื่องเล่นเสียง คงไว้เฉพาะข้อความคำถามผู้ใช้และเสียงพูดโต้ตอบ */
     [data-testid="stChatMessage"]:nth-child(even) {
         display: none !important;
     }
@@ -196,30 +197,49 @@ st.markdown('''
     <div class="hero-title">Build your ideas with Zyphere</div>
 ''', unsafe_allow_html=True)
 
-# แสดงเฉพาะข้อความคำถามของผู้ใช้
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# เล่นเสียงตอบกลับอัตโนมัติแบบซ่อน (Invisible Autoplay Audio)
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
     with open(st.session_state.latest_audio, "rb") as f:
         audio_bytes = f.read()
     audio_base64 = base64.b64encode(audio_bytes).decode()
     st.markdown(f'<audio autoplay="true" src="data:audio/mp3;base64,{audio_base64}"></audio>', unsafe_allow_html=True)
 
+# สมองกลจำลองการพูดคุยแบบธรรมชาติ (สลับการทวนคำถามและตอบรับแบบมนุษย์)
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
+    
+    # สุ่มเลือกรูปแบบการตอบ (บางครั้งทวนคำถาม บางครั้งตอบรับแบบลื่นไหล)
+    style_choice = random.choice([1, 2, 3])
+
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
-        return "สถาปัตยกรรมระบบครอบคลุม 4 แกนหลักระดับเอลีท ได้แก่ องคาพยพความรู้อจักรวาล, อากาศพลศาสตร์และ CAD, หุ่นยนต์อัตโนมัติ IoT, และระบบเผยแพร่คอนเทนต์อัตโนมัติครับ"
+        if style_choice == 1:
+            return "เรื่องความสามารถของระบบเหรอครับ หลักๆ เราครอบคลุม 4 แกน ทั้งความรู้อัจฉริยะ อากาศพลศาสตร์ หุ่นยนต์ IoT และระบบคอนเทนต์อัตโนมัติเลยครับ"
+        else:
+            return "สถาปัตยกรรมระบบของเราพร้อมลุยทั้ง 4 แกนหลักระดับเอลีทแล้วครับ มีอะไรให้ผมช่วยจัดการเป็นพิเศษไหมครับ"
+            
     elif any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
-        return "กำลังสังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งจีโค้ดสำหรับโครงสร้างโลหะผสมไทเทเนียมกราฟีนเรียบร้อยแล้วครับ"
+        if style_choice == 1:
+            return f"อยากให้ออกแบบชิ้นส่วนหรือสร้าง G-code สำหรับโครงสร้างวิศวกรรมใช่ไหมครับ จัดการสังเคราะห์พิมพ์เขียวให้เรียบร้อยแล้วครับ"
+        else:
+            return "ระบบกำลังเร่งสังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งสำหรับโครงสร้างโลหะผสมให้คุณตอนนี้เลยครับ"
+            
     elif any(k in cmd_lower for k in ["เดินป่า", "วิดีโอ", "facebook", "tiktok", "youtube"]):
-        return "ระบบอัตโนมัติ Cross-Platform กำลังสร้างวิดีโอและเผยแพร่ลงโซเชียลมีเดียให้คุณทันทีครับ"
+        if style_choice == 1:
+            return "เรื่องคอนเทนต์และวิดีโอใช่ไหมครับ ระบบ Cross-Platform กำลังจัดการตัดต่อและเผยแพร่ลงโซเชียลมีเดียให้ทันทีเลยครับ"
+        else:
+            return "ระบบอัตโนมัติกำลังจัดการเรื่องสคริปต์และวิดีโอเพื่อเผยแพร่ออนไลน์ให้เรียบร้อยแล้วครับ"
+            
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ระบบ Zyphere พร้อมรับบัญชาการครับ"
+        return f"สวัสดีครับคุณ {speaker_name} ดีใจที่ได้คุยกันครับ วันนี้มีโปรเจกต์ไหนอยากให้ผมช่วยขับเคลื่อนไหมครับ"
+        
     else:
-        return f"รับทราบคำสั่งครับคุณ {speaker_name} กำลังประมวลผลข้อมูลผ่านโครงข่ายประสาทเทียมของ Zyphere ทันทีครับ"
+        if style_choice == 1:
+            return f"อืม เรื่อง '{cmd}' สินะครับ กำลังประมวลผลข้อมูลและเตรียมระบบรองรับให้คุณทันทีเลยครับ"
+        else:
+            return f"รับทราบครับคุณ {speaker_name} กำลังตรวจสอบพารามิเตอร์และลุยงานนี้ให้คุณเดี๋ยวนี้ครับ"
 
 def process_command(cmd):
     if not cmd:
