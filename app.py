@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS สมบูรณ์แบบ ---
+# --- CSS ปรับปรุงขนาดโลโก้ และขยาย Textbox แคปซูลเป็น 2 บรรทัด ---
 st.markdown("""
     <style>
     .stApp {
@@ -31,12 +31,13 @@ st.markdown("""
     }
 
     .block-container {
-        padding-top: 4vh !important;
+        padding-top: 3vh !important;
         padding-bottom: 2rem !important;
-        max-width: 850px !important;
+        max-width: 880px !important;
         margin: 0 auto;
     }
 
+    /* โลโก้ปฏิกรณ์ Neon Atom ปรับขยายใหญ่ทรงพลัง (110px) */
     .logo-container {
         display: flex;
         flex-direction: column;
@@ -46,8 +47,8 @@ st.markdown("""
         margin-bottom: 0px;
     }
     .svg-logo {
-        width: 70px;
-        height: 70px;
+        width: 110px;
+        height: 110px;
         animation: pulseLogo 3s infinite alternate ease-in-out;
     }
     .orbit-1 { transform-origin: center; animation: spinSlow 10s linear infinite; }
@@ -56,30 +57,45 @@ st.markdown("""
     @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spinReverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
     @keyframes pulseLogo {
-        0% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)); }
-        100% { filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8)); }
+        0% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5)); }
+        100% { filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.9)); }
     }
     @keyframes pulseCore { 0% { transform: scale(0.9); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
 
     .logo-text {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 700;
-        letter-spacing: 4px;
+        letter-spacing: 5px;
         color: #38bdf8;
-        margin-top: 4px;
-        margin-bottom: 2px;
+        margin-top: 6px;
+        margin-bottom: 4px;
         text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
     }
 
     .hero-title {
         text-align: center;
-        font-size: 34px;
+        font-size: 36px;
         font-weight: 400;
         color: #1f1f1f;
         margin-top: 5px;
         margin-bottom: 25px;
         letter-spacing: -0.5px;
+    }
+
+    /* ตกแต่ง Text Area ขยายกว้างเป็น 2 บรรทัด ไร้ขอบแดง */
+    .stTextArea textarea {
+        border: 1px solid #dadce0 !important;
+        border-radius: 16px !important;
+        padding: 14px 18px !important;
+        font-size: 15px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+        background-color: #ffffff !important;
+        resize: none !important;
+    }
+    .stTextArea textarea:focus {
+        border-color: #1a73e8 !important;
+        box-shadow: 0 4px 16px rgba(26, 115, 232, 0.15) !important;
     }
 
     .user-profile-card {
@@ -100,7 +116,6 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส ยาคำ", "email": "karanyapas@yakham.com", "role": "Authorized Executive"}
 ]
 
-# ระบบจำสถานะการล็อกอินข้าม Session ในเบราว์เซอร์นี้
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "latest_audio" not in st.session_state:
@@ -118,7 +133,7 @@ async def generate_male_voice(text, output_path):
     communicate = edge_tts.Communicate(tts_text, voice, pitch="-4Hz", rate="+0%")
     await communicate.save(output_path)
 
-# --- SIDEBAR (Persistent Login) ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.markdown("### Google AI Studio")
     st.caption("Zyphere Sovereign Core Engine")
@@ -174,7 +189,7 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- MAIN CENTER ---
+# --- MAIN CENTER (โลโก้ใหญ่พิเศษ 110px + ข้อความ ZYPHERE) ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -269,7 +284,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- FLOATING CENTRAL COMMAND CAPSULE (FIXED SUBMIT & ENTER) ---
+# --- TEXT BOX 2 บรรทัด และแถบปุ่มกดแคปซูล ---
 if st.session_state.voice_active:
     with st.container():
         st.markdown("🎙️ **Voice Command Active**")
@@ -279,27 +294,26 @@ if st.session_state.voice_active:
 
 default_input = st.session_state.pop("pending_prompt", "")
 
-# รับค่าจากคีย์บอร์ดและปุ่มกดได้อย่างสมบูรณ์แบบ
-with st.form(key="google_ai_studio_capsule", clear_on_submit=True):
-    user_input = st.text_input("Describe an app and let Zyphere do the rest", value=default_input, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
-    
-    c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
-    with c1:
-        st.form_submit_button("⊕")
-    with c2:
-        st.write("")
-    with c3:
-        st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed")
-    with c4:
-        col_m, col_r = st.columns([1, 2.2])
-        with col_m:
-            mic_btn = st.form_submit_button("🎙️")
-        with col_r:
-            submitted = st.form_submit_button("✦ I'm feeling lucky", type="primary")
+# กล่องรับคำสั่งขยายเป็น 2 บรรทัด (height=90)
+user_input = st.text_area("Describe an app and let Zyphere do the rest", value=default_input, height=90, label_visibility="collapsed", placeholder="Describe an app and let Zyphere do the rest")
 
-    if submitted and user_input:
-        process_command(user_input)
-        st.rerun()
+c1, c2, c3, c4 = st.columns([0.6, 3.8, 1.8, 2.4])
+with c1:
+    st.button("⊕", key="btn_add")
+with c2:
+    st.write("")
+with c3:
+    st.selectbox("Mode", ["Max mode", "Fast mode"], label_visibility="collapsed", key="sb_mode")
+with c4:
+    col_m, col_r = st.columns([1, 2.2])
+    with col_m:
+        mic_btn = st.button("🎙️", key="btn_mic")
+    with col_r:
+        submitted = st.button("✦ I'm feeling lucky", type="primary", key="btn_run")
+
+if submitted and user_input.strip():
+    process_command(user_input.strip())
+    st.rerun()
 
 if mic_btn:
     st.session_state.voice_active = not st.session_state.voice_active
