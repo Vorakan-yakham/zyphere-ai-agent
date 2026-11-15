@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS ซ่อน UI และแต่งธีม Neon ให้พรีเมียม ---
+# --- 2. Custom CSS แต่ง UI, ซ่อนเมนู และแก้สีตัวหนังสือในกล่องแชทให้ชัดเจน ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -43,6 +43,16 @@ st.markdown("""
         50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 35px rgba(0, 243, 255, 0.9); }
         100% { transform: scale(1); opacity: 0.8; }
     }
+
+    /* บังคับสีตัวหนังสือในช่องแชท input ให้เป็นสีขาว อ่านง่าย ชัดเจน */
+    .stChatInput input {
+        color: #ffffff !important;
+    }
+    
+    /* ปรับแต่งสไตล์กล่องแชทให้มีความพรีเมียมเข้ากับธีม Neon */
+    .stChatInput textarea {
+        color: #ffffff !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -71,7 +81,6 @@ def play_audio_invisible(audio_file_path):
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# อนุญาตอีเมลหลักของคุณวรกันต์และแอดมิน
 ALLOWED_EMAILS = ["vorakangm@gmail.com", "admin@zyphere.com"]
 admin_secret = st.secrets.get("admin_email", None)
 if admin_secret and admin_secret not in ALLOWED_EMAILS:
@@ -103,9 +112,6 @@ st.markdown("""
 user_input = st.chat_input("พูดคุยกับ Zyphere (Knowledge / Aerospace / Robotics / Content)...")
 
 if user_input:
-    # ตรรกะการตอบสนองแบบ Stochastic / Conversational Mirroring
     response_text = f"รับทราบครับคุณวรกันต์ ระบบกำลังประมวลผลคำขอเกี่ยวกับ {user_input} ให้ทันทีครับ"
-    
-    # สร้างและเล่นเสียงพูดทุ้มนุ่มนวลอัตโนมัติ
     audio_path = generate_male_voice(response_text)
     play_audio_invisible(audio_path)
