@@ -4,7 +4,8 @@ import tempfile
 import smtplib
 from email.mime.text import MIMEText
 import speech_recognition as sr
-from gtts import gTTS
+import asyncio
+import edge_tts
 from pypdf import PdfReader
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="centered")
@@ -21,6 +22,13 @@ AUTHORIZED_USERS = [
 # ระบบความจำภายในเซสชัน
 if "memory_logs" not in st.session_state:
     st.session_state.memory_logs = []
+
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายด้วย Edge TTS ---
+async def generate_male_voice(text, output_path):
+    # ใช้เสียงผู้ชายไทย (NiwatNeural หรือ PrachyaNeural) ให้เสียงทุ้ม นุ่ม ลึก ฟังดูเป็นธรรมชาติ
+    voice = "th-TH-NiwatNeural"
+    communicate = edge_tts.Communicate(text, voice)
+    await communicate.save(output_path)
 
 # --- แผงควบคุมตั้งค่าระบบ (Sidebar) ---
 with st.sidebar:
@@ -83,7 +91,7 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
         if not is_authorized:
             st.error("🚨 [ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการประมวลผลทันที")
         else:
-            with st.spinner("กำลังประมวลผลระบบอัตโนมัติ..."):
+            with st.spinner("กำลังประมวลผลระบบอัตโนมัติด้วยเสียงสายลมอันทรงพลัง..."):
                 if input_method == "พิมพ์ข้อความคำสั่ง":
                     command_text = text_input
                 else:
@@ -121,7 +129,7 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     st.success("✅ ผ่านการตรวจสอบความปลอดภัยระดับสูงสุดเรียบร้อย")
                     st.write(f"**คำสั่งของคุณ:** {command_text}")
                     
-                    response_msg = f"รับทราบคำสั่งจากคุณ {speaker_name} ระบบ Zyphere AI บันทึกและปฏิบัติการเรียบร้อยแล้วครับ"
+                    response_msg = f"รับทราบคำสั่งครับคุณ {speaker_name} ระบบ Zyphere AI สายลมพิทักษ์ บันทึกและปฏิบัติการเรียบร้อยแล้วครับ"
                     st.info(f"🤖 [AI Response]: {response_msg}")
 
                     # ส่งอีเมลแจ้งเตือนอัตโนมัติผ่าน Gmail SMTP
@@ -141,11 +149,10 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
                     except Exception as mail_err:
                         st.warning(f"⚠️ ส่งอีเมลไม่สำเร็จ (โปรดตรวจสอบ App Password): {str(mail_err)}")
 
-                    # สังเคราะห์เสียงพูดตอบกลับ (TTS) แบบปรับปรุงให้สมบูรณ์
+                    # สังเคราะห์เสียงพูดตอบกลับ (TTS) เป็นเสียงผู้ชาย
                     try:
-                        tts = gTTS(text=response_msg, lang='th', slow=False)
                         tts_path = "response.mp3"
-                        tts.save(tts_path)
+                        asyncio.run(generate_male_voice(response_msg, tts_path))
                         st.audio(tts_path, format="audio/mp3", autoplay=True)
                     except Exception as tts_err:
                         st.warning(f"⚠️ ไม่สามารถสร้างเสียงพูดได้: {str(tts_err)}")
@@ -154,4 +161,4 @@ if st.button("🚀 ส่งคำสั่งไปยัง AI Super-Agent", t
 if st.session_state.memory_logs:
     with st.expander("📂 ดูประวัติคำสั่งและความจำส่วนตัวของระบบ"):
         for log in st.session_state.memory_logs:
-            st
+            st.text(log)
