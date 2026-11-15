@@ -10,7 +10,7 @@ from pypdf import PdfReader
 
 st.set_page_config(page_title="Zyphere Autonomous Super-Agent", page_icon="🛡️", layout="wide")
 
-# --- ดีไซน์ CSS สุดล้ำ สไตล์ Command Center (อ่านง่าย ตัวหนังสือคมชัด) ---
+# --- ดีไซน์ CSS แก้ไขสีตัวอักษรในช่องแชทให้ชัดเจน อ่านง่าย 100% ---
 st.markdown("""
     <style>
     .stApp {
@@ -37,8 +37,10 @@ st.markdown("""
         color: #f8fafc !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-    .stChatInputContainer {
-        border-color: #38bdf8 !important;
+    /* บังคับสีตัวอักษรในช่องพิมพ์ข้อความให้เป็นสีขาวชัดเจน */
+    [data-testid="stChatInput"] textarea {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -64,7 +66,7 @@ if "is_verified" not in st.session_state:
     st.session_state.verified_name = ""
     st.session_state.verified_surname = ""
 
-# --- ฟังก์ชันสร้างเสียงพูดผู้ชาย (โทนทุ้ม นุ่มลึกระดับพรีเมียม) ---
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม ---
 async def generate_male_voice(text, output_path):
     voice = "th-TH-NiwatNeural"
     communicate = edge_tts.Communicate(text, voice)
@@ -135,7 +137,7 @@ def dr_zyphere_brain(cmd, doc_text):
     # 1. หมวดเขียนโปรแกรม (PHP / Python / System Architecture)
     if any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
         return (f"เรียน คุณ {speaker_name} ในฐานะที่ปรึกษาทางเทคนิคและสถาปัตยกรรมซอฟต์แวร์ ผมได้วิเคราะห์และออกแบบชุดคำสั่งตามหลักการ Engineering ให้เรียบร้อยครับ:\n\n"
-                f"```php\n<?php\n/**\n * Zyphere Enterprise PHP Core Engine\n * Author: Dr. Zyphere for Khun {speaker_name}\n */\nclass ZyphereCore {{\n    public function execute() {{\n        return 'System Status: Operational & Secure';\n    }}\n}}\n$agent = new ZyphereCore();\necho$agent->execute();\n?>\n```\n\n"
+                f"```php\n<?php\n/**\n * Zyphere Enterprise PHP Core Engine\n * Author: Dr. Zyphere for Khun {speaker_name}\n */\nclass ZyphereCore {{\n    public function execute() {{\n        return 'System Status: Operational & Secure';\n    }}\n}}\n$agent = new ZyphereCore();\necho $agent->execute();\n?>\n```\n\n"
                 f"**คำแนะนำเชิงลึก:** โครงสร้างนี้ถูกออกแบบให้มีความปลอดภัยสูง ป้องกันช่องโหว่พื้นฐาน สามารถนำไปปรับใช้ใน Production Server ได้ทันทีครับ")
     
     # 2. หมวดวิเคราะห์หุ้น / ตลาดโลก (Macro Analysis)
@@ -161,64 +163,4 @@ def dr_zyphere_brain(cmd, doc_text):
         return f"เรียนคุณ {speaker_name} ขณะนี้ยังไม่มีเอกสารในคลังความรู้ กรุณาอัปโหลดไฟล์ PDF หรือ TXT ที่แถบเมนูด้านซ้าย เพื่อให้ผมทำการ Extract และวิเคราะห์ข้อมูลเชิงลึกให้ท่านครับ"
 
     # 5. ทักทายระดับโปร
-    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมให้คำปรึกษาและปฏิบัติการขั้นสูง ทั้งการเขียนสคริปต์ระบบ วิเคราะห์ตลาดทุน หรือค้นคว้าวิจัยเชิงลึก มีภารกิจใดให้ผมดูแลเป็นพิเศษไหมครับ"
-
-    # 6. ตอบกลับทั่วไปแบบฉลาดล้ำลึก
-    else:
-        return (f"💡 **บันทึกการวิเคราะห์คำสั่ง:** '{cmd}'\n\n"
-                f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้ประมวลผลตรรกะ ดำเนินการตามโจทย์ และจัดเก็บ Log ความปลอดภัยเรียบร้อยแล้วครับ "
-                f"ทุกขั้นตอนถูกบันทึกและส่งรายงานสรุปไปยังอีเมลปลายทางของท่านเรียบร้อย มีประเด็นอื่นให้ผมวิเคราะห์ต่อไหมครับ?")
-
-# --- ฟังก์ชันประมวลผลหลัก ---
-def process_command(cmd):
-    if not cmd:
-        return
-    
-    if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังปิดตัวลงทันที!")
-        st.stop()
-
-    response_msg = dr_zyphere_brain(cmd, doc_content)
-
-    st.session_state.messages.append({"role": "user", "content": cmd})
-    st.session_state.messages.append({"role": "assistant", "content": response_msg})
-
-    # ส่งอีเมลเบื้องหลัง
-    try:
-        sender_email = "vorakangm@gmail.com"
-        app_password = "pygo tfga zubw xqca"
-        
-        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere Agent:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์ Dr. Mode: {response_msg}")
-        msg['Subject'] = f"🛡️ Zyphere Dr. Report: {speaker_name}"
-        msg['From'] = sender_email
-        msg['To'] = target_email
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, app_password)
-            server.sendmail(sender_email, target_email, msg.as_string())
-    except Exception as e:
-        pass
-
-    # สร้างเสียงพูดผู้ชายพรีเมียม
-    try:
-        tts_path = "response.mp3"
-        asyncio.run(generate_male_voice(response_msg, tts_path))
-        st.session_state.latest_audio = tts_path
-    except Exception as e:
-        st.session_state.latest_audio = None
-
-# --- แสดงประวัติแชท ---
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
-# เล่นเสียงล่าสุดอัตโนมัติ
-if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
-
-# --- ช่องรับคำสั่งด้านล่างสุด (สไตล์ Claude AI พิมพ์แล้ว Enter ส่งทันที) ---
-user_input = st.chat_input("ปรึกษา Dr. Zyphere เช่น เขียนโค้ด PHP, วิเคราะห์หุ้น, ค้นคว้าข้อมูลเชิงลึก...")
-if user_input:
-    process_command(user_input)
-    st.rerun()
+    elif any(k in cmd_lower
