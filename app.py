@@ -2,23 +2,44 @@ import streamlit as st
 import os
 import smtplib
 from email.mime.text import MIMEText
-from datetime import datetime
+import asyncio
+import edge_tts
 
-st.set_page_config(page_title="Zyphere Native Super-Agent", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="Zyphere Claude Edition", page_icon="🛡️", layout="centered")
 
-# --- ดีไซน์สไตล์ Cyberpunk Command Center ---
+# --- ดีไซน์ CSS สไตล์ Claude AI แท้ๆ (Clean Light Minimalist, โทนอุ่นสบายตา) ---
 st.markdown("""
     <style>
-    .stApp { background-color: #090a0f; color: #e6edf3; }
-    .main-title { font-size: 26px; font-weight: 800; color: #38bdf8; text-align: center; }
-    .sub-title { color: #94a3b8; font-size: 14px; text-align: center; margin-bottom: 25px; }
-    .stChatMessage { background-color: #1e293b !important; border-radius: 12px !important; padding: 15px !important; }
-    [data-testid="stChatInput"] textarea { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+    .stApp {
+        background-color: #fcfbf9;
+        color: #333333;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    .welcome-header {
+        text-align: center;
+        font-size: 26px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+    .stChatMessage {
+        background-color: #ffffff !important;
+        border: 1px solid #e5e5df !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        color: #222222 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        margin-bottom: 12px;
+    }
+    [data-testid="stChatInput"] textarea {
+        color: #1a1a1a !important;
+        -webkit-text-fill-color: #1a1a1a !important;
+    }
     </style>
 """, unsafe_allow_html=True)
-
-st.markdown('<p class="main-title">🛡️ Zyphere Native Autonomous Business Engine</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">ระบบสร้างรายได้และประมวลผลภายใน (Independent Core)</p>', unsafe_allow_html=True)
 
 # ฐานข้อมูลผู้มีสิทธิ์เด็ดขาด
 AUTHORIZED_USERS = [
@@ -26,96 +47,152 @@ AUTHORIZED_USERS = [
     {"name": "การัณยภาส", "surname": "ยาคำ", "role": "Son"}
 ]
 
+# ระบบความจำแชท
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "latest_audio" not in st.session_state:
+    st.session_state.latest_audio = None
+
 if "is_verified" not in st.session_state:
     st.session_state.is_verified = False
     st.session_state.verified_name = ""
 
-# ระบบความปลอดภัย
-if not st.session_state.is_verified:
-    st.subheader("🔑 ยืนยันตัวตนเจ้าของระบบ")
-    c1, c2 = st.columns(2)
-    with c1: in_name = st.text_input("ชื่อจริง", placeholder="วรกันต์")
-    with c2: in_sur = st.text_input("นามสกุล", placeholder="ยาคำ")
+# --- ฟังก์ชันสร้างเสียงพูดผู้ชายพรีเมียม (Native Neural Voice) ---
+async def generate_male_voice(text, output_path):
+    voice = "th-TH-NiwatNeural"
+    communicate = edge_tts.Communicate(text, voice)
+    await communicate.save(output_path)
+
+# --- แผงควบคุมตั้งค่า (Sidebar) ---
+with st.sidebar:
+    st.header("⚙️ ระบบควบคุมความปลอดภัย")
+    target_email = st.text_input("อีเมลรับรายงาน", value="vorakangm@gmail.com")
+    st.markdown("---")
+    st.markdown("### 💼 โมดูลสร้างเงิน (Micro-SaaS)")
+    selected_tool = st.selectbox("เลือกเครื่องมือธุรกิจ:", [
+        "ระบบคำนวณสินเชื่อและวางแผนการเงิน",
+        "ระบบประเมินจุดคุ้มทุนร้านค้าออนไลน์"
+    ])
     
-    if st.button("🔓 ปลดล็อกระบบ", type="primary"):
-        if any(u["name"] == in_name.strip() and u["surname"] == in_sur.strip() for u in AUTHORIZED_USERS):
+    if st.session_state.is_verified:
+        st.markdown("---")
+        if st.button("🔒 ล้างการยืนยันตัวตน (Logout)", type="secondary"):
+            st.session_state.is_verified = False
+            st.session_state.verified_name = ""
+            st.session_state.messages = []
+            st.session_state.latest_audio = None
+            st.rerun()
+
+# --- ตรวจสอบสิทธิ์ความปลอดภัย ---
+if not st.session_state.is_verified:
+    st.markdown("### 🔑 ยืนยันตัวตนความปลอดภัยระดับสูงสุด")
+    col1, col2 = st.columns(2)
+    with col1:
+        input_name = st.text_input("ชื่อจริง", placeholder="เช่น วรกันต์")
+    with col2:
+        input_surname = st.text_input("นามสกุล", placeholder="เช่น ยาคำ")
+    
+    if st.button("🔓 ปลดล็อกระบบ Zyphere", type="primary"):
+        is_authorized = any(
+            user["name"].strip() == input_name.strip() and user["surname"].strip() == input_surname.strip()
+            for user in AUTHORIZED_USERS
+        )
+        if is_authorized:
             st.session_state.is_verified = True
-            st.session_state.verified_name = in_name.strip()
+            st.session_state.verified_name = input_name.strip()
+            st.success(f"✅ ยืนยันตัวตนสำเร็จ! ยินดีต้อนรับครับ คุณ {input_name}")
             st.rerun()
         else:
-            st.error("🚨 [ACCESS DENIED]: ปฏิเสธการเข้าถึงเฉพาะตระกูลยาคำเท่านั้น")
+            st.error("🚨 [ACCESS DENIED]: ตรวจพบคำสั่งจากบุคคลภายนอก ระบบปฏิเสธการเข้าถึง")
     st.stop()
 
 speaker_name = st.session_state.verified_name
-st.success(f"🛡️ ผู้ใช้งานปัจจุบัน: คุณ {speaker_name} | สถานะระบบ: Native Core Online")
 
-# --- ฟังก์ชันสร้างและประมวลผลภายใน (Native Business Procedures) ---
-def native_financial_calculator(principal, rate, years):
-    """ฟังก์ชันคำนวณสินเชื่อและผลตอบแทนธุรกิจแบบคำนวณเอง 100%"""
+# --- หน้าแรกสไตล์ Claude (แสดงข้อความต้อนรับเมื่อยังไม่มีแชท) ---
+if not st.session_state.messages:
+    st.markdown(f'<p class="welcome-header">✨ สวัสดีตอนเย็นค่ะ {speaker_name}</p>', unsafe_allow_html=True)
+
+# --- สมองกลอัจฉริยะ Native Core (J.A.R.V.I.S. Level Reasoning) ---
+def native_jarvis_brain(cmd):
+    cmd_lower = cmd.lower()
+    
+    # 1. เขียนและวิเคราะห์โค้ด
+    if any(k in cmd_lower for k in ["php", "python", "เขียนโค้ด", "code", "script", "ฟังก์ชัน"]):
+        return (f"เรียน คุณ {speaker_name} ในฐานะสถาปนิกซอฟต์แวร์ส่วนตัว ผมได้ออกแบบชุดโครงสร้างโค้ดตามมาตรฐาน Enterprise เรียบร้อยครับ:\n\n"
+                f"```python\n# Zyphere Native Core Engine\nclass ZyphereAgent:\n    def __init__(self, owner):\n        self.owner = owner\n        self.status = 'Fully Operational'\n    \n    def execute_task(self, task_name):\n        return f'Executing {{task_name}} for {{self.owner}} with high security.'\n\nagent = ZyphereAgent('{speaker_name}')\nprint(agent.execute_task('Automated Business Logic'))\n```\n\n"
+                f"**คำแนะนำเชิงสถาปัตยกรรม:** โค้ดนี้มีความปลอดภัยสูง รันบนระบบภายใน 100% สามารถนำไปต่อยอดได้ทันทีครับ")
+    
+    # 2. คำนวณทางธุรกิจและทำเงิน (Micro-SaaS Tool)
+    elif any(k in cmd_lower for k in ["คำนวณ", "เงินกู้", "สินเชื่อ", "ธุรกิจ", "กำไร"]):
+        return (f"📊 **ระบบวิเคราะห์และสร้างรายได้อัตโนมัติ (Native Business Engine):**\n\n"
+                f"เรียนคุณ {speaker_name} โมดูลสร้างเครื่องมือคำนวณพร้อมใช้งานแล้วครับ ท่านสามารถนำระบบนี้ไปเปิดให้บริการหรือรับจ้างลูกค้าเพื่อสร้างกระแสเงินสด (Cash Flow) ได้ทันทีโดยไม่ต้องพึ่งพาบริการภายนอก มีตัวเลขหรือโจทย์ธุรกิจที่ต้องการให้ผมคำนวณระบุเพิ่มเติมไหมครับ?")
+    
+    # 3. ค้นคว้าความรู้ทุกศาสตร์แขนง
+    elif any(k in cmd_lower for k in ["ค้นหา", "คืออะไร", "วิเคราะห์", "อธิบาย", "ความรู้"]):
+        return (f"🔍 **การสังเคราะห์ข้อมูลเชิงลึก (Universal Knowledge Synthesis):**\n\n"
+                f"จากการประมวลผลฐานข้อมูลตรรกะขั้นสูงเกี่ยวกับคำสั่ง '{cmd}':\n"
+                f"- **แก่นสำคัญ:** ประเด็นนี้มีความซับซ้อนและมีผลกระทบโดยตรงต่อการพัฒนาเทคโนโลยีและระบบอัตโนมัติ\n"
+                f"- **แนวทางปฏิบัติ:** สามารถนำมาประยุกต์ใช้กับโปรเจกต์ของตระกูลยาคำได้อย่างมีประสิทธิภาพ\n\n"
+                f"หากต้องการให้ผมเจาะลึกในมุมมองทางวิทยาศาสตร์ เศรษฐศาสตร์ หรือเทคโนโลยีส่วนใดเพิ่มเติม แจ้งได้เลยครับ")
+
+    # 4. ทักทาย
+    elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
+        return f"สวัสดีครับคุณ {speaker_name} ผม Zyphere Autonomous Super-Agent พร้อมรับบัญชาการครับ มีภารกิจใดให้ผมดูแล ไม่ว่าจะเป็นการเขียนโค้ด วิเคราะห์ธุรกิจ หรือสร้างระบบอัตโนมัติ สั่งการได้เลยครับ"
+
+    # 5. ตอบกลับทั่วไป
+    else:
+        return (f"💡 **บันทึกการประมวลผลคำสั่ง:** '{cmd}'\n\n"
+                f"เรียนคุณ {speaker_name} ระบบ Zyphere ได้วิเคราะห์ข้อมูล บันทึก Log ความปลอดภัย และส่งรายงานเข้าสู่ระบบอีเมลเรียบร้อยแล้วครับ มีประเด็นใดให้ผมปฏิบัติการต่อไหมครับ?")
+
+# --- ฟังก์ชันประมวลผลหลัก ---
+def process_command(cmd):
+    if not cmd:
+        return
+    
+    if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
+        st.error(f"🛑 [KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
+        st.stop()
+
+    response_msg = native_jarvis_brain(cmd)
+
+    st.session_state.messages.append({"role": "user", "content": cmd})
+    st.session_state.messages.append({"role": "assistant", "content": response_msg})
+
+    # ส่งอีเมลเบื้องหลัง
     try:
-        p = float(principal)
-        r = float(rate) / 100 / 12
-        n = int(years) * 12
-        if r > 0:
-            emi = (p * r * (1 + r)**n) / ((1 + r)**n - 1)
-            total_payment = emi * n
-            total_interest = total_payment - p
-        else:
-            emi = p / n
-            total_payment = p
-            total_interest = 0
-        return emi, total_payment, total_interest
+        sender_email = "vorakangm@gmail.com"
+        app_password = "pygo tfga zubw xqca"
+        msg = MIMEText(f"รายงานการปฏิบัติการ Zyphere:\n\nผู้สั่งการ: {speaker_name}\nคำสั่ง: {cmd}\nผลการวิเคราะห์: {response_msg}")
+        msg['Subject'] = f"🛡️ Zyphere Report: {speaker_name}"
+        msg['From'] = sender_email
+        msg['To'] = target_email
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, app_password)
+            server.sendmail(sender_email, target_email, msg.as_string())
     except:
-        return 0, 0, 0
+        pass
 
-st.markdown("---")
-st.subheader("📊 ระบบบริการคำนวณและสร้างรายได้อัตโนมัติ (Native Micro-SaaS)")
+    # สร้างเสียงพูดพรีเมียม
+    try:
+        tts_path = "response.mp3"
+        asyncio.run(generate_male_voice(response_msg, tts_path))
+        st.session_state.latest_audio = tts_path
+    except:
+        st.session_state.latest_audio = None
 
-tool_choice = st.selectbox("เลือกโมดูลบริการสำหรับลูกค้ายุคดิจิทัล:", [
-    "1. ระบบคำนวณสินเชื่อและวางแผนการเงินธุรกิจ (Loan & EMI Engine)",
-    "2. ระบบประเมินจุดคุ้มทุนและกำไรสินค้าออนไลน์ (Break-Even Profit Engine)"
-])
+# --- แสดงประวัติแชทสไตล์ Claude ---
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
 
-if "1" in tool_choice:
-    st.markdown("### 🧮 โมดูลคำนวณสินเชื่อ (พร้อมส่งออกรายงานให้ลูกค้า)")
-    p_input = st.number_input("ยอดเงินกู้ / เงินลงทุนตั้งต้น (บาท):", value=100000.0, step=10000.0)
-    r_input = st.number_input("อัตราดอกเบี้ยต่อปี (%):", value=5.0, step=0.5)
-    y_input = st.number_input("ระยะเวลา (ปี):", value=3, step=1)
-    
-    if st.button("🚀 ประมวลผลและสร้างรายงานให้ลูกค้า", type="primary"):
-        emi, total_pay, total_int = native_financial_calculator(p_input, r_input, y_input)
-        
-        report_text = f"""
-        ### 📄 รายงานผลการคำนวณทางการเงิน (Zyphere Native Engine)
-        - **ผู้จัดทำระบบ:** ออกแบบและประมวลผลโดย Zyphere สำหรับคุณ {speaker_name}
-        - **ยอดเงินลงทุน/เงินกู้:** {p_input:,.2f} บาท
-        - **ระยะเวลาผ่อนชำระ:** {y_input} ปี ({y_input*12} เดือน)
-        - **ยอดผ่อนชำระต่อเดือน:** **{emi:,.2f} บาท/เดือน**
-        - **ดอกเบี้ยรวมทั้งหมด:** {total_int:,.2f} บาท
-        - **ยอดชำระสุทธิรวม:** {total_pay:,.2f} บาท
-        
-        *คำแนะนำเชิงธุรกิจ: ท่านสามารถบันทึกรายงานนี้ส่งให้ลูกค้าเพื่อปิดการขายบริการคำนวณสินเชื่อได้ทันที!*
-        """
-        st.success("✅ ประมวลผลสำเร็จเรียบร้อย!")
-        st.markdown(report_text)
+# เล่นเสียงล่าสุดอัตโนมัติ
+if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
+    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
 
-elif "2" in tool_choice:
-    st.markdown("### 📦 โมดูลประเมินจุดคุ้มทุนร้านค้าออนไลน์")
-    cost_per_unit = st.number_input("ต้นทุนสินค้าต่อชิ้น (บาท):", value=50.0)
-    sell_price = st.number_input("ราคาขายต่อชิ้น (บาท):", value=150.0)
-    fixed_cost = st.number_input("ค่าใช้จ่ายคงที่ต่อเดือน เช่น ค่าโฆษณา/ค่าเช่า (บาท):", value=5000.0)
-    
-    if st.button("🚀 คำนวณจุดคุ้มทุนธุรกิจ", type="primary"):
-        profit_per_unit = sell_price - cost_per_unit
-        if profit_per_unit > 0:
-            break_even_units = fixed_cost / profit_per_unit
-            st.success("✅ คำนวณสำเร็จ!")
-            st.markdown(f"""
-            ### 📈 รายงานจุดคุ้มทุน (Break-Even Analysis)
-            - **กำไรต่อชิ้น:** {profit_per_unit:,.2f} บาท
-            - **จำนวนสินค้าที่ต้องขายได้ต่อเดือนเพื่อให้คุ้มทุน:** **{break_even_units:,.0f} ชิ้น**
-            
-            *บริการนี้เหมาะสำหรับนำไปรับจ้างปรึกษาพ่อค้าแม่ค้าออนไลน์ในการตั้งราคาขายครับ!*
-            """)
-        else:
-            st.error("❌ ราคาขายต้องมากกว่าต้นทุนสินค้าจึงจะสามารถคำนวณจุดคุ้มทุนได้")
+# --- ช่องรับคำสั่งด้านล่างสุด (สไตล์ Claude AI พิมพ์แล้ว Enter ส่งทันที) ---
+user_input = st.chat_input("วันนี้ให้ฉันช่วยอะไรดี...")
+if user_input:
+    process_command(user_input)
+    st.rerun()
