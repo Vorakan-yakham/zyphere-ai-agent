@@ -4,6 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 import asyncio
 import edge_tts
+import base64
 
 st.set_page_config(
     page_title="Build | Zyphere Studio", 
@@ -12,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ดีไซน์ CSS ขยาย ViewBox โลโก้ และดันตำแหน่งให้อยู่กึ่งกลางสวยงาม ---
+# --- ดีไซน์ CSS สมบูรณ์แบบ (ซ่อนกล่องแชทและซ่อนเครื่องเล่นเสียงทั้งหมด) ---
 st.markdown("""
     <style>
     .stApp {
@@ -22,6 +23,11 @@ st.markdown("""
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    
+    /* ซ่อนกล่องแสดงข้อความแชทและเครื่องเล่นเสียงทั้งหมดไม่ให้เกะกะสายตา */
+    [data-testid="stChatMessage"], .stAudio {
+        display: none !important;
+    }
 
     [data-testid="stSidebar"] {
         background-color: #f8f9fa;
@@ -36,14 +42,13 @@ st.markdown("""
         margin: 0 auto;
     }
 
-    /* ขยายกรอบโลโก้ปฏิกรณ์ไม่ให้โดนตัดขอบเวลาหมุน */
     .logo-container {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin-top: 15px;
-        margin-bottom: 5px;
+        margin-top: 5px;
+        margin-bottom: 0px;
     }
     .svg-logo {
         width: 120px;
@@ -174,7 +179,7 @@ if not st.session_state.is_verified:
 
 speaker_name = st.session_state.verified_name
 
-# --- MAIN CENTER (ขยาย viewBox เป็น 140x140 ป้องกันโลโก้แหว่ง) ---
+# --- MAIN CENTER ---
 st.markdown('''
     <div class="logo-container">
         <svg class="svg-logo" viewBox="-20 -20 140 140" xmlns="http://www.w3.org/2000/svg">
@@ -188,67 +193,35 @@ st.markdown('''
     <div class="hero-title">Build your ideas with Zyphere</div>
 ''', unsafe_allow_html=True)
 
-# แสดงประวัติแชท
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
+# เล่นเสียงอัตโนมัติแบบซ่อน (Invisible Autoplay Audio)
 if st.session_state.latest_audio and os.path.exists(st.session_state.latest_audio):
-    st.markdown("🔊 **Zyphere Voice Synthesis Output:**")
-    st.audio(st.session_state.latest_audio, format="audio/mp3", autoplay=True)
+    with open(st.session_state.latest_audio, "rb") as f:
+        audio_bytes = f.read()
+    audio_base64 = base64.b64encode(audio_bytes).decode()
+    st.markdown(f'<audio autoplay="true" src="data:audio/mp3;base64,{audio_base64}"></audio>', unsafe_allow_html=True)
 
 def native_jarvis_brain(cmd):
     cmd_lower = cmd.lower()
     if any(k in cmd_lower for k in ["ความสามารถ", "ทำอะไรได้บ้าง", "เธอทำอะไร", "ระบบมีอะไรบ้าง"]):
-        return (
-            "สถาปัตยกรรมระบบครอบคลุม 4 แกนหลักระดับเอลีท:\n\n"
-            "1. **Universal Knowledge & Omni-Science:** ประมวลผลและไขคำตอบทางฟิสิกส์ควอนตัม อากาศพลศาสตร์ และทฤษฎีขั้นสูง\n"
-            "2. **Aerospace & CAD/G-Code Synthesis:** ออกแบบโครงสร้างยานอวกาศ ชิ้นส่วนเครื่องจักรกล และสร้างชุดคำสั่ง G-code สำหรับเครื่องพิมพ์ 3 มิติ / CNC\n"
-            "3. **Autonomous Robotics & IoT Integration:** ควบคุมวงจรอิเล็กทรอนิกส์ แขนกล และระบบเซนเซอร์อัตโนมัติ\n"
-            "4. **Cross-Platform Content Automation:** สั่งการสร้างวิดีโอ สคริปต์ และเผยแพร่อัตโนมัติลง Social Media (Facebook, YouTube, TikTok)\n\n"
-            "โปรดระบุภารกิจเฉพาะด้านที่ต้องการให้เริ่มปฏิบัติการได้ทันทีครับ"
-        )
+        return "สถาปัตยกรรมระบบครอบคลุม 4 แกนหลักระดับเอลีท ได้แก่ องคาพยพความรู้อจักรวาล, อากาศพลศาสตร์และ CAD, หุ่นยนต์อัตโนมัติ IoT, และระบบเผยแพร่คอนเทนต์อัตโนมัติครับ"
     elif any(k in cmd_lower for k in ["ยานอวกาศ", "หุ่นยนต์", "เครื่องจักร", "gcode", "g-code", "cad", "ออกแบบ"]):
-        return (
-            "**ผลการสังเคราะห์พิมพ์เขียววิศวกรรม:**\n\n"
-            "```gcode\n"
-            "; Zyphere Native CNC / 3D Printer G-Code\n"
-            "; Target: Advanced Alloy Structural Component\n"
-            "G21 ; Set units to millimeters\n"
-            "G90 ; Absolute positioning\n"
-            "M104 S240 ; Set Extruder Temp\n"
-            "G1 X0 Y0 Z0.2 F3000 ; Move to origin\n"
-            "```\n\n"
-            "**ข้อเสนอแนะทางวัสดุศาสตร์:** แนะนำให้ใช้ Titanium-Graphene Alloy เพื่อรองรับแรงกดดันสูงในชั้นบรรยากาศ"
-        )
+        return "กำลังสังเคราะห์พิมพ์เขียววิศวกรรมและชุดคำสั่งจีโค้ดสำหรับโครงสร้างโลหะผสมไทเทเนียมกราฟีนเรียบร้อยแล้วครับ"
     elif any(k in cmd_lower for k in ["เดินป่า", "วิดีโอ", "facebook", "tiktok", "youtube"]):
-        return (
-            "**ระบบอัตโนมัติ Cross-Platform Content Automation กำลังทำงาน:**\n\n"
-            "1. **Scripting:** สร้างบทเรื่องเล่าคนเดินป่าบรรยากาศลึกลับน่าติดตามเรียบร้อย\n"
-            "2. **Voice Synthesis:** สังเคราะห์เสียงบรรยายพรีเมียมโทนทุ้มนุ่มนวล\n"
-            "3. **Video Production:** ตัดต่อฟุตเทจป่าเขาพร้อมซับไตเติลออโต้\n"
-            "4. **API Deployment:** ส่งข้อมูลและเผยแพร่อัตโนมัติไปยัง Facebook, YouTube และ TikTok เรียบร้อยแล้วครับ"
-        )
+        return "ระบบอัตโนมัติ Cross-Platform กำลังสร้างวิดีโอและเผยแพร่ลงโซเชียลมีเดียให้คุณทันทีครับ"
     elif any(k in cmd_lower for k in ["สวัสดี", "hello", "hi"]):
-        return f"สวัสดีครับคุณ {speaker_name} ระบบ Zyphere พร้อมรับบัญชาการสร้างนวัตกรรมและขับเคลื่อนโครงสร้างอัจฉริยะแล้วครับ"
+        return f"สวัสดีครับคุณ {speaker_name} ระบบ Zyphere พร้อมรับบัญชาการครับ"
     else:
-        return (
-            "**ผลการวิเคราะห์ทางตรรกะและฐานข้อมูลจักรวาล:**\n\n"
-            "- ตรวจสอบตัวแปรและประเมินความเป็นไปได้ภายใต้กฎฟิสิกส์และระบบอัตโนมัติเรียบร้อย\n"
-            "- พร้อมแปลงข้อกำหนดดังกล่าวให้เป็นพิมพ์เขียววิศวกรรม ชุดโค้ดโปรแกรม หรือแผนปฏิบัติการอัตโนมัติ\n\n"
-            "กรุณาระบุพารามิเตอร์เพิ่มเติมหากต้องการให้ดำเนินการทันทีครับ"
-        )
+        return f"รับทราบคำสั่งครับคุณ {speaker_name} กำลังประมวลผลข้อมูลผ่านโครงข่ายประสาทเทียมของ Zyphere ทันทีครับ"
 
 def process_command(cmd):
     if not cmd:
         return
     if any(k in cmd.lower() for k in ["ปิดระบบ", "shutdown", "kill switch"]):
-        st.error(f"[KILL-SWITCH ACTIVATED]: คำสั่งฉุกเฉินจากคุณ {speaker_name} ระบบกำลังตัดการทำงานทันที!")
+        st.error(f"[KILL-SWITCH ACTIVATED]: ตัดการทำงานทันทีตามคำสั่งคุณ {speaker_name}")
         st.stop()
 
     response_msg = native_jarvis_brain(cmd)
     st.session_state.messages.append({"role": "user", "content": cmd})
-    st.session_state.messages.append({"role": "assistant", "content": response_msg})
 
     try:
         sender_email = "vorakangm@gmail.com"
@@ -270,7 +243,7 @@ def process_command(cmd):
     except:
         st.session_state.latest_audio = None
 
-# --- CHAT INPUT (กด Enter ส่งข้อความทันที 100%) ---
+# --- CHAT INPUT ---
 if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
     prompt = st.session_state.pop("pending_prompt")
     process_command(prompt)
