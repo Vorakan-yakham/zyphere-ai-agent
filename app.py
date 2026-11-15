@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS แก้ไขสีตัวหนังสือในช่องกรอกให้เป็นสีดำชัดเจน ---
+# --- 2. Custom CSS แต่ง UI และกำหนดสีตอนไฮไลต์ข้อความ (Selection) ให้ชัดเจน ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -22,6 +22,16 @@ st.markdown("""
     .stApp {
         background-color: #0e1117;
         color: #ffffff;
+    }
+    
+    /* กำหนดสีเวลาเอาเมาส์ไฮไลต์ลากคลุมข้อความ */
+    ::selection {
+        background: #00f3ff;
+        color: #000000;
+    }
+    ::-moz-selection {
+        background: #00f3ff;
+        color: #000000;
     }
     
     .neon-container {
@@ -44,14 +54,13 @@ st.markdown("""
         100% { transform: scale(1); opacity: 0.8; }
     }
 
-    /* บังคับตัวอักษรข้างในช่อง input ทุกช่องให้เป็นสีดำเข้ม และพื้นหลังช่องเป็นสีขาว */
+    /* บังคับตัวอักษรข้างในช่อง input ให้เป็นสีดำเข้ม และพื้นหลังช่องเป็นสีขาว */
     input {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
         background-color: #ffffff !important;
     }
     
-    /* ป้องกัน Streamlit ใช้สีอื่นทับในส่วน BaseWeb input */
     div[data-baseweb="input"] input {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
