@@ -3,10 +3,9 @@ import edge_tts
 import asyncio
 import base64
 import os
-import json
 from datetime import datetime
 
-# --- 1. ตั้งค่าหน้าเว็บแบบ Minimal & Distraction-free ---
+# --- 1. System Configuration ---
 st.set_page_config(
     page_title="Zyphere Autonomous Core",
     page_icon="⚡",
@@ -14,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. Custom CSS สำหรับ Dark-Mode Neon Aesthetic ---
+# --- 2. Production-Grade CSS (Strict Contrast Enforcement) ---
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -26,55 +25,38 @@ st.markdown("""
         color: #ffffff;
     }
     
-    label, p, span, div[data-baseweb="typography"] {
+    /* Global Typography */
+    label, p, span, div[data-baseweb="typography"], h1, h2, h3 {
         color: #ffffff !important;
     }
     
-    ::selection {
-        background: #00f3ff;
-        color: #000000;
-    }
-    ::-moz-selection {
-        background: #00f3ff;
-        color: #000000;
+    /* Strict Input Box Styling: White Background & Pitch Black Text */
+    div[data-baseweb="input"] {
+        background-color: #ffffff !important;
+        border-radius: 6px !important;
+        border: 1px solid #00f3ff !important;
     }
     
-    .neon-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-    
-    .neon-atom {
-        font-size: 60px;
-        animation: pulse 2s infinite;
-        text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 35px rgba(0, 243, 255, 0.9); }
-        100% { transform: scale(1); opacity: 0.8; }
-    }
-
-    input, textarea, div[data-baseweb="input"] input, div[data-baseweb="base-input"] textarea {
+    div[data-baseweb="input"] input {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
+        background-color: #transparent !important;
+        font-weight: 600 !important;
     }
-
+    
+    /* Chat Input Styling */
     .stChatInput textarea {
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
+        background-color: #ffffff !important;
     }
 
+    /* Authentication & Action Buttons */
     div.stButton > button {
         background-color: #ffffff !important;
         color: #000000 !important;
         -webkit-text-fill-color: #000000 !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important;
         font-weight: 700 !important;
         border: 2px solid #00f3ff !important;
         width: 100% !important;
@@ -91,20 +73,30 @@ st.markdown("""
         -webkit-text-fill-color: #000000 !important;
     }
     
-    .memory-panel {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-left: 4px solid #00f3ff;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 12px;
-        font-family: monospace;
-        font-size: 12px;
+    .neon-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .neon-atom {
+        font-size: 60px;
+        animation: pulse 2s infinite;
+        text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 35px rgba(0, 243, 255, 0.9); }
+        100% { transform: scale(1); opacity: 0.8; }
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. ฟังก์ชันเสียงพรีเมียม (Edge TTS) ---
+# --- 3. Audio Synthesis (Edge TTS) ---
 def generate_male_voice(text, output_path="temp_audio.mp3"):
     voice = "th-TH-NiwatNeural"
     tts_text = text.replace("Zyphere", "ไซเฟอร์").replace("zyphere", "ไซเฟอร์")
@@ -127,7 +119,7 @@ def play_audio_invisible(audio_file_path):
         """
         st.markdown(audio_html, unsafe_allow_html=True)
 
-# --- 4. ระบบ Authentication ---
+# --- 4. Authentication Management ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -137,10 +129,10 @@ if admin_secret and admin_secret not in ALLOWED_EMAILS:
     ALLOWED_EMAILS.append(admin_secret)
 
 if not st.session_state.authenticated:
-    st.markdown("<div style='text-align: center; margin-top: 100px;'><h2>⚡ ZYPHERE ACCESS CONTROL</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; margin-top: 80px;'><h2>⚡ ZYPHERE ACCESS CONTROL</h2></div>", unsafe_allow_html=True)
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
-        user_email = st.text_input("")
+        user_email = st.text_input("Authorized Email", placeholder="")
         if st.button("Authenticate"):
             if user_email.strip().lower() in ALLOWED_EMAILS:
                 st.session_state.authenticated = True
@@ -149,57 +141,20 @@ if not st.session_state.authenticated:
                 st.error("Access Denied. Invalid credentials.")
     st.stop()
 
-# --- 5. PERSISTENT MEMORY & AUTONOMOUS REASONING CORE ---
-class ZyphereAutonomousEngine:
-    def __init__(self, memory_store):
-        self.memory = memory_store
-
-    def process_goal(self, user_goal: str):
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        memory_entry = {
-            "timestamp": timestamp,
-            "goal": user_goal,
-            "status": "PROCESSED"
-        }
-        self.memory.append(memory_entry)
-        
-        goal_lower = user_goal.lower()
-        if any(kw in goal_lower for kw in ["cad", "aerospace", "drone", "3d", "part"]):
-            axis = "Aerospace & CAD Engine"
-        elif any(kw in goal_lower for kw in ["robot", "arm", "kinematics", "motor"]):
-            axis = "Robotics Core"
-        elif any(kw in goal_lower for kw in ["content", "video", "script", "marketing"]):
-            axis = "Content Automation"
-        else:
-            axis = "Knowledge & Full-Stack Architecture"
-            
-        return axis, memory_entry
-
-# --- 6. ส่วนแสดงผลหลัก (UI Layout) ---
-st.markdown("""
-    <div class="neon-container">
-        <div class="neon-atom">⚛️</div>
-        <h3 style="letter-spacing: 2px; color: #00f3ff; text-align: center; margin-top: 5px;">ZYPHERE AUTONOMOUS OS</h3>
-        <p style="color: #8b949e; font-size: 12px; text-align: center;">Long-term Memory Enabled | Autonomous Execution Core</p>
-    </div>
-""", unsafe_allow_html=True)
-
+# --- 5. Autonomous Executive Core ---
 if "memory_bank" not in st.session_state:
     st.session_state.memory_bank = []
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-with st.sidebar:
-    st.markdown("### 🧠 Autonomous Memory")
-    st.write(f"Total Memorized Goals: {len(st.session_state.memory_bank)}")
-    if st.session_state.memory_bank:
-        for idx, mem in enumerate(st.session_state.memory_bank[-5:]):
-            st.markdown(f"<div class='memory-panel'><b>[{mem['timestamp']}]</b><br>{mem['goal']}</div>", unsafe_allow_html=True)
-    if st.button("Clear Memory"):
-        st.session_state.memory_bank = []
-        st.session_state.messages = []
-        st.rerun()
+st.markdown("""
+    <div class="neon-container">
+        <div class="neon-atom">⚛️</div>
+        <h3 style="letter-spacing: 2px; color: #00f3ff; text-align: center; margin-top: 5px;">ZYPHERE AUTONOMOUS OS</h3>
+        <p style="color: #8b949e; font-size: 12px; text-align: center;">Executive Agent Core | 4-Axis Architecture</p>
+    </div>
+""", unsafe_allow_html=True)
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -213,36 +168,28 @@ if user_prompt:
         st.markdown(user_prompt)
         
     with st.chat_message("assistant"):
-        with st.spinner("Zyphere กำลังดึงความจำ วิเคราะห์ และสร้างสรรค์ผลลัพธ์..."):
-            engine = ZyphereAutonomousEngine(st.session_state.memory_bank)
-            axis, current_memory = engine.process_goal(user_prompt)
+        with st.spinner("Zyphere กำลังประมวลผลเป้าหมาย..."):
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            st.session_state.memory_bank.append({"timestamp": timestamp, "goal": user_prompt})
             
             response_output = (
-                f"รับทราบและบันทึกเป้าหมายของคุณวรกันต์ลงใน **Autonomous Memory Bank** เรียบร้อยแล้ว "
-                f"ระบบได้ประมวลผลผ่านแกน **{axis}** โดยอิงจากบริบทและความต้องการทั้งหมด:\n\n"
+                f"รับทราบและบันทึกเป้าหมายของคุณวรกันต์เรียบร้อยแล้ว "
+                f"ระบบกำลังดำเนินการตาม Grand Vision ที่คุณตั้งไว้:\n\n"
                 "```python\n"
-                "# --- ZYPHERE AUTONOMOUS EXECUTOR ---\n"
-                f"# Memorized Goal ID: #{len(st.session_state.memory_bank)}\n"
-                f"# Target Intent: {user_prompt}\n"
-                f"# Assigned Axis: {axis}\n\n"
-                "class ExecutiveTargetPipeline:\n"
+                "# --- ZYPHERE AUTONOMOUS EXECUTION ENGINE ---\n"
+                f"# Target Goal: {user_prompt}\n"
+                f"# Status: ACTIVE SYNC\n\n"
+                "class CoreExecutor:\n"
                 "    def __init__(self):\n"
-                f"        self.intent = \"{user_prompt}\"\n"
-                "        self.memory_state = \"SYNCED\"\n"
-                "        \n"
-                "    def execute_action(self):\n"
-                "        print(f\"Executing autonomous task for intent: {self.intent}\")\n"
-                "        return \"OUTPUT_READY: Complete architectural package generated.\"\n\n"
-                "if __name__ == '__main__':\n"
-                "    pipeline = ExecutiveTargetPipeline()\n"
-                "    print(pipeline.execute_action())\n"
+                "        self.status = 'READY'\n"
+                "    def run(self):\n"
+                "        return 'SUCCESS: Autonomous pipeline executed.'\n"
                 "```\n\n"
-                "ระบบพร้อมตอบสนองและต่อยอดคำสั่งถัดไปทันทีครับ บรีฟเป้าหมายหรือข้อมูลที่คุณต้องการให้สร้างสรรค์ต่อได้เลยครับคุณวรกันต์!"
+                "ระบบพร้อมปฏิบัติการขั้นต่อไปแล้วครับ บรีฟคำสั่งถัดมาได้เลยครับคุณวรกันต์!"
             )
 
             st.markdown(response_output)
-            
-            audio_path = generate_male_voice("บันทึกเป้าหมายและประมวลผลระบบเรียบร้อยแล้วครับคุณวรกันต์")
+            audio_path = generate_male_voice("รับทราบและประมวลผลเป้าหมายเรียบร้อยแล้วครับ")
             play_audio_invisible(audio_path)
             
             st.session_state.messages.append({"role": "assistant", "content": response_output})
