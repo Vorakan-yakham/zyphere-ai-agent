@@ -497,7 +497,7 @@ async function extractFile(f){
  try{const t=await f.text();if(t&&!/\uFFFD{3,}/.test(t.slice(0,3000)))return t}catch(e){}
  throw new Error('ไม่รองรับไฟล์ประเภทนี้');
 }
-async function transcribeFile(f){const b=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));const j=await api('/api/transcribe',{method:'POST',body:JSON.stringify({name:f.name||'audio.mp3',data:btoa(s)})});return j.text}
+async function transcribeFile(f){const b=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));const j=await api('/api/transcribe',{method:'POST',body:JSON.stringify({name:f.name||'audio.mp3',data:btoa(s),key:getK('zyphere_groq_key')||''})});return j.text}
 async function addFiles(list){const fs=[...(list||[])];for(const f of fs){if(pend.items.length>=8){toast('แนบได้ไม่เกิน 8 ไฟล์ต่อข้อความ');break}
  const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('audio/')||/\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(f.name)){it.text='\n\n[ไฟล์เสียง '+f.name+']:\n'+(await transcribeFile(f))}else if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
   const raw=String(await extractFile(f)||'').replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();

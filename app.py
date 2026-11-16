@@ -3043,9 +3043,9 @@ class Handler(SimpleHTTPRequestHandler):
         if not isinstance(body, dict):
             body = {}
         if u.path == "/api/transcribe":
-            key = os.environ.get("GROQ_API_KEY", "").strip()
+            key = os.environ.get("GROQ_API_KEY", "").strip() or str(body.get("key") or "").strip()
             if not key:
-                self._send_json(400, {"ok": False, "error": "ต้องตั้ง GROQ_API_KEY บนเซิร์ฟเวอร์เพื่อแปลงเสียงเป็นข้อความ"})
+                self._send_json(400, {"ok": False, "error": "ต้องใส่คีย์ Groq ในหน้าตั้งค่าเว็บ หรือตั้ง GROQ_API_KEY บนเซิร์ฟเวอร์เพื่อแปลงเสียงเป็นข้อความ"})
                 return
             try:
                 raw = base64.b64decode(str(body.get("data") or ""), validate=True)
