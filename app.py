@@ -1,4 +1,4 @@
-# ZYPHERE V46 - LOGOUT IN FOOTER + PLUS IS FILE PICKER - CHECK THIS LINE
+# ZYPHERE V47 - LOGO CLICK COLLAPSE EXPAND - CHECK THIS LINE
 import streamlit as st, os, io, base64, asyncio, re
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -9,6 +9,7 @@ if 'show_add' not in st.session_state: st.session_state.show_add=False
 if 'add_text' not in st.session_state: st.session_state.add_text=''
 if 'add_img' not in st.session_state: st.session_state.add_img=None
 if 'brain_main' not in st.session_state: st.session_state.brain_main='Zyphere อัตโนมัติ'
+if 'collapsed' not in st.session_state: st.session_state.collapsed=False
 _act=st.query_params.get('action','')
 if _act=='logout': st.session_state.messages=[]; st.query_params.clear(); st.rerun()
 if _act=='login': st.session_state.user_name='Whisp'; st.query_params.clear(); st.rerun()
@@ -45,6 +46,8 @@ section[data-testid='stSidebar'] .stMarkdown{margin:0!important;padding:0!import
 .chat-ai{max-width:760px;margin:6px auto;font-size:15px;line-height:1.6}
 </style>""", unsafe_allow_html=True)
 
+if st.session_state.collapsed:
+    st.markdown("<style>section[data-testid='stSidebar']{width:64px!important;min-width:64px!important} .sidebar-footer{width:64px!important} .logo-txt,.menu-txt,.lb,.user-txt{display:none!important} section[data-testid='stSidebar'] .stButton>button{padding:0!important;justify-content:center!important;font-size:18px!important}</style>", unsafe_allow_html=True)
 def get_key(n):
     try: return st.secrets.get(n,'')
     except: return os.getenv(n,'')
@@ -73,26 +76,29 @@ def show_audio(d):
 
 # --- SIDEBAR V42 ---
 with st.sidebar:
-    st.markdown("<div class='logo-top'><div class='logo-dot'>\u2726</div><div class='logo-txt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>\u2315</div></div><div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่', key='v46_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v46_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v46_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v46_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v46_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
+    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v47_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
+    st.markdown("<div class='logo-gap'></div>", unsafe_allow_html=True)
+    if st.button('\u270e  แชทใหม่', key='v47_new'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u25a6  คลัง', key='v47_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
+    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v47_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
+    if st.button('\u25ce  ปรับแต่ง', key='v47_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
+    if st.button('\u25a1  วิดีโอ', key='v47_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
     st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v46_nb'): st.session_state.messages=[]; st.rerun()
+    if st.button('\uFF0B  Notebook ใหม่', key='v47_nb'): st.session_state.messages=[]; st.rerun()
     st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
     _seen=[]; _has=False
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v46_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='v47_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v46_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='v47_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
     # FOOTER - bottom of sidebar, normal flow so it never disappears
     st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    st.markdown("<a href='?action=logout' target='_self' style='display:flex;align-items:center;gap:10px;padding:0 12px;height:36px;border-radius:999px;text-decoration:none;color:#1f1f1f;font-size:14px'>OUT ออกจากระบบ</a><a href='?action=login' target='_self' style='display:flex;align-items:center;gap:10px;padding:0 12px;height:36px;border-radius:999px;text-decoration:none;color:#1f1f1f;font-size:14px'>SWAP สลับบัญชี / เข้าสู่ระบบ</a></div>", unsafe_allow_html=True)
+    if st.button('\u21aa  ออกจากระบบ', key='v47_logout'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v47_login'): st.session_state.user_name='Whisp'; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # --- MAIN ---
 has_chat=len(st.session_state.messages)>0 or bool(st.session_state.pending)
@@ -102,8 +108,14 @@ voice=False
 if not has_chat:
     st.markdown("<div class='hero'>เราจะเริ่มจากตรงไหนก่อนดี</div>", unsafe_allow_html=True)
     st.markdown("<div class='center'><div class='blob'></div><div class='pill'>", unsafe_allow_html=True)
-    if st.session_state.add_img is not None:
-        st.markdown("<div style='background:#fff;border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:6px 12px;display:inline-block;font-size:13px;margin-bottom:8px'>FILE: "+st.session_state.add_img.name+"</div>", unsafe_allow_html=True)
+    if st.session_state.show_add:
+        st.markdown("<div style='background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:14px;margin-bottom:10px'><b>\uFF0B เพิ่มให้ Zyphere ทำงาน</b><br><span style='font-size:13px;color:#666'>เพิ่มรูป / ไฟล์ / ข้อความ แล้วพิมพ์สั่งข้างล่าง</span></div>", unsafe_allow_html=True)
+        up=st.file_uploader('เพิ่มรูป / ไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed')
+        if up is not None:
+            st.session_state.add_img=up; st.success('เพิ่มแล้ว: '+up.name)
+            if up.type and 'image' in up.type: st.image(up, width=200)
+        st.session_state.add_text=st.text_area('เพิ่มข้อความ', value=st.session_state.add_text, placeholder='วางข้อความยาวๆ ตรงนี้...', height=100)
+        if st.button('\uFF0B เพิ่มการสนทนาใหม่'): st.session_state.messages=[]; st.session_state.show_add=False; st.rerun()
     with st.form('f', clear_on_submit=True):
         c1,c2,c3,c4=st.columns([0.4,4,1.7,0.5])
         with c1:
@@ -114,7 +126,7 @@ if not has_chat:
     st.markdown('</div><div class="chips"><span class="chip">ค้นพบ</span><span class="chip">ถามอะไรก็ได้</span><span class="chip">ดำเนินการ</span><span class="chip">สร้างรูปภาพ</span></div></div>', unsafe_allow_html=True)
     if plus: st.session_state.show_add=not st.session_state.show_add
     if st.session_state.show_add:
-        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v46_picker')
+        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v47_picker')
         if _up is not None: st.session_state.add_img=_up; st.session_state.show_add=False; st.rerun()
     if sent: prompt=inp; brain=bp
 else:
