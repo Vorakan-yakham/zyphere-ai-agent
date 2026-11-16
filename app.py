@@ -65,7 +65,8 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
-VOICES = {"th": "th-TH-NiwatNeural", "en": "en-GB-RyanNeural"}
+VOICES = {"th": "th-TH-PremwadeeNeural", "en": "en-GB-RyanNeural"}
+VOICE_OPTIONS = {"th": ["th-TH-PremwadeeNeural", "th-TH-AcharaNeural", "th-TH-NiwatNeural"], "en": ["en-GB-RyanNeural", "en-US-AriaNeural", "en-US-GuyNeural", "en-GB-SoniaNeural"]}
 MEM_LOCK = threading.Lock()
 JOB_LOCK = threading.Lock()
 JOBS = {}
@@ -2818,8 +2819,8 @@ def list_jobs():
 # ----------------------------------------------------------------------------
 # TTS
 # ----------------------------------------------------------------------------
-async def synth_tts(text, voice, rate):
-    com = edge_tts.Communicate(text, voice, rate=rate, pitch="-8Hz")
+async def synth_tts(text, voice, rate, pitch="+0Hz"):
+    com = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch or "+0Hz")
     out = b""
     async for c in com.stream():
         if c["type"] == "audio":
@@ -2862,10 +2863,12 @@ class Handler(SimpleHTTPRequestHandler):
             try:
                 if edge_tts is None:
                     raise RuntimeError("edge-tts not installed (pip install -r requirements.txt)")
-                text = q.get("text", [""])[0][:1500]
-                voice = VOICES.get(q.get("lang", ["th"])[0], VOICES["th"])
-                pct = int(q.get("rate", ["0"])[0])
-                data = asyncio.run(synth_tts(text, voice, f"{pct:+d}%"))
+                text = q.get("text", [""])[0][:4000]
+                lang = q.get("lang", ["th"])[0]
+                want = q.get("voice", [""])[0]
+                voice = want if want in VOICE_OPTIONS.get(lang, []) else VOICES.get(lang, VOICES["th"])
+                pct = max(-20, min(20, int(q.get("rate", ["0"])[0] or 0)))
+                data = asyncio.run(synth_tts(text, voice, f"{pct:+d}%", "+0Hz"))
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/mpeg")
                 self.send_header("Content-Length", str(len(data)))
