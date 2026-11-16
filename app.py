@@ -5,7 +5,13 @@ st.markdown("""
 <style>
 .stApp, .stApp p, .stApp h1, .stApp span, .stApp div, .stApp input, .stApp button, .stApp label { font-family:'Prompt',sans-serif !important; }
 [data-testid="stToolbar"]{display:none !important}
-footer{display:none !important} .block-container{padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important} [data-testid="stVerticalBlock"]{gap:4px !important} .stMarkdown{margin:0 !important; padding:0 !important}
+footer{display:none !important}
+    section[data-testid="stSidebar"]{padding-top:0 !important}
+    section[data-testid="stSidebar"] > div{padding-top:0 !important}
+    div[data-testid="stSidebar"] div[data-testid="stVerticalBlock"]{gap:0 !important}
+    div[data-testid="stSidebar"] button > div{justify-content:flex-start !important; text-align:left !important}
+    div[data-testid="stSidebar"] button:hover{background:#e8eaed !important}
+     .block-container{padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important} [data-testid="stVerticalBlock"]{gap:4px !important} .stMarkdown{margin:0 !important; padding:0 !important}
 .stApp{background: radial-gradient(700px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), #fff !important}
 section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px !important; display:block !important; visibility:visible !important; transform:none !important} section[data-testid="stSidebar"][aria-expanded="false"]{display:block !important; visibility:visible !important; margin-left:0 !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important} [data-testid="stSidebarCollapsedControl"]{display:flex !important}
 .hero{font-size:28px;font-weight:400;text-align:center;margin-top:36px;margin-bottom:0;line-height:1.4;color:#1f1f1f}
@@ -13,9 +19,9 @@ section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px 
 .pill-center div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
 .pill-center div[data-testid="stSelectbox"] > div > div{border:none !important;box-shadow:none !important;background:transparent !important;font-size:13px !important}
 .pill-center button{border:none !important;background:#d3e3fd !important;box-shadow:none !important;border-radius:50% !important;width:38px !important;height:38px !important}
-div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;height:32px !important;padding:4px 12px !important;margin:1px 0 !important;border-radius:999px !important;font-size:14px !important}
+div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;justify-content:flex-start !important;height:32px !important;padding:4px 8px 4px 12px !important;margin:0 !important;border-radius:999px !important;color:#1f1f1f !important}border-radius:999px !important;font-size:14px !important}
 div[data-testid="stSidebar"] button:hover{background:#e3e3e3 !important}
-div[data-testid="stSidebar"] button[kind="primary"]{background:#1f1f1f !important; color:#fff !important}
+div[data-testid="stSidebar"] button[kind="primary"]{background:#f0f4f9 !important; color:#1f1f1f !important; font-weight:500 !important}
 div[data-testid="stChatInput"]{max-width:768px !important; margin:0 auto !important}
 div[data-testid="stChatInput"] > div{border-radius:999px !important; box-shadow:0 4px 24px rgba(0,0,0,0.12) !important; border:none !important}
 .chat-ai{max-width:768px;margin:4px auto 2px;font-size:15px;line-height:1.55;padding:2px 0}
@@ -74,7 +80,7 @@ def go(p): st.session_state.pending=p; st.rerun()
 def home(): st.session_state.messages=[]; st.session_state.pending=""; st.session_state.last_audio=None; st.rerun()
 # ================= LEFT MENU =================
 with st.sidebar:
-    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:14px"><div style="width:34px;height:34px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
+    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:6px 12px 8px 12px;margin-top:0"><div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
     if st.button("🏠  กลับหน้าแรก", use_container_width=True, type="primary"): home()
     st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">แชท</div>', unsafe_allow_html=True)
     if st.button("✎  แชทใหม่", use_container_width=True): home()
