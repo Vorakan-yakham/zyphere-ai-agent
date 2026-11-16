@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Generator, List, Optional
 
-from core.prompts import ANSWER_WITH_PLAN, AXES, BASE, PLAN_PROMPT
+from core.prompts import ANSWER_WITH_PLAN, AXES, BASE, PLAN_PROMPT, VERIFY_PROMPT
 
 AXIS_KNOWLEDGE = "Knowledge & Full-Stack Architecture"
 AXIS_AEROSPACE = "Aerospace & CAD Engine"
@@ -72,6 +72,14 @@ class ZyphereAdvancedEngine:
                       max_tokens: int = 4096) -> Generator[str, None, None]:
         yield from self.llm.stream(self.build_system(axis, plan),
                                    self.build_messages(history, prompt, attachments), max_tokens)
+
+    def verify(self, history, prompt, attachments, axis, answer: str) -> str:
+        """Self-check: returns "" if the answer holds up, else a short list of corrections."""
+        msgs = self.build_messages(history, prompt, attachments) + [
+            {"role": "assistant", "content": answer},
+            {"role": "user", "content": "ตรวจทานคำตอบด้านบนตามกติกา"}]
+        out = self.llm.complete(self.build_system(axis) + "\n\n" + VERIFY_PROMPT, msgs, max_tokens=700).strip()
+        return "" if not out or out.upper().startswith("OK") else out
 
     # ---------- memory ----------
     def record(self, prompt: str, axis: str, attachments: Optional[list], answer: str) -> None:

@@ -1,4 +1,4 @@
-"""Uploaded-file handling: text, PDF and images become Anthropic content blocks."""
+"""Uploaded-file handling: text, PDF and images become neutral content blocks (core.llm converts them for the local model)."""
 import base64
 import csv
 import io

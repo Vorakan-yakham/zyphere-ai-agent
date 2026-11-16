@@ -53,7 +53,7 @@ def render_cognition(store, guard, scheduler, brain, online: bool) -> None:
         f"<span class='zy-muted' style='font-size:12px'>· background loop {'running' if alive else 'stopped'} · "
         f"{used}/{cap} autonomous calls today</span></div>", unsafe_allow_html=True)
     if not online:
-        st.info("ต้องตั้งค่า ANTHROPIC_API_KEY ก่อน จึงจะคิดเองได้")
+        st.info("ต้องเปิด Ollama และดึงโมเดลก่อน (ollama pull qwen2.5:7b-instruct) จึงจะคิดเองได้")
 
     left, right = st.columns([3, 2])
     with left:

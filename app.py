@@ -1,4 +1,6 @@
-"""Zyphere Autonomous Executive OS - main entry point & UI controller."""
+"""Zyphere Autonomous Executive OS (local edition) - main entry point & UI controller.
+Brain = Ollama on this machine; speech-in = faster-whisper; speech-out = offline TTS; no cloud API."""
+import base64
 import hashlib
 
 import streamlit as st
@@ -14,6 +16,8 @@ from core import (  # noqa: E402
     LLM, Brain, Guard, LLMError, MemoryBank, Scheduler, Store, ZyphereAdvancedEngine, get_api_key,
 )
 from core import commands  # noqa: E402
+from core import sensors  # noqa: E402
+from core.parser import Attachment  # noqa: E402
 from core.voice import VoiceError, transcribe  # noqa: E402
 from ui.cognition import render_cognition, render_skills, state_of  # noqa: E402
 from ui.components import (  # noqa: E402
@@ -99,6 +103,34 @@ if audio is not None:
         except VoiceError as e:
             st.warning(str(e))
 
+# Sensors: a fresh camera photo is analysed once and attached to the NEXT message only
+sensor_ctx, sensor_att, cam_digest = "", None, None
+with st.expander("Sensors · กล้อง", icon=":material/sensors:"):
+    use_cam = st.toggle("ให้ AI รับรู้ภาพจากกล้อง (ถ่ายภาพแล้วพิมพ์/พูดต่อได้เลย)", key="use_cam")
+    use_vision = st.toggle("ส่งภาพให้โมเดลมองภาพด้วย (ช้ากว่า ต้อง ollama pull qwen2.5vl:7b)", key="use_vision")
+    if use_cam:
+        shot = st.camera_input("กล้อง", label_visibility="collapsed")
+        if shot is not None:
+            raw = shot.getvalue()
+            cam_digest = hashlib.sha1(raw).hexdigest()
+            if cam_digest != st.session_state.get("cam_digest"):
+                st.session_state.cam_prev = st.session_state.get("cam_cur")
+                st.session_state.cam_cur, st.session_state.cam_digest = raw, cam_digest
+            try:
+                reading = sensors.summarize(sensors.analyze_image(raw, st.session_state.get("cam_prev")))
+                st.caption(reading)
+                if cam_digest != st.session_state.get("cam_used"):
+                    sensor_ctx = reading
+                    if use_vision:
+                        sensor_att = Attachment("camera.jpg", "image", data_b64=base64.b64encode(raw).decode(),
+                                                media_type=getattr(shot, "type", None) or "image/jpeg")
+            except ValueError as e:
+                st.warning(str(e))
+    serial_line = sensors.read_serial()  # optional Arduino/ESP32 line (env ZYPHERE_SERIAL), read-only
+    if serial_line:
+        st.caption(serial_line)
+        sensor_ctx = (sensor_ctx + "\n" + serial_line).strip()
+
 limit_hit = st.session_state.turns >= MAX_TURNS_PER_SESSION
 if limit_hit:
     st.warning("ถึงขีดจำกัดจำนวนข้อความของเซสชันนี้แล้ว กด Purge memory & chat หรือ Sign out เพื่อเริ่มใหม่")
@@ -106,6 +138,7 @@ if limit_hit:
 # The input is never disabled by a missing key: that made the app look broken.
 prompt = st.chat_input("บรีฟงาน ถามคำถาม สั่ง /help หรือแนบไฟล์ในแถบข้าง…", disabled=limit_hit) or suggestion or voice_prompt
 
+from_voice = bool(voice_prompt) and prompt == voice_prompt
 if prompt:
     welcome_slot.empty()
     with header_slot.container():
@@ -121,7 +154,7 @@ if prompt:
         with st.chat_message("assistant", avatar=AI_AVATAR):
             st.markdown(badges("System", False), unsafe_allow_html=True)
             st.markdown(reply)
-        if settings.voice:
+        if settings.voice or from_voice:
             speak(reply)
         st.stop()
 
@@ -130,6 +163,8 @@ if prompt:
         st.stop()
 
     history = list(st.session_state.messages)
+    llm_prompt = f"{prompt}\n\n{sensor_ctx}" if sensor_ctx else prompt
+    turn_atts = list(settings.attachments) + ([sensor_att] if sensor_att else [])
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar=USER_AVATAR):
         st.markdown(prompt)
@@ -143,16 +178,28 @@ if prompt:
             plan = None
             if settings.deep:
                 with st.status("กำลังวิเคราะห์เชิงลึก…", expanded=False) as status:
-                    plan = engine.plan(history, prompt, settings.attachments, axis)
+                    plan = engine.plan(history, llm_prompt, turn_atts, axis)
                     st.markdown(plan)
                     status.update(label="วิเคราะห์เสร็จแล้ว — กำลังเรียบเรียงคำตอบ", state="complete")
 
             answer = st.write_stream(
-                engine.stream_answer(history, prompt, settings.attachments, axis, plan,
+                engine.stream_answer(history, llm_prompt, turn_atts, axis, plan,
                                      max_tokens=8000 if settings.deep else 4096)
             )
             answer = answer if isinstance(answer, str) else "".join(str(x) for x in answer)
 
+            if settings.verify:
+                with st.status("กำลังตรวจทานคำตอบ…", expanded=False) as vstatus:
+                    fix = engine.verify(history, llm_prompt, turn_atts, axis, answer)
+                    vstatus.update(label="ตรวจทานแล้ว — พบจุดที่ควรแก้" if fix else "ตรวจทานแล้ว — ไม่พบข้อผิดพลาดสำคัญ",
+                                   state="complete")
+                if fix:
+                    note = "**ข้อแก้ไขจากการตรวจทาน**\n\n" + fix
+                    st.markdown(note)
+                    answer += "\n\n" + note
+
+            if cam_digest and sensor_ctx:
+                st.session_state.cam_used = cam_digest  # a photo is attached to one message only
             engine.record(prompt, axis, settings.attachments, answer)
             with header_slot.container():  # refresh the memory counter
                 render_header(settings, len(memory), online, compact=True, auto=auto_state)
@@ -160,7 +207,7 @@ if prompt:
                 {"role": "assistant", "content": answer, "axis": axis, "reasoning": plan}
             )
             st.session_state.turns += 1
-            if settings.voice:
+            if settings.voice or from_voice:
                 speak(answer)
         except LLMError as e:
             st.error(str(e))

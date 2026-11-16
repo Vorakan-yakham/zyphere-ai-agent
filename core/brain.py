@@ -11,6 +11,7 @@ import time
 from typing import Callable, Dict, List, Optional
 
 from core import prompts
+from core.llm import default_model
 from core.safety import BudgetExceeded, Guard, Verdict, authorize, redact
 from core.sandbox import run_code, validate, SandboxViolation
 from core.store import Store
@@ -69,9 +70,11 @@ def check_skill(spec: Dict[str, str]) -> str:
 
 class Brain:
     def __init__(self, store: Store, guard: Guard, llm_factory: Callable[[str], object],
-                 light_model: str = "claude-haiku-5-5", strong_model: str = "claude-sonnet-5-5"):
+                 light_model: Optional[str] = None, strong_model: Optional[str] = None):
         self.store, self.guard, self.llm_factory = store, guard, llm_factory
-        self.light_model, self.strong_model = light_model, strong_model
+        # one local model for everything by default: switching models in Ollama means a slow reload
+        self.light_model = light_model or default_model()
+        self.strong_model = strong_model or self.light_model
 
     # ---------- model access ----------
     def _ask(self, model: str, system: str, user: str, max_tokens: int, source: str) -> str:

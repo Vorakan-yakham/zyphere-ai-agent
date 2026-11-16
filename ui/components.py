@@ -1,25 +1,20 @@
 """UI pieces: login, sidebar, HUD header, welcome screen, message rendering, optional voice."""
-import asyncio
 import base64
 import hmac
 import html
-import os
 import re
-import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
 import streamlit as st
 
-from core import DEFAULT_MODEL, MODELS, SUPPORTED_TYPES, Attachment, get_api_key, parse_uploaded_file
+from core import SUPPORTED_TYPES, Attachment, default_model, model_choices, parse_uploaded_file
 
 USER_AVATAR = ":material/person:"
 AI_AVATAR = ":material/blur_circular:"
-AUDIO_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "audio")
-VOICE = "th-TH-NiwatNeural"
 DEFAULT_ALLOWED = ["vorakangm@gmail.com", "admin@zyphere.com"]
-MAX_TURNS_PER_SESSION = 80  # cost guard for the API key
+MAX_TURNS_PER_SESSION = 500  # protects the context window / memory, not money (local model is free)
 
 # 24x24 line icons (monochrome, stroke = currentColor via CSS)
 ICONS = {
@@ -41,10 +36,10 @@ SUGGESTIONS = [
 ]
 
 SETUP_TEXT = (
-    "ช่องพิมพ์ใช้งานได้ตามปกติ แต่ **AI ยังไม่ตอบ** เพราะยังไม่ได้เชื่อมต่อ API key  \n"
-    "Streamlit Cloud: เปิดแอป → **Manage app** → **Settings** → **Secrets** แล้ววาง 2 บรรทัดนี้ จากนั้นกด **Reboot app**"
+    "ช่องพิมพ์ใช้งานได้ตามปกติ แต่ **AI ยังไม่ตอบ** เพราะยังไม่พบสมองในเครื่อง (Ollama)  \n"
+    "ติดตั้ง Ollama จาก ollama.com แล้วรันคำสั่งด้านล่างใน Terminal จากนั้นรีเฟรชหน้านี้"
 )
-SETUP_CODE = 'ANTHROPIC_API_KEY = "sk-ant-..."\naccess_code = "รหัสผ่านยาว ๆ ที่คุณตั้งเอง"'
+SETUP_CODE = "ollama serve   # ถ้า Ollama ยังไม่ทำงานเบื้องหลัง\nollama pull qwen2.5:7b-instruct"
 
 
 def reactor_svg(size: int = 120) -> str:
@@ -83,6 +78,7 @@ class Settings:
     voice: bool
     attachments: List[Attachment]
     lang: str = "th-TH"
+    verify: bool = False
 
 
 # ---------- Auth ----------
@@ -118,9 +114,9 @@ def auth_gate() -> None:
     )
     _, col, _ = st.columns([1, 1.6, 1])
     with col:
-        # The app spends API credits, so an email alone (public in the repo) is not enough.
-        if get_api_key(st.secrets if _secret("ANTHROPIC_API_KEY") else None) and not access_code:
-            st.error("ยังไม่ได้ตั้งค่า `access_code` ใน Secrets — ระบบปิดการเข้าสู่ระบบไว้เพื่อป้องกันการใช้ API key โดยผู้อื่น")
+        # The app can reach this machine's camera, microphone and local model, so an email alone is not enough.
+        if not access_code:
+            st.error("ยังไม่ได้ตั้งค่า `access_code` ใน .streamlit/secrets.toml — ระบบปิดการเข้าสู่ระบบไว้เพื่อป้องกันผู้อื่นใช้กล้อง ไมค์ และสมองในเครื่องของคุณ")
             st.code('access_code = "รหัสผ่านของคุณ"', language="toml")
             st.stop()
 
@@ -145,21 +141,19 @@ def _speakable(text: str, limit: int = 400) -> str:
 
 
 def speak(text: str) -> None:
-    """Edge-TTS read-out of the first part of an answer. Never raises."""
+    """Offline read-out of the first part of an answer (core.tts). Never raises."""
     try:
-        import edge_tts
+        from core.tts import synthesize
         spoken = _speakable(text).replace("Zyphere", "ไซเฟอร์")
         if not spoken:
             return
-        os.makedirs(AUDIO_DIR, exist_ok=True)
-        for f in sorted((os.path.join(AUDIO_DIR, x) for x in os.listdir(AUDIO_DIR)), key=os.path.getmtime)[:-5]:
-            os.remove(f)
-        path = os.path.join(AUDIO_DIR, f"{uuid.uuid4().hex}.mp3")
-        asyncio.run(edge_tts.Communicate(spoken, VOICE, pitch="-5Hz", rate="-2%").save(path))
-        with open(path, "rb") as fh:
-            b64 = base64.b64encode(fh.read()).decode()
-        st.markdown(f'<audio autoplay controls style="width:100%"><source src="data:audio/mp3;base64,{b64}" '
-                    f'type="audio/mp3"></audio>', unsafe_allow_html=True)
+        wav = synthesize(spoken)
+        if not wav:
+            st.caption("ยังสร้างเสียงตอบไม่ได้ — ติดตั้ง `pip install -r requirements-voice.txt` (ดู README)")
+            return
+        b64 = base64.b64encode(wav).decode()
+        st.markdown(f'<audio autoplay controls style="width:100%"><source src="data:audio/wav;base64,{b64}" '
+                    f'type="audio/wav"></audio>', unsafe_allow_html=True)
     except Exception as e:
         print(f"Audio Generation Error: {e}")
 
@@ -177,12 +171,15 @@ def render_sidebar(memory) -> Settings:
         st.markdown("---")
 
         _label("Intelligence")
-        default = _secret("default_model") or DEFAULT_MODEL
-        keys = list(MODELS)
+        choices = model_choices()
+        keys = list(choices)
+        default = _secret("default_model") or default_model()
         model = st.selectbox("Model", keys, index=keys.index(default) if default in keys else 0,
-                             format_func=lambda k: MODELS[k], label_visibility="collapsed")
+                             format_func=lambda k: choices[k], label_visibility="collapsed")
         deep = st.toggle("Deep analysis", value=False,
                          help="AI วิเคราะห์เป้าหมาย ข้อสมมติ ตัวเลือก และความเสี่ยงก่อนเขียนคำตอบ ช้ากว่าและใช้โควตามากกว่า แต่ลึกกว่า")
+        verify = st.toggle("Self-check", value=False,
+                           help="หลังตอบ AI จะตรวจทานคำตอบตัวเองอีกรอบและเพิ่มข้อแก้ไขถ้าพบจุดผิด ช่วยให้โมเดลขนาดเล็กแม่นขึ้น แต่ช้าลง")
         voice = st.toggle("Voice response", value=False, help="อ่านคำตอบออกเสียง (ภาษาไทย)")
         lang = st.selectbox("Voice input language", ["th-TH", "en-US"], label_visibility="collapsed",
                             format_func=lambda k: {"th-TH": "ไมค์: ภาษาไทย", "en-US": "Mic: English"}[k])
@@ -219,12 +216,12 @@ def render_sidebar(memory) -> Settings:
         if st.button("Sign out", icon=":material/logout:"):
             st.session_state.clear()
             st.rerun()
-    return Settings(model=model, deep=deep, voice=voice, attachments=attachments, lang=lang)
+    return Settings(model=model, deep=deep, voice=voice, attachments=attachments, lang=lang, verify=verify)
 
 
 # ---------- Main area ----------
 def hud(settings: Settings, memory_count: int, online: bool, files: int, auto: str = "OFF") -> str:
-    model = MODELS[settings.model].split("—")[0].strip().upper()
+    model = settings.model.upper()
     status = ("<span class='zy-dot'></span>Online" if online else "<span class='zy-dot off'></span>Offline")
     chips = [f"<span class='zy-chip solid'>{status}</span>" if online else f"<span class='zy-chip'>{status}</span>",
              f"<span class='zy-chip'>{html.escape(model)}</span>",
@@ -232,6 +229,8 @@ def hud(settings: Settings, memory_count: int, online: bool, files: int, auto: s
              f"<span class='zy-chip'>Files {files:02d}</span>",
              f"<span class='zy-chip{' solid' if auto == 'ON' else ''}'>Autonomy {auto}</span>",
              f"<span class='zy-chip'>{'Deep analysis' if settings.deep else 'Standard'}</span>"]
+    if settings.verify:
+        chips.append("<span class='zy-chip'>Self-check</span>")
     return "<div class='zy-hud'>" + "".join(chips) + "</div>"
 
 
@@ -249,7 +248,7 @@ def render_header(settings: Settings, memory_count: int, online: bool, compact: 
 def render_offline_notice() -> None:
     st.markdown("<div class='zy-notice'><div class='zy-eyebrow' style='margin-bottom:6px'>Brain offline</div>"
                 + html.escape(SETUP_TEXT).replace("**", "").replace("  \n", "<br>") + "</div>", unsafe_allow_html=True)
-    st.code(SETUP_CODE, language="toml")
+    st.code(SETUP_CODE, language="bash")
 
 
 def render_welcome() -> Optional[str]:

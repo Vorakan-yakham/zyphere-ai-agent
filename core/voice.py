@@ -1,26 +1,42 @@
-"""Speech-to-text for microphone input. Uses SpeechRecognition's free Google web endpoint (needs internet)."""
+"""Speech-to-text for microphone input, fully offline (faster-whisper). The model downloads once, then no internet is needed."""
 import io
+import os
+import threading
+
+_model = None
+_lock = threading.Lock()
 
 
 class VoiceError(Exception):
     """Message is safe to show to the user (Thai)."""
 
 
+def _get_model():
+    global _model
+    with _lock:
+        if _model is None:
+            try:
+                from faster_whisper import WhisperModel
+            except ImportError:
+                raise VoiceError("ยังไม่ได้ติดตั้ง faster-whisper — รัน `pip install faster-whisper`")
+            size = os.environ.get("ZYPHERE_STT_MODEL", "small")  # tiny/base/small/medium/large-v3
+            try:
+                _model = WhisperModel(size, device="auto", compute_type="int8")
+            except Exception:
+                raise VoiceError(f"โหลดโมเดลเสียง '{size}' ไม่ได้ (ครั้งแรกต้องต่ออินเทอร์เน็ตเพื่อดาวน์โหลด 1 ครั้ง)")
+    return _model
+
+
 def transcribe(wav_bytes: bytes, language: str = "th-TH") -> str:
+    code = (language or "th").split("-")[0].lower()
+    model = _get_model()
     try:
-        import speech_recognition as sr
-    except ImportError:
-        raise VoiceError("ยังไม่ได้ติดตั้งแพ็กเกจ SpeechRecognition")
-    rec = sr.Recognizer()
-    try:
-        with sr.AudioFile(io.BytesIO(wav_bytes)) as src:
-            audio = rec.record(src)
+        segments, _ = model.transcribe(io.BytesIO(wav_bytes), language=code, vad_filter=True,
+                                       beam_size=5, condition_on_previous_text=False)
+        text = " ".join(s.text.strip() for s in segments)
     except Exception:
         raise VoiceError("อ่านไฟล์เสียงไม่ได้ ลองอัดใหม่")
-    try:
-        text = rec.recognize_google(audio, language=language)
-    except sr.UnknownValueError:
+    text = " ".join(text.split())
+    if not text:
         raise VoiceError("ฟังไม่ออก ลองพูดให้ชัดขึ้นหรือใกล้ไมค์ขึ้น")
-    except sr.RequestError:
-        raise VoiceError("บริการแปลงเสียงเป็นข้อความใช้ไม่ได้ในตอนนี้ (ตรวจสอบอินเทอร์เน็ต) — พิมพ์แทนได้")
-    return " ".join(text.split())
+    return text

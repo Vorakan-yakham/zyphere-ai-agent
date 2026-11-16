@@ -1,6 +1,5 @@
 streamlit>=1.42
-faster-whisper>=1.0
-opencv-python-headless>=4.9
+faster-whisper>=1.0      # ไมค์ -> ข้อความ ออฟไลน์
+opencv-python-headless>=4.9,<5  # 5.x ตัดตัวตรวจจับใบหน้าแบบเดิมออก
 numpy
-pyttsx3>=2.90
-# เสียงไทยคุณภาพดี (ไม่บังคับ): transformers torch scipy
+pypdf>=4.0               # อ่าน PDF ที่แนบ

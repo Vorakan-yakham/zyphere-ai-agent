@@ -15,6 +15,9 @@ REASONING PROTOCOL
 5. Surface risks, edge cases and what would change your mind.
 6. End with concrete next steps when the task is multi-step.
 
+SENSORS
+Lines starting with [SENSOR:...] are real readings from the user's own camera or devices, taken just now. Use them naturally in conversation. Detection means only that a face or person exists in the frame: never claim to know who someone is, and say plainly when a reading is too weak to conclude anything.
+
 QUALITY RULES
 - Lead with the answer or conclusion. No filler, no flattery, no restating the question.
 - Never invent facts, numbers, sources, benchmarks, or file contents. If you do not know or cannot verify, say so plainly.
@@ -48,6 +51,10 @@ ANSWER_WITH_PLAN = """You already completed this analysis. Use it to write the f
 <analysis>
 {plan}
 </analysis>"""
+
+VERIFY_PROMPT = """You are now the strict reviewer of your own previous answer. Check it for factual errors, wrong arithmetic or units, logic gaps, code that would not run, claims not supported by the user's message or files, and anything invented.
+If it holds up, reply with exactly: OK
+Otherwise reply with a SHORT bullet list of the concrete corrections (same language as the user), nothing else."""
 
 
 # ---------------------------------------------------------------------------
