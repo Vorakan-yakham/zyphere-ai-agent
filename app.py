@@ -5,7 +5,7 @@ st.markdown("""
 <style>
 .stApp, .stApp p, .stApp h1, .stApp span, .stApp div, .stApp input, .stApp button, .stApp label { font-family:'Prompt',sans-serif !important; }
 [data-testid="stToolbar"]{display:none !important}
-footer{display:none !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important; color:#1f1f1f !important}
+footer{display:none !important} div[data-testid="stSidebar"] .stButton{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button:hover{background:#ececec !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important; color:#1f1f1f !important}
     section[data-testid="stSidebar"]{padding-top:0 !important}
     section[data-testid="stSidebar"] > div{padding-top:0 !important}
     div[data-testid="stSidebar"] div[data-testid="stVerticalBlock"]{gap:0 !important}
@@ -94,13 +94,16 @@ def home(): st.session_state.messages=[]; st.session_state.pending=""; st.sessio
 # ================= LEFT MENU =================
 with st.sidebar:
     st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:10px 12px 6px 12px;margin-top:0"><div style="width:24px;height:24px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
-    if st.button("✎  แชทใหม่", use_container_width=True, key="gemini_newchat"): home()
+    if st.button("✎  แชทใหม่                                          Ctrl+Shift+O", use_container_width=True, key="meta_newchat"): home()
     # Gemini has no 'แชท' header - direct list
     # removed duplicate new chat - already at top
-    if st.button("⌕  ค้นหาแชท", use_container_width=True): go("สรุปให้หน่อยว่าฉันเคยคุยเรื่องอะไรบ้าง")
+    if st.button("⌕  ค้นหา                                          Ctrl+K", use_container_width=True): go("สรุปให้หน่อยว่าฉันเคยคุยเรื่องอะไรบ้าง")
+    if st.button("🖼  สื่อ", use_container_width=True): go("เปิดสื่อ รูป วิดีโอ ที่เคยทำ")
+    if st.button("◈  อาร์ติแฟกต์", use_container_width=True): go("เปิดอาร์ติแฟกต์ งานที่เคยสร้าง")
     if st.button("⊞  คลัง", use_container_width=True): go("เปิดคลังงานของฉัน สรุปงานที่เคยทำ")
     if st.button("◷  กำหนดเวลาแล้ว", use_container_width=True): go("ดูงานที่กำหนดเวลาไว้วันนี้ แล้วจัดลำดับให้หน่อย")
     if st.button("✎  ปรับแต่ง Zyphere", use_container_width=True): go("ปรับแต่งให้เธอพูดแบบเพื่อนร่วมงาน ตรงๆ อบอุ่น")
+    if st.button("▶  Vibes", use_container_width=True): go("เปิด Vibes โหมดชิลๆ")
     if st.button("▷  วิดีโอ", use_container_width=True): go("ช่วยคิดสคริปต์วิดีโอสั้นๆ ให้หน่อย")
     st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">เครื่องมือ</div>', unsafe_allow_html=True)
     if st.button("🎙  พูดคุยด้วยเสียง", use_container_width=True): go("คุยกับฉันด้วยเสียง พูดตอบกลับเป็นภาษาไทย เสียงผู้ชาย")
