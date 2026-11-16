@@ -1,4 +1,4 @@
-# ZYPHERE FINAL - All Buttons Working - GitHub Pages + Streamlit
+# ZYPHERE REAL BRAIN - GitHub Pages + Streamlit
 import streamlit as st, pathlib
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide')
 st.markdown("<style>[data-testid='stSidebar']{display:none} [data-testid='stToolbar']{display:none} footer{display:none} .main .block-container{padding:0!important;max-width:100%!important}</style>", unsafe_allow_html=True)
