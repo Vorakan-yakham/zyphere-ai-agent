@@ -1,62 +1,98 @@
-import streamlit as st, os
-st.set_page_config(page_title="ZYP HERE", page_icon="✦", layout="wide")
+import streamlit as st, os, urllib.parse
+st.set_page_config(page_title="ZYP HERE", page_icon="✦", layout="wide", initial_sidebar_state="expanded")
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 * { font-family:'Prompt',sans-serif !important; }
 header[data-testid="stHeader"]{display:none !important}
 footer{display:none !important}
-.stApp{background: radial-gradient(700px 420px at 68% 52%, #cfe0ff 0%, transparent 62%), radial-gradient(600px 350px at 32% 58%, #e8f0ff 0%, transparent 60%), #fff !important}
-section[data-testid="stSidebar"]{width:280px !important; min-width:280px !important; background:#f0f4f9 !important; padding:0 !important}
-.block-container{padding:0 20px !important; max-width:100% !important}
+.stApp{background: radial-gradient(680px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), radial-gradient(550px 320px at 38% 58%, #e6f0ff 0%, transparent 60%), #fff !important}
+section[data-testid="stSidebar"]{width:280px !important; min-width:280px !important; background:#f0f4f9 !important; display:block !important; visibility:visible !important}
+section[data-testid="stSidebar"] > div{padding-top:0 !important}
+.block-container{padding:0 !important; max-width:100% !important}
 div[data-testid="stVerticalBlock"]{gap:0 !important}
-/* ANIMATED LOGO */
-.logo-wrap{display:flex;align-items:center;gap:10px;padding:16px 16px 12px}
-.logo-anim{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb,#d96570);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;animation:spinGlow 3s ease-in-out infinite}
-@keyframes spinGlow{0%,100%{transform:rotate(0deg) scale(1);box-shadow:0 0 0 rgba(66,133,244,0)}50%{transform:rotate(180deg) scale(1.08);box-shadow:0 0 18px rgba(66,133,244,.5)}}
-.logo-text{font-size:17px;font-weight:600;letter-spacing:.2px}
+/* LOGO ANIMATED */
+.logo-row{display:flex;align-items:center;gap:10px;padding:16px 14px 14px}
+.logo-anim{width:38px;height:38px;min-width:38px;border-radius:50%;background:conic-gradient(from 0deg,#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;animation:spinGlow 2.8s ease-in-out infinite}
+@keyframes spinGlow{0%,100%{transform:rotate(0deg) scale(1);box-shadow:0 0 0 rgba(66,133,244,0)}50%{transform:rotate(180deg) scale(1.1);box-shadow:0 0 20px rgba(66,133,244,.55)}}
 .side-item{display:flex;align-items:center;gap:12px;height:38px;padding:0 12px;margin:1px 10px;border-radius:999px;font-size:14px;color:#1f1f1f}
 .side-item.active{background:#e3e3e3}
 .side-item .ic{width:20px;text-align:center;font-size:18px;line-height:1;color:#444}
-.side-label{font-size:12px;color:#5f6368;padding:16px 22px 6px}
-.hero{font-size:32px !important;font-weight:500;text-align:center;margin-top:110px !important}
-.sub{font-size:14px;color:#5f6368;text-align:center;margin-top:4px}
-.pill-wrap{max-width:680px;margin:28px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:6px 8px 6px 14px}
-.chip{background:#fff;border:1px solid #e5e5e5;border-radius:999px;padding:7px 14px;font-size:13px;color:#333}
-.topbar{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px 0 0}
+.side-label{font-size:13px;color:#5f6368;padding:20px 22px 6px}
+.topbar{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px 0 0}
 .top-gray{background:#eef2f7;border:none;border-radius:999px;padding:8px 14px;font-size:13px}
 .top-blue{background:#d3e3fd;border:none;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:500}
+.hero{font-size:32px;font-weight:500;text-align:center;margin-top:140px;color:#1f1f1f}
 </style>
 """, unsafe_allow_html=True)
 def get_key(n):
     try: return st.secrets.get(n,"")
     except: return os.getenv(n,"")
+# --- LEFT - MUST SHOW ---
 with st.sidebar:
-    st.markdown('<div class="logo-wrap"><div class="logo-anim">✦</div><div><div class="logo-text">Zyphere</div><div style="font-size:11px;color:#5f6368">เพื่อนร่วมงานของคุณ</div></div><span style="margin-left:auto;font-size:16px;color:#555">⌕ &nbsp; ▭</span></div>', unsafe_allow_html=True)
-    st.markdown('<div class="side-item active"><span class="ic">✎</span>แชทใหม่</div><div class="side-item"><span class="ic">⌕</span>ค้นหาแชท</div><div class="side-item"><span class="ic">⊞</span>คลัง</div><div class="side-item"><span class="ic">◷</span>กำหนดเวลาแล้ว</div><div class="side-item"><span class="ic">✎</span>ปรับแต่ง Zyphere</div><div class="side-item"><span class="ic">▷</span>วิดีโอ</div>', unsafe_allow_html=True)
+    st.markdown('<div class="logo-row"><div class="logo-anim">✦</div><div><div style="font-size:17px;font-weight:600;line-height:1.1">Zyphere</div><div style="font-size:11px;color:#5f6368">เพื่อนร่วมงานของคุณ</div></div><span style="margin-left:auto;font-size:16px;color:#555">⌕ &nbsp; ▭</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="side-item active"><span class="ic">✎</span>แชทใหม่</div><div class="side-item"><span class="ic">⊞</span>คลัง</div><div class="side-item"><span class="ic">◷</span>กำหนดเวลาแล้ว</div><div class="side-item"><span class="ic">✎</span>ปรับแต่ง</div><div class="side-item"><span class="ic">▷</span>วิดีโอ</div>', unsafe_allow_html=True)
     st.markdown('<div class="side-label">เครื่องมือ</div><div class="side-item"><span class="ic">🎙</span>พูดคุยด้วยเสียง</div><div class="side-item"><span class="ic">✓</span>รายการงานของฉัน</div><div class="side-item"><span class="ic">⌨</span>เขียนโค้ด</div><div class="side-item"><span class="ic">▤</span>สรุปงาน</div><div class="side-item"><span class="ic">✦</span>คิดไอเดีย</div>', unsafe_allow_html=True)
     st.markdown('<div class="side-label">Notebook</div><div class="side-item"><span class="ic">＋</span>Notebook ใหม่</div>', unsafe_allow_html=True)
-    st.markdown('<div class="side-label">BRAINS — Zyphere</div><div class="side-item"><span class="ic">●</span>Groq · เร็ว</div><div class="side-item"><span class="ic">●</span>Groq · คิดลึก</div><div class="side-item"><span class="ic">●</span>Gemini · สรุปยาว</div><div class="side-item"><span class="ic">●</span>OpenRouter · ตัวใหญ่</div>', unsafe_allow_html=True)
-    st.markdown('<div style="position:fixed;bottom:14px;left:12px;width:250px;display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#f0f4f9"><span style="font-size:14px">○ Whisp - Vorakan</span><span style="font-size:16px">⚙</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="side-label">BRAINS — Zyphere</div><div class="side-item"><span class="ic">●</span>Groq · เร็ว</div><div class="side-item"><span class="ic">●</span>Gemini · สรุปยาว</div><div class="side-item"><span class="ic">●</span>OpenRouter · ตัวใหญ่</div>', unsafe_allow_html=True)
+    voice = st.checkbox("◉ ให้ Zyphere พูดตอบกลับ", value=True)
+    brain_side = st.selectbox("เลือกสมอง", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"])
+    if st.button("＋ แชทใหม่", use_container_width=True):
+        st.session_state.messages=[]
+        st.rerun()
+    st.markdown('<div style="position:fixed;bottom:16px;left:12px;width:250px;display:flex;justify-content:space-between;align-items:center;padding:0 12px"><span style="font-size:14px">○ Whisp</span><span style="font-size:16px">⚙</span></div>', unsafe_allow_html=True)
+# --- TOP RIGHT ---
 st.markdown('<div class="topbar"><button class="top-gray">↓ ดาวน์โหลดแอป</button><button class="top-blue">✦ อัปเกรด</button><button class="top-gray">✦</button></div>', unsafe_allow_html=True)
 if "messages" not in st.session_state: st.session_state.messages=[]
-if not st.session_state.messages:
-    st.markdown('<div class="hero">เราจะเริ่มจากตรงไหนก่อนดี</div><div class="sub">Zyphere เพื่อนร่วมงานของคุณ — พิมพ์ก็ได้ พูดก็ได้</div>', unsafe_allow_html=True)
+# --- READ PILL INPUT FROM HTML COMPONENT ---
+qp = st.query_params
+prompt = qp.get("q", "")
+brain = qp.get("brain", "Zyphere อัตโนมัติ")
+if prompt:
+    # clear query so refresh does not resend
+    st.query_params.clear()
+if not st.session_state.messages and not prompt:
+    st.markdown('<div class="hero">เราจะเริ่มจากตรงไหนก่อนดี</div>', unsafe_allow_html=True)
 else:
     for m in st.session_state.messages:
         with st.chat_message(m["role"]): st.markdown(m["content"])
-st.markdown('<div class="pill-wrap">', unsafe_allow_html=True)
-with st.form("pill", clear_on_submit=True):
-    c1,c2,c3,c4,c5 = st.columns([0.5,5,1.8,0.6,0.6])
-    with c1: st.markdown('<div style="font-size:24px;text-align:center">＋</div>', unsafe_allow_html=True)
-    with c2: prompt = st.text_input("q", placeholder="พิมพ์ @ เพื่อดูเครื่องมือเชื่อมต่อ ทักษะ และอื่นๆ", label_visibility="collapsed")
-    with c3: brain = st.selectbox("m", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"], label_visibility="collapsed")
-    with c4: st.markdown('<div style="font-size:18px;text-align:center">🎙</div>', unsafe_allow_html=True)
-    with c5: sent = st.form_submit_button("➤")
-    voice = st.checkbox("◉ ให้ Zyphere พูดตอบกลับ", value=True)
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('<div style="display:flex;gap:8px;justify-content:center;margin-top:14px"><span class="chip">⌨ เขียนโค้ด</span><span class="chip">▤ สรุปงาน</span><span class="chip">✦ คิดไอเดีย</span><span class="chip">◉ อธิบายลึกๆ</span></div>', unsafe_allow_html=True)
+# --- SINGLE ROW PILL - pure HTML, no Streamlit columns, never breaks ---
+import streamlit.components.v1 as components
+pill_html = """
+<div style="max-width:680px;margin:28px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 14px;display:flex;align-items:center;gap:8px;font-family:Prompt,sans-serif">
+  <span style="font-size:24px;line-height:1">＋</span>
+  <form id="f" style="flex:1;display:flex;align-items:center;gap:8px;margin:0">
+    <input id="q" name="q" placeholder="ถาม Zyphere" style="flex:1;border:none;outline:none;font-size:15px;font-family:Prompt,sans-serif;background:transparent" />
+    <select name="brain" style="border:none;outline:none;font-size:13px;background:transparent;font-family:Prompt,sans-serif">
+      <option>Zyphere อัตโนมัติ</option><option>01 GROQ - FAST</option><option>02 GROQ - DEEP</option><option>03 GEMINI - LONG</option><option>04 OPENROUTER - BIG</option>
+    </select>
+    <button type="button" onclick="voice()" style="border:none;background:#f0f4f9;width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer">🎙</button>
+  </form>
+</div>
+<script>
+function voice(){
+  try{
+    var r = new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+    r.lang='th-TH'; r.onresult=function(e){ document.getElementById('q').value=e.results[0][0].transcript; document.getElementById('f').requestSubmit(); };
+    r.start();
+  }catch(e){ alert('เบราว์เซอร์นี้ไม่รองรับไมค์ ลองพิมพ์แทนได้เลย'); }
+}
+document.getElementById('f').addEventListener('submit', function(e){
+  e.preventDefault();
+  var q=document.getElementById('q').value;
+  var b=document.querySelector('select[name=brain]').value;
+  if(!q) return;
+  var url = new URL(window.parent.location.href);
+  url.searchParams.set('q', q);
+  url.searchParams.set('brain', b);
+  window.parent.location.href = url.toString();
+});
+</script>
+"""
+components.html(pill_html, height=80)
 if prompt:
+    if brain_side and brain_side!="Zyphere อัตโนมัติ" and brain=="Zyphere อัตโนมัติ":
+        brain=brain_side
     st.session_state.messages.append({"role":"user","content":prompt})
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
