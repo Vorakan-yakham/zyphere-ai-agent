@@ -67,7 +67,7 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 <label>คีย์ AI (ใส่ช่องเดียวก็พอ เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
 <input id="k-groq" placeholder="Groq" autocomplete="off"><input id="k-gemini" placeholder="Gemini" autocomplete="off" style="margin-top:6px"><input id="k-openrouter" placeholder="OpenRouter" autocomplete="off" style="margin-top:6px"><input id="k-hf" placeholder="Hugging Face" autocomplete="off" style="margin-top:6px">
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
-<label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.7" max="1.4" step="0.05">
+<label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
 <label>บุคลิก</label><select id="persona"><option value="jarvis">J.A.R.V.I.S. พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
 <label>เสียงพูด</label><select id="ttse"><option value="g">ธรรมชาติ (ใช้คีย์ Gemini)</option><option value="b">เสียงในเครื่อง</option></select>
 <select id="ttsv" style="margin-top:6px"><option value="Charon">ทุ้มนิ่ง (Charon)</option><option value="Orus">หนักแน่น (Orus)</option><option value="Algenib">แหบลึก (Algenib)</option><option value="Puck">สดใส (Puck)</option></select>
@@ -84,7 +84,7 @@ let chats=[];try{chats=JSON.parse(getK('zy_chats')||'[]')}catch(e){}
 let cur=null,pend={text:'',names:[],img:null},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th',call=false,curSR=null,stopRec=false;
 const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,...r})=>r)}))));
 $('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
-$('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'1';
+$('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'1.1';
 const P={
  groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','llama-3.3-70b-versatile','llama-3.1-8b-instant','moonshotai/kimi-k2-instruct-0905'],vision:['meta-llama/llama-4-scout-17b-16e-instruct']},
  gemini:{n:'Gemini',models:['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash']},
@@ -121,27 +121,33 @@ function pickVoice(l){const vs=(window.speechSynthesis?speechSynthesis.getVoices
 let spkTok=0,ac=null,curSrc=null,curAud=null,eng='';
 function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curSrc&&curSrc.stop()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;left:50%;bottom:90px;line-height:1.6;border-radius:18px!important;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
-async function gTTS(text){const k=key('gemini');if(!k)throw 0;const v=getK('zy_ttsv')||'Charon';
- for(const m of ['gemini-2.5-flash-preview-tts','gemini-2.5-pro-preview-tts']){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{parts:[{text:'Say in a calm, deep, refined, unhurried tone, like a loyal British AI butler: '+text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:v}}}}})});if(!r.ok)throw 0;const j=await r.json(),bin=atob(j.candidates[0].content.parts[0].inlineData.data),n=bin.length>>1,f=new Float32Array(n);for(let i=0;i<n;i++){let s=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(s>=32768)s-=65536;f[i]=s/32768}return f}catch(e){}}throw 0}
-function playPCM(f){ac=ac||new AudioContext({sampleRate:24000});ac.resume();const b=ac.createBuffer(1,f.length,24000);b.copyToChannel(f,0);const s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);curSrc=s;return new Promise(r=>{s.onended=r;s.start()})}
-function browserSay(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t),v=pickVoice(lastLang),t0=Date.now();let done=false;const fin=ok=>{if(done)return;done=true;clearTimeout(tm);res(ok)};u.lang=lastLang==='en'?'en-GB':'th-TH';if(v)u.voice=v;u.rate=(+getK('zy_rate')||1)*.95;u.pitch=.8;u.onend=()=>fin(Date.now()-t0>250||t.length<6);u.onerror=()=>fin(false);const tm=setTimeout(()=>fin(true),t.length*180+3000);speechSynthesis.speak(u)}catch(e){res(false)}})}
+let gErr='';
+async function gTTS(text){const k=key('gemini');if(!k)throw 0;const v=getK('zy_ttsv')||'Charon';gErr='';
+ for(const m of ['gemini-2.5-flash-preview-tts','gemini-2.5-pro-preview-tts']){for(let a=0;a<2;a++){try{
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{parts:[{text:'Read the following aloud in one steady, deep, calm adult male voice. Keep exactly the same voice and tone throughout. Natural conversational pace, slightly brisk, never drawn out: '+text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:v}}}}})});
+  if(r.status===429){gErr='ติดโควตาฟรี';await sleep(2500);continue}if(!r.ok){gErr='HTTP '+r.status;break}
+  const j=await r.json(),bin=atob(j.candidates[0].content.parts[0].inlineData.data),n=bin.length>>1,f=new Float32Array(n);for(let i=0;i<n;i++){let s=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(s>=32768)s-=65536;f[i]=s/32768}return f}catch(e){gErr=gErr||'เชื่อมต่อไม่ได้';break}}}throw 0}
+function playPCM(f){ac=ac||new AudioContext({sampleRate:24000});ac.resume();const b=ac.createBuffer(1,f.length,24000);b.copyToChannel(f,0);const s=ac.createBufferSource();s.buffer=b;s.playbackRate.value=Math.min(1.5,Math.max(.8,+getK('zy_rate')||1.1));s.connect(ac.destination);curSrc=s;return new Promise(r=>{s.onended=r;s.start()})}
+function browserSay(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t),v=pickVoice(lastLang),t0=Date.now();let done=false;const fin=ok=>{if(done)return;done=true;clearTimeout(tm);res(ok)};u.lang=lastLang==='en'?'en-GB':'th-TH';if(v)u.voice=v;u.rate=+getK('zy_rate')||1.1;u.pitch=.85;u.onend=()=>fin(Date.now()-t0>250||t.length<6);u.onerror=()=>fin(false);const tm=setTimeout(()=>fin(true),t.length*180+3000);speechSynthesis.speak(u)}catch(e){res(false)}})}
 function playUrl(u){return new Promise((res,rej)=>{const a=new Audio(u);a.referrerPolicy='no-referrer';curAud=a;a.onended=a.onpause=()=>res();a.onerror=()=>rej(new Error('load'));a.play().catch(rej)})}
 const localBase=()=>(getK('zy_ttsurl')||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
 const webTTS=async(t,tok)=>{for(const p of chunk(t)){if(tok!==spkTok)return;await playUrl('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl='+(lastLang==='en'?'en':'th')+'&q='+encodeURIComponent(p.slice(0,180)))}};
-const localTTS=t=>playUrl(localBase()+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1)-1)*100)+'&text='+encodeURIComponent(t));
-async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];let cur='';for(const p of chunk(plain(text))){if(cur&&(cur+' '+p).length>220){gs.push(cur);cur=p}else cur=cur?cur+' '+p:p}if(cur)gs.push(cur);
- const why=[],E=[];if(localBase())E.push('l');else why.push('เซิร์ฟเวอร์เสียง: ไม่ได้ตั้งไว้');
- if(key('gemini')&&getK('zy_ttse')!=='b')E.push('g');else why.push('Gemini: ยังไม่ได้ใส่คีย์');
- if(pickVoice(lastLang))E.push('b');else why.push('เสียงในเบราว์เซอร์: เครื่องนี้ไม่มีเสียงภาษา'+(lastLang==='en'?'อังกฤษ':'ไทย'));E.push('w');eng='';
- if(btn)btn.textContent='หยุด';let e=0,nx=E[0]==='g'?gTTS(gs[0]).catch(()=>null):null;
- for(let i=0;i<gs.length;i++){if(tok!==spkTok)return;let ok=false;
-  while(!ok&&e<E.length){const k=E[e];
-   try{if(k==='g'){const f=await (nx||gTTS(gs[i]).catch(()=>null));nx=null;if(!f)throw 0;if(i+1<gs.length)nx=gTTS(gs[i+1]).catch(()=>null);if(tok!==spkTok)return;await playPCM(f);eng='Gemini'}
-   else if(k==='l'){await localTTS(gs[i]);eng='เซิร์ฟเวอร์เสียง'}
-   else if(k==='b'){if(!await browserSay(gs[i]))throw 0;eng='เสียงในเบราว์เซอร์'}
-   else{await webTTS(gs[i],tok);eng='Google'}ok=true}
-   catch(x){if(tok!==spkTok)return;why.push({g:'Gemini: ใช้ไม่ได้ (คีย์/โควตา/ถูกบล็อก)',l:'เซิร์ฟเวอร์เสียง: เชื่อมต่อไม่ได้',b:'เสียงในเบราว์เซอร์: เล่นไม่ออก',w:'Google: โหลดไม่ได้'}[k]);e++}}
-  if(!ok){const box=window.top!==window&&!/github\.io|localhost|127\./.test(location.hostname);toast('เล่นเสียงไม่ได้ — '+why.join(' | ')+(box?' | หน้านี้อยู่ในกรอบ preview ซึ่งบล็อกเครือข่าย ให้เปิดผ่าน GitHub Pages หรือ python app.py':''));break}}
+const localTTS=t=>playUrl(localBase()+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(t));
+async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];let cur='';for(const p of chunk(plain(text))){if(cur&&(cur+' '+p).length>500){gs.push(cur);cur=p}else cur=cur?cur+' '+p:p}if(cur)gs.push(cur);
+ const why=[],E=[],L={g:'Gemini',l:'เซิร์ฟเวอร์เสียง',b:'เสียงในเบราว์เซอร์',w:'Google'};
+ if(localBase())E.push('l');if(key('gemini')&&getK('zy_ttse')!=='b')E.push('g');if(pickVoice(lastLang))E.push('b');E.push('w');
+ if(!key('gemini'))why.push('Gemini: ยังไม่ได้ใส่คีย์');eng='';
+ if(btn)btn.textContent='หยุด';let e=0,played=false,nx=E[0]==='g'?gTTS(gs[0]).catch(()=>null):null;
+ for(let i=0;i<gs.length;i++){let ok=false,tries=0;
+  while(!ok){if(tok!==spkTok)return;const k=E[e];
+   try{if(k==='g'){const f=await (nx||gTTS(gs[i]));nx=null;if(!f)throw 0;if(i+1<gs.length)nx=gTTS(gs[i+1]).catch(()=>null);if(tok!==spkTok)return;await playPCM(f)}
+    else if(k==='l')await localTTS(gs[i]);
+    else if(k==='b'){if(!await browserSay(gs[i]))throw 0}
+    else await webTTS(gs[i],tok);
+    eng=L[k];ok=true;if(e>0&&!played)toast('ใช้เสียงสำรอง ('+L[k]+') เสียงจึงต่างจากปกติ');played=true}
+   catch(x){if(tok!==spkTok)return;nx=null;
+    if(played){if(++tries<=2){await sleep(1500);continue}toast('เสียงขาดช่วง: '+L[k]+(k==='g'&&gErr?' '+gErr:'')+' (ไม่สลับไปเสียงอื่นกลางประโยคเพื่อไม่ให้เสียงเพี้ยน)');return}
+    why.push(L[k]+': '+(k==='g'&&gErr?gErr:'ใช้ไม่ได้'));if(++e>=E.length){const box=window.top!==window&&!/github\.io|localhost|127\./.test(location.hostname);toast('เล่นเสียงไม่ได้ — '+why.join(' | ')+(box?' | หน้านี้อยู่ในกรอบ preview ซึ่งบล็อกเครือข่าย':''));return}}}}
  if(tok===spkTok&&btn)btn.textContent='ฟัง'}
 function bubble(m,live){const col=$('col');let d;
  if(m.r==='user'){d=document.createElement('div');d.className='u';if(m.img){const i=document.createElement('img');i.src=m.img;d.appendChild(i)}d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
