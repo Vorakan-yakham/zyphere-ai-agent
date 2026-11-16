@@ -82,6 +82,7 @@ class Settings:
     deep: bool
     voice: bool
     attachments: List[Attachment]
+    lang: str = "th-TH"
 
 
 # ---------- Auth ----------
@@ -183,6 +184,8 @@ def render_sidebar(memory) -> Settings:
         deep = st.toggle("Deep analysis", value=False,
                          help="AI วิเคราะห์เป้าหมาย ข้อสมมติ ตัวเลือก และความเสี่ยงก่อนเขียนคำตอบ ช้ากว่าและใช้โควตามากกว่า แต่ลึกกว่า")
         voice = st.toggle("Voice response", value=False, help="อ่านคำตอบออกเสียง (ภาษาไทย)")
+        lang = st.selectbox("Voice input language", ["th-TH", "en-US"], label_visibility="collapsed",
+                            format_func=lambda k: {"th-TH": "ไมค์: ภาษาไทย", "en-US": "Mic: English"}[k])
 
         _label("File hub")
         st.caption("ไฟล์ที่แนบจะถูกส่งให้ AI ทุกข้อความ จนกว่าจะลบออก")
@@ -216,30 +219,31 @@ def render_sidebar(memory) -> Settings:
         if st.button("Sign out", icon=":material/logout:"):
             st.session_state.clear()
             st.rerun()
-    return Settings(model=model, deep=deep, voice=voice, attachments=attachments)
+    return Settings(model=model, deep=deep, voice=voice, attachments=attachments, lang=lang)
 
 
 # ---------- Main area ----------
-def hud(settings: Settings, memory_count: int, online: bool, files: int) -> str:
+def hud(settings: Settings, memory_count: int, online: bool, files: int, auto: str = "OFF") -> str:
     model = MODELS[settings.model].split("—")[0].strip().upper()
     status = ("<span class='zy-dot'></span>Online" if online else "<span class='zy-dot off'></span>Offline")
     chips = [f"<span class='zy-chip solid'>{status}</span>" if online else f"<span class='zy-chip'>{status}</span>",
              f"<span class='zy-chip'>{html.escape(model)}</span>",
              f"<span class='zy-chip'>Memory {memory_count:03d}</span>",
              f"<span class='zy-chip'>Files {files:02d}</span>",
+             f"<span class='zy-chip{' solid' if auto == 'ON' else ''}'>Autonomy {auto}</span>",
              f"<span class='zy-chip'>{'Deep analysis' if settings.deep else 'Standard'}</span>"]
     return "<div class='zy-hud'>" + "".join(chips) + "</div>"
 
 
-def render_header(settings: Settings, memory_count: int, online: bool, compact: bool) -> None:
+def render_header(settings: Settings, memory_count: int, online: bool, compact: bool, auto: str = "OFF") -> None:
     if compact:
         st.markdown(f"<div class='zy-hero'>{reactor_svg(44)}<div class='zy-wordmark small'>Zyphere</div>"
-                    + hud(settings, memory_count, online, len(settings.attachments)) + "</div>", unsafe_allow_html=True)
+                    + hud(settings, memory_count, online, len(settings.attachments), auto) + "</div>", unsafe_allow_html=True)
         return
     st.markdown(f"<div class='zy-hero' style='margin-top:14px'>{reactor_svg(132)}<div class='zy-wordmark'>Zyphere</div>"
                 "<div class='zy-eyebrow'>Autonomous Executive OS</div>"
                 f"<div class='zy-greet'>{html.escape(greeting())}</div>"
-                + hud(settings, memory_count, online, len(settings.attachments)) + "</div>", unsafe_allow_html=True)
+                + hud(settings, memory_count, online, len(settings.attachments), auto) + "</div>", unsafe_allow_html=True)
 
 
 def render_offline_notice() -> None:

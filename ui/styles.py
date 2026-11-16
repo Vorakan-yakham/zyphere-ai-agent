@@ -25,10 +25,11 @@ html, body, [class*="css"], .stApp { font-family: 'Inter', 'Noto Sans Thai', sys
         linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 56px 56px,
         var(--bg);
 }
-.block-container { max-width: 1040px; padding-top: 1.6rem; }
+.block-container { max-width: 1040px; padding-top: 4rem; }
 
 /* Header stays (it holds the sidebar toggle) but is invisible chrome */
-header[data-testid="stHeader"] { background: transparent !important; }
+header[data-testid="stHeader"] { background: transparent !important; pointer-events: none; }
+header[data-testid="stHeader"] * { pointer-events: auto; }
 div[data-testid="stToolbar"], div[data-testid="stDecoration"], #MainMenu, footer { visibility: hidden; }
 
 .stApp p, .stApp li, .stApp label, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp span, .stMarkdown { color: var(--text); }
@@ -131,6 +132,28 @@ div[data-testid="stExpander"] summary, div[data-testid="stStatus"] summary { fon
 .zy-mem { background: var(--s1); padding: 8px 10px; border-radius: 4px; margin-bottom: 6px; font-size: 11.5px; border-left: 2px solid var(--line2); line-height: 1.5; }
 .zy-mem .ts { font-family: var(--mono); font-size: 10px; color: var(--muted) !important; letter-spacing: 0.06em; }
 .zy-file { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; border: 1px solid var(--line); border-radius: 3px; padding: 5px 9px; margin-bottom: 5px; color: #d6d6da !important; }
+
+/* primary (emergency) button + segmented view switch */
+div.stButton > button[data-testid="stBaseButton-primary"] {
+    background: #ffffff !important; color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-weight: 700 !important; letter-spacing: .12em;
+}
+div.stButton > button[data-testid="stBaseButton-primary"]:hover { box-shadow: 0 0 28px rgba(255,255,255,.55); }
+div[data-testid="stSegmentedControl"] { justify-content: center; margin: 0 0 18px; }
+div[data-testid="stSegmentedControl"] button {
+    background: transparent !important; border: 1px solid var(--line2) !important; color: #d6d6da !important; border-radius: 3px !important;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+}
+div[data-testid="stSegmentedControl"] button[aria-checked="true"], div[data-testid="stSegmentedControl"] button[aria-pressed="true"] {
+    background: #ffffff !important; color: #000000 !important; border-color: #ffffff !important;
+}
+div[data-testid="stSegmentedControl"] button[aria-checked="true"] *, div[data-testid="stSegmentedControl"] button[aria-pressed="true"] * { color: #000000 !important; }
+div[data-testid="stProgressBarTrack"] { background: rgba(255,255,255,.12) !important; }
+div[data-testid="stProgressBarTrack"] > div { background: #ffffff !important; }
+div[data-testid="stAudioInput"] { background: var(--s1) !important; border: 1px solid var(--line2) !important; border-radius: 6px !important; }
+div[data-testid="stAudioInput"] * { color: #ffffff !important; }
+.zy-log { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.5; }
+.zy-log .ts { font-family: var(--mono); font-size: 10.5px; color: var(--muted) !important; white-space: nowrap; }
+.zy-log .zy-chip { flex: none; }
 
 /* reactor animation */
 .zy-reactor { color: #ffffff; filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.35)); }
