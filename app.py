@@ -59,10 +59,20 @@ if prompt:
             if "GROQ" in brain:
                 from groq import Groq
                 client=Groq(api_key=keys["GROQ_API_KEY"])
-                model="llama-3.3-70b-versatile" if "FAST" in brain else "deepseek-r1-distill-llama-70b"
-                with st.spinner("Zyphere กำลังคิด..."):
-                    r=client.chat.completions.create(model=model, messages=[{"role":"system","content":system}]+st.session_state.messages, temperature=0.8, max_tokens=2000)
-                    answer=r.choices[0].message.content
+                pass # model chosen in loop
+                models_to_try = ["llama-3.1-8b-instant", "qwen-qwq-32b", "openai/gpt-oss-120b"]
+                    answer = ""
+                    last_err = ""
+                    for model in models_to_try:
+                        try:
+                            r=client.chat.completions.create(model=model, messages=[{"role":"system","content":system}]+st.session_state.messages, temperature=0.8, max_tokens=2000)
+                            answer=r.choices[0].message.content
+                            break
+                        except Exception as e:
+                            last_err=str(e)
+                            continue
+                    if not answer:
+                        answer=f"Groq ลองทุกโมเดลแล้วติด: {last_err} ลองสลับไปใช้ GEMINI ดูก่อนนะ"
             elif "GEMINI" in brain:
                 import google.generativeai as genai
                 genai.configure(api_key=keys["GEMINI_API_KEY"])
