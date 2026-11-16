@@ -1,1 +1,2 @@
-# Zyphere Fix Grok No Credits - Vorakan Yakham PromptPay 0941939686
+# Zyphere RESET
+Upload index.html to GitHub Pages. No auto-clear, no paid.
