@@ -1,4 +1,4 @@
-# ZYPHERE V47 - LOGO CLICK COLLAPSE EXPAND - CHECK THIS LINE
+# ZYPHERE V48 - PLAYFUL ALIVE - CHECK THIS LINE
 import streamlit as st, os, io, base64, asyncio, re
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -48,6 +48,42 @@ section[data-testid='stSidebar'] .stMarkdown{margin:0!important;padding:0!import
 
 if st.session_state.collapsed:
     st.markdown("<style>section[data-testid='stSidebar']{width:64px!important;min-width:64px!important} .sidebar-footer{width:64px!important} .logo-txt,.menu-txt,.lb,.user-txt{display:none!important} section[data-testid='stSidebar'] .stButton>button{padding:0!important;justify-content:center!important;font-size:18px!important}</style>", unsafe_allow_html=True)
+
+# --- V48 PLAYFUL: alive, bouncy, interactive - no emoji, mono tone kept ---
+st.markdown('''<style>
+/* smooth everywhere */
+*{transition:all .18s ease!important}
+/* hero text floats gently */
+.hero{animation:floaty 3.2s ease-in-out infinite!important}
+/* blob breathes + follows */
+.blob{animation:breathe 3s ease-in-out infinite!important;filter:blur(40px) saturate(1.3)!important}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.12);opacity:.85}}
+/* logo spins faster on hover */
+.logo-top:hover .logo-dot{animation-duration:.8s!important;transform:scale(1.15)!important;cursor:pointer}
+/* menu rows: slide + lift on hover, no boxes */
+section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!important;transform:translateX(4px)!important;box-shadow:0 2px 10px rgba(0,0,0,.06)!important}
+/* pill: glow on focus, lift on hover */
+.pill:hover{box-shadow:0 8px 30px rgba(66,133,244,.18)!important;transform:translateY(-1px)!important}
+.pill:focus-within{box-shadow:0 0 0 3px rgba(66,133,244,.18), 0 10px 30px rgba(0,0,0,.08)!important}
+/* chips: bouncy, clickable feel */
+.chip{cursor:pointer;transition:all .15s!important}
+.chip:hover{background:#1f1f1f!important;color:#fff!important;transform:translateY(-2px) scale(1.03)!important;box-shadow:0 6px 14px rgba(0,0,0,.15)!important}
+.chip:active{transform:scale(.96)!important}
+/* + button spins on hover */
+.pill button:hover{transform:rotate(90deg) scale(1.1)!important;background:#1f1f1f!important;color:#fff!important}
+/* send button pops */
+.pill button:active{transform:scale(.9)!important}
+/* chat messages slide in */
+.chat-ai{animation:slidein .35s ease!important}
+@keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* typing dots */
+.typing{font-size:18px;letter-spacing:4px;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+/* Whisp footer: soft lift */
+.sidebar-footer:hover{background:#f8f9fa!important}
+</style>''', unsafe_allow_html=True)
+
 def get_key(n):
     try: return st.secrets.get(n,'')
     except: return os.getenv(n,'')
@@ -76,28 +112,28 @@ def show_audio(d):
 
 # --- SIDEBAR V42 ---
 with st.sidebar:
-    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v47_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
+    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v48_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
     st.markdown("<div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่', key='v47_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v47_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v47_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v47_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v47_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
+    if st.button('\u270e  แชทใหม่', key='v48_new'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u25a6  คลัง', key='v48_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
+    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v48_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
+    if st.button('\u25ce  ปรับแต่ง', key='v48_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
+    if st.button('\u25a1  วิดีโอ', key='v48_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
     st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v47_nb'): st.session_state.messages=[]; st.rerun()
+    if st.button('\uFF0B  Notebook ใหม่', key='v48_nb'): st.session_state.messages=[]; st.rerun()
     st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
     _seen=[]; _has=False
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v47_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='v48_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v47_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='v48_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
     # FOOTER - bottom of sidebar, normal flow so it never disappears
     st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    if st.button('\u21aa  ออกจากระบบ', key='v47_logout'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v47_login'): st.session_state.user_name='Whisp'; st.rerun()
+    if st.button('\u21aa  ออกจากระบบ', key='v48_logout'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v48_login'): st.session_state.user_name='Whisp'; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- MAIN ---
@@ -106,7 +142,7 @@ prompt=''
 brain=st.session_state.get('brain_main','Zyphere อัตโนมัติ')
 voice=False
 if not has_chat:
-    st.markdown("<div class='hero'>เราจะเริ่มจากตรงไหนก่อนดี</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:13px;text-align:center;color:#888;margin-bottom:6px;animation:floaty 3s infinite'>วันนี้อยากให้ช่วยอะไรดี</div><div class='hero'>เราจะเริ่มจากตรงไหนก่อนดี</div>", unsafe_allow_html=True)
     st.markdown("<div class='center'><div class='blob'></div><div class='pill'>", unsafe_allow_html=True)
     if st.session_state.show_add:
         st.markdown("<div style='background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:14px;margin-bottom:10px'><b>\uFF0B เพิ่มให้ Zyphere ทำงาน</b><br><span style='font-size:13px;color:#666'>เพิ่มรูป / ไฟล์ / ข้อความ แล้วพิมพ์สั่งข้างล่าง</span></div>", unsafe_allow_html=True)
@@ -126,7 +162,7 @@ if not has_chat:
     st.markdown('</div><div class="chips"><span class="chip">ค้นพบ</span><span class="chip">ถามอะไรก็ได้</span><span class="chip">ดำเนินการ</span><span class="chip">สร้างรูปภาพ</span></div></div>', unsafe_allow_html=True)
     if plus: st.session_state.show_add=not st.session_state.show_add
     if st.session_state.show_add:
-        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v47_picker')
+        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v48_picker')
         if _up is not None: st.session_state.add_img=_up; st.session_state.show_add=False; st.rerun()
     if sent: prompt=inp; brain=bp
 else:
