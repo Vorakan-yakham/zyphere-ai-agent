@@ -306,7 +306,7 @@ async function callProv(id,msgs,img,sig,on,sys){
     };
     return await withRetry(async()=>{
      let res=await doCall(contents),text=res.text;
-     for(let round=0;round<3&&res.finish==='MAX_TOKENS';round++){
+     for(let round=0;round<6&&(res.finish==='MAX_TOKENS'||(!res.finish&&text.length>18000));round++){
       on&&on(text+'\n\n…');
       const cont=contents.concat([{role:'model',parts:[{text}]},{role:'user',parts:[{text:CONT_OPENAI}]}]);
       const r2=await doCall(cont);text+=r2.text;res=r2;on&&on(text);
@@ -332,7 +332,7 @@ async function callProv(id,msgs,img,sig,on,sys){
    };
    return await withRetry(async()=>{
     let res=await doCall(om),text=res.text;
-    for(let round=0;round<3&&res.finish==='length';round++){
+    for(let round=0;round<6&&(res.finish==='length'||(!res.finish&&text.length>18000));round++){
      on&&on(text+'\n\n…');
      const cont=om.concat([{role:'assistant',content:text},{role:'user',content:CONT_OPENAI}]);
      const r2=await doCall(cont);text+=r2.text;res=r2;on&&on(text);
@@ -526,9 +526,10 @@ async function execTool(call){const name=call.tool,args=call.args||{};
 let spkTok=0,ac=null,curAud=null;
 function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
-async function speak(text,btn){stopSpeak();const tok=spkTok;const clean=plain(text).slice(0,1200);if(btn)btn.textContent='หยุด';const lb=localBase();
- try{if(getK('zy_ttse')!=='b'&&lb){for(const p of clean.split(/\n+/).filter(Boolean)){if(tok!==spkTok)return;const u=lb+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(p.slice(0,400));await new Promise((res,rej)=>{const a=new Audio(u);curAud=a;a.onended=()=>res();a.onerror=()=>rej();a.play().catch(rej)});}if(btn)btn.textContent='ฟัง';return}}catch(e){}
- await sayOne(clean);if(btn)btn.textContent='ฟัง'}
+function ttsParts(t){const s=String(t||'');const out=[];let cur='';for(let p of s.split(/(?<=[.!?。！？])\s+|\n+/).filter(Boolean)){while(p.length>380){if(cur){out.push(cur);cur=''}out.push(p.slice(0,380));p=p.slice(380)}if(cur&&(cur+' '+p).length>380){out.push(cur);cur=p}else cur=(cur?cur+' ':'')+p}if(cur)out.push(cur);return out}
+async function speak(text,btn){stopSpeak();const tok=spkTok;const clean=plain(text);if(btn)btn.textContent='หยุด';const lb=localBase();
+ try{if(getK('zy_ttse')!=='b'&&lb){for(const p of ttsParts(clean)){if(tok!==spkTok)return;const u=lb+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(p);await new Promise((res,rej)=>{const a=new Audio(u);curAud=a;a.onended=()=>res();a.onerror=()=>rej();a.play().catch(rej)});}if(btn)btn.textContent='ฟัง';return}}catch(e){}
+ for(const p of ttsParts(clean)){if(tok!==spkTok)return;await sayOne(p)}if(btn)btn.textContent='ฟัง'}
 
 // voice in
 function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -598,7 +599,7 @@ async function send(voice){
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
  view();lastLang=resolveLang(t);const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
- const hist=c.m.slice(-16),msgs=[];let left=24000;
+ const hist=c.m.slice(-24),msgs=[];let left=60000;
  for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'',ct=m.c||'';
   if(x){if(x.length<=left)left-=x.length;else{x=x.slice(0,Math.max(0,left))+'\n...(ตัดเนื้อหาไฟล์)';left=0}}
   if(ct.length>left){ct=ct.slice(0,Math.max(0,left))+'\n...(ตัดข้อความยาว)';left=0}else left-=ct.length;
