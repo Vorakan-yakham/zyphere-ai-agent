@@ -7,7 +7,7 @@ st.markdown("""
 [data-testid="stToolbar"]{display:none !important}
 footer{display:none !important}
 .stApp{background: radial-gradient(700px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), #fff !important}
-section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:280px !important}
+section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px !important}
 .hero{font-size:32px;font-weight:500;text-align:center;margin-top:110px}
 .pill-center{max-width:680px;margin:24px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 18px}
 .pill-center div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
@@ -15,89 +15,121 @@ section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:280px 
 .pill-center button{border:none !important;background:#d3e3fd !important;box-shadow:none !important;border-radius:50% !important;width:38px !important;height:38px !important}
 div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;height:38px !important;border-radius:999px !important;font-size:14px !important}
 div[data-testid="stSidebar"] button:hover{background:#e3e3e3 !important}
+div[data-testid="stSidebar"] button[kind="primary"]{background:#1f1f1f !important; color:#fff !important}
 div[data-testid="stChatInput"]{max-width:680px !important; margin:0 auto !important}
 div[data-testid="stChatInput"] > div{border-radius:999px !important; box-shadow:0 4px 24px rgba(0,0,0,0.12) !important; border:none !important}
 .chat-ai{max-width:680px;margin:14px auto;font-size:15px;line-height:1.7}
 .topbar{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px 0 0}
 .top-gray{background:#eef2f7;border:none;border-radius:999px;padding:8px 14px;font-size:13px}
 .top-blue{background:#d3e3fd;border:none;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:500}
+.login-box{background:#fff;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:999px;margin:10px 0}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
 </style>
 """, unsafe_allow_html=True)
 def get_key(n):
     try: return st.secrets.get(n,"")
     except: return os.getenv(n,"")
-# ---------- MALE VOICE - fixed, no asyncio.run crash ----------
 def make_male_audio(text):
-    text = text[:900].strip()
+    text=text[:900].strip()
     if not text: return None, "empty"
-    # Try 1: edge-tts male NiwatNeural with fresh loop
     try:
         import edge_tts
         async def _speak():
-            comm = edge_tts.Communicate(text, "th-TH-NiwatNeural", rate="+0%", pitch="-4Hz")
-            buf = io.BytesIO()
+            comm=edge_tts.Communicate(text,"th-TH-NiwatNeural",rate="+0%",pitch="-4Hz")
+            buf=io.BytesIO()
             async for chunk in comm.stream():
                 if chunk["type"]=="audio": buf.write(chunk["data"])
             return buf.getvalue()
-        loop = asyncio.new_event_loop()
+        loop=asyncio.new_event_loop()
         try:
-            asyncio.set_event_loop(loop)
-            data = loop.run_until_complete(_speak())
-        finally:
-            loop.close()
-        if data and len(data)>1000:
-            return data, "Niwat - ผู้ชาย"
-    except Exception as e:
-        err1 = str(e)[:100]
-    # Try 2: gTTS fallback (always works on Cloud)
+            asyncio.set_event_loop(loop); data=loop.run_until_complete(_speak())
+        finally: loop.close()
+        if data and len(data)>1000: return data, "Niwat - ผู้ชาย"
+    except: pass
     try:
         from gtts import gTTS
-        buf = io.BytesIO()
-        gTTS(text=text, lang="th", slow=False).write_to_fp(buf)
-        return buf.getvalue(), "gTTS - สำรอง"
-    except Exception as e:
-        return None, f"fail: {e}"
-def show_audio_autoplay(data):
-    b64 = base64.b64encode(data).decode()
+        buf=io.BytesIO(); gTTS(text=text,lang="th",slow=False).write_to_fp(buf); return buf.getvalue(), "gTTS - สำรอง"
+    except Exception as e: return None, str(e)
+def show_audio(data):
+    b64=base64.b64encode(data).decode()
     import streamlit.components.v1 as components
-    components.html(f'<audio autoplay controls style="width:100%"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio><p style="font-family:Prompt;font-size:13px;color:#555">🔊 กำลังพูด... ถ้าไม่ได้ยิน กด Play ข้างบน</p>', height=70)
+    components.html(f'<audio autoplay controls style="width:100%"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>', height=60)
 if "messages" not in st.session_state: st.session_state.messages=[]
 if "pending" not in st.session_state: st.session_state.pending=""
 if "last_audio" not in st.session_state: st.session_state.last_audio=None
 if "last_audio_label" not in st.session_state: st.session_state.last_audio_label=""
+if "user_name" not in st.session_state: st.session_state.user_name=""
+if "logged_in" not in st.session_state: st.session_state.logged_in=False
+if "show_login" not in st.session_state: st.session_state.show_login=False
 def go(p): st.session_state.pending=p; st.rerun()
+def home(): st.session_state.messages=[]; st.session_state.pending=""; st.session_state.last_audio=None; st.rerun()
+# ================= LEFT MENU =================
 with st.sidebar:
-    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:14px"><div style="width:32px;height:32px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">✦</div><b style="font-size:17px">Zyphere</b><span style="margin-left:auto;font-size:16px">⌕ &nbsp; ▭</span></div>', unsafe_allow_html=True)
-    if st.button("✎  แชทใหม่", use_container_width=True):
-        st.session_state.messages=[]; st.session_state.pending=""; st.session_state.last_audio=None; st.rerun()
-    if st.button("⊞  คลัง", use_container_width=True): go("เปิดคลังงานของฉัน")
-    if st.button("◷  กำหนดเวลาแล้ว", use_container_width=True): go("ดูงานที่กำหนดเวลาไว้วันนี้")
-    if st.button("✎  ปรับแต่ง", use_container_width=True): go("ปรับแต่งให้เธอพูดแบบเพื่อนร่วมงาน")
-    if st.button("▷  วิดีโอ", use_container_width=True): go("ช่วยคิดสคริปต์วิดีโอสั้นๆ")
-    st.markdown('<div style="font-size:12px;color:#5f6368;padding:18px 12px 6px">Notebook</div>', unsafe_allow_html=True)
-    if st.button("＋  Notebook ใหม่", use_container_width=True): go("สร้าง Notebook ใหม่")
+    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:14px"><div style="width:34px;height:34px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
+    if st.button("🏠  กลับหน้าแรก", use_container_width=True, type="primary"): home()
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">แชท</div>', unsafe_allow_html=True)
+    if st.button("✎  แชทใหม่", use_container_width=True): home()
+    if st.button("⌕  ค้นหาแชท", use_container_width=True): go("สรุปให้หน่อยว่าฉันเคยคุยเรื่องอะไรบ้าง")
+    if st.button("⊞  คลัง", use_container_width=True): go("เปิดคลังงานของฉัน สรุปงานที่เคยทำ")
+    if st.button("◷  กำหนดเวลาแล้ว", use_container_width=True): go("ดูงานที่กำหนดเวลาไว้วันนี้ แล้วจัดลำดับให้หน่อย")
+    if st.button("✎  ปรับแต่ง Zyphere", use_container_width=True): go("ปรับแต่งให้เธอพูดแบบเพื่อนร่วมงาน ตรงๆ อบอุ่น")
+    if st.button("▷  วิดีโอ", use_container_width=True): go("ช่วยคิดสคริปต์วิดีโอสั้นๆ ให้หน่อย")
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">เครื่องมือที่ใช้บ่อย</div>', unsafe_allow_html=True)
+    if st.button("🎙  พูดคุยด้วยเสียง", use_container_width=True): go("คุยกับฉันด้วยเสียง พูดตอบกลับเป็นภาษาไทย เสียงผู้ชาย")
+    if st.button("✓  รายการงานของฉัน", use_container_width=True): go("ทำรายการงานวันนี้ให้หน่อย แบบเช็กลิสต์")
+    if st.button("⌨  เขียนโค้ดให้หน่อย", use_container_width=True): go("เขียนโค้ดให้หน่อย อธิบายทีละบรรทัด")
+    if st.button("▤  สรุปงาน", use_container_width=True): go("สรุปงานวันนี้ให้สั้นๆ เข้าใจง่าย")
+    if st.button("✦  คิดไอเดีย", use_container_width=True): go("คิดไอเดียใหม่ๆ ให้หน่อย 5 ไอเดีย")
+    if st.button("◉  อธิบายลึกๆ", use_container_width=True): go("อธิบายเรื่องนี้ให้ลึกๆ แบบเข้าใจง่าย")
+    if st.button("📝  เขียนอีเมล / เอกสาร", use_container_width=True): go("ช่วยร่างอีเมลให้หน่อย สุภาพ เป็นทางการ")
+    if st.button("🌐  แปลภาษา", use_container_width=True): go("ช่วยแปลภาษา ไทย-อังกฤษ ให้หน่อย")
+    if st.button("🧮  คิดเลข / วางแผน", use_container_width=True): go("ช่วยคิดเลขและวางแผนให้หน่อย")
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">Notebook</div>', unsafe_allow_html=True)
+    if st.button("＋  Notebook ใหม่", use_container_width=True): go("สร้าง Notebook ใหม่ สรุปเรื่องที่ฉันจะถาม")
     if st.session_state.messages:
-        st.markdown('<div style="font-size:12px;color:#5f6368;padding:18px 12px 6px">ทั้งหมด</div>', unsafe_allow_html=True)
+        st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">ประวัติ - บทความที่เคยสนทนา</div>', unsafe_allow_html=True)
         seen=[]
         for m in st.session_state.messages:
             if m["role"]=="user" and m["content"] not in seen:
                 seen.append(m["content"])
                 st.button(f"💬  {m['content'][:28]}", use_container_width=True, key=f"hist_{len(seen)}")
-    st.markdown('<div style="font-size:12px;color:#5f6368;padding:18px 12px 6px">BRAINS — Zyphere</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">BRAINS — Zyphere</div>', unsafe_allow_html=True)
     brain = st.selectbox("เลือกสมอง", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"], key="brain_side")
     voice = st.checkbox("◉ ให้ Zyphere พูดตอบกลับ (เสียงผู้ชาย)", value=True)
-    st.caption("ถ้าเสียงไม่ดัง ให้กดปุ่ม 🔊 ฟังอีกครั้ง ข้างล่างคำตอบ")
-    # Replay button in sidebar - always visible
     if st.session_state.last_audio:
-        st.markdown("---")
-        st.markdown("**🔊 เสียงล่าสุด**")
-        st.audio(st.session_state.last_audio, format="audio/mp3")
-        st.caption(f"เสียง: {st.session_state.last_audio_label}")
-    st.markdown('<div style="padding:14px 12px;font-size:14px">○ Whisp &nbsp; ⚙</div>', unsafe_allow_html=True)
+        st.markdown("**🔊 เสียงล่าสุด**"); st.audio(st.session_state.last_audio, format="audio/mp3"); st.caption(st.session_state.last_audio_label)
+    # ============ LOGIN - BOTTOM LEFT LIKE GEMINI ============
+    st.markdown("---")
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:4px 12px">บัญชีของฉัน</div>', unsafe_allow_html=True)
+    if not st.session_state.logged_in:
+        if st.button("👤  เข้าสู่ระบบ", use_container_width=True, type="primary"):
+            st.session_state.show_login=True; st.rerun()
+        if st.session_state.show_login:
+            st.markdown('<div class="login-box"><b>👋 เข้าสู่ระบบ Zyphere</b><br><span style="font-size:13px;color:#666">ใส่ชื่อเล่นของคุณ Zyphere จะจำได้</span></div>', unsafe_allow_html=True)
+            name = st.text_input("ชื่อเล่น", value="Whisp", placeholder="เช่น Whisp / Vorakan", key="login_name")
+            if st.button("➜  เข้าสู่ระบบเลย", use_container_width=True, type="primary"):
+                st.session_state.user_name = name.strip() or "Whisp"
+                st.session_state.logged_in=True; st.session_state.show_login=False; st.rerun()
+            if st.button("✕  ปิด", use_container_width=True):
+                st.session_state.show_login=False; st.rerun()
+            st.caption("ยังไม่ต้องใช้รหัสผ่าน — ระบบจะจำชื่อคุณในเครื่องนี้ ถ้าอยากได้ Google Login บอกผมได้")
+        else:
+            st.caption("ยังไม่เข้าสู่ระบบ — กด 👤 เข้าสู่ระบบ แล้ว Zyphere จะทักชื่อคุณ")
+    else:
+        initial = st.session_state.user_name[:1].upper() if st.session_state.user_name else "W"
+        st.markdown(f'<div class="user-card"><div class="avatar">{initial}</div><div><b style="font-size:14px">{st.session_state.user_name}</b><br><span style="font-size:12px;color:#5f6368">เจ้าของ Zyphere</span></div><span style="margin-left:auto">⚙</span></div>', unsafe_allow_html=True)
+        c1,c2 = st.columns(2)
+        with c1:
+            if st.button("⚙  ตั้งค่า", use_container_width=True): go("เปิดตั้งค่า Zyphere")
+        with c2:
+            if st.button("↩  ออก", use_container_width=True):
+                st.session_state.logged_in=False; st.session_state.user_name=""; st.session_state.messages=[]; st.rerun()
 st.markdown('<div class="topbar"><button class="top-gray">↓ ดาวน์โหลดแอป</button><button class="top-blue">✦ อัปเกรด</button><button class="top-gray">✦</button></div>', unsafe_allow_html=True)
 has_chat = len(st.session_state.messages)>0 or bool(st.session_state.pending)
 if not has_chat:
-    st.markdown('<div class="hero">เราจะเริ่มจากตรงไหนก่อนดี</div>', unsafe_allow_html=True)
+    greet = f"สวัสดี {st.session_state.user_name} เราจะเริ่มจากตรงไหนก่อนดี" if st.session_state.logged_in else "เราจะเริ่มจากตรงไหนก่อนดี"
+    st.markdown(f'<div class="hero">{greet}</div>', unsafe_allow_html=True)
     st.markdown('<div class="pill-center">', unsafe_allow_html=True)
     with st.form("pill_center", clear_on_submit=True):
         c1,c2,c3,c4 = st.columns([0.4,4,1.6,0.5])
@@ -115,12 +147,10 @@ else:
         else:
             st.markdown(f'<div class="chat-ai">{m["content"]}</div>', unsafe_allow_html=True)
             st.markdown('<div style="max-width:680px;margin:6px auto;font-size:16px;color:#888">👍 👎 ↻ ⧉ ⋯ &nbsp; 🔊</div>', unsafe_allow_html=True)
-    # Show last audio player right under chat + replay button
     if st.session_state.last_audio:
         st.markdown('<div style="max-width:680px;margin:0 auto"><b>🔊 เสียง Zyphere (ผู้ชาย)</b></div>', unsafe_allow_html=True)
-        show_audio_autoplay(st.session_state.last_audio)
-        if st.button("🔊 ฟังอีกครั้ง", key="replay_main"):
-            show_audio_autoplay(st.session_state.last_audio)
+        show_audio(st.session_state.last_audio)
+        if st.button("🔊 ฟังอีกครั้ง", key="replay_main"): show_audio(st.session_state.last_audio)
     inp2 = st.chat_input("ถาม Zyphere")
     prompt = st.session_state.pending or inp2 or ""
     if st.session_state.pending: st.session_state.pending=""
@@ -130,7 +160,8 @@ if prompt:
     st.markdown(f'<div style="max-width:680px;margin:18px auto 6px;display:flex;justify-content:flex-end"><span style="background:#f0f4f9;border-radius:999px;padding:10px 18px;font-size:15px">{prompt}</span></div>', unsafe_allow_html=True)
     with st.spinner("Zyphere กำลังคิด..."):
         try:
-            system="You are Zyphere, coworker friend of Vorakan. Talk like a close male teammate in Thai, warm, direct, simple. Name is Zyphere."
+            uname = st.session_state.user_name or "Whisp"
+            system=f"You are Zyphere, coworker friend of {uname}. Talk like a close male teammate in Thai, warm, direct, simple. Name is Zyphere. Call user {uname}."
             answer=""
             if "GEMINI" in brain:
                 import google.generativeai as genai
@@ -156,14 +187,9 @@ if prompt:
                 with st.spinner("🔊 Zyphere กำลังทำเสียงผู้ชาย..."):
                     data, label = make_male_audio(answer)
                 if data:
-                    st.session_state.last_audio = data
-                    st.session_state.last_audio_label = label
-                    st.markdown(f'<div style="max-width:680px;margin:6px auto;color:#2e7d32">🔊 เสียงพร้อมแล้ว ({label}) — กด Play ถ้าเบราว์เซอร์ไม่เล่นเอง</div>', unsafe_allow_html=True)
-                    show_audio_autoplay(data)
-                    st.audio(data, format="audio/mp3")
-                else:
-                    st.warning(f"ทำเสียงไม่ได้: {label} — ลองกด 🔊 ฟังอีกครั้ง หรือเช็คว่าเปิดเสียงไว้ไหม")
-            else:
-                st.caption("ปิดเสียงไว้ — ติ๊ก ◉ ให้ Zyphere พูดตอบกลับ ในเมนูซ้ายเพื่อเปิดเสียง")
+                    st.session_state.last_audio=data; st.session_state.last_audio_label=label
+                    st.markdown(f'<div style="max-width:680px;margin:6px auto;color:#2e7d32">🔊 เสียงพร้อมแล้ว ({label})</div>', unsafe_allow_html=True)
+                    show_audio(data); st.audio(data, format="audio/mp3")
+                else: st.warning(f"ทำเสียงไม่ได้: {label}")
             st.rerun()
         except Exception as e: st.error(f"Error: {e}")
