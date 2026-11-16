@@ -432,7 +432,7 @@ function bubble(m,live){const col=$('col');let d;
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
-   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'})}}
+   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
 const SUG=['ช่วยค้นข้อมูลล่าสุดเกี่ยวกับ AI ที่น่าสนใจให้หน่อย','จำไว้ว่าเรียกฉันว่าเพื่อน และชอบคำอธิบายสั้น ๆ','ช่วยสรุปสิ่งที่ควรทำต่อจากไฟล์/งานที่ฉันให้','อากาศที่กรุงเทพตอนนี้เป็นยังไง'];
 function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
@@ -590,6 +590,8 @@ async function knowledgeContext(q){
  }catch(e){return ''}
 }
 
+async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
+async function critiqueAnswer(q,answer,ctx){if(!answer||answer.length<300||!localBase())return answer;const sys='You are a strict QA reviewer. Check the draft answer against the question and notes. Return JSON only: {"score":0-1,"issues":["..."],"improved":"..."}. If complete and accurate, score 1 and improved equals the draft. Never invent facts. Keep the same language.';const prompt='Question: '+String(q||'').slice(0,500)+'\n\nNotes:\n'+String(ctx||'').slice(0,1500)+'\n\nDraft answer:\n'+String(answer).slice(0,4000);try{const r=await ask([{role:'user',content:prompt}],null,ctrl?ctrl.signal:null,()=>{},sys);const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]);if(j&&j.score!=null&&Number(j.score)<0.75&&j.improved)return String(j.improved)}catch(e){}return answer}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
@@ -637,7 +639,8 @@ async function send(voice){
   }
  }
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
- setBusy(false);c.m.push({r:'assistant',c:reply});save();view();
+ if(ok&&!local&&knowCtx&&reply.length<8000)reply=await critiqueAnswer(t,reply,knowCtx);
+  setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
  if(ok) await maybeAutoRemember(t,reply);
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
  else if(voice&&!ok){call=false;endCall()}}
