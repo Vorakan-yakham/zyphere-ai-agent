@@ -3,5 +3,3 @@ groq
 google-generativeai
 openai
 gtts
-SpeechRecognition
-pydub
