@@ -3004,8 +3004,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {
                 "ok": True,
                 "name": "zyphere",
-                "version": 21,
-                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv"],
+                "version": 22,
+                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv", "stt", "critique", "feedback", "languages", "craft"],
                 "image_sources": ["openverse", "wikimedia", "pexels", "pixabay", "unsplash"],
                 "video": bool(Image and FFMPEG),
                 "knowledge_count": knowledge_count(),
