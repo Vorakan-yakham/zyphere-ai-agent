@@ -1,62 +1,128 @@
 <!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zyphere</title>
-<style>body{margin:0;font-family:system-ui,sans-serif;background:#fff;display:flex;height:100vh}.side{width:230px;border-right:1px solid #eee;padding:14px}.side div{padding:9px;border-radius:8px}.main{flex:1;display:flex;flex-direction:column;max-width:900px;margin:0 auto;width:100%}.chat{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px}.b{max-width:80%;padding:12px 16px;border-radius:16px;white-space:pre-wrap;line-height:1.6}.u{align-self:flex-end;background:#0084ff;color:#fff}.a{align-self:flex-start;background:#f0f2f5}.box{padding:14px;display:flex;gap:8px;border-top:1px solid #eee;align-items:center}.box input{flex:1;padding:13px 16px;border-radius:999px;border:1px solid #ddd;outline:none;font-size:15px}.box select{padding:10px;border-radius:999px}.send{width:48px;height:48px;border-radius:50%;border:0;background:#0084ff;color:#fff;font-size:20px;cursor:pointer;flex-shrink:0}.mini{width:44px;height:44px;border-radius:50%;border:1px solid #ddd;background:#fff;font-size:18px;cursor:pointer;flex-shrink:0}.ok{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}.card{background:#fff;width:520px;max-width:92vw;border-radius:16px;padding:20px}.card input{width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;margin:5px 0}</style></head><body>
-<div class="side"><b style="font-size:22px">✦ Zyphere</b><div>✎ แชทใหม่</div><div>⌕ ค้นหา</div><div>⊞ สื่อ</div><div style="margin-top:420px;border-top:1px solid #eee;padding-top:10px"><button onclick="openS()" style="width:100%;text-align:left;padding:10px;border:0;background:#fff;cursor:pointer">⚙ ตั้งค่า - ใส่คีย์</button><div style="padding:8px;font-weight:bold">W Whisp</div></div></div>
-<div class="main"><div style="padding:12px;text-align:right;color:#888;font-size:12px">Zyphere COMPLETE 6 • เลือกภาษา ไทย/อังกฤษ ได้</div><div class="chat" id="chat"><div class="b a">สวัสดีครับ ผม Zyphere 4 สมองฟรีใช้ได้ครบแล้ว พิมพ์ กดไมค์ หรือกด + แนบไฟล์ได้เลย</div></div>
-<div class="box"><select id="lang"><option value="auto">ภาษา: อัตโนมัติ</option><option value="th">ภาษา: ไทย</option><option value="en">ภาษา: English</option></select><select id="brain"><option value="groq">Groq ฟรี (gsk_)</option><option value="gemini">Gemini ฟรี (AQ.)</option><option value="openrouter">OpenRouter ฟรี</option><option value="hf">Hugging Face ฟรี</option></select><input id="q" placeholder="ถาม Zyphere..." autocomplete="off"><button class="mini" id="plusBtn" type="button" title="แนบไฟล์">+</button><input type="file" id="fileIn" style="display:none"><button class="mini" id="micBtn" type="button" title="พูด">🎤</button><button class="mini" id="voiceBtn" type="button" title="เปิด/ปิดเสียง">🔊</button><button class="send" id="sendBtn" type="button">↑</button></div></div>
-<div class="ok" id="set"><div class="card"><h3 style="margin:0">ตั้งค่า - ใส่คีย์ฟรี</h3><p style="font-size:13px;color:#666">ใส่ช่องเดียวก็พอ</p>Groq (gsk_)<input id="k-groq" autocomplete="off">Gemini (AQ.)<input id="k-gemini" autocomplete="off">OpenRouter (sk-or-v1-)<input id="k-openrouter" autocomplete="off">Hugging Face (hf_)<input id="k-hf" autocomplete="off"><br><button onclick="closeS()" style="padding:10px 16px;background:#16a34a;color:#fff;border:0;border-radius:10px;cursor:pointer">เสร็จแล้ว - ปิด</button></div></div>
+<style>
+:root{--bg:#fff;--fg:#1c1e21;--bd:#e4e6eb;--ai:#f0f2f5;--pr:#0084ff;--mut:#888}
+@media(prefers-color-scheme:dark){:root{--bg:#18191a;--fg:#e4e6eb;--bd:#3a3b3c;--ai:#242526;--mut:#aaa}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;height:100vh;height:100dvh}
+button,select,input,textarea{font:inherit;color:inherit;background:var(--bg)}
+.side{width:250px;border-right:1px solid var(--bd);padding:12px;display:flex;flex-direction:column;gap:6px}
+.side .list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.it{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+.it:hover,.it.on{background:var(--ai)}.it span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it i{font-style:normal;color:var(--mut);padding-left:6px}
+.sb{padding:9px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;text-align:left}
+.main{flex:1;display:flex;flex-direction:column;max-width:900px;margin:0 auto;width:100%;min-width:0}
+.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:12px}
+.chat{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.b{max-width:85%;padding:12px 16px;border-radius:16px;white-space:pre-wrap;line-height:1.6;word-break:break-word}
+.u{align-self:flex-end;background:var(--pr);color:#fff}.a{align-self:flex-start;background:var(--ai)}
+.b img{max-width:240px;border-radius:10px;display:block;margin-bottom:6px}
+.b pre{background:#0d1117;color:#e6edf3;padding:10px;border-radius:8px;overflow:auto;white-space:pre;margin:8px 0}
+.b code{font-family:ui-monospace,monospace;font-size:.92em}.b :not(pre)>code{background:rgba(127,127,127,.2);padding:1px 5px;border-radius:4px}
+.act{margin-top:6px;display:flex;gap:6px}.act button{border:1px solid var(--bd);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
+.chips{padding:0 14px;display:flex;gap:6px;flex-wrap:wrap}.chip{background:var(--ai);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.box{padding:12px 14px;display:flex;gap:8px;border-top:1px solid var(--bd);align-items:center}
+.box textarea{flex:1;padding:12px 16px;border-radius:20px;border:1px solid var(--bd);outline:none;resize:none;max-height:140px;font-size:15px}
+.box select{padding:8px;border-radius:999px;border:1px solid var(--bd);max-width:120px}
+.send{width:46px;height:46px;border-radius:50%;border:0;background:var(--pr);color:#fff;font-size:20px;cursor:pointer;flex-shrink:0}
+.mini{width:42px;height:42px;border-radius:50%;border:1px solid var(--bd);cursor:pointer;flex-shrink:0}
+.ok{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9}
+.card{background:var(--bg);width:520px;max-width:92vw;max-height:90vh;overflow:auto;border-radius:16px;padding:20px}
+.card input,.card textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);margin:4px 0 8px}
+#menu{display:none}
+@media(max-width:700px){.side{position:fixed;inset:0 auto 0 0;z-index:5;background:var(--bg);transform:translateX(-100%);transition:.2s}.side.open{transform:none}#menu{display:inline-block}.box select{max-width:84px;font-size:12px}}
+</style></head><body>
+<div class="side" id="side"><b style="font-size:22px">✦ Zyphere</b>
+<button class="sb" id="newBtn">✎ แชทใหม่</button><input id="search" class="sb" placeholder="⌕ ค้นหาแชท" autocomplete="off">
+<div class="list" id="list"></div><button class="sb" id="setBtn">⚙ ตั้งค่า / ใส่คีย์</button></div>
+<div class="main"><div class="top"><button class="mini" id="menu">☰</button><span>Zyphere • ไทย/English • จำบทสนทนาได้ • สลับสมองอัตโนมัติถ้าตัวหนึ่งล่ม</span></div>
+<div class="chat" id="chat"></div><div class="chips" id="chips"></div>
+<div class="box"><select id="lang"><option value="auto">ภาษา: อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
+<select id="brain"><option value="groq">Groq</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option><option value="hf">Hugging Face</option></select>
+<textarea id="q" rows="1" placeholder="ถาม Zyphere... (Enter ส่ง, Shift+Enter ขึ้นบรรทัดใหม่)"></textarea>
+<button class="mini" id="plusBtn" title="แนบไฟล์/รูป">+</button><input type="file" id="fileIn" style="display:none">
+<button class="mini" id="micBtn" title="พูด">🎤</button><button class="mini" id="voiceBtn" title="เปิด/ปิดเสียงตอบ">🔊</button><button class="send" id="sendBtn">↑</button></div></div>
+<div class="ok" id="set"><div class="card"><h3 style="margin:0 0 6px">ตั้งค่า</h3><p style="font-size:13px;color:var(--mut);margin:0 0 8px">ใส่คีย์ช่องเดียวก็พอ คีย์เก็บในเบราว์เซอร์คุณเท่านั้น</p>
+Groq (gsk_)<input id="k-groq" autocomplete="off">Gemini (AQ. / AIza)<input id="k-gemini" autocomplete="off">OpenRouter (sk-or-v1-)<input id="k-openrouter" autocomplete="off">Hugging Face (hf_)<input id="k-hf" autocomplete="off">
+คำสั่งพิเศษให้ AI (บุคลิก/กฎที่ต้องจำ)<textarea id="custom" rows="3" placeholder="เช่น เรียกฉันว่าพี่ ตอบแบบเป็นกันเอง"></textarea>
+<button id="doneBtn" class="sb" style="background:#16a34a;color:#fff">เสร็จแล้ว</button> <button id="wipeBtn" class="sb" style="color:#d33">ลบแชททั้งหมด</button></div></div>
 <script>
-function getK(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
-function openS(){var m={'k-groq':'zyphere_groq_key','k-gemini':'zyphere_gemini_key','k-openrouter':'zyphere_openrouter_key','k-hf':'zyphere_hf_key'};Object.keys(m).forEach(function(id){document.getElementById(id).value=getK(m[id]);document.getElementById(id).oninput=function(){try{localStorage.setItem(m[id],this.value.trim())}catch(e){}}});document.getElementById('set').style.display='flex';}
-function closeS(){document.getElementById('set').style.display='none';}
-function clean(t){if(!t)return t;return t.replace(/\*\*|__|#{1,6}|```/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/\s{2,}/g,' ').trim();}
-function addMsg(t,cls){var d=document.createElement('div');d.className='b '+cls;d.textContent=t;document.getElementById('chat').appendChild(d);document.getElementById('chat').scrollTop=99999;return d;}
-let voiceOn=true;
-let _voices=[];try{if('speechSynthesis' in window){_voices=window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>{_voices=window.speechSynthesis.getVoices();};}}catch(e){}
-function speakText(txt,btn){try{if(!voiceOn)return;if(!('speechSynthesis' in window)){if(btn)btn.textContent='▶';return;}window.speechSynthesis.cancel();try{window.speechSynthesis.resume();}catch(e){}let u=new SpeechSynthesisUtterance(txt);u.lang=(window._zyLang==='en'?'en-US':'th-TH');u.rate=1;u.pitch=0.85;u.volume=1;let vs=_voices.length?_voices:window.speechSynthesis.getVoices();let want=(window._zyLang==='en'?'en':'th');let th=vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(want));if(th)u.voice=th;u.onend=()=>{if(btn)btn.textContent='▶';};u.onerror=()=>{if(btn)btn.textContent='▶';};if(btn)btn.textContent='⏹';window.speechSynthesis.speak(u);}catch(e){if(btn)btn.textContent='▶';}}
-function toggleVoice(){voiceOn=!voiceOn;let b=document.getElementById('voiceBtn');if(b)b.textContent=voiceOn?'🔊':'🔇';if(!voiceOn&&window.speechSynthesis)window.speechSynthesis.cancel();}
-function startListen(){try{let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('เบราว์เซอร์นี้ไม่รองรับไมค์ ให้พิมพ์แทน');return;}let r=new SR();r.lang='th-TH';let b=document.getElementById('micBtn');if(b)b.textContent='🔴';r.onresult=(e)=>{let t=e.results[0][0].transcript;document.getElementById('q').value=t;if(b)b.textContent='🎤';send();};r.onerror=()=>{if(b)b.textContent='🎤';};r.onend=()=>{if(b)b.textContent='🎤';};r.start();}catch(e){alert('เปิดไมค์ไม่ได้: '+e.message);}}
-let attachedText='';let attachedNames=[];
-async function callAI(text,brain){let langSel=document.getElementById('lang')?document.getElementById('lang').value:'auto';let isThai=/[\u0E00-\u0E7F]/.test(text);let useLang=langSel==='auto'?(isThai?'th':'en'):langSel;if(useLang==='th'){text='ตอบเป็นภาษาไทยเท่านั้น ตอบสั้น กระชับ ไม่ต้องยกคู่มือยาว\n\n'+text;}else{text='Reply in English only. Keep it short and clear, no long manual unless asked.\n\n'+text;}window._zyLang=useLang;
- if(brain==='groq'){var k=getK('zyphere_groq_key');if(!k)throw new Error('ยังไม่ได้ใส่ Groq Key - กด ตั้งค่า ใส่ gsk_');var models=['openai/gpt-oss-120b','llama-3.1-8b-instant','moonshotai/kimi-k2-instruct-0905'];var lastErr='';for(var mi=0;mi<models.length;mi++){try{var r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:models[mi],messages:[{role:'user',content:text}]})});var j=await r.json();if(r.ok&&j.choices)return j.choices[0].message.content;lastErr=(j.error&&j.error.message)||('Groq '+r.status);}catch(e){lastErr=e.message;}}throw new Error('Groq: '+lastErr);}
- if(brain==='gemini'){var k2=getK('zyphere_gemini_key');if(!k2)throw new Error('ยังไม่ได้ใส่ Gemini Key - กด ตั้งค่า ใส่ AQ.');var gmodels=['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash'];var gerr='';for(var gi=0;gi<gmodels.length;gi++){for(var gv=0;gv<2;gv++){var ver=gv===0?'v1beta':'v1';try{var r2=await fetch('https://generativelanguage.googleapis.com/'+ver+'/models/'+gmodels[gi]+':generateContent?key='+k2,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}]})});var j2=await r2.json();if(r2.ok&&j2.candidates)return j2.candidates[0].content.parts[0].text;gerr=(j2.error&&j2.error.message)||('Gemini '+r2.status);}catch(e){gerr=e.message;}}}throw new Error('Gemini: '+gerr);}
- if(brain==='openrouter'){var k3=getK('zyphere_openrouter_key');if(!k3)throw new Error('ยังไม่ได้ใส่ OpenRouter Key');var omodels=['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free','meta-llama/llama-3.3-70b-instruct:free'];var oerr='';for(var oi=0;oi<omodels.length;oi++){try{var r3=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k3},body:JSON.stringify({model:omodels[oi],messages:[{role:'user',content:text}]})});var j3=await r3.json();if(r3.ok&&j3.choices)return j3.choices[0].message.content;oerr=(j3.error&&j3.error.message)||('OpenRouter '+r3.status);}catch(e){oerr=e.message;}}throw new Error('OpenRouter: '+oerr);}
- if(brain==='hf'){var k4=getK('zyphere_hf_key');if(!k4)throw new Error('ยังไม่ได้ใส่ HF Key');var herr='';var hmodels=['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'];for(var hi=0;hi<hmodels.length;hi++){try{var r4=await fetch('https://router.huggingface.co/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k4},body:JSON.stringify({model:hmodels[hi],messages:[{role:'user',content:text}],max_tokens:1000})});var j4=await r4.json();if(r4.ok&&j4.choices)return j4.choices[0].message.content;herr=(j4.error&&j4.error.message)||('HF '+r4.status);}catch(e){herr=e.message;}}throw new Error('HF: '+herr);}
-}
-async function send(){var q=document.getElementById('q');var t=q.value.trim();if(!t&&!attachedText)return;let prompt=t;if(attachedText){prompt=t+'\n\n--- เนื้อไฟล์ที่แนบมา ---'+attachedText;attachedText='';attachedNames=[];}if(!t)return;q.value='';addMsg(t,'u');var b=addMsg('กำลังคิด...','a');try{var ans=await callAI(prompt,document.getElementById('brain').value);let txt=clean(ans);b.textContent='';let sp=document.createElement('span');sp.textContent=txt;let pb=document.createElement('button');pb.textContent='▶';pb.title='ฟังเสียง';pb.style.cssText='margin-left:8px;border:1px solid #ddd;background:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:12px';pb.onclick=()=>{if(window.speechSynthesis&&window.speechSynthesis.speaking){window.speechSynthesis.cancel();pb.textContent='▶';return;}speakText(txt,pb);};b.appendChild(sp);b.appendChild(pb);if(voiceOn)speakText(txt,pb);}catch(e){b.textContent='เกิดข้อผิดพลาด: '+e.message;}}
-document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();send();}});
-document.getElementById('sendBtn').addEventListener('click',function(){send();});
-document.getElementById('micBtn').addEventListener('click',function(){startListen();});
-document.getElementById('voiceBtn').addEventListener('click',function(){toggleVoice();});
-document.getElementById('plusBtn').addEventListener('click',function(){document.getElementById('fileIn').click();});
-document.getElementById('fileIn').addEventListener('change',function(){let f=this.files[0];if(!f)return;let q=document.getElementById('q');if(/\.(zip|rar|7z|exe|mp3|mp4|pdf)$/i.test(f.name)){addMsg('ไฟล์ '+f.name+' เป็นไฟล์บีบอัด/ไบนารี อ่านตรงๆ ไม่ได้ ให้แตกไฟล์ก่อน แล้วส่งไฟล์ .txt .html .js .md .json ข้างในมาแทน','a');this.value='';return;}let rd=new FileReader();rd.onload=()=>{let txt=String(rd.result||'').slice(0,12000);attachedText+=('\n\n[ไฟล์ '+f.name+']:\n'+txt);attachedNames.push(f.name);addMsg('อ่านไฟล์แล้ว: '+f.name+' ('+txt.length+' ตัวอักษร) พิมพ์คำถามแล้วกดส่งได้เลย','a');};if(f.type.startsWith('image/')){rd.readAsDataURL(f);}else{rd.readAsText(f);}q.value=(q.value+' [ไฟล์: '+f.name+'] ').trim();this.value='';});
-
-// วางรูปจาก Print Screen / Ctrl+V + ลากไฟล์วางได้
-document.addEventListener('paste', function(e){
-  try{
-    var items=(e.clipboardData||{}).items||[];
-    for(var i=0;i<items.length;i++){
-      var it=items[i];
-      if(it.kind==='file'){
-        var f=it.getAsFile(); if(!f) continue;
-        var q=document.getElementById('q');
-        var name=f.name||('pasted-'+Date.now()+'.png');
-        q.value=(q.value+' [รูปที่วาง: '+name+'] ').trim();
-        attachedText+='\n[รูปที่วาง: '+name+' - ผู้ใช้วางรูปมา ให้ตอบจากบริบทที่ผู้ใช้พิมพ์]';addMsg('วางรูปแล้ว: '+name+' (พิมพ์คำถามต่อแล้วกดส่งได้เลย)','a');
-        e.preventDefault(); return;
-      }
-    }
-    var txt=(e.clipboardData||{}).getData&&e.clipboardData.getData('text');
-    if(txt){ /* let default paste into input if focused */ }
-  }catch(err){}
-});
-var chatEl=document.getElementById('chat');
-chatEl.addEventListener('dragover', function(e){e.preventDefault();});
-chatEl.addEventListener('drop', function(e){
-  e.preventDefault();
-  var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
-  if(!f) return;
-  var q=document.getElementById('q');
-  q.value=(q.value+' [ไฟล์: '+f.name+'] ').trim();
-  addMsg('ลากไฟล์มาแล้ว: '+f.name+' (พิมพ์คำถามต่อแล้วกดส่งได้เลย)','a');
-});
+const $=id=>document.getElementById(id);
+const getK=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const setK=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let chats=[];try{chats=JSON.parse(getK('zy_chats')||'[]')}catch(e){}
+let cur=null,pend={text:'',names:[],img:null},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th';
+$('brain').value=getK('zy_brain')||'groq';$('lang').value=getK('zy_lang')||'auto';$('voiceBtn').textContent=voiceOn?'🔊':'🔇';
+const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,...r})=>r)}))));
+const P={
+ groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','llama-3.3-70b-versatile','llama-3.1-8b-instant','moonshotai/kimi-k2-instruct-0905'],vision:['meta-llama/llama-4-scout-17b-16e-instruct']},
+ openrouter:{n:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',models:['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free','meta-llama/llama-3.3-70b-instruct:free'],vision:['google/gemma-3-27b-it:free']},
+ hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]},
+ gemini:{n:'Gemini',models:['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash']}};
+const key=id=>getK('zyphere_'+id+'_key');
+function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
+function sysPrompt(l){return (l==='th'?'คุณคือ Zyphere ผู้ช่วย AI ตอบเป็นภาษาไทย กระชับ ชัดเจน ถูกต้อง ใช้ markdown ได้ โค้ดใส่ใน ``` ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere, a helpful AI assistant. Reply in English, concise and accurate. Markdown allowed, code in ``` fences. If unsure, say so; never invent facts.')+(getK('zy_custom')?'\n\nUser instructions: '+getK('zy_custom'):'')}
+async function readSSE(r,pick,on){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;try{const t=pick(JSON.parse(d));if(t){full+=t;on(full)}}catch(e){}}}if(!full)throw new Error('ไม่ได้รับคำตอบ');return full}
+async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
+async function callProv(id,msgs,img,sig,on,sys){
+ const p=P[id],k=key(id);let err='';
+ if(id==='gemini'){
+  const contents=msgs.map((m,i)=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}].concat(img&&i===msgs.length-1?[{inline_data:{mime_type:img.split(';')[0].slice(5),data:img.split(',')[1]}}]:[])}));
+  for(const m of p.models){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':streamGenerateContent?alt=sse',{method:'POST',signal:sig,headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents})});if(!r.ok)await fail(r,'Gemini');return await readSSE(r,j=>j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join(''),on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
+  throw new Error(err)}
+ const list=img?p.vision:p.models;if(!list.length)throw new Error('ไม่รองรับรูปภาพ');
+ const om=[{role:'system',content:sys}].concat(msgs.map((m,i)=>img&&i===msgs.length-1?{role:'user',content:[{type:'text',text:m.content},{type:'image_url',image_url:{url:img}}]}:m));
+ for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:2048})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
+ throw new Error(err)}
+async function ask(msgs,img,sig,on,sys){
+ const sel=$('brain').value,order=[sel,...Object.keys(P).filter(x=>x!==sel)],errs=[];
+ for(const id of order){if(!key(id)){if(id===sel)errs.push('ยังไม่ได้ใส่คีย์ '+P[id].n);continue}
+  try{return{text:await callProv(id,msgs,img,sig,on,sys),id}}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
+ throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กด ⚙ ตั้งค่า')}
+function md(t){return t.split('```').map((p,i)=>i%2?'<pre><code>'+esc(p.replace(/^[\w+-]*\n/,''))+'</code></pre>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>')).join('')}
+function plain(t){return t.replace(/```[\s\S]*?```/g,' ').replace(/[*_#`]/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'')}
+function speak(t,btn){try{const s=window.speechSynthesis;if(!s)return;if(s.speaking){s.cancel();if(btn)btn.textContent='▶ ฟัง';return}const u=new SpeechSynthesisUtterance(plain(t));u.lang=lastLang==='en'?'en-US':'th-TH';const v=s.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith(lastLang));if(v)u.voice=v;u.onend=u.onerror=()=>{if(btn)btn.textContent='▶ ฟัง'};if(btn)btn.textContent='⏹ หยุด';s.speak(u)}catch(e){}}
+function bubble(m){const d=document.createElement('div');d.className='b '+(m.r==='user'?'u':'a');const c=document.createElement('div');d.appendChild(c);
+ if(m.img){const i=document.createElement('img');i.src=m.img;d.insertBefore(i,c)}
+ if(m.r==='user'){c.textContent=m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')}else{c.innerHTML=md(m.c);
+  const a=document.createElement('div');a.className='act';a.innerHTML='<button>คัดลอก</button><button>▶ ฟัง</button>';
+  a.children[0].onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);e.target.textContent='คัดลอกแล้ว'};a.children[1].onclick=e=>speak(m.c,e.target);d.appendChild(a)}
+ $('chat').appendChild(d);$('chat').scrollTop=1e9;return d}
+function view(){const ch=$('chat');ch.innerHTML='';const c=chats.find(x=>x.id===cur);
+ if(!c||!c.m.length)bubble({r:'assistant',c:'สวัสดีครับ ผม Zyphere พิมพ์ กดไมค์ หรือกด + แนบไฟล์/รูปได้เลย ผมจำบทสนทนาในแชทนี้ได้ และถ้าสมองที่เลือกล่มจะสลับไปตัวอื่นให้อัตโนมัติ'});
+ else c.m.forEach(bubble);renderList()}
+function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
+ chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>m.c.toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
+  d.innerHTML='<span>'+esc(c.t)+'</span><i title="ลบ">✕</i>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
+  d.querySelector('i').onclick=e=>{e.stopPropagation();chats=chats.filter(x=>x.id!==c.id);if(cur===c.id)cur=null;save();view()};L.appendChild(d)})}
+function chips(){const b=$('chips');b.innerHTML='';pend.names.forEach(n=>{const s=document.createElement('span');s.className='chip';s.textContent='📎 '+n+' ✕';s.onclick=()=>{pend={text:'',names:[],img:null};chips()};b.appendChild(s)})}
+function addFile(f){if(!f)return;if(f.type.startsWith('image/')){const r=new FileReader();r.onload=()=>{pend.img=r.result;pend.names.push(f.name||'รูป');chips()};r.readAsDataURL(f);return}
+ if(/\.(zip|rar|7z|exe|mp3|mp4|pdf|docx?|xlsx?)$/i.test(f.name)){alert('อ่านไฟล์ประเภทนี้ตรงๆ ไม่ได้ ให้แปลงเป็น .txt .md .json .csv .html .js .py ก่อน');return}
+ const r=new FileReader();r.onload=()=>{const t=String(r.result||'');pend.text+='\n\n[ไฟล์ '+f.name+']:\n'+t.slice(0,30000)+(t.length>30000?'\n...(ตัดส่วนที่เกิน 30,000 ตัวอักษร)':'');pend.names.push(f.name);chips()};r.readAsText(f)}
+function setBusy(b){busy=b;$('sendBtn').textContent=b?'■':'↑'}
+async function send(){
+ if(busy){ctrl&&ctrl.abort();return}
+ const t=$('q').value.trim();if(!t&&!pend.names.length)return;
+ let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.names[0]).slice(0,32),m:[]};chats.unshift(c);cur=c.id}
+ const um={r:'user',c:t||'(แนบไฟล์)',x:pend.text,f:pend.names.slice(),img:pend.img};c.m.push(um);pend={text:'',names:[],img:null};chips();$('q').value='';$('q').style.height='';
+ view();const lang=resolveLang(t);lastLang=lang;const ab=bubble({r:'assistant',c:'กำลังคิด...'});const body=ab.firstChild;
+ const msgs=c.m.slice(-20).map(m=>({role:m.r==='user'?'user':'assistant',content:m.c+(m.x||'')}));
+ ctrl=new AbortController();setBusy(true);let reply='';
+ try{const r=await ask(msgs,um.img,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9},sysPrompt(lang));reply=r.text;if(r.id!==$('brain').value)reply+='\n\n(ใช้ '+P[r.id].n+' แทน เพราะตัวที่เลือกใช้ไม่ได้)'}
+ catch(e){if(e.name==='AbortError'){reply=reply||'(หยุดแล้ว)'}else{reply='เกิดข้อผิดพลาด:\n'+e.message}}
+ setBusy(false);c.m.push({r:'assistant',c:reply});save();view();if(voiceOn&&!/^เกิดข้อผิดพลาด/.test(reply)){const b=$('chat').lastChild.querySelector('.act button:last-child');speak(reply,b)}}
+function listen(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('เบราว์เซอร์นี้ไม่รองรับไมค์ ให้พิมพ์แทน');return}
+ const r=new SR(),b=$('micBtn'),l=$('lang').value;r.lang=l==='en'?'en-US':'th-TH';b.textContent='🔴';r.onresult=e=>{$('q').value=e.results[0][0].transcript;send()};r.onerror=r.onend=()=>{b.textContent='🎤'};try{r.start()}catch(e){b.textContent='🎤'}}
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+$('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'});
+$('sendBtn').onclick=send;$('micBtn').onclick=listen;$('plusBtn').onclick=()=>$('fileIn').click();
+$('fileIn').onchange=function(){addFile(this.files[0]);this.value=''};
+$('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').textContent=voiceOn?'🔊':'🔇';if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel()};
+$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
+document.addEventListener('paste',e=>{const it=[...(e.clipboardData||{}).items||[]].find(i=>i.kind==='file');if(it){e.preventDefault();addFile(it.getAsFile())}});
+$('chat').addEventListener('dragover',e=>e.preventDefault());$('chat').addEventListener('drop',e=>{e.preventDefault();addFile(e.dataTransfer.files[0])});
+$('setBtn').onclick=()=>{['groq','gemini','openrouter','hf'].forEach(id=>{const el=$('k-'+id);el.value=key(id);el.oninput=()=>setK('zyphere_'+id+'_key',el.value.trim())});$('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('set').style.display='flex'};
+$('doneBtn').onclick=()=>$('set').style.display='none';$('set').onclick=e=>{if(e.target===$('set'))$('set').style.display='none'};
+$('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
+view();
 </script></body></html>
