@@ -218,6 +218,7 @@ const key=id=>getK('zyphere_'+id+'_key');
 const KIDS=['groq','gemini','openrouter','hf'];
 const redact=s=>{let t=String(s==null?'':s);for(const id of KIDS){const k=key(id);if(k&&k.length>6)t=t.split(k).join('••••')}return t};
 const maskK=k=>k?'••••••••'+k.slice(-4):'';
+const cleanAns=s=>String(s==null?'':s).split('Provider blocked the response').join('ขออภัย ระบบผู้ให้บริการกันคำตอบชั่วคราว กรุณาลองใหม่หรือเปลี่ยนโมเดลครับ');
 function resolveLang(t){const s=$('lang').value;if(s!=='auto')return s;if(/[\u0E00-\u0E7F]/.test(t||''))return 'th';if(/[A-Za-z]/.test(t||''))return 'en';return lastLang||'th'}
 const localBase=()=>(getK('zy_ttsurl')||backendBase||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
 async function detectBackend(){try{if(getK('zy_ttsurl'))return;const r=await fetch(location.origin+'/api/health',{cache:'no-store'});if(r.ok){const j=await r.json();if(j&&j.name==='zyphere')backendBase=location.origin}}catch(e){}}
@@ -313,7 +314,7 @@ async function callProv(id,msgs,img,sig,on,sys){
      if(!text)throw new Error(res.finish==='SAFETY'||res.finish==='RECITATION'?'โมเดลหยุดเพราะนโยบายความปลอดภัย/การอ้างอิงซ้ำ ลองแบ่งข้อความหรือถามใหม่':'ไม่ได้รับคำตอบ');
      return text;
     });
-   }catch(e){if(e.name==='AbortError')throw e;err=e.message}
+   }catch(e){if(e.name==='AbortError')throw e;err=cleanAns(e.message)}
   }
   throw new Error(err);
  }
@@ -339,14 +340,14 @@ async function callProv(id,msgs,img,sig,on,sys){
     if(!text)throw new Error('ไม่ได้รับคำตอบ');
     return text;
    });
-  }catch(e){if(e.name==='AbortError')throw e;err=e.message}
+  }catch(e){if(e.name==='AbortError')throw e;err=cleanAns(e.message)}
  }
  throw new Error(err)}
 let prefProv='';
 async function ask(msgs,img,sig,on,sys){
  const sel=$('brain').value,all=Object.keys(P);const order=sel==='auto'?[prefProv,...all.filter(x=>x!==prefProv)]:[sel,...all.filter(x=>x!==sel)];const errs=[];
  for(const id of order){if(!id)continue;if(!key(id)){if(id===sel)errs.push('ยังไม่ได้ใส่คีย์ '+P[id].n);continue}
-  try{const out=await callProv(id,msgs,img,sig,on,sys);prefProv=id;return out}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
+  try{const out=await callProv(id,msgs,img,sig,on,sys);prefProv=id;return cleanAns(out)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
  throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กดตั้งค่าที่เมนูซ้าย')}
 
 // smoother streaming UI (throttled repaint so long replies stay responsive)
