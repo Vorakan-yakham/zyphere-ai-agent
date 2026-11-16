@@ -1,6 +1,1 @@
 streamlit
-groq
-google-generativeai
-openai
-gtts
-edge-tts

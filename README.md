@@ -1,1 +1,6 @@
-Zyphere V6 Coworker Voice+Text - Upload ทับ V5 ได้เลย ใช้ Secrets เดิม 4 ตัว ไม่ต้องใส่ใหม่
+# Zyphere - Meta AI Exact Clone
+
+- index.html = หน้า Zyphere แบบ Meta AI เป๊ะๆ (ไฟล์หลัก)
+- app.py = ตัวห่อให้ Streamlit Cloud เปิด index.html ได้
+- เปิดบน GitHub Pages: Settings > Pages > Branch: main > Folder: / (root) > Save แล้วเปิด https://Vorakan-yakham.github.io/zyphere-ai-agent/
+- เปิดบน Streamlit Cloud: ใช้ app.py เหมือนเดิม
