@@ -221,6 +221,9 @@ const KIDS=['groq','gemini','openrouter','hf'];
 const redact=s=>{let t=String(s==null?'':s);for(const id of KIDS){const k=key(id);if(k&&k.length>6)t=t.split(k).join('••••')}return t};
 const maskK=k=>k?'••••••••'+k.slice(-4):'';
 const cleanAns=s=>String(s==null?'':s).split('Provider blocked the response').join('ขออภัย ระบบผู้ให้บริการกันคำตอบชั่วคราว กรุณาลองใหม่หรือเปลี่ยนโมเดลครับ');
+const SCRUB='Provider blocked the response',SCRUB_TH='ขออภัย ระบบผู้ให้บริการกันคำตอบชั่วคราว กรุณาลองใหม่หรือเปลี่ยนโมเดลครับ';
+function scrubNode(n){try{const w=document.createTreeWalker(n||document.body,NodeFilter.SHOW_TEXT);let x;while(x=w.nextNode()){if(x.nodeValue&&x.nodeValue.includes(SCRUB))x.nodeValue=x.nodeValue.split(SCRUB).join(SCRUB_TH)}}catch(e){}}
+new MutationObserver(ms=>{for(const m of ms)scrubNode(m.target.parentNode||m.target)}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function resolveLang(t){const s=$('lang').value;if(s!=='auto')return s;if(/[\u0E00-\u0E7F]/.test(t||''))return 'th';if(/[A-Za-z]/.test(t||''))return 'en';return lastLang||'th'}
 const localBase=()=>(getK('zy_ttsurl')||backendBase||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
 async function detectBackend(){try{if(getK('zy_ttsurl'))return;const r=await fetch(location.origin+'/api/health',{cache:'no-store'});if(r.ok){const j=await r.json();if(j&&j.name==='zyphere')backendBase=location.origin}}catch(e){}}
