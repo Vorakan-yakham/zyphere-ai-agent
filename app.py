@@ -1,4 +1,4 @@
-# ZYPHERE V53 - META AI EXACT REBUILD FROM SCRATCH - CHECK THIS LINE
+# ZYPHERE V54 - TRUE META AI CLONE FIX - CHECK THIS LINE
 import streamlit as st, os
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -10,6 +10,8 @@ if 'add_img' not in st.session_state: st.session_state.add_img=None
 if 'add_text' not in st.session_state: st.session_state.add_text=''
 if 'brain_main' not in st.session_state: st.session_state.brain_main='Zyphere อัตโนมัติ'
 if 'collapsed' not in st.session_state: st.session_state.collapsed=False
+# V54: if user stuck collapsed from V53, start expanded - sidebar must be visible
+if st.session_state.get('v54_reset') is None: st.session_state.collapsed=False; st.session_state.v54_reset=True
 if 'recent_files' not in st.session_state: st.session_state.recent_files=[]
 if 'voice_on' not in st.session_state: st.session_state.voice_on=True
 _act=st.query_params.get('action','')
@@ -28,7 +30,7 @@ section[data-testid='stSidebar'] .stButton>button{width:100%!important;text-alig
 section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!important}
 .main .block-container{max-width:760px!important;margin:auto!important;padding-top:140px!important}
 .hero{font-size:28px!important;font-weight:700!important;text-align:center!important;color:#1f1f1f!important;margin-bottom:24px!important}
-.pill{background:#fff!important;border-radius:24px!important;box-shadow:0 4px 24px rgba(0,0,0,.08)!important;padding:12px 14px!important;max-width:760px!important;margin:auto!important}
+.pill{background:#fff!important;border-radius:24px!important;box-shadow:0 4px 24px rgba(0,0,0,.08)!important;padding:12px 14px!important;max-width:680px!important;margin:0 auto!important} .main .block-container{max-width:760px!important;margin:0 auto!important;padding-left:24px!important;padding-right:24px!important} [data-testid='stFileUploader']{max-width:560px!important;margin:0 auto!important;background:#fff!important;border-radius:0 0 24px 24px!important;box-shadow:0 20px 60px rgba(0,0,0,.25)!important;padding:0 24px 24px!important}
 .chips{display:flex;gap:8px;justify-content:center;margin-top:16px}
 .chip{border:1px solid #eee;border-radius:999px;padding:6px 14px;font-size:13px;background:#fff;cursor:pointer}
 .chip:hover{background:#f0f0f0}
@@ -44,21 +46,21 @@ def show_audio(b):
 
 # --- SIDEBAR LIKE META AI ---
 with st.sidebar:
-    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v53_logo'):
+    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v54_logo'):
         st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
     if not st.session_state.collapsed:
-        if st.button('✎  แชทใหม่                                          Ctrl+Shift+O', key='v53_new'): st.session_state.messages=[]; st.rerun()
-        if st.button('⌕  ค้นหา                                              Ctrl+K', key='v53_search'): pass
-        if st.button('▦  สื่อ', key='v53_media'): pass
-        if st.button('◈  อาร์ติแฟกต์', key='v53_art'): pass
-        if st.button('◷  กำหนดเวลาแล้ว', key='v53_sched'): pass
-        if st.button('♡  Vibes', key='v53_vibes'): pass
+        if st.button('✎  แชทใหม่                                          Ctrl+Shift+O', key='v54_new'): st.session_state.messages=[]; st.rerun()
+        if st.button('⌕  ค้นหา                                              Ctrl+K', key='v54_search'): pass
+        if st.button('▦  สื่อ', key='v54_media'): pass
+        if st.button('◈  อาร์ติแฟกต์', key='v54_art'): pass
+        if st.button('◷  กำหนดเวลาแล้ว', key='v54_sched'): pass
+        if st.button('♡  Vibes', key='v54_vibes'): pass
         st.markdown("<div style='font-size:12px;color:#888;padding:16px 12px 4px'>ประวัติ</div>", unsafe_allow_html=True)
-        if st.button('สร้าง AI ฟรีสุดฉลาด', key='v53_h1'): st.session_state.pending='สร้าง AI ฟรีสุดฉลาด'; st.rerun()
-        if st.button('SEO สำหรับน้ำพริกกากหมู', key='v53_h2'): st.session_state.pending='SEO สำหรับน้ำพริกกากหมู'; st.rerun()
+        if st.button('สร้าง AI ฟรีสุดฉลาด', key='v54_h1'): st.session_state.pending='สร้าง AI ฟรีสุดฉลาด'; st.rerun()
+        if st.button('SEO สำหรับน้ำพริกกากหมู', key='v54_h2'): st.session_state.pending='SEO สำหรับน้ำพริกกากหมู'; st.rerun()
         st.markdown("<div style='position:fixed;bottom:0;left:0;width:280px;background:#fff;padding:12px;border-top:1px solid #f0f0f0'><div style='display:flex;align-items:center;gap:10px;padding:0 12px'><div style='width:32px;height:32px;border-radius:50%;background:#7b61ff;color:#fff;display:flex;align-items:center;justify-content:center'>W</div><div><b style='font-size:14px'>Whisp</b><div style='font-size:12px;color:#888'>เจ้าของ Zyphere</div></div></div><a href='?action=logout' target='_self' style='display:flex;padding:0 12px;height:36px;align-items:center;text-decoration:none;color:#1f1f1f;font-size:14px'>↪ ออกจากระบบ</a><a href='?action=login' target='_self' style='display:flex;padding:0 12px;height:36px;align-items:center;text-decoration:none;color:#1f1f1f;font-size:14px'>⇄ สลับบัญชี / เข้าสู่ระบบ</a></div>", unsafe_allow_html=True)
     else:
-        for ic,k in [('✎','v53_c_new'),('⌕','v53_c_search'),('▦','v53_c_media'),('◈','v53_c_art'),('◷','v53_c_sched'),('♡','v53_c_vibes')]:
+        for ic,k in [('✎','v54_c_new'),('⌕','v54_c_search'),('▦','v54_c_media'),('◈','v54_c_art'),('◷','v54_c_sched'),('♡','v54_c_vibes')]:
             if st.button(ic, key=k): pass
         st.markdown("<div style='position:fixed;bottom:0;left:0;width:64px;background:#fff;padding:12px 0;text-align:center'><div style='width:32px;height:32px;border-radius:50%;background:#7b61ff;color:#fff;display:flex;align-items:center;justify-content:center;margin:auto'>W</div></div>", unsafe_allow_html=True)
 
@@ -70,8 +72,8 @@ if not has_chat:
     st.markdown("<div class='hero'>เราควรเริ่มจากตรงไหนดี</div>", unsafe_allow_html=True)
     # Meta AI style popup for + : centered modal
     if st.session_state.show_add:
-        st.markdown("<div style='background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px;max-width:560px;margin:0 auto 16px'><b style='font-size:18px'>เพิ่มสื่อและไฟล์</b><br><span style='font-size:13px;color:#666'>อัพโหลดอะไรก็ได้ที่คุณต้องการ</span></div>", unsafe_allow_html=True)
-        _up=st.file_uploader('คลิกเพื่อดู หรือลากแล้ววางที่นี่', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='visible', key='v53_picker')
+        st.markdown("<div style='background:#fff;border-radius:24px 24px 0 0;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px 24px 0;max-width:560px;margin:0 auto'><b style='font-size:18px'>เพิ่มสื่อและไฟล์</b><br><span style='font-size:13px;color:#666'>อัพโหลดอะไรก็ได้ที่คุณต้องการ</span></div>", unsafe_allow_html=True)
+        _up=st.file_uploader('คลิกเพื่อดู หรือลากแล้ววางที่นี่', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='visible', key='v54_picker')
         if _up is not None:
             st.session_state.add_img=_up
             if _up.name not in st.session_state.recent_files: st.session_state.recent_files.insert(0,_up.name)
@@ -79,7 +81,7 @@ if not has_chat:
         if st.session_state.recent_files:
             st.markdown("<div style='font-size:13px;font-weight:600;margin:8px 0;text-align:center'>รายการอัพโหลดล่าสุด</div>", unsafe_allow_html=True)
             st.markdown("<div style='text-align:center'>"+" ".join(["<span style='display:inline-block;background:#f0f4f9;border-radius:12px;padding:8px 12px;font-size:12px;margin:2px'>"+n+"</span>" for n in st.session_state.recent_files[:6]])+"</div>", unsafe_allow_html=True)
-        if st.button('✕ ปิด', key='v53_close'): st.session_state.show_add=False; st.rerun()
+        if st.button('✕ ปิด', key='v54_close'): st.session_state.show_add=False; st.rerun()
     if st.session_state.add_img is not None:
         st.markdown("<div style='text-align:center'><span style='background:#fff;border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:6px 12px;font-size:13px'>📎 "+st.session_state.add_img.name+"</span></div>", unsafe_allow_html=True)
     st.markdown("<div class='pill'>", unsafe_allow_html=True)
