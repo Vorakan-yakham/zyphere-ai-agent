@@ -1,1 +1,1 @@
-# Zyphere RESET - static site, no backend needed
+# Zyphere RESET Jarvis - static
