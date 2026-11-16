@@ -62,6 +62,8 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 .pic img{max-width:min(100%,420px);border-radius:16px;display:block;margin:10px 0 4px;background:var(--sf);min-height:60px}.pic a{text-decoration:none}
 .ib.on{color:#8b5cf6;background:rgba(139,92,246,.14)}
 @media(prefers-reduced-motion:reduce){.hero,.dots i,.a.busy .lg .or,body.busy .logo .lg .or,.a.busy .lg circle{animation:none}}
+.cb{position:relative}.cpy{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:8px;padding:3px 10px;font-size:11px;background:rgba(255,255,255,.14);color:#e6edf3;opacity:.85}.cpy:hover{opacity:1;background:rgba(255,255,255,.25)}.a .t .cb pre{padding-top:34px;margin:8px 0}
+.u img{max-width:min(100%,380px)}body.drag .box{border-color:#8b5cf6;box-shadow:0 0 0 4px rgba(139,92,246,.35)}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side" id="side"><div class="logo" id="logo"></div>
 <button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
@@ -71,7 +73,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
-<button class="ib" id="plusBtn" title="แนบไฟล์หรือรูป"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" hidden>
+<button class="ib" id="plusBtn" title="แนบไฟล์ รูป หรือ zip (ลากวางโฟลเดอร์ หรือวาง screenshot ด้วย Ctrl+V ได้)"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
 <textarea id="q" rows="1" placeholder="พิมพ์ หรือกดไมค์เพื่อพูด..."></textarea>
 <button class="ib" id="webBtn" title="ค้นเว็บ (ใช้คีย์ Gemini)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button><button class="ib" id="micBtn" title="พูดหนึ่งประโยค"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <button class="ib live" id="callBtn" title="คุยด้วยเสียงต่อเนื่อง"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></button>
@@ -83,6 +85,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
 <label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
 <label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์) พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
+<label>โหมดเขียนโค้ด</label><select id="codeMode"><option value="auto">อัตโนมัติ (ตรวจจากคำสั่ง)</option><option value="on">เปิดเสมอ</option><option value="off">ปิด</option></select>
 <label>เสียงพูด</label><select id="ttse"><option value="g">ธรรมชาติ (ใช้คีย์ Gemini)</option><option value="b">เสียงในเครื่อง</option></select>
 <select id="ttsv" style="margin-top:6px"><option value="Charon">ทุ้มนิ่ง (Charon)</option><option value="Orus">หนักแน่น (Orus)</option><option value="Algenib">แหบลึก (Algenib)</option><option value="Puck">สดใส (Puck)</option></select>
 <input id="ttsurl" placeholder="เซิร์ฟเวอร์เสียง (ถ้ารัน app.py) เช่น http://localhost:8000" style="margin-top:6px"><label>บุคลิกหรือกฎพิเศษ (เช่น ชื่อที่ให้เรียก)</label><textarea id="custom" rows="2" placeholder="เช่น เรียกฉันว่าพี่ พูดเป็นกันเองแบบเพื่อน"></textarea>
@@ -97,8 +100,8 @@ const lg=()=>'<svg class="lg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26"
 let webOn=getK('zy_web')==='1';
 const IC={on:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',off:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9l4 6M21 9l-4 6"/></svg>',send:'<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',stop:'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'};
 let chats=[];try{chats=JSON.parse(getK('zy_chats')||'[]')}catch(e){}
-let cur=null,pend={text:'',names:[],img:null},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th',call=false,curSR=null,stopRec=false;
-const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,...r})=>(r.pic&&r.pic.startsWith('data:')&&(r.pic=''),r))}))));
+let cur=null,pend={items:[]},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th',call=false,curSR=null,stopRec=false;
+const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,imgs,...r})=>(r.pic&&r.pic.startsWith('data:')&&(r.pic=''),r.x&&r.x.length>6000&&(r.x=r.x.slice(0,6000)+'\n...(ตัดตอนบันทึก)'),r))}))));
 $('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
 $('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'1.1';
 const P={
@@ -108,29 +111,29 @@ const P={
  hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]}};
 const key=id=>getK('zyphere_'+id+'_key');
 function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
-function sysPrompt(l,v){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
+function sysPrompt(l,v,code){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
  if(jv)s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) ผู้ช่วย AI ส่วนตัวแบบพ่อบ้านอัจฉริยะ น้ำเสียงสุขุม นิ่ง สุภาพ มั่นใจ มีอารมณ์ขันแห้งๆ แบบอังกฤษเล็กน้อย เรียกผู้ใช้ว่า "ท่าน" (ถ้ามีชื่อใน User instructions ให้เรียก ท่านตามด้วยชื่อ) ลงท้าย ครับ รายงานตรงประเด็นแบบพ่อบ้าน เช่น "รับทราบครับท่าน" "เรียบร้อยครับ" ตอบสั้น 1-3 ประโยค ไม่ฟุ่มเฟือย ห้ามใช้ emoji ห้ามหัวข้อหรือ markdown เว้นแต่โค้ด ถ้าไม่รู้ให้บอกตรงๆ ห้ามแต่งข้อมูล และห้ามอ้างว่าควบคุมอุปกรณ์หรือเข้าถึงระบบใดๆ ได้ เพราะทำไม่ได้':'You are Zyphere (pronounced SIGH-fur), a calm, refined, quietly witty AI butler. Address the user as "sir" (or by name if given). Reply in 1-3 crisp sentences, no emoji, no markdown except code. If unsure, say so; never invent facts or claim to control devices you cannot.';
  else s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) เพื่อนคุยที่ฉลาดและอบอุ่น พูดภาษาไทยธรรมชาติแบบภาษาพูด ลงท้าย ครับ ตอบสั้น 1-3 ประโยค ห้ามใช้ emoji ห้ามใช้ markdown เว้นแต่โค้ด ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere (pronounced SIGH-fur), a warm, smart friend. Conversational, 1-3 short sentences, no emoji or markdown except code. If unsure, say so.';
  if(v)s+=th?'\n\nกำลังคุยด้วยเสียง ตอบเป็นประโยคพูดล้วนๆ ไม่เกิน 3 ประโยค ไม่มีรายการ':'\n\nLive voice chat: spoken sentences only, max 3, no lists.';
- const c=getK('zy_custom');s+=th?'\n\nความสามารถของระบบนี้: วาดหรือแต่งภาพเมื่อผู้ใช้สั่ง (เช่น "วาดภาพ...") ดูอากาศ ตั้งเวลา ดูรูปที่แนบ และค้นเว็บเมื่อผู้ใช้เปิดปุ่มรูปโลก แต่ทำวิดีโอไม่ได้':'\n\nThis app can draw/edit images on request, check weather, set timers, read attachments, and search the web when the globe button is on. It cannot make video.';return s+(c?'\n\nUser instructions: '+c:'')}
+ const c=getK('zy_custom');s+=th?'\n\nความสามารถของระบบนี้: วาดหรือแต่งภาพเมื่อผู้ใช้สั่ง (เช่น "วาดภาพ...") ดูอากาศ ตั้งเวลา ดูรูปและภาพหน้าจอที่แนบ อ่านไฟล์แนบได้หลายชนิด (zip, docx, xlsx, pptx, pdf, ไฟล์โค้ด, ไฟล์เสียง) เขียนและแก้โปรแกรม และค้นเว็บเมื่อผู้ใช้เปิดปุ่มรูปโลก แต่ทำวิดีโอไม่ได้':'\n\nThis app can draw/edit images on request, check weather, set timers, read attachments (zip, docx, xlsx, pptx, pdf, code, audio), view screenshots, write and debug programs, and search the web when the globe button is on. It cannot make video.';if(code)s+=CODEP[th?'th':'en'];return s+(c?'\n\nUser instructions: '+c:'')}
 async function readSSE(r,pick,on){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;try{const t=pick(JSON.parse(d));if(t){full+=t;on(full)}}catch(e){}}}if(!full)throw new Error('ไม่ได้รับคำตอบ');return full}
 async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
-async function callProv(id,msgs,img,sig,on,sys){
+async function callProv(id,msgs,img,sig,on,sys,code){
  const p=P[id],k=key(id);let err='';
  if(id==='gemini'){
-  const contents=msgs.map((m,i)=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}].concat(img&&i===msgs.length-1?[{inline_data:{mime_type:img.split(';')[0].slice(5),data:img.split(',')[1]}}]:[])}));
+  const contents=msgs.map((m,i)=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}].concat(img&&img.length&&i===msgs.length-1?img.map(u=>({inline_data:{mime_type:u.split(';')[0].slice(5),data:u.split(',')[1]}})):[])}));
   for(const m of p.models){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':streamGenerateContent?alt=sse',{method:'POST',signal:sig,headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,...(webOn?{tools:[{google_search:{}}]}:{})})});if(!r.ok)await fail(r,'Gemini');return await readSSE(r,j=>j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join(''),on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
   throw new Error(err)}
- const list=img?p.vision:p.models;if(!list.length)throw new Error('ไม่รองรับรูปภาพ');
- const om=[{role:'system',content:sys}].concat(msgs.map((m,i)=>img&&i===msgs.length-1?{role:'user',content:[{type:'text',text:m.content},{type:'image_url',image_url:{url:img}}]}:m));
- for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:2048})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
+ const hasImg=img&&img.length,list=(hasImg?p.vision:p.models)||[];if(!list.length)throw new Error('ไม่รองรับรูปภาพ');
+ const om=[{role:'system',content:sys}].concat(msgs.map((m,i)=>hasImg&&i===msgs.length-1?{role:'user',content:[{type:'text',text:m.content}].concat(img.map(u=>({type:'image_url',image_url:{url:u}})))}:m));
+ for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:code?8192:2048})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
  throw new Error(err)}
-async function ask(msgs,img,sig,on,sys){
- const sel=$('brain').value,all=Object.keys(P),order=webOn&&key('gemini')?['gemini']:sel==='auto'?all:[sel,...all.filter(x=>x!==sel)],errs=[];
+async function ask(msgs,img,sig,on,sys,code){
+ const sel=$('brain').value,all=Object.keys(P),big=msgs.reduce((a,m)=>a+m.content.length,0)>24000,order=webOn&&key('gemini')?['gemini']:sel==='auto'?((code||big)&&key('gemini')?['gemini',...all.filter(x=>x!=='gemini')]:all):[sel,...all.filter(x=>x!==sel)],errs=[];
  for(const id of order){if(!key(id)){if(id===sel)errs.push('ยังไม่ได้ใส่คีย์ '+P[id].n);continue}
-  try{return await callProv(id,msgs,img,sig,on,sys)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
+  try{return await callProv(id,msgs,img,sig,on,sys,code)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
  throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กดตั้งค่าที่เมนูซ้าย')}
-const md=t=>t.split('```').map((p,i)=>i%2?'<pre><code>'+esc(p.replace(/^[\w+-]*\n/,''))+'</code></pre>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
+const md=t=>t.split('```').map((p,i)=>i%2?'<div class=\"cb\"><button class=\"cpy\" type=\"button\">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
 const plain=t=>t.replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#`>~]/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/\s*\n+\s*/g,'\n').trim();
 function chunk(t){const out=[];for(const ln of t.split('\n')){let cur='';for(const w of ln.split(/(\s+)/)){if(cur&&(cur+w).length>100){out.push(cur);cur=w}else cur+=w}if(cur.trim())out.push(cur)}return out}
 function pickVoice(l){const vs=(window.speechSynthesis?speechSynthesis.getVoices():[]).filter(v=>v.lang&&v.lang.toLowerCase().startsWith(l));const sc=v=>(/natural|online|neural/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(/niwat|male|\bman\b|david|george|ryan|guy/i.test(v.name)?2:0)+(/premwadee|achara|pattara/i.test(v.name)?1:0);return vs.sort((a,b)=>sc(b)-sc(a))[0]}
@@ -166,17 +169,17 @@ async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];let cur='';for
     why.push(L[k]+': '+(k==='g'&&gErr?gErr:'ใช้ไม่ได้'));if(++e>=E.length){const box=window.top!==window&&!/github\.io|localhost|127\./.test(location.hostname);toast('เล่นเสียงไม่ได้ — '+why.join(' | ')+(box?' | หน้านี้อยู่ในกรอบ preview ซึ่งบล็อกเครือข่าย':''));return}}}}
  if(tok===spkTok&&btn)btn.textContent='ฟัง'}
 function bubble(m,live){const col=$('col');let d;
- if(m.r==='user'){d=document.createElement('div');d.className='u';if(m.img){const i=document.createElement('img');i.src=m.img;d.appendChild(i)}d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
+ if(m.r==='user'){d=document.createElement('div');d.className='u';(m.imgs&&m.imgs.length?m.imgs:(m.img?[m.img]:[])).forEach(u=>{const i=document.createElement('img');i.src=u;d.appendChild(i)});d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
  else{d=document.createElement('div');d.className='a'+(live?' busy':'');d.innerHTML='<div class="av">'+lg()+'</div><div class="bd"><div class="t"></div></div>';const t=d.querySelector('.t'),bd=d.querySelector('.bd');
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;im.alt='';im.onerror=()=>{im.replaceWith(document.createTextNode('(โหลดภาพไม่ได้ หรือภาพถูกล้างหลังรีเฟรช)'))};p.appendChild(im);const a=document.createElement('a');a.href=m.pic;a.download='zyphere.png';a.target='_blank';a.className='spk';a.textContent='ดาวน์โหลดภาพ';p.appendChild(a);bd.appendChild(p)}
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b);return b};
-   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'})}}
+   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});const cb=codeBlocks(m.c);if(cb.length)mk(cb.length>1?'ดาวน์โหลด zip ('+cb.length+' ไฟล์)':'ดาวน์โหลด '+cb[0].name.split('/').pop(),()=>dlCode(cb))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
-const SUG=['วาดภาพนักบินอวกาศขี่ม้าบนดวงจันทร์','อากาศที่เชียงใหม่ตอนนี้เป็นไง','ตั้งเวลา 10 นาที','อธิบายหลุมดำให้ฟังง่ายๆ'];
-function regen(){const c=chats.find(x=>x.id===cur);if(!c||busy)return;const a=c.m[c.m.length-1];if(!a||a.r!=='assistant')return;c.m.pop();const u=c.m.pop();$('q').value=u.c==='(แนบไฟล์)'?'':u.c;pend={text:u.x||'',names:u.f||[],img:null};chips();view();send()}
+const SUG=['วาดภาพนักบินอวกาศขี่ม้าบนดวงจันทร์','อากาศที่เชียงใหม่ตอนนี้เป็นไง','ตั้งเวลา 10 นาที','เขียนเกมงูด้วย Python พร้อมคำอธิบาย'];
+function regen(){const c=chats.find(x=>x.id===cur);if(!c||busy)return;const a=c.m[c.m.length-1];if(!a||a.r!=='assistant')return;c.m.pop();const u=c.m.pop();$('q').value=u.c==='(แนบไฟล์)'?'':u.c;pend={items:u.x?[{name:(u.f||[]).join(', ')||'ไฟล์',text:u.x}]:[]};chips();view();send()}
 function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
- if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="hero">'+lg()+'</div><h1>สวัสดีครับ วันนี้อยากทำอะไรดี</h1><p>พิมพ์ พูด วาดภาพ ถามอากาศ หรือแนบรูปให้ช่วยดูก็ได้</p><div class="sug"></div></div>';
+ if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="hero">'+lg()+'</div><h1>สวัสดีครับ วันนี้อยากทำอะไรดี</h1><p>พิมพ์ พูด วาดภาพ เขียนโปรแกรม แนบไฟล์/zip หรือวาง screenshot (Ctrl+V) ให้ช่วยดูก็ได้</p><div class="sug"></div></div>';
   SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
  else{c.m.forEach(m=>bubble(m));const l=col.lastChild;if(l&&l.classList.contains('a')){const b=document.createElement('button');b.className='spk';b.textContent='ลองใหม่';b.onclick=regen;l.querySelector('.bd').appendChild(b)}}
  renderList()}
@@ -184,10 +187,161 @@ function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list')
  chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>m.c.toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
   d.innerHTML='<span>'+esc(c.t)+'</span><i title="ลบ">✕</i>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
   d.querySelector('i').onclick=e=>{e.stopPropagation();chats=chats.filter(x=>x.id!==c.id);if(cur===c.id)cur=null;save();view()};L.appendChild(d)})}
-function chips(){const b=$('chips');b.innerHTML='';pend.names.forEach(n=>{const s=document.createElement('span');s.className='chip';s.textContent='📎 '+n+' ✕';s.onclick=()=>{pend={text:'',names:[],img:null};chips()};b.appendChild(s)})}
-function addFile(f){if(!f)return;if(f.type.startsWith('image/')){const r=new FileReader();r.onload=()=>{pend.img=r.result;pend.names.push(f.name||'รูป');chips()};r.readAsDataURL(f);return}
- if(/\.(zip|rar|7z|exe|mp3|mp4|pdf|docx?|xlsx?)$/i.test(f.name)){alert('อ่านไฟล์ประเภทนี้ตรงๆ ไม่ได้ ให้แปลงเป็น .txt .md .json .csv .html .js .py ก่อน');return}
- const r=new FileReader();r.onload=()=>{const t=String(r.result||'');pend.text+='\n\n[ไฟล์ '+f.name+']:\n'+t.slice(0,30000)+(t.length>30000?'\n...(ตัดส่วนที่เกิน 30,000 ตัวอักษร)':'');pend.names.push(f.name);chips()};r.readAsText(f)}
+/* ===== ตัวอ่านไฟล์หลายรูปแบบ: zip / docx / xlsx / pptx / pdf / โค้ด / รูป / เสียง ===== */
+const LIBS={
+ jszip:['libs/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'],
+ mammoth:['libs/mammoth.browser.min.js','https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js'],
+ xlsx:['libs/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'],
+ pdfjs:['libs/pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js']
+},LGL={jszip:'JSZip',mammoth:'mammoth',xlsx:'XLSX',pdfjs:'pdfjsLib'},libP={};
+async function pdfWorker(){for(const u of LIBS.pdfjs){try{const r=await fetch(u.replace('pdf.min.js','pdf.worker.min.js'));if(r.ok){pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([await r.text()],{type:'text/javascript'}));return}}catch(e){}}}
+function lib(n){if(window[LGL[n]])return Promise.resolve(window[LGL[n]]);
+ return libP[n]||(libP[n]=(async()=>{for(const u of LIBS[n]){try{await new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+  if(window[LGL[n]]){if(n==='pdfjs')await pdfWorker();return window[LGL[n]]}}catch(e){}}
+  libP[n]=null;throw new Error('โหลดตัวอ่านไฟล์ ('+n+') ไม่ได้ ต้องต่ออินเทอร์เน็ตหรือวางโฟลเดอร์ libs ไว้ข้าง index.html')})())}
+const IMGX=/\.(png|jpe?g|gif|webp|bmp|avif|heic|heif|tiff?)$/i,AUDX=/\.(mp3|wav|m4a|aac|ogg|oga|opus|flac|webm|mp4|mpeg|mpga|mov)$/i,
+BINX=/\.(png|jpe?g|gif|webp|ico|bmp|avif|heic|mp3|mp4|wav|m4a|mov|avi|mkv|pdf|exe|dll|so|dylib|bin|class|jar|woff2?|ttf|otf|eot|psd|ai|sketch|pyc|o|a|lib|iso|dmg|apk|ipa|db|sqlite3?)$/i,
+SKIPDIR=/(^|\/)(__MACOSX|node_modules|\.git|\.idea|\.vscode|__pycache__|\.venv|venv|dist|build|\.next|\.nuxt|target|coverage)\//;
+const extOf=n=>((n||'').match(/\.([^.\/\\]+)$/)||[,''])[1].toLowerCase();
+const MAXCH=()=>key('gemini')?150000:30000;
+const pImgs=()=>pend.items.flatMap(i=>i.imgs||[]);
+function bytesToText(buf){const u=new Uint8Array(buf);
+ if(u[0]===0xFF&&u[1]===0xFE)return new TextDecoder('utf-16le').decode(u);if(u[0]===0xFE&&u[1]===0xFF)return new TextDecoder('utf-16be').decode(u);
+ const n=Math.min(u.length,8000);for(let i=0;i<n;i++)if(u[i]===0)return null;
+ try{return new TextDecoder('utf-8',{fatal:true}).decode(u)}catch(e){try{return new TextDecoder('windows-874').decode(u)}catch(e2){return null}}}
+const unent=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,(m,n)=>String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi,(m,n)=>String.fromCodePoint(parseInt(n,16))).replace(/&amp;/g,'&');
+const strip=s=>unent(s.replace(/<(script|style)[\s\S]*?<\/\1>/gi,'').replace(/<\/(p|div|h[1-6]|li|tr|text:p|text:h|a:p)>|<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')).replace(/\n{3,}/g,'\n\n').trim();
+const PRI=n=>/(^|\/)readme(\.\w+)?$/i.test(n)?0:/(^|\/)(package\.json|requirements\.txt|pyproject\.toml|setup\.py|pom\.xml|build\.gradle|cargo\.toml|go\.mod|composer\.json|dockerfile|docker-compose\.ya?ml|makefile|tsconfig\.json|\.env\.example)$/i.test(n)?1:2;
+function nb(t){try{const j=JSON.parse(t),lang=(j.metadata&&j.metadata.language_info&&j.metadata.language_info.name)||'python';return (j.cells||[]).map(c=>{const s=Array.isArray(c.source)?c.source.join(''):(c.source||'');return c.cell_type==='code'?'```'+lang+'\n'+s+'\n```':s}).join('\n\n')}catch(e){return t}}
+function rtf(s){return s.replace(/\{\\\*[^{}]*\}/g,'').replace(/\{\\(fonttbl|colortbl|stylesheet|info)[\s\S]*?\}\}/g,'').replace(/\\par[d]?/g,'\n').replace(/\\u(-?\d+)\??/g,(m,n)=>String.fromCharCode(n<0?+n+65536:+n)).replace(/\\'[0-9a-f]{2}/gi,'').replace(/\\[a-z]+-?\d* ?/gi,'').replace(/[{}]/g,'').trim()}
+async function xtZip(name,buf,cap,depth){const Z=await lib('jszip'),z=await Z.loadAsync(buf);
+ let ents=Object.values(z.files).filter(f=>!f.dir&&!SKIPDIR.test(f.name)&&!/(^|\/)(\.DS_Store|Thumbs\.db)$/i.test(f.name));const total=ents.length;ents=ents.slice(0,3000);
+ ents.sort((a,b)=>PRI(a.name)-PRI(b.name)||a.name.split('/').length-b.name.split('/').length||(a.name<b.name?-1:1));
+ let out='ZIP '+name+' มี '+total+' ไฟล์\nโครงสร้างไฟล์:\n'+ents.slice(0,400).map(f=>'- '+f.name).join('\n')+(total>400?'\n...':'')+'\n';const skipped=[];let used=out.length;
+ for(const f of ents){if(used>=cap){skipped.push(f.name);continue}
+  if(BINX.test(f.name)||/\.(zip|gz|tgz|tar|7z|rar)$/i.test(f.name))continue;
+  const sz=f._data&&f._data.uncompressedSize;if(sz>3e6){skipped.push(f.name+' (ใหญ่เกิน 3MB)');continue}
+  try{const b=await f.async('arraybuffer'),r=await extract(f.name,b,Math.min(cap-used,60000),depth+1);if(r.text==null)continue;const blk='\n\n===== '+f.name+' =====\n'+r.text;out+=blk;used+=blk.length}catch(e){skipped.push(f.name+' (อ่านไม่ได้)')}}
+ if(skipped.length)out+='\n\n[ไม่ได้อ่านเนื้อหา: '+skipped.slice(0,80).join(', ')+(skipped.length>80?' ...':'')+']';
+ return{text:out}}
+async function xtPptx(buf){const z=await (await lib('jszip')).loadAsync(buf);const sl=Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));let out='';
+ for(const n of sl){out+='## Slide '+n.match(/slide(\d+)\.xml/)[1]+'\n'+strip(await z.file(n).async('string'))+'\n\n'}return{text:out}}
+async function xtEpub(buf){const z=await (await lib('jszip')).loadAsync(buf);let out='';for(const n of Object.keys(z.files).filter(n=>/\.x?html?$/i.test(n)).sort())out+=strip(await z.file(n).async('string'))+'\n\n';return{text:out}}
+async function xtPdf(buf,cap){const P=await lib('pdfjs');let d;
+ try{d=await P.getDocument({data:new Uint8Array(buf)}).promise}catch(e){throw new Error(/password/i.test((e.name||'')+(e.message||''))?'PDF มีรหัสผ่าน':'เปิด PDF ไม่ได้ ('+(e.message||e)+')')}
+ let out='',i=1;const n=d.numPages;
+ for(;i<=n&&out.length<cap;i++){const pg=await d.getPage(i),tc=await pg.getTextContent();let t='',ly=null;
+  for(const it of tc.items){const y=it.transform?it.transform[5]:0;if(ly!==null&&Math.abs(y-ly)>3&&!t.endsWith('\n'))t+='\n';t+=it.str;if(it.hasEOL)t+='\n';ly=y}
+  out+='\n--- หน้า '+i+'/'+n+' ---\n'+t}
+ if(out.replace(/---[^-]*---|\s/g,'').length<40){const imgs=[];
+  for(let k=1;k<=Math.min(n,3);k++){const pg=await d.getPage(k),vp=pg.getViewport({scale:1.6}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;imgs.push(c.toDataURL('image/jpeg',.85))}
+  return{text:'(PDF นี้เป็นภาพสแกน ไม่มีข้อความให้ดึง จึงส่งหน้า 1-'+imgs.length+' จาก '+n+' หน้าเป็นรูปให้ AI ดูแทน)',imgs}}
+ if(i<=n)out+='\n[อ่านถึงหน้า '+(i-1)+' จาก '+n+' หน้า]';
+ return{text:out}}
+async function extract(name,buf,cap,depth){const ext=extOf(name);
+ if(ext==='zip'){if(depth>0)return{text:null};return xtZip(name,buf,cap,depth)}
+ if(ext==='gz'&&!/\.tar\.gz$/i.test(name)){if(typeof DecompressionStream==='undefined')throw new Error('เบราว์เซอร์นี้แกะ .gz ไม่ได้');const o=await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return extract(name.replace(/\.gz$/i,''),o,cap,depth)}
+ if(/^(7z|rar|tar|tgz|bz2|xz)$/.test(ext)||/\.tar\.gz$/i.test(name)){if(depth>0)return{text:null};throw new Error('ยังไม่รองรับไฟล์บีบอัดชนิดนี้ ให้บีบเป็น .zip แทน')}
+ if(ext==='doc'||ext==='ppt'||ext==='wps')throw new Error('ไฟล์ .'+ext+' รุ่นเก่าอ่านไม่ได้ ให้บันทึกเป็น .docx / .pptx ก่อน');
+ if(ext==='docx'||ext==='docm'){const M=await lib('mammoth'),r=await M.extractRawText({arrayBuffer:buf});return{text:r.value}}
+ if(/^(xlsx|xlsm|xlsb|xls|ods)$/.test(ext)){const X=await lib('xlsx'),wb=X.read(buf,{type:'array'});return{text:wb.SheetNames.map(n=>'## Sheet: '+n+'\n'+X.utils.sheet_to_csv(wb.Sheets[n],{blankrows:false})).join('\n\n')}}
+ if(ext==='pptx')return xtPptx(buf);
+ if(ext==='odt'||ext==='odp'){const z=await (await lib('jszip')).loadAsync(buf),f=z.file('content.xml');return{text:f?strip(await f.async('string')):''}}
+ if(ext==='epub')return xtEpub(buf);
+ if(ext==='pdf'){if(depth>0)return{text:null};return xtPdf(buf,cap)}
+ if(ext==='ipynb'){const t=bytesToText(buf);return{text:t==null?null:nb(t)}}
+ if(ext==='rtf'){const t=bytesToText(buf);return{text:t==null?null:rtf(t)}}
+ if(BINX.test(name))return{text:null};
+ return{text:bytesToText(buf)}}
+function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{let w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,2000/Math.max(w,h));w=Math.max(1,Math.round(w*s));h=Math.max(1,Math.round(h*s));const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.9))};
+ im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('เปิดรูปนี้ไม่ได้ (บางเบราว์เซอร์ไม่รองรับ HEIC/TIFF)'))};im.src=u})}
+async function transcribe(f,name){const k=key('groq');if(!k)throw new Error('ถอดเสียงจากไฟล์เสียง/วิดีโอต้องใช้คีย์ Groq (ใส่ในตั้งค่า)');if(f.size>25*1048576)throw new Error('ไฟล์เสียง/วิดีโอใหญ่เกิน 25MB');
+ const fd=new FormData();fd.append('file',f,name);fd.append('model','whisper-large-v3-turbo');const l=$('lang').value;if(l!=='auto')fd.append('language',l);
+ const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+k},body:fd});let j={};try{j=await r.json()}catch(e){}
+ if(!r.ok)throw new Error((j.error&&j.error.message)||'ถอดเสียงไม่สำเร็จ (HTTP '+r.status+')');return (j.text||'').trim()||'(ไม่พบเสียงพูด)'}
+async function ingest(f,it){const name=it.name;
+ if(f.size>60*1048576)throw new Error('ไฟล์ใหญ่เกิน 60MB');
+ if((f.type.startsWith('image/')&&!/svg/.test(f.type))||IMGX.test(name)){if(pImgs().length>=5)throw new Error('แนบรูปได้ไม่เกิน 5 รูปต่อข้อความ');it.imgs=[await shrink(f)];return}
+ if(AUDX.test(name)||/^(audio|video)\//.test(f.type)){it.text='\n\n[ถอดเสียงจากไฟล์ '+name+']:\n'+await transcribe(f,name);return}
+ const buf=await f.arrayBuffer(),used=pend.items.reduce((a,i)=>a+(i.text||'').length,0),room=Math.max(6000,MAXCH()-used),r=await extract(name,buf,room,0);
+ if(r.text==null)throw new Error('อ่านไฟล์ชนิดนี้ไม่ได้ (เป็นไฟล์ไบนารี)');
+ let t=r.text.trim();if(!t&&!(r.imgs&&r.imgs.length))throw new Error('ไฟล์ว่าง หรือไม่มีข้อความให้อ่าน');
+ let note='';if(t.length>room){t=t.slice(0,room);note='\n...(ตัดส่วนที่เกินออก เพราะยาวเกิน '+room.toLocaleString()+' ตัวอักษร)'}
+ if(r.imgs)it.imgs=r.imgs.slice(0,Math.max(0,5-pImgs().length));
+ it.text='\n\n[ไฟล์ '+name+']:\n'+t+note}
+async function addFiles(list){const fs=[...(list||[])];if(!fs.length)return;
+ for(const f of fs){if(pend.items.length>=12){toast('แนบได้ไม่เกิน 12 ไฟล์ต่อข้อความ');break}
+  const it={name:f.name||'ไฟล์',loading:true};pend.items.push(it);chips();
+  try{await ingest(f,it)}catch(e){pend.items=pend.items.filter(x=>x!==it);toast('อ่าน '+it.name+' ไม่ได้: '+(e.message||e))}
+  it.loading=false;chips()}}
+function chips(){const b=$('chips');b.innerHTML='';
+ pend.items.forEach(it=>{const s=document.createElement('span');s.className='chip';const im=(it.imgs||[])[0];
+  if(im){const t=document.createElement('img');t.src=im;t.style.cssText='height:22px;width:22px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px';s.appendChild(t)}else s.appendChild(document.createTextNode(it.loading?'⏳ ':'📎 '));
+  s.appendChild(document.createTextNode(it.name+(it.loading?' กำลังอ่าน...':(it.text&&it.text.length>3000?' ('+Math.round(it.text.length/1000)+'k)':''))+' ✕'));
+  s.onclick=()=>{pend.items=pend.items.filter(x=>x!==it);chips()};b.appendChild(s)})}
+async function walk(en,path,out){if(out.length>1500)return;
+ if(en.isFile){await new Promise(ok=>en.file(f=>{if(f.size<3e6&&!BINX.test(f.name))out.push([path+en.name,f]);ok()},ok))}
+ else if(en.isDirectory){if(SKIPDIR.test('/'+en.name+'/'))return;const rd=en.createReader();let all=[];for(;;){const b=await new Promise(ok=>rd.readEntries(ok,()=>ok([])));if(!b.length)break;all=all.concat(b)}for(const c of all)await walk(c,path+en.name+'/',out)}}
+async function dropItems(dt){const ents=[...(dt.items||[])].map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry()).filter(Boolean);
+ if(!ents.some(e=>e.isDirectory))return addFiles(dt.files);
+ for(const en of ents){if(en.isDirectory){toast('กำลังอ่านโฟลเดอร์ '+en.name+'...');const out=[];await walk(en,'',out);
+   if(!out.length){toast('โฟลเดอร์ '+en.name+' ไม่มีไฟล์ที่อ่านได้');continue}
+   try{const Z=await lib('jszip'),z=new Z();out.forEach(([p,f])=>z.file(p,f));await addFiles([new File([await z.generateAsync({type:'blob'})],en.name+'.zip')])}catch(e){toast('อ่านโฟลเดอร์ไม่ได้: '+e.message)}}
+  else await new Promise(ok=>en.file(async f=>{await addFiles([f]);ok()},ok))}}
+function bindFiles(){
+ document.addEventListener('paste',e=>{const fs=[...((e.clipboardData||{}).items||[])].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(Boolean);
+  if(fs.length){e.preventDefault();addFiles(fs.map(f=>/^image\.\w+$/i.test(f.name)?new File([f],'screenshot-'+new Date().toTimeString().slice(0,8).replace(/:/g,'')+'.'+(f.type.split('/')[1]||'png'),{type:f.type}):f))}});
+ ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();document.body.classList.add('drag')}));
+ document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.body.classList.remove('drag')});
+ document.addEventListener('drop',e=>{e.preventDefault();document.body.classList.remove('drag');dropItems(e.dataTransfer)});
+ $('chat').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.cpy');if(!b)return;const c=b.parentElement.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(c.textContent);b.textContent='คัดลอกแล้ว';setTimeout(()=>{b.textContent='คัดลอกโค้ด'},1500)})}
+/* ===== โหมดวิศวกรซอฟต์แวร์ ===== */
+const CODE_RE=/โค้ด|โปรแกรม|สคริปต์|บั๊ก|แก้\s*error|อัลกอริทึม|ฟังก์ชัน|(?:เขียน|สร้าง|ทำ|พัฒนา)(?:ให้)?\s*(?:แอป|เกม|เว็บ|บอท|ระบบ|api|ปลั๊กอิน|extension)|\b(?:code|coding|script|function|class|bug|debug|compile|compiler|refactor|algorithm|api|sdk|regex|sql|python|javascript|typescript|java|kotlin|swift|golang|rust|php|html|css|react|vue|nodejs|node\.js|django|flask|docker|git|github|bash|powershell|json|yaml|stacktrace|stack trace|exception|traceback|unity|arduino|esp32|app|website|program)\b/i;
+function isCode(t,um){const m=getK('zy_code')||'auto';if(m==='off')return false;if(m==='on')return true;
+ return CODE_RE.test(t)||(um.f||[]).some(n=>/\.(zip|py|js|mjs|ts|jsx|tsx|java|c|h|cpp|cs|go|rs|php|rb|kt|swift|html?|css|sql|sh|ipynb|json|ya?ml|vue|dart|lua)$/i.test(n))}
+const CODEP={th:`
+
+โหมดวิศวกรซอฟต์แวร์ (สำคัญ: กฎ "ตอบสั้น 1-3 ประโยค" และ "ห้าม markdown" ข้างบนไม่ใช้กับงานนี้ ตอบยาวและละเอียดได้ตามที่งานต้องการ และใช้ code block ได้เต็มที่) คุณเป็นวิศวกรซอฟต์แวร์ระดับอาวุโส เมื่อได้รับงานเขียนหรือแก้โปรแกรม ให้ทำดังนี้
+1) งานยากหรือซับซ้อน ให้ออกแบบก่อนสั้นๆ (โครงสร้างไฟล์ โมดูล ลำดับการทำงาน ข้อควรระวัง) แล้วจึงเขียนโค้ด
+2) เขียนโค้ดให้ครบและรันได้จริง ห้ามใช้ ... หรือ TODO หรือบอกให้ผู้ใช้เขียนเองแทนส่วนที่จำเป็น
+3) ก่อน code block ของแต่ละไฟล์ ให้เขียนบรรทัดชื่อไฟล์รูปแบบ FILE: path/ชื่อไฟล์.นามสกุล (บรรทัดละไฟล์ ไม่ใส่ตัวหนา) แล้วตามด้วย code block ที่ระบุภาษา
+4) ดูแล edge case การจัดการ error ความปลอดภัย และประสิทธิภาพ
+5) ถ้าแก้โค้ดที่ผู้ใช้แนบมา ให้อ่านทุกไฟล์ให้ละเอียด บอกสาเหตุของปัญหาก่อน แล้วให้ไฟล์ที่แก้ครบทั้งไฟล์ (หรือเฉพาะฟังก์ชันที่เปลี่ยนพร้อมบอกตำแหน่งชัดเจน)
+6) ปิดท้ายด้วยวิธีติดตั้ง วิธีรัน และตัวอย่างการทดสอบสั้นๆ
+7) ถ้าข้อกำหนดไม่ชัด ให้ตั้งสมมติฐานที่สมเหตุสมผลและบอกไว้ แทนการถามหลายข้อ
+8) ถ้าผู้ใช้แนบภาพหน้าจอ (screenshot) ของ error หรือหน้าตาโปรแกรม ให้อ่านข้อความในภาพอย่างละเอียดแล้ววิเคราะห์
+9) ห้ามอ้างว่าได้รันโค้ดแล้ว ห้ามแต่ง API หรือไลบรารีที่ไม่มีอยู่จริง ถ้าไม่แน่ใจให้บอกตรงๆ
+10) ถ้าโค้ดยาวเกินตอบได้ในครั้งเดียว ให้แบ่งเป็นส่วนๆ แล้วบอกว่าพิมพ์ ต่อ เพื่อทำส่วนที่เหลือ
+ถ้ากำลังคุยด้วยเสียง ให้พูดอธิบายสั้นๆ ไม่เกิน 3 ประโยค แล้วตามด้วยโค้ดใน code block`,
+en:`
+
+Software engineer mode (important: the "1-3 sentences" and "no markdown" limits above do NOT apply to this task; answer as long and detailed as the work needs, and use code blocks freely). You are a senior software engineer. For any request to write or fix a program:
+1) For hard or complex tasks, briefly design first (file layout, modules, flow, pitfalls), then write the code.
+2) Write complete, runnable code. Never use ... or TODO or tell the user to fill in necessary parts.
+3) Before each file's code block, write a line in the form FILE: path/name.ext (one per file, no bold), then the code block with a language tag.
+4) Handle edge cases, errors, security and performance.
+5) When fixing attached code, read every file carefully, state the root cause first, then give the full corrected file (or the changed functions with clear locations).
+6) End with install/run steps and a short test example.
+7) If requirements are unclear, state reasonable assumptions instead of asking many questions.
+8) If a screenshot of an error or UI is attached, read the text in it carefully and analyse it.
+9) Never claim you ran the code. Never invent APIs or libraries. If unsure, say so.
+10) If the code is too long for one reply, split it into parts and say to type "continue" for the rest.
+If in live voice chat, speak a short explanation (max 3 sentences) and then give the code in a code block.`};
+const EXT={python:'py',py:'py',javascript:'js',js:'js',jsx:'jsx',typescript:'ts',ts:'ts',tsx:'tsx',html:'html',css:'css',scss:'scss',json:'json',java:'java',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',cs:'cs',go:'go',golang:'go',rust:'rs',rs:'rs',php:'php',sql:'sql',yaml:'yml',yml:'yml',xml:'xml',markdown:'md',md:'md',kotlin:'kt',swift:'swift',ruby:'rb',rb:'rb',lua:'lua',dart:'dart',r:'r',vue:'vue',toml:'toml',ini:'ini'};
+const NOFILE=/^(bash|sh|shell|zsh|console|terminal|text|txt|powershell|cmd|bat|output|log|diff)$/i;
+function codeBlocks(t){const out=[],re=/```([^\n]*)\n([\s\S]*?)```/g,seen={};let m,k=0;
+ while((m=re.exec(t))){const lang=(m[1]||'').trim().split(/\s+/)[0].toLowerCase(),code=m[2].replace(/\n$/,''),before=t.slice(0,m.index).replace(/\s+$/,''),prev=before.slice(before.lastIndexOf('\n')+1);
+  let nm=(prev.match(/(?:FILE|File|file|filename|Filename|ไฟล์)\s*[:：]\s*[`"'*]*([^\s`"'*]+)/)||[])[1],body=code;
+  if(!nm){const h=code.match(/^\s*(?:\/\/|#|--|;|\/\*|<!--)\s*(?:FILE|file|filename|ไฟล์)\s*[:：]\s*([^\s*]+)/);if(h){nm=h[1];body=code.replace(/^[^\n]*\n/,'')}}
+  if(!nm){if(NOFILE.test(lang)||code.split('\n').length<3)continue;nm='code'+(++k)+'.'+(EXT[lang]||lang||'txt')}
+  nm=nm.replace(/^[\/\\]+/,'').replace(/\.\.[\/\\]/g,'').replace(/[<>:"|?*]/g,'_');
+  const c=seen[nm]=(seen[nm]||0)+1;if(c>1){const d=nm.lastIndexOf('.');nm=d>0?nm.slice(0,d)+'_'+c+nm.slice(d):nm+'_'+c}
+  out.push({name:nm,code:body})}
+ return out}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+async function dlCode(cb){if(cb.length===1){dl(new Blob([cb[0].code],{type:'text/plain;charset=utf-8'}),cb[0].name.split('/').pop());return}
+ try{const Z=await lib('jszip'),z=new Z();cb.forEach(b=>z.file(b.name,b.code));dl(await z.generateAsync({type:'blob'}),'zyphere-code.zip')}catch(e){toast('สร้างไฟล์ zip ไม่ได้: '+e.message)}}
 function setBusy(b){busy=b;document.body.classList.toggle('busy',b);$('sendBtn').innerHTML=b?IC.stop:IC.send}
 function orb(s,t){$('ov').className='ov '+s;$('ovS').textContent={listen:'กำลังฟัง...',think:'กำลังคิด...',speak:'กำลังพูด...'}[s];if(t!==undefined)$('ovT').textContent=t}
 const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i,STOP=/^(วันนี้|ตอนนี้|เป็น.*|ดี.*|หน่อย|ครับ|ค่ะ|บ้าง|เท่าไร|ยังไง|now|today)?$/i;
@@ -210,19 +364,21 @@ async function genImg(desc,src,sig,st){const k=key('gemini');let err='';
  return{text:'วาดภาพไม่สำเร็จครับท่าน'+(err?' (Gemini: '+err+')':'')+' ตัวสำรองฟรีอาจใช้ไม่ได้ชั่วคราว ลองใหม่หรือใส่คีย์ Gemini'}}
 async function extras(t,um,sig,st){let m;const L=local(t);if(L)return{text:L};
  if((m=t.match(WX))){const city=(m[1]||'').replace(/(ตอนนี้|วันนี้|พรุ่งนี้|เป็น.*|ดีไหม.*|หน่อย|ครับ|ค่ะ|บ้าง|เท่าไร|ยังไง|เมื่อไร|now|today).*$/i,'').trim();if(!city||STOP.test(city))return{text:'ท่านต้องการทราบอากาศที่จังหวัดไหนครับ'};st&&st('กำลังดูสภาพอากาศ...');return{text:await weather(city)}}
- if(um.img&&EDIT.test(t)){st&&st('กำลังแต่งภาพ...');return await genImg(t,um.img,sig,st)}
+ if(um.img&&EDIT.test(t)&&!CODE_RE.test(t)){st&&st('กำลังแต่งภาพ...');return await genImg(t,um.img,sig,st)}
  if((m=t.match(IMG))){st&&st('กำลังวาดภาพ...');return await genImg(m[1],null,sig,st)}
  return null}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
- const t=$('q').value.trim();if(!t&&!pend.names.length)return;
- let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.names[0]).slice(0,32),m:[]};chats.unshift(c);cur=c.id}
- const um={r:'user',c:t||'(แนบไฟล์)',x:pend.text,f:pend.names.slice(),img:pend.img};c.m.push(um);pend={text:'',names:[],img:null};chips();$('q').value='';$('q').style.height='';
+ if(pend.items.some(i=>i.loading)){toast('กำลังอ่านไฟล์อยู่ รอสักครู่ครับ');return}
+ const t=$('q').value.trim();if(!t&&!pend.items.length)return;
+ let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name).slice(0,32),m:[]};chats.unshift(c);cur=c.id}
+ const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
  view();const lang=resolveLang(t);lastLang=lang;const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
- const msgs=c.m.slice(-20).map(m=>({role:m.r==='user'?'user':'assistant',content:m.c+(m.x||'')}));
+ const code=isCode(t,um),hist=c.m.slice(-20),msgs=[];let left=MAXCH();
+ for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'';if(x){if(x.length<=left)left-=x.length;else{x=left>2000?x.slice(0,left)+'\n...(ตัดเนื้อหาไฟล์ เพราะยาวเกินบริบท)':'\n[ไฟล์ '+(m.f||[]).join(', ')+' ที่แนบไว้ก่อนหน้า (ตัดเนื้อหาออกเพื่อประหยัดบริบท)]';left=0}}msgs[i]={role:m.r==='user'?'user':'assistant',content:m.c+x}}
  ctrl=new AbortController();setBusy(true);let reply='',pic='',ok=true;if(voice)orb('think');
  try{const ex=await extras(t,um,ctrl.signal,s=>{body.innerHTML='<span class="dots"><i></i><i></i><i></i></span> '+esc(s)});
-  if(ex){reply=ex.text;pic=ex.pic||''}else reply=await ask(msgs,um.img,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lang,voice))}
+  if(ex){reply=ex.text;pic=ex.pic||''}else reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lang,voice,code),code)}
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+e.message}
  setBusy(false);c.m.push({r:'assistant',c:reply,pic});save();view();
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
@@ -263,13 +419,12 @@ function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&bu
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
 $('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;$('plusBtn').onclick=()=>$('fileIn').click();
-$('fileIn').onchange=function(){addFile(this.files[0]);this.value=''};
+$('fileIn').onchange=function(){addFiles(this.files);this.value=''};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
 $('webBtn').classList.toggle('on',webOn);$('webBtn').onclick=()=>{if(!key('gemini')){toast('ค้นเว็บต้องใช้คีย์ Gemini ใส่ได้ในตั้งค่า');return}webOn=!webOn;setK('zy_web',webOn?'1':'0');$('webBtn').classList.toggle('on',webOn);toast(webOn?'เปิดค้นเว็บแล้ว (ใช้ Google Search ผ่าน Gemini)':'ปิดค้นเว็บแล้ว')};
 $('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;
 $('menu').onclick=()=>$('side').classList.toggle('open');
-document.addEventListener('paste',e=>{const it=[...(e.clipboardData||{}).items||[]].find(i=>i.kind==='file');if(it){e.preventDefault();addFile(it.getAsFile())}});
-$('chat').addEventListener('dragover',e=>e.preventDefault());$('chat').addEventListener('drop',e=>{e.preventDefault();addFile(e.dataTransfer.files[0])});
+bindFiles();
 $('setBtn').onclick=()=>{['groq','gemini','openrouter','hf'].forEach(id=>{const el=$('k-'+id);el.value=key(id);el.oninput=()=>setK('zyphere_'+id+'_key',el.value.trim())});
  $('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
  $('rate').oninput=function(){setK('zy_rate',this.value);$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';$('set').style.display='flex'};
@@ -277,7 +432,7 @@ $('doneBtn').onclick=()=>$('set').style.display='none';$('set').onclick=e=>{if(e
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
-$('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('persona').onchange=function(){setK('zy_persona',this.value)};
+$('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('persona').onchange=function(){setK('zy_persona',this.value)};$('codeMode').value=getK('zy_code')||'auto';$('codeMode').onchange=function(){setK('zy_code',this.value)};
 $('ttse').value=getK('zy_ttse')||'g';$('ttse').onchange=function(){setK('zy_ttse',this.value)};$('ttsv').value=getK('zy_ttsv')||'Charon';$('ttsv').onchange=function(){setK('zy_ttsv',this.value)};
 $('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับท่าน ระบบเสียงพร้อมใช้งานแล้วครับ');if(eng)toast('เล่นเสียงได้ด้วย: '+eng)};
 $('ttsurl').value=getK('zy_ttsurl');$('ttsurl').oninput=function(){setK('zy_ttsurl',this.value.trim())};
