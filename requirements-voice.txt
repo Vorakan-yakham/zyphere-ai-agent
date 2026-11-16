@@ -1,5 +1,0 @@
-# เสียงตอบแบบออฟไลน์ (เสียงไทยคุณภาพดีกว่าเสียงระบบ) — ไฟล์ใหญ่ ~2GB; ดาวน์โหลดโมเดล 1 ครั้งตอนใช้ครั้งแรก
-torch
-transformers
-# ทางเลือกเบา (เสียงระบบ OS): pyttsx3  และ ZYPHERE_TTS=system
-# อ่านเซ็นเซอร์ Arduino/ESP32: pyserial  และ ZYPHERE_SERIAL=COM3
