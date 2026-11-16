@@ -1,6 +1,13 @@
-# Zyphere - Meta AI Exact Clone
+# Zyphere - 4 Brains
 
-- index.html = หน้า Zyphere แบบ Meta AI เป๊ะๆ (ไฟล์หลัก)
-- app.py = ตัวห่อให้ Streamlit Cloud เปิด index.html ได้
-- เปิดบน GitHub Pages: Settings > Pages > Branch: main > Folder: / (root) > Save แล้วเปิด https://Vorakan-yakham.github.io/zyphere-ai-agent/
-- เปิดบน Streamlit Cloud: ใช้ app.py เหมือนเดิม
+1. Grok ตัวที่ 1 (xAI) - xai-...
+2. Gemini ตัวที่ 2 (Google) - AIza...
+3. OpenRouter ตัวที่ 3 - sk-or-...
+4. Hugging Face ตัวที่ 4 - hf_...
+
+## Upload to GitHub Pages
+Upload index.html + app.py + requirements.txt to Vorakan-yakham/zyphere-ai-agent, Replace old files, wait 1-2 min, Ctrl+Shift+R
+
+## After upload
+Click gear (⚙) bottom-left > API Key > Paste key in each field > Save
+Keys stay in browser only, never uploaded to GitHub.
