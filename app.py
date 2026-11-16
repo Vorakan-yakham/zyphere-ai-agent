@@ -1,4 +1,4 @@
-# ZYPHERE V44 - LOGIN FIXED BOTTOM REAL - CHECK THIS LINE
+# ZYPHERE V45 - ATOM LOGO SPIN + ONE PILL - CHECK THIS LINE
 import streamlit as st, os, io, base64, asyncio, re
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -20,7 +20,7 @@ div[data-testid='stSidebarContent']{padding-top:0!important;padding-bottom:0!imp
 div[data-testid='stSidebarContent'] [data-testid='stVerticalBlock']{gap:4px!important}
 /* LOGO - pull up to top edge, no padding */
 .logo-top{padding:8px 12px 0 12px;margin-top:0;display:flex;align-items:center;gap:10px}
-.logo-dot{width:26px;height:26px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.logo-dot{width:26px;height:26px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;animation:atomspin 6s linear infinite;box-shadow:0 0 0 2px #fff, 0 0 12px rgba(66,133,244,.35)} @keyframes atomspin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .logo-txt{font-size:17px;font-weight:500}
 .logo-gap{height:16px}
 /* BUTTONS AS TEXT - no boxes, balanced 36px */
@@ -37,7 +37,7 @@ section[data-testid='stSidebar'] .stMarkdown{margin:0!important;padding:0!import
 .center{max-width:720px;margin:22px auto 0;position:relative}
 .blob{position:absolute;inset:-40px -80px auto -80px;height:220px;background:radial-gradient(ellipse at center, rgba(66,133,244,.18), rgba(155,114,203,.12) 45%, transparent 70%);filter:blur(10px);z-index:0}
 .pill{position:relative;z-index:1;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:10px 12px 10px 18px}
-.chips{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.pill [data-testid='stHorizontalBlock']{gap:0!important} .pill .stTextInput>div{border:none!important;box-shadow:none!important} .pill .stTextInput input{border:none!important;box-shadow:none!important} .pill .stSelectbox>div{border:none!important;box-shadow:none!important} .pill .stSelectbox>div>div{border:none!important} .pill .stFormSubmitButton>button{border:none!important;box-shadow:none!important;background:transparent!important} .pill{padding:6px 6px 6px 14px!important} .pill .stColumn{padding:0!important} .chips{display:flex;gap:8px;justify-content:center;margin-top:16px}
 .chip{border:1px solid #eee;border-radius:999px;padding:7px 14px;font-size:13px;color:#444;background:#fff}
 .chat-ai{max-width:760px;margin:6px auto;font-size:15px;line-height:1.6}
 </style>""", unsafe_allow_html=True)
@@ -71,26 +71,26 @@ def show_audio(d):
 # --- SIDEBAR V42 ---
 with st.sidebar:
     st.markdown("<div class='logo-top'><div class='logo-dot'>\u2726</div><div class='logo-txt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>\u2315</div></div><div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่', key='v44_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v44_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v44_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v44_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v44_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
+    if st.button('\u270e  แชทใหม่', key='v45_new'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u25a6  คลัง', key='v45_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
+    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v45_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
+    if st.button('\u25ce  ปรับแต่ง', key='v45_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
+    if st.button('\u25a1  วิดีโอ', key='v45_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
     st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v44_nb'): st.session_state.messages=[]; st.rerun()
+    if st.button('\uFF0B  Notebook ใหม่', key='v45_nb'): st.session_state.messages=[]; st.rerun()
     st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
     _seen=[]; _has=False
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v44_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='v45_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v44_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='v45_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
     # FOOTER - bottom of sidebar, normal flow so it never disappears
     st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    if st.button('\u21aa  ออกจากระบบ', key='v44_logout'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v44_login'): st.session_state.user_name='Whisp'; st.rerun()
+    if st.button('\u21aa  ออกจากระบบ', key='v45_logout'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v45_login'): st.session_state.user_name='Whisp'; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- MAIN ---
