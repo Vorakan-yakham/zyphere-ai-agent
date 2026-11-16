@@ -1,174 +1,73 @@
-<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zyphere - Meta AI Clone</title><style>
+<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zyphere</title><style>
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,system-ui,sans-serif;background:#fff;color:#111;display:flex;height:100vh;overflow:hidden}
-#sidebar{width:280px;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;transition:width .25s;flex-shrink:0;background:#fff}
-#sidebar.collapsed{width:64px}
-#sidebar.collapsed .lbl,#sidebar.collapsed .hist,#sidebar.collapsed .foot-name,#sidebar.collapsed .logo-txt{display:none}
-.logo{padding:14px 14px 6px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
-.logo-mark{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:18px;flex-shrink:0;transition:transform .4s}
-.logo:hover .logo-mark{transform:rotate(360deg)}
-.logo-txt{font-weight:800;font-size:20px}
-.menu{padding:8px}
-.mitem{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;transition:transform .15s,background .15s}
-.mitem:hover{background:#f0f0f0;transform:scale(1.03) translateY(-1px)}
-.mitem .ic{width:24px;text-align:center;font-size:16px;flex-shrink:0}
-.mitem.active{background:#f0f0f0;font-weight:600}
-.hist{padding:10px 14px;font-size:12px;color:#888}
-.foot{margin-top:auto;border-top:1px solid #eee;padding:10px}
-.foot-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;cursor:pointer}
-.foot-row:hover{background:#f0f0f0}
-.avatar{width:36px;height:36px;border-radius:50%;background:#d8b4f8;color:#5b21b6;display:grid;place-items:center;font-weight:700;flex-shrink:0}
+#sidebar{width:280px;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0;background:#fff}
+#sidebar.collapsed{width:64px}#sidebar.collapsed .lbl,#sidebar.collapsed .foot-name,#sidebar.collapsed .logo-txt{display:none}
+body.sidebar-hidden #sidebar{display:none}
+.logo{padding:14px;display:flex;gap:10px;cursor:pointer;align-items:center}.logo-mark{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center}.logo-txt{font-weight:800;font-size:20px}
+.mitem{display:flex;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;align-items:center}.mitem:hover{background:#f0f0f0}
+.foot{margin-top:auto;border-top:1px solid #eee;padding:10px}.foot-row{display:flex;gap:10px;padding:8px;border-radius:10px;cursor:pointer;align-items:center}.foot-row:hover{background:#f0f0f0}
+.avatar{width:36px;height:36px;border-radius:50%;background:#d8b4f8;display:grid;place-items:center;font-weight:700;flex-shrink:0}
 #main{flex:1;display:flex;flex-direction:column;min-width:0}
-#login{flex:1;display:flex;align-items:center;justify-content:center}
-.login-card{width:420px;max-width:92vw;text-align:center}
-.login-card h1{font-size:28px;margin:8px 0}
-.login-card p{color:#666;font-size:14px}
-input[type=text],input[type=email]{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:12px;font-size:14px;outline:none;margin:6px 0}
-input:focus{border-color:#2563eb}
-.btn{width:100%;padding:12px;border:0;border-radius:999px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer;margin:6px 0;font-size:14px}
-.btn:hover{background:#1d4ed8}
-.btn-ghost{background:#f0f0f0;color:#111}
-.btn-ghost:hover{background:#e5e5e5}
-.btn-dark{background:#111}
-.err{background:#fdecea;color:#a00;padding:10px;border-radius:10px;font-size:13px;display:none}
-#chat-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}
-#msgs{flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;align-items:center}
-.hero{max-width:760px;width:100%;text-align:center;margin-top:40px}
-.hero h1{font-size:34px;margin:0}
-.hero p{color:#666}
-.warn{max-width:560px;margin:18px auto;background:#fff;border:1px solid #eee;border-radius:14px;padding:16px;text-align:left;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-.warn b{font-size:14px}
-.warn span{font-size:13px;color:#555}
-.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.chip{border:1px solid #ddd;border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13px;background:#fff}
-.chip:hover{background:#f0f0f0}
-.msg-list{max-width:760px;width:100%;display:flex;flex-direction:column;gap:14px}
-.msg{padding:12px 16px;border-radius:16px;max-width:85%;line-height:1.6;font-size:15px;white-space:pre-wrap}
-.msg.user{align-self:flex-end;background:#2563eb;color:#fff}
-.msg.ai{align-self:flex-start;background:#f5f5f5}
-.msg small{display:block;color:#888;font-size:11px;margin-bottom:4px}
-#composer{padding:16px;display:flex;justify-content:center}
-.comp{width:760px;max-width:94vw;border:1px solid #ddd;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,.06);padding:10px 12px;background:#fff}
-.comp input{border:0;outline:none;width:100%;font-size:15px;padding:8px}
-.comp-row{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
-select{border:1px solid #ddd;border-radius:999px;padding:6px 10px;font-size:13px}
-.iconbtn{border:0;background:#f0f0f0;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px}
-.iconbtn:hover{transform:scale(1.15)}
-.send{width:40px;height:40px;border-radius:50%;border:0;background:#2563eb;color:#fff;font-size:18px;cursor:pointer}
-#settings{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50}
-.set-card{background:#fff;width:520px;max-width:94vw;max-height:88vh;overflow:auto;border-radius:18px;padding:20px}
-.keybox{border:1px solid #eee;border-radius:12px;padding:12px;margin:10px 0}
-.keybox b{font-size:14px}.keybox p{font-size:12px;color:#666;margin:4px 0}
-.keyrow{display:flex;gap:8px}.keyrow input{flex:1}
-.paste{border:1px solid #ddd;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-.status{font-size:12px;margin-top:6px}.ok{color:green}.no{color:#999}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:999px;display:none;z-index:99}
-@media(max-width:700px){#sidebar{display:none}}
+#login{flex:1;display:flex;align-items:center;justify-content:center}.login-card{width:420px;max-width:92vw;text-align:center}
+input{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:6px 0;font-size:14px}.btn{width:100%;padding:12px;border:0;border-radius:999px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer;margin:6px 0}.btn-dark{background:#111}.btn-ghost{background:#f0f0f0;color:#111}
+#chat-wrap{flex:1;display:none;flex-direction:column;overflow:hidden}#msgs{flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;align-items:center}
+.hero{max-width:760px;width:100%;text-align:center}.warn{max-width:560px;margin:16px auto;border:1px solid #eee;border-radius:14px;padding:16px;text-align:left}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.chip{border:1px solid #ddd;border-radius:999px;padding:8px 14px;cursor:pointer}
+.msg-list{max-width:760px;width:100%;display:flex;flex-direction:column;gap:12px}.msg{padding:12px 16px;border-radius:16px;max-width:85%;white-space:pre-wrap;line-height:1.6}.msg.user{align-self:flex-end;background:#2563eb;color:#fff}.msg.ai{align-self:flex-start;background:#f5f5f5}
+#composer{padding:16px;display:flex;justify-content:center}.comp{width:760px;max-width:94vw;border:1px solid #ddd;border-radius:24px;padding:10px;background:#fff}.comp input{border:0;outline:none}
+select{border:1px solid #ddd;border-radius:999px;padding:6px 10px}.iconbtn{border:0;background:#f0f0f0;width:36px;height:36px;border-radius:50%;cursor:pointer}.send{width:40px;height:40px;border-radius:50%;border:0;background:#2563eb;color:#fff;font-size:18px;cursor:pointer}
+#settings{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50}.set-card{background:#fff;width:520px;max-width:94vw;max-height:88vh;overflow:auto;border-radius:18px;padding:20px}
+.keybox{border:1px solid #eee;border-radius:12px;padding:12px;margin:10px 0}.keyrow{display:flex;gap:8px}.keyrow input{flex:1}.paste{border:1px solid #ddd;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}.status{font-size:12px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:999px;display:none;z-index:99}
+#hideTab{position:fixed;left:280px;top:50%;transform:translateY(-50%);width:24px;height:60px;background:#111;color:#fff;border:0;border-radius:0 12px 12px 0;cursor:pointer;z-index:100;font-size:18px}
+#showTab{position:fixed;left:0;top:50%;transform:translateY(-50%);width:24px;height:60px;background:#111;color:#fff;border:0;border-radius:0 12px 12px 0;cursor:pointer;z-index:100;display:none;font-size:18px}
+body.sidebar-hidden #hideTab{display:none}body.sidebar-hidden #showTab{display:block}
 </style></head><body>
-<aside id="sidebar">
-<div class="logo" onclick="toggleSide()"><div class="logo-mark">✦</div><span class="logo-txt">Zyphere</span></div>
-<div class="menu">
-<div class="mitem active" onclick="newChat()"><span class="ic">✎</span><span class="lbl">แชทใหม่</span></div>
-<div class="mitem" onclick="doSearch()"><span class="ic">⌕</span><span class="lbl">ค้นหา</span></div>
-<div class="mitem" onclick="showMedia()"><span class="ic">▦</span><span class="lbl">สื่อ</span></div>
-<div class="mitem" onclick="showArt()"><span class="ic">◈</span><span class="lbl">อาร์ติแฟกต์</span></div>
-<div class="mitem" onclick="showSched()"><span class="ic">◷</span><span class="lbl">กำหนดเวลาแล้ว</span></div>
-<div class="mitem" onclick="toggleVibes()"><span class="ic">♡</span><span class="lbl">Vibes</span></div>
-</div>
-<div class="hist" id="hist">ประวัติ • Guest<br><span style="color:#aaa">ยังไม่มีประวัติ</span></div>
-<div class="foot">
-<div class="foot-row" onclick="openSettings()"><span class="ic">⚙</span><span class="lbl">ตั้งค่า</span></div>
-<div class="foot-row"><div class="avatar" id="av">G</div><div class="foot-name"><div id="uname" style="font-weight:600;font-size:14px">Guest</div><div style="font-size:12px;color:#888">สมาชิก Zyphere</div></div></div>
-<div class="foot-row" onclick="logout()"><span class="ic">↪</span><span class="lbl">ออกจากระบบ</span></div>
-<div class="foot-row" onclick="switchAcc()"><span class="ic">⇄</span><span class="lbl">สลับบัญชี</span></div>
-</div>
-</aside>
-<main id="main">
-<div id="login"><div class="login-card">
-<div style="width:56px;height:56px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:26px;margin:0 auto">✦</div>
-<h1>ยินดีต้อนรับสู่ Zyphere</h1><p>เข้าสู่ระบบเพื่อเริ่มแชท ประวัติของคุณจะแยกตามบัญชี</p>
-<div class="err" id="loginErr"></div>
-<button class="btn btn-dark" onclick="enterNow('Guest')">เข้าใช้งานเลย ไม่ต้อง Login</button>
-<div style="margin:14px 0;color:#888;font-size:13px">— หรือ —</div>
-<input id="gmailIn" type="email" placeholder="vorakangm@gmail.com">
-<button class="btn" onclick="loginGmail()">เข้าสู่ระบบด้วย Gmail</button>
-<input id="emailIn" type="email" placeholder="you@example.com">
-<button class="btn" onclick="loginEmail()">เข้าสู่ระบบ</button>
-<button class="btn btn-ghost" onclick="enterNow('Whisp')">เข้าสู่ระบบด้วยบัญชี Whisp (เดโม)</button>
-<p style="font-size:12px;color:#999">บัญชีล่าสุด: Whisp • เจ้าของ Zyphere • การเข้าสู่ระบบจะถูกบันทึกไว้ เปิดแอปอีกครั้งยังจำอยู่</p>
-</div></div>
-<div id="chat-wrap">
-<div id="msgs"><div class="hero" id="hero">
-<h1 id="heroTitle">เราควรเริ่มจากตรงไหนดี, Guest?</h1>
-<p>ถาม สรุป วางแผน หรือสร้างไอเดีย — เริ่มจากประโยคเดียว</p>
-<div class="warn" id="warnBox"><b>⚠ ยังไม่ได้ใส่ API Key — Zyphere ยังตอบด้วยโมเดลจริงไม่ได้</b><br><span>เปิดการตั้งค่าด้านล่างซ้าย แล้วใส่ Grok ตัวที่ 1 (xai-...) เพื่อให้ Zyphere ตอบได้จริง</span><br><button class="btn" style="width:auto;padding:10px 18px;margin-top:10px" onclick="openSettings()">เปิดการตั้งค่า</button></div>
-<div class="chips"><span class="chip" onclick="quick('ค้นพบ')">ค้นพบ</span><span class="chip" onclick="quick('ถามอะไรก็ได้')">ถามอะไรก็ได้</span><span class="chip" onclick="quick('ดำเนินการ')">ดำเนินการ</span><span class="chip" onclick="quick('สร้างรูปภาพ')">สร้างรูปภาพ</span></div>
-</div><div class="msg-list" id="msgList"></div></div>
-<div id="composer"><div class="comp">
-<select id="brainSel" onchange="saveBrain()"><option value="auto">Zyphere อัตโนมัติ</option><option value="grok">Grok ตัวที่ 1</option><option value="gemini">Gemini ตัวที่ 2</option><option value="openrouter">OpenRouter ตัวที่ 3</option><option value="hf">Hugging Face ตัวที่ 4</option></select>
-<input id="q" placeholder="ถาม Zyphere..." onkeydown="if(event.key==='Enter')sendMsg()">
-<div class="comp-row"><div style="display:flex;gap:8px;align-items:center"><button class="iconbtn" onclick="pickFile()">＋</button><span style="font-size:13px;color:#555">เพิ่มสื่อและไฟล์</span><input type="file" id="fileIn" style="display:none" onchange="filePicked()"></div><div style="display:flex;gap:8px;align-items:center"><button class="iconbtn" onclick="startMic()">🎤</button><button class="send" onclick="sendMsg()">↑</button></div></div>
-</div></div>
-<p style="text-align:center;font-size:12px;color:#999;margin:0 0 10px">Zyphere ตอบด้วยโมเดลจริงเมื่อใส่ API Key แล้ว • ยังไม่ใส่คีย์ ยังไม่ใส่คีย์</p>
-</div>
-</main>
-<div id="settings"><div class="set-card">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">การตั้งค่า</h2><button class="iconbtn" onclick="closeSettings()">✕</button></div>
-<p style="color:#666;font-size:13px">ธีม / เสียง / Brain / API Key — บันทึกอัตโนมัติทันทีที่พิมพ์หรือวาง ไม่ต้องกดปุ่มบันทึก</p>
-<label>ธีม <select id="themeSel" onchange="localStorage.setItem('zyphere_theme',this.value);toast('บันทึกธีมแล้ว')"><option value="light">สว่าง</option><option value="dark">มืด</option></select></label><br><br>
-<label>เสียง <select id="voiceSel" onchange="localStorage.setItem('zyphere_voice',this.value);toast('บันทึกเสียงแล้ว')"><option value="on">เปิดเสียง</option><option value="off">ปิดเสียง</option></select></label><br><br>
-<label>Brain เริ่มต้น <select id="brainDef" onchange="localStorage.setItem('zyphere_brain_default',this.value);document.getElementById('brainSel').value=this.value;toast('บันทึก Brain แล้ว')"><option value="auto">Zyphere อัตโนมัติ</option><option value="grok">Grok ตัวที่ 1</option><option value="gemini">Gemini ตัวที่ 2</option><option value="openrouter">OpenRouter ตัวที่ 3</option><option value="hf">Hugging Face ตัวที่ 4</option></select></label>
-<h3>API Key - สมองจริง</h3><p style="font-size:12px;color:#666">วางคีย์แล้วบันทึกอัตโนมัติทันที คีย์เก็บในเบราว์เซอร์ของคุณเท่านั้น</p>
-<div class="keybox"><b>1. Grok ตัวที่ 1</b><p>xAI • ขึ้นต้น xai-... • model grok-3-mini</p><div class="keyrow"><input id="k-grok" type="text" placeholder="xai-..."><button class="paste" onclick="pasteKey('k-grok')">วาง</button></div><div class="status no" id="s-grok">ยังไม่ได้ใส่คีย์</div></div>
-<div class="keybox"><b>2. Gemini ตัวที่ 2</b><p>Google • ขึ้นต้น AIza... • model gemini-2.0-flash</p><div class="keyrow"><input id="k-gemini" type="text" placeholder="AIza..."><button class="paste" onclick="pasteKey('k-gemini')">วาง</button></div><div class="status no" id="s-gemini">ยังไม่ได้ใส่คีย์</div></div>
-<div class="keybox"><b>3. OpenRouter ตัวที่ 3</b><p>ขึ้นต้น sk-or-...</p><div class="keyrow"><input id="k-openrouter" type="text" placeholder="sk-or-..."><button class="paste" onclick="pasteKey('k-openrouter')">วาง</button></div><div class="status no" id="s-openrouter">ยังไม่ได้ใส่คีย์</div></div>
-<div class="keybox"><b>4. Hugging Face ตัวที่ 4</b><p>ขึ้นต้น hf_...</p><div class="keyrow"><input id="k-hf" type="text" placeholder="hf_..."><button class="paste" onclick="pasteKey('k-hf')">วาง</button></div><div class="status no" id="s-hf">ยังไม่ได้ใส่คีย์</div></div>
-<button class="btn" onclick="saveAllKeys()">บันทึก API Key</button>
-<p style="font-size:12px;color:#888">ถ้าวางแล้วไม่ขึ้น ให้เช็ค: คลิกในช่องให้เคอร์เซอร์กระพริบก่อน แล้วกด Ctrl+V หรือกดปุ่ม วาง ข้างๆ ช่อง</p>
-</div></div>
+<button id="hideTab" onclick="hideSidebar()" title="ซ่อนแถบ">‹</button><button id="showTab" onclick="showSidebar()" title="แสดงแถบ">›</button>
+<aside id="sidebar"><div class="logo" onclick="toggleSide()"><div class="logo-mark">✦</div><span class="logo-txt">Zyphere</span></div>
+<div style="padding:8px"><div class="mitem" onclick="newChat()">✎ <span class="lbl">แชทใหม่</span></div><div class="mitem" onclick="toast('ค้นหา')">⌕ <span class="lbl">ค้นหา</span></div><div class="mitem" onclick="toast('สื่อ')">▦ <span class="lbl">สื่อ</span></div><div class="mitem" onclick="toast('อาร์ติแฟกต์')">◈ <span class="lbl">อาร์ติแฟกต์</span></div><div class="mitem" onclick="toast('กำหนดเวลาแล้ว')">◷ <span class="lbl">กำหนดเวลาแล้ว</span></div><div class="mitem" onclick="toast('Vibes')">♡ <span class="lbl">Vibes</span></div></div>
+<div class="foot"><div class="foot-row" style="background:#fef3c7" onclick="showPaywall()">⭐ <span class="lbl">Premium 99 บาท/เดือน</span></div><div id="usageLabel" style="font-size:12px;color:#888;padding:6px 12px">ใช้ฟรี 0/10</div><div class="foot-row" onclick="openSettings()">⚙ <span class="lbl">ตั้งค่า</span></div><div class="foot-row"><div class="avatar" id="av">G</div><div class="foot-name"><div id="uname" style="font-weight:600">Guest</div><div style="font-size:12px;color:#888">สมาชิก Zyphere</div></div></div><div class="foot-row" onclick="logout()"><span>↪</span> <span class="lbl">ออกจากระบบ</span></div><div class="foot-row" onclick="switchAccount()"><span>⇄</span> <span class="lbl">สลับบัญชี</span></div></div></aside>
+<main id="main"><div id="login"><div class="login-card"><div style="width:56px;height:56px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:26px;margin:0 auto">✦</div><h1>ยินดีต้อนรับสู่ Zyphere</h1><p>เข้าสู่ระบบเพื่อเริ่มแชท</p><button type="button" class="btn btn-dark" onclick="enterNow('Guest')">เข้าใช้งานเลย ไม่ต้อง Login</button><div style="margin:12px;color:#888">— หรือ —</div><input id="gmailIn" placeholder="vorakangm@gmail.com"><button type="button" class="btn" onclick="loginGmail()">เข้าสู่ระบบด้วย Gmail</button><input id="emailIn" placeholder="you@example.com"><button type="button" class="btn" onclick="loginEmail()">เข้าสู่ระบบ</button><button type="button" class="btn btn-ghost" onclick="enterNow('Whisp')">เข้าสู่ระบบด้วยบัญชี Whisp (เดโม)</button></div></div>
+<div id="chat-wrap"><div id="msgs"><div class="hero" id="hero"><h1 id="heroTitle">เราควรเริ่มจากตรงไหนดี, Guest?</h1><p>ถาม สรุป วางแผน หรือสร้างไอเดีย</p><div class="warn" id="warnBox"><b>ยังไม่ได้ใส่ API Key</b><br><span>กด ⚙ ด้านล่างซ้าย แล้วใส่ Grok ตัวที่ 1 เพื่อให้ Zyphere ตอบได้จริง</span><br><button class="btn" style="width:auto;padding:10px 18px;margin-top:10px" onclick="openSettings()">เปิดการตั้งค่า</button></div><div class="chips"><span class="chip" onclick="quick('ค้นพบ')">ค้นพบ</span><span class="chip" onclick="quick('ถามอะไรก็ได้')">ถามอะไรก็ได้</span><span class="chip" onclick="quick('ดำเนินการ')">ดำเนินการ</span><span class="chip" onclick="quick('สร้างรูปภาพ')">สร้างรูปภาพ</span></div></div><div class="msg-list" id="msgList"></div></div>
+<div id="composer"><div class="comp"><select id="brainSel"><option value="auto">Zyphere อัตโนมัติ</option><option value="grok">Grok ตัวที่ 1</option><option value="gemini">Gemini ตัวที่ 2</option><option value="openrouter">OpenRouter ตัวที่ 3</option><option value="hf">Hugging Face ตัวที่ 4</option></select><input id="q" placeholder="ถาม Zyphere..." onkeydown="if(event.key==='Enter')sendMsg()"><div style="display:flex;justify-content:space-between;margin-top:6px"><button class="iconbtn" onclick="toast('อัพไฟล์')">＋</button><div><button class="iconbtn" onclick="toast('ไมค์')">🎤</button> <button class="send" onclick="sendMsg()">↑</button></div></div></div></div></div></main>
+<div id="settings"><div class="set-card"><div style="display:flex;justify-content:space-between"><h2 style="margin:0">การตั้งค่า</h2><button class="iconbtn" onclick="closeSettings()">✕</button></div><p style="font-size:13px;color:#666">วางคีย์แล้วบันทึกอัตโนมัติทันที ไม่ต้องกดปุ่มบันทึก</p><h3>API Key - สมองจริง</h3>
+<div class="keybox"><b>1. Grok ตัวที่ 1</b><p style="font-size:12px;color:#666">xAI • ขึ้นต้น xai-... • ถ้า Grok 400 ให้ลองสลับไป Gemini</p><div class="keyrow"><input id="k-grok" placeholder="xai-..."><button class="paste" onclick="pasteKey('k-grok')">วาง</button></div><div class="status" id="s-grok">ยังไม่ได้ใส่คีย์</div></div>
+<div class="keybox"><b>2. Gemini ตัวที่ 2</b><div class="keyrow"><input id="k-gemini" placeholder="AIza..."><button class="paste" onclick="pasteKey('k-gemini')">วาง</button></div><div class="status" id="s-gemini">ยังไม่ได้ใส่คีย์</div></div>
+<div class="keybox"><b>3. OpenRouter ตัวที่ 3</b><div class="keyrow"><input id="k-openrouter" placeholder="sk-or-..."><button class="paste" onclick="pasteKey('k-openrouter')">วาง</button></div><div class="status" id="s-openrouter">ยังไม่ได้ใส่คีย์</div></div>
+<div class="keybox"><b>4. Hugging Face ตัวที่ 4</b><div class="keyrow"><input id="k-hf" placeholder="hf_..."><button class="paste" onclick="pasteKey('k-hf')">วาง</button></div><div class="status" id="s-hf">ยังไม่ได้ใส่คีย์</div></div>
+<button class="btn" onclick="saveAllKeys()">บันทึก API Key</button></div></div>
 <div class="toast" id="toast"></div>
 <script>
-let user=null;
+let user=null; let usage=parseInt((()=>{try{return localStorage.getItem('zyphere_usage')||'0'}catch(e){return '0'}})()); let isPremium=(()=>{try{return localStorage.getItem('zyphere_premium')==='1'}catch(e){return false}})();
 const KEYMAP={'k-grok':['zyphere_grok_key','s-grok'],'k-gemini':['zyphere_gemini_key','s-gemini'],'k-openrouter':['zyphere_openrouter_key','s-openrouter'],'k-hf':['zyphere_hf_key','s-hf']};
-function toast(m){let t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000)}
-function mask(v){if(!v)return '';return '****'+v.slice(-4)}
-function updateStatus(){let any=false;for(let id in KEYMAP){let [ls,sid]=KEYMAP[id];let v=localStorage.getItem(ls)||'';let el=document.getElementById(sid);if(v){el.textContent='✓ เชื่อมต่อแล้ว '+mask(v);el.className='status ok';any=true;}else{el.textContent='ยังไม่ได้ใส่คีย์';el.className='status no';}}let w=document.getElementById('warnBox');if(w)w.style.display=any?'none':'block';}
-function saveOne(id){let v=document.getElementById(id).value.trim();if(!v)return;let ls=KEYMAP[id][0];try{localStorage.setItem(ls,v)}catch(e){}updateStatus();toast('✓ บันทึกอัตโนมัติแล้ว')}
-function saveAllKeys(){for(let id in KEYMAP){let v=document.getElementById(id).value.trim();if(v){try{localStorage.setItem(KEYMAP[id][0],v)}catch(e){}}}updateStatus();toast('✓ บันทึกแล้ว');}
+const PAY_NAME="วรกันต์ ยาคำ"; const PAY_PHONE="094-193-9686";
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function safeSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function safeGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function safeDel(k){try{localStorage.removeItem(k)}catch(e){}}
+function mask(v){return v?'****'+v.slice(-4):''}
+function updateStatus(){let any=false;for(let id in KEYMAP){let v=safeGet(KEYMAP[id][0])||'';let el=document.getElementById(KEYMAP[id][1]);if(v){el.textContent='✓ เชื่อมต่อแล้ว '+mask(v);el.style.color='green';any=true;}else{el.textContent='ยังไม่ได้ใส่คีย์';el.style.color='#999';}}let w=document.getElementById('warnBox');if(w)w.style.display=any?'none':'block';let u=document.getElementById('usageLabel');if(u)u.textContent=isPremium?'Premium • ไม่จำกัด':'ใช้ฟรี '+usage+'/10';}
+function saveOne(id){let v=document.getElementById(id).value.trim();if(!v)return;safeSet(KEYMAP[id][0],v);updateStatus();toast('✓ บันทึกอัตโนมัติแล้ว')}
+function saveAllKeys(){for(let id in KEYMAP){let v=document.getElementById(id).value.trim();if(v)safeSet(KEYMAP[id][0],v);}updateStatus();toast('✓ บันทึกแล้ว')}
 async function pasteKey(id){try{let t=await navigator.clipboard.readText();if(t){document.getElementById(id).value=t.trim();saveOne(id);return;}}catch(e){}let t=prompt('วางคีย์ตรงนี้ แล้วกด OK');if(t){document.getElementById(id).value=t.trim();saveOne(id);}}
-for(let id in KEYMAP){document.getElementById(id).addEventListener('input',()=>saveOne(id));document.getElementById(id).addEventListener('paste',(e)=>{setTimeout(()=>saveOne(id),50)});}
-function showMain(){document.getElementById('login').style.display='none';document.getElementById('chat-wrap').style.display='flex';document.getElementById('uname').textContent=user.name;document.getElementById('av').textContent=user.name.charAt(0).toUpperCase();document.getElementById('heroTitle').textContent='เราควรเริ่มจากตรงไหนดี, '+user.name+'?';document.getElementById('hist').innerHTML='ประวัติ • '+user.name+'<br><span style="color:#aaa">ยังไม่มีประวัติ</span>';updateStatus();}
-function enterNow(name){try{user={name:name,email:name.toLowerCase()+'@gmail.com'};localStorage.setItem('zyphere_user',JSON.stringify(user));localStorage.setItem('zyphere_logged_in','1');}catch(e){user={name:name,email:''}}showMain();toast('เข้าสู่ระบบสำเร็จ');}
-function loginGmail(){let v=document.getElementById('gmailIn').value.trim()||'vorakangm@gmail.com';if(!v.includes('@'))v+='@gmail.com';enterNow(v.split('@')[0]||'Guest');}
-function loginEmail(){let v=document.getElementById('emailIn').value.trim()||'guest@example.com';if(!v.includes('@'))v+='@gmail.com';enterNow(v.split('@')[0]||'Guest');}
-function logout(){try{localStorage.removeItem('zyphere_logged_in');}catch(e){}document.getElementById('chat-wrap').style.display='none';document.getElementById('login').style.display='flex';}
-function switchAcc(){logout();toast('เลือกบัญชีใหม่ได้เลย');}
+for(let id in KEYMAP){document.getElementById(id).addEventListener('input',()=>saveOne(id));}
+function showMain(){document.getElementById('login').style.display='none';document.getElementById('chat-wrap').style.display='flex';document.getElementById('uname').textContent=user.name;document.getElementById('av').textContent=user.name.charAt(0).toUpperCase();document.getElementById('heroTitle').textContent='เราควรเริ่มจากตรงไหนดี, '+user.name+'?';updateStatus();}
+function showLogin(){document.getElementById('chat-wrap').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('uname').textContent='Guest';document.getElementById('av').textContent='G';}
+function enterNow(n){if(!n)n='Guest';n=String(n).trim()||'Guest';user={name:n,email:n.toLowerCase()+'@gmail.com'};safeSet('zyphere_user',JSON.stringify(user));safeSet('zyphere_logged_in','1');showMain();toast('เข้าสู่ระบบสำเร็จ - '+n);}
+function loginGmail(){let v=(document.getElementById('gmailIn').value||'').trim()||'vorakangm@gmail.com';if(!v.includes('@'))v+='@gmail.com';enterNow(v.split('@')[0]||'Guest');}
+function loginEmail(){let v=(document.getElementById('emailIn').value||'').trim()||'guest@example.com';if(!v.includes('@'))v+='@gmail.com';enterNow(v.split('@')[0]||'Guest');}
+function logout(){user=null;safeDel('zyphere_logged_in');safeDel('zyphere_user');showLogin();toast('ออกจากระบบแล้ว');}
+function switchAccount(){logout();toast('เลือกบัญชีใหม่ได้เลย');}
 function toggleSide(){document.getElementById('sidebar').classList.toggle('collapsed');}
-document.addEventListener('keydown',e=>{if(e.key==='Tab'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){e.preventDefault();toggleSide();}});
+function hideSidebar(){document.body.classList.add('sidebar-hidden');safeSet('zyphere_sidebar','hidden');}
+function showSidebar(){document.body.classList.remove('sidebar-hidden');document.getElementById('sidebar').classList.remove('collapsed');safeSet('zyphere_sidebar','show');}
 function newChat(){document.getElementById('msgList').innerHTML='';document.getElementById('hero').style.display='block';}
-function doSearch(){let q=prompt('ค้นหาแชท:');if(q)toast('ค้นหา: '+q);}
-function showMedia(){toast('สื่อ: ดูไฟล์ที่อัพไว้ในหน้านี้');}
-function showArt(){toast('อาร์ติแฟกต์: ยังไม่มีชิ้นงาน');}
-function showSched(){let t=prompt('เพิ่มงานที่กำหนดเวลา (ชื่อ + เวลา):');if(t)toast('บันทึกงานแล้ว: '+t);}
-function toggleVibes(){toast('Vibes: เปลี่ยนชุดชิปแล้ว');}
 function quick(t){document.getElementById('q').value=t;sendMsg();}
-function pickFile(){document.getElementById('fileIn').click();}
-function filePicked(){let f=document.getElementById('fileIn').files[0];if(f)toast('อัพไฟล์แล้ว: '+f.name);}
-function startMic(){if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){let R=new (window.SpeechRecognition||window.webkitSpeechRecognition)();R.lang='th-TH';R.onresult=e=>{document.getElementById('q').value=e.results[0][0].transcript;};R.start();}else{toast('เบราว์เซอร์นี้ไม่รองรับไมค์ ลองพิมพ์แทน');}}
-function openSettings(){for(let id in KEYMAP){try{let v=localStorage.getItem(KEYMAP[id][0])||'';document.getElementById(id).value=v;}catch(e){}}updateStatus();document.getElementById('settings').style.display='flex';}
+function openSettings(){for(let id in KEYMAP){try{document.getElementById(id).value=safeGet(KEYMAP[id][0])||'';}catch(e){}}updateStatus();document.getElementById('settings').style.display='flex';}
 function closeSettings(){document.getElementById('settings').style.display='none';updateStatus();}
-function saveBrain(){try{localStorage.setItem('zyphere_brain',document.getElementById('brainSel').value)}catch(e){}}
-function addMsg(text,who,brain){let l=document.getElementById('msgList');let d=document.createElement('div');d.className='msg '+(who==='user'?'user':'ai');if(who!=='user')d.innerHTML='<small>'+(brain||'Zyphere')+'</small>';d.textContent=text;if(who!=='user')d.innerHTML='<small>'+(brain||'Zyphere')+'</small>'+text.replace(/</g,'&lt;');l.appendChild(d);document.getElementById('msgs').scrollTop=99999;}
-async function sendMsg(){let q=document.getElementById('q');let text=q.value.trim();if(!text)return;document.getElementById('hero').style.display='none';addMsg(text,'user');q.value='';let brain=document.getElementById('brainSel').value;if(brain==='auto'){if(localStorage.getItem('zyphere_grok_key'))brain='grok';else if(localStorage.getItem('zyphere_gemini_key'))brain='gemini';else if(localStorage.getItem('zyphere_openrouter_key'))brain='openrouter';else if(localStorage.getItem('zyphere_hf_key'))brain='hf';else brain='none';}
-let typing=document.createElement('div');typing.className='msg ai';typing.textContent='Zyphere กำลังพิมพ์...';document.getElementById('msgList').appendChild(typing);
-try{let ans=await callAI(text,brain);typing.remove();addMsg(ans,'ai',brain);}catch(e){typing.remove();addMsg('เกิดข้อผิดพลาด: '+(e.message||e)+' — ตรวจคีย์ในตั้งค่า ⚙ แล้วลองอีกครั้ง','ai',brain);}}
-async function callAI(text,brain){
-if(brain==='none'||!brain)throw new Error('ยังไม่ได้ใส่ API Key - กด ⚙ แล้วใส่ Grok ตัวที่ 1');
-if(brain==='grok'){let k=localStorage.getItem('zyphere_grok_key');if(!k)throw new Error('ยังไม่ได้ใส่ Grok Key');let r=await fetch('https://api.x.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'grok-3-mini',messages:[{role:'user',content:text}]})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('Grok '+r.status));return j.choices[0].message.content;}
-if(brain==='gemini'){let k=localStorage.getItem('zyphere_gemini_key');if(!k)throw new Error('ยังไม่ได้ใส่ Gemini Key');let r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}]})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('Gemini '+r.status));return j.candidates[0].content.parts[0].text;}
-if(brain==='openrouter'){let k=localStorage.getItem('zyphere_openrouter_key');if(!k)throw new Error('ยังไม่ได้ใส่ OpenRouter Key');let r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k,'HTTP-Referer':location.href},body:JSON.stringify({model:'openai/gpt-4o',messages:[{role:'user',content:text}]})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('OpenRouter '+r.status));return j.choices[0].message.content;}
-if(brain==='hf'){let k=localStorage.getItem('zyphere_hf_key');if(!k)throw new Error('ยังไม่ได้ใส่ Hugging Face Key');let r=await fetch('https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-8B-Instruct',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({inputs:text})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('HF '+r.status));return Array.isArray(j)?(j[0].generated_text||JSON.stringify(j)):JSON.stringify(j);}
-throw new Error('ไม่พบสมองที่เลือก');}
-// restore
-try{let u=localStorage.getItem('zyphere_user');let li=localStorage.getItem('zyphere_logged_in');if(u&&li){user=JSON.parse(u);showMain();}let b=localStorage.getItem('zyphere_brain');if(b)document.getElementById('brainSel').value=b;}catch(e){}updateStatus();
+function showPaywall(){let m=document.createElement('div');m.id='paywall';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200';m.innerHTML='<div style="background:#fff;padding:24px;border-radius:18px;width:430px;max-width:92vw;text-align:center"><h2>ใช้ฟรีครบ 10 ครั้งแล้ว</h2><p>สมัคร Premium 99 บาท/เดือน ถามได้ไม่จำกัด</p><div style="background:#f0f0f0;padding:14px;border-radius:12px"><div style="font-size:20px">QR พร้อมเพย์</div><div style="font-size:14px;font-weight:700">'+PAY_NAME+'</div><div style="font-size:14px">'+PAY_PHONE+' • 99 บาท</div><img src="qr.jpg" style="width:200px;height:200px;margin-top:8px"></div><input id="slipCode" placeholder="ใส่รหัสสลิป / เบอร์โทรที่โอน" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;margin-top:10px"><button onclick="submitSlip()" style="width:100%;padding:12px;background:#2563eb;color:#fff;border:0;border-radius:999px;margin-top:8px;cursor:pointer">ส่งสลิปให้แอดมินเช็ค</button><button onclick="document.getElementById(&quot;paywall&quot;).remove()" style="width:100%;padding:10px;background:#eee;border:0;border-radius:999px;margin-top:6px">ปิด</button></div>';document.body.appendChild(m);}
+function submitSlip(){let c=document.getElementById('slipCode').value.trim()||'ไม่ระบุ';let pend=JSON.parse(safeGet('zyphere_pending')||'[]');pend.push({user:user?user.name:'Guest',code:c,time:new Date().toLocaleString('th-TH')});safeSet('zyphere_pending',JSON.stringify(pend));alert('ส่งสลิปแล้ว รอแอดมินเช็ค');document.getElementById('paywall').remove();}
+function addMsg(t,who,brain){let l=document.getElementById('msgList');let d=document.createElement('div');d.className='msg '+(who==='user'?'user':'ai');d.textContent=t;if(who!=='user'){let s=document.createElement('small');s.textContent=brain||'Zyphere';d.prepend(s);}l.appendChild(d);}
+async function sendMsg(){let q=document.getElementById('q');let text=q.value.trim();if(!text)return;if(!isPremium&&usage>=10){showPaywall();return;}document.getElementById('hero').style.display='none';addMsg(text,'user');q.value='';let brain=document.getElementById('brainSel').value;if(brain==='auto'){if(safeGet('zyphere_grok_key'))brain='grok';else if(safeGet('zyphere_gemini_key'))brain='gemini';else if(safeGet('zyphere_openrouter_key'))brain='openrouter';else if(safeGet('zyphere_hf_key'))brain='hf';else brain='none';}let typing=document.createElement('div');typing.className='msg ai';typing.textContent='Zyphere กำลังพิมพ์...';document.getElementById('msgList').appendChild(typing);try{let ans;let used=brain;try{ans=await callAI(text,brain);}catch(e1){let fallbacks=['gemini','openrouter','hf','grok'].filter(b=>b!==brain);let ok=false;for(let fb of fallbacks){let hasKey=fb==='grok'?safeGet('zyphere_grok_key'):fb==='gemini'?safeGet('zyphere_gemini_key'):fb==='openrouter'?safeGet('zyphere_openrouter_key'):safeGet('zyphere_hf_key');if(!hasKey)continue;try{ans=await callAI(text,fb);used=fb+' (สำรองจาก '+brain+')';ok=true;break;}catch(e2){}}if(!ok)throw e1;}typing.remove();addMsg(ans,'ai',used);if(!isPremium){usage++;safeSet('zyphere_usage',String(usage));updateStatus();}}catch(e){typing.remove();addMsg('เกิดข้อผิดพลาด: '+(e.message||e),'ai',brain);}}
+async function callAI(text,brain){if(brain==='none')throw new Error('ยังไม่ได้ใส่ API Key - กด ⚙ แล้วใส่ Grok ตัวที่ 1');if(brain==='grok'){let k=safeGet('zyphere_grok_key');if(!k)throw new Error('ยังไม่ได้ใส่ Grok Key');let models=['grok-beta','grok-2','grok-4'];let lastErr='';for(let m of models){try{let r=await fetch('https://api.x.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:[{role:'user',content:text}],temperature:0.7,max_tokens:2000})});let txt=await r.text();let j={};try{j=JSON.parse(txt)}catch(e){}if(r.ok&&j.choices&&j.choices[0])return j.choices[0].message.content;lastErr=(j.error&&j.error.message)||txt.slice(0,200)||('Grok '+r.status);if(r.status===401||r.status===403)break;}catch(e){lastErr=e.message;}}throw new Error('Grok: '+lastErr+' — ลองเช็คคีย์ xai- หรือสลับไป Gemini ตัวที่ 2');}if(brain==='gemini'){let k=safeGet('zyphere_gemini_key');if(!k)throw new Error('ยังไม่ได้ใส่ Gemini Key');let models=['gemini-2.0-flash','gemini-1.5-flash','gemini-pro'];let lastErr='';for(let m of models){let r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}]})});let j=await r.json().catch(()=>({}));if(r.ok&&j.candidates&&j.candidates[0])return j.candidates[0].content.parts[0].text;lastErr=(j.error&&j.error.message)||('Gemini '+r.status);}throw new Error('Gemini: '+lastErr);}if(brain==='openrouter'){let k=safeGet('zyphere_openrouter_key');if(!k)throw new Error('ยังไม่ได้ใส่ OpenRouter Key');let r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'openai/gpt-4o',messages:[{role:'user',content:text}]})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('OpenRouter '+r.status));return j.choices[0].message.content;}if(brain==='hf'){let k=safeGet('zyphere_hf_key');if(!k)throw new Error('ยังไม่ได้ใส่ HF Key');let r=await fetch('https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-8B-Instruct',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({inputs:text})});let j=await r.json();if(!r.ok)throw new Error(j.error?.message||('HF '+r.status));return JSON.stringify(j);}throw new Error('ไม่พบสมอง');}
+try{let u=safeGet('zyphere_user');let li=safeGet('zyphere_logged_in');if(u&&li){user=JSON.parse(u);showMain();}if(safeGet('zyphere_sidebar')==='hidden')document.body.classList.add('sidebar-hidden');}catch(e){}updateStatus();
 </script></body></html>
