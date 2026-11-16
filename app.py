@@ -1,4 +1,4 @@
-# ZYPHERE V43 - SIDEBAR BACK - SAFE TOP + BOTTOM - CHECK THIS LINE
+# ZYPHERE V44 - LOGIN FIXED BOTTOM REAL - CHECK THIS LINE
 import streamlit as st, os, io, base64, asyncio, re
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -30,7 +30,7 @@ section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!impor
 section[data-testid='stSidebar'] .stMarkdown{margin:0!important;padding:0!important}
 .lb{font-size:12px;color:#5f6368;padding:0 12px;margin:14px 0 4px;display:block;line-height:1.4}
 /* FOOTER FIXED TO BOTTOM - not floating mid screen, not off screen */
-.sidebar-footer{margin-top:auto!important;background:#fff!important;border-top:1px solid #f0f0f0!important;padding:10px 8px 10px 8px!important}
+.sidebar-footer{position:fixed!important;left:0!important;bottom:0!important;width:280px!important;background:#fff!important;border-top:1px solid #f0f0f0!important;padding:10px 8px 10px 8px!important;z-index:999!important} div[data-testid='stSidebarContent']{padding-bottom:130px!important}
 .sidebar-footer .stButton>button{height:36px!important}
 .user-row{display:flex;align-items:center;gap:10px;padding:6px 12px 8px}
 .hero{font-size:28px;text-align:center;margin-top:110px}
@@ -71,26 +71,26 @@ def show_audio(d):
 # --- SIDEBAR V42 ---
 with st.sidebar:
     st.markdown("<div class='logo-top'><div class='logo-dot'>\u2726</div><div class='logo-txt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>\u2315</div></div><div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่', key='v43_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v43_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v43_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v43_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v43_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
+    if st.button('\u270e  แชทใหม่', key='v44_new'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u25a6  คลัง', key='v44_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
+    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v44_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
+    if st.button('\u25ce  ปรับแต่ง', key='v44_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
+    if st.button('\u25a1  วิดีโอ', key='v44_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
     st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v43_nb'): st.session_state.messages=[]; st.rerun()
+    if st.button('\uFF0B  Notebook ใหม่', key='v44_nb'): st.session_state.messages=[]; st.rerun()
     st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
     _seen=[]; _has=False
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v43_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='v44_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v43_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='v44_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
     # FOOTER - bottom of sidebar, normal flow so it never disappears
     st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    if st.button('\u21aa  ออกจากระบบ', key='v43_logout'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v43_login'): st.session_state.user_name='Whisp'; st.rerun()
+    if st.button('\u21aa  ออกจากระบบ', key='v44_logout'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v44_login'): st.session_state.user_name='Whisp'; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- MAIN ---
