@@ -1,0 +1,1 @@
+Zyphere V5 Mono Tone 4 Brains - Upload ทับของเก่า แล้วใส่ 4 Keys ใหม่ใน Secrets อย่าส่ง Key ในแชท
