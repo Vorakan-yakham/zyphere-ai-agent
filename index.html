@@ -14,9 +14,10 @@
 .inputbox{padding:16px;display:flex;gap:8px;align-items:center;border-top:1px solid #eee}
 .inputbox select{padding:10px;border-radius:999px;border:1px solid #ddd}
 .inputbox input{flex:1;padding:14px 18px;border-radius:999px;border:1px solid #ddd;outline:none;font-size:15px}
-.send{width:44px;height:44px;border-radius:50%;border:0;background:#0084ff;color:#fff;font-size:20px;cursor:pointer}
+.send{width:48px;height:48px;border-radius:50%;border:0;background:#0084ff;color:#fff;font-size:22px;cursor:pointer}
+.iconbtn{width:44px;height:44px;border-radius:50%;border:1px solid #ddd;background:#fff;font-size:18px;cursor:pointer}
 #settings{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:99}
-.card{background:#fff;width:520px;max-width:92vw;border-radius:18px;padding:20px}
+.card{background:#fff;width:520px;max-width:92vw;border-radius:18px;padding:20px;max-height:90vh;overflow:auto}
 .card input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0 2px}
 .card button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
 .save{background:#16a34a;color:#fff;font-weight:bold}.clear{background:#dc2626;color:#fff}
@@ -29,41 +30,56 @@
 <button onclick="openSettings()">⚙ ตั้งค่า - ใส่คีย์</button>
 <button onclick="clearAll()">🗑️ ลบกุญแจทั้งหมด</button>
 <div style="padding:8px;font-weight:bold">W Whisp</div></div></div>
-<div class="main"><div class="top">Meta AI style</div>
+<div class="main"><div class="top">Meta AI style • Jarvis mode • FINAL</div>
 <div class="chat" id="chat">
-<div class="warn"><b>✅ Zyphere RESET - ตัวใหม่สะอาด:</b> ไม่มี Grok ไม่มี Premium ไม่มี 0/10 ไม่มีลบกุญแจอัตโนมัติอีกแล้ว<br>ใส่คีย์แค่ครั้งเดียว มันจำไว้เลย ไม่ลบเอง</div>
-<div class="bubble ai">สวัสดีครับ ผม Zyphere ใส่คีย์ Groq (gsk_) หรือ Gemini (AQ.) ในตั้งค่าก่อน แล้วถามได้เลยครับ</div>
+<div class="warn"><b>✅ Zyphere FINAL - กด Enter ได้แล้ว:</b> ปิดตัวช่วยจำคำที่แย่ง Enter แล้ว • สมองครบ 4 ตัวฟรี • หู 🎤 ปาก ▶ • ไม่มีอีโมจิ • ไม่มี Grok • ไม่มี Premium</div>
+<div class="bubble ai">สวัสดีครับ ผม Zyphere ใส่คีย์ในตั้งค่าก่อน แล้วพิมพ์หรือกดไมค์พูดได้เลยครับ</div>
 </div>
 <div class="inputbox">
-<select id="brain"><option value="groq">Groq - ฟรี (gsk_)</option><option value="gemini">Gemini - ฟรี (AQ.)</option><option value="auto">อัตโนมัติ - ฟรี</option></select>
-<input id="q" placeholder="ถาม Zyphere..." autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();send();}">
-<button class="send" onclick="send()">↑</button>
+<select id="brain"><option value="groq">Groq - ฟรี (gsk_)</option><option value="gemini">Gemini - ฟรี (AQ.)</option><option value="openrouter">OpenRouter - ฟรี</option><option value="hf">Hugging Face - ฟรี</option><option value="auto">อัตโนมัติ - ฟรี</option></select>
+<input id="q" placeholder="ถาม Zyphere..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+<button class="iconbtn" onclick="startListen()" id="micBtn" title="พูดใส่ Zyphere">🎤</button>
+<button class="iconbtn" onclick="toggleVoice()" id="voiceBtn" title="เปิด/ปิดเสียง">🔊</button>
+<button class="send" id="sendBtn" onclick="send()">↑</button>
 </div></div>
 <div id="settings"><div class="card">
-<div style="display:flex;justify-content:space-between"><h2 style="margin:0">ตั้งค่า - ใส่คีย์ฟรี</h2><button onclick="closeSettings()">✕</button></div>
-<p style="color:#666;font-size:13px">พิมพ์หรือวางคีย์แล้วมันบันทึกทันที ไม่ต้องกดบันทึกซ้ำ</p>
-<b>⭐ Groq - ฟรี</b><br><span style="font-size:12px">เอาจาก console.groq.com/keys ขึ้นต้น gsk_</span>
-<input id="k-groq" placeholder="gsk_..." oninput="saveOne('k-groq')"><div class="ok" id="s-groq">ยังไม่ได้ใส่คีย์</div>
-<b>Gemini - ฟรี</b><br><span style="font-size:12px">เอาจาก aistudio.google.com ขึ้นต้น AQ.</span>
-<input id="k-gemini" placeholder="AQ...." oninput="saveOne('k-gemini')"><div class="ok" id="s-gemini">ยังไม่ได้ใส่คีย์</div>
+<div style="display:flex;justify-content:space-between"><h2 style="margin:0">ตั้งค่า - ใส่คีย์ฟรี 4 ตัว</h2><button onclick="closeSettings()">✕</button></div>
+<p style="color:#666;font-size:13px">พิมพ์หรือวางคีย์แล้วบันทึกทันที</p>
+<b>⭐ Groq - ฟรี</b><br><span style="font-size:12px">console.groq.com/keys ขึ้นต้น gsk_</span>
+<input id="k-groq" placeholder="gsk_..." autocomplete="off" oninput="saveOne('k-groq')"><div class="ok" id="s-groq">ยังไม่ได้ใส่คีย์</div>
+<b>Gemini - ฟรี</b><br><span style="font-size:12px">aistudio.google.com ขึ้นต้น AQ.</span>
+<input id="k-gemini" placeholder="AQ...." autocomplete="off" oninput="saveOne('k-gemini')"><div class="ok" id="s-gemini">ยังไม่ได้ใส่คีย์</div>
+<b>OpenRouter - ฟรี</b><br><span style="font-size:12px">openrouter.ai ขึ้นต้น sk-or-v1-</span>
+<input id="k-openrouter" placeholder="sk-or-v1-..." autocomplete="off" oninput="saveOne('k-openrouter')"><div class="ok" id="s-openrouter">ยังไม่ได้ใส่คีย์</div>
+<b>Hugging Face - ฟรี</b><br><span style="font-size:12px">huggingface.co ขึ้นต้น hf_</span>
+<input id="k-hf" placeholder="hf_..." autocomplete="off" oninput="saveOne('k-hf')"><div class="ok" id="s-hf">ยังไม่ได้ใส่คีย์</div>
 <br><button class="save" onclick="closeSettings()">เสร็จแล้ว - ปิด</button>
 <button class="clear" onclick="clearAll()">ลบกุญแจทั้งหมด</button>
 </div></div>
 <script>
 function get(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
 function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-const MAP={'k-groq':['zyphere_groq_key','s-groq'],'k-gemini':['zyphere_gemini_key','s-gemini']};
+const MAP={'k-groq':['zyphere_groq_key','s-groq'],'k-gemini':['zyphere_gemini_key','s-gemini'],'k-openrouter':['zyphere_openrouter_key','s-openrouter'],'k-hf':['zyphere_hf_key','s-hf']};
 function saveOne(id){let v=document.getElementById(id).value.trim();set(MAP[id][0],v);let s=document.getElementById(MAP[id][1]);if(s)s.textContent=v?'✅ ใส่แล้ว จำไว้แล้ว':'ยังไม่ได้ใส่คีย์';}
 function openSettings(){for(let id in MAP){let el=document.getElementById(id);if(el)el.value=get(MAP[id][0]);let s=document.getElementById(MAP[id][1]);if(s)s.textContent=get(MAP[id][0])?'✅ ใส่แล้ว จำไว้แล้ว':'ยังไม่ได้ใส่คีย์';}document.getElementById('settings').style.display='flex';}
 function closeSettings(){document.getElementById('settings').style.display='none';}
-function clearAll(){['zyphere_groq_key','zyphere_gemini_key'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});['k-groq','k-gemini'].forEach(id=>{let el=document.getElementById(id);if(el)el.value='';});['s-groq','s-gemini'].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent='ยังไม่ได้ใส่คีย์';});alert('ลบกุญแจหมดแล้ว ใส่ใหม่ได้เลย');}
+function clearAll(){['zyphere_groq_key','zyphere_gemini_key','zyphere_openrouter_key','zyphere_hf_key'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});['k-groq','k-gemini','k-openrouter','k-hf'].forEach(id=>{let el=document.getElementById(id);if(el)el.value='';});['s-groq','s-gemini','s-openrouter','s-hf'].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent='ยังไม่ได้ใส่คีย์';});alert('ลบกุญแจหมดแล้ว ใส่ใหม่ได้เลย');}
 function newChat(){document.getElementById('chat').innerHTML='<div class="bubble ai">เริ่มแชทใหม่แล้วครับ ถามได้เลย</div>';}
-function add(t,cls){let d=document.createElement('div');d.className='bubble '+cls;d.textContent=t;document.getElementById('chat').appendChild(d);document.getElementById('chat').scrollTop=99999;return d;}
+function cleanText(t){if(!t)return t;return t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/:-\\)|:\\)|;-\\)|;\\)|:\(|:-\(|:D|:P/g,'').replace(/\s{2,}/g,' ').trim();}
+let voiceOn=true;
+function toggleVoice(){voiceOn=!voiceOn;let b=document.getElementById('voiceBtn');if(b)b.textContent=voiceOn?'🔊':'🔇';if(!voiceOn&&window.speechSynthesis)window.speechSynthesis.cancel();}
+function speakText(txt,btn){try{if(!voiceOn)return;if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(txt);u.lang='th-TH';u.rate=1;u.pitch=0.8;let vs=window.speechSynthesis.getVoices();let th=vs.find(v=>v.lang&&v.lang.startsWith('th'));if(th)u.voice=th;u.onend=()=>{if(btn)btn.textContent='▶';};if(btn)btn.textContent='⏹';window.speechSynthesis.speak(u);}catch(e){}}
+function startListen(){try{let SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('เบราว์เซอร์นี้ไม่รองรับไมค์ ให้พิมพ์แทน');return;}let r=new SR();r.lang='th-TH';let b=document.getElementById('micBtn');if(b)b.textContent='🔴';r.onresult=(e)=>{let t=e.results[0][0].transcript;document.getElementById('q').value=t;if(b)b.textContent='🎤';send();};r.onerror=()=>{if(b)b.textContent='🎤';};r.onend=()=>{if(b)b.textContent='🎤';};r.start();}catch(e){alert('เปิดไมค์ไม่ได้: '+e.message);}}
+function add(t,cls){let d=document.createElement('div');d.className='bubble '+cls;if(cls==='ai'){let s=document.createElement('span');s.textContent=cleanText(t);let b=document.createElement('button');b.textContent='▶';b.title='ฟังเสียง';b.style.cssText='margin-left:8px;border:1px solid #ddd;background:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:12px';b.onclick=()=>{if(window.speechSynthesis&&window.speechSynthesis.speaking){window.speechSynthesis.cancel();b.textContent='▶';return;}speakText(t,b);};d.appendChild(s);d.appendChild(b);document.getElementById('chat').appendChild(d);document.getElementById('chat').scrollTop=99999;return d;}d.textContent=t;document.getElementById('chat').appendChild(d);document.getElementById('chat').scrollTop=99999;return d;}
 async function callAI(text,brain){
  if(brain==='auto') brain=get('zyphere_groq_key')?'groq':'gemini';
  if(brain==='groq'){let k=get('zyphere_groq_key');if(!k)throw new Error('ยังไม่ได้ใส่ Groq Key - กด ตั้งค่า แล้วใส่ gsk_');let models=['llama-3.3-70b-versatile','openai/gpt-oss-120b'];let err='';for(let m of models){try{let r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:[{role:'user',content:text}],temperature:0.7,max_tokens:2000})});let j=await r.json();if(r.ok&&j.choices)return j.choices[0].message.content;err=(j.error&&j.error.message)||('Groq '+r.status);}catch(e){err=e.message;}}throw new Error('Groq: '+err);}
  if(brain==='gemini'){let k=get('zyphere_gemini_key');if(!k)throw new Error('ยังไม่ได้ใส่ Gemini Key - กด ตั้งค่า แล้วใส่ AQ.');let models=['gemini-2.5-flash','gemini-2.0-flash'];let err='';for(let m of models){for(let ver of ['v1beta','v1']){try{let r=await fetch('https://generativelanguage.googleapis.com/'+ver+'/models/'+m+':generateContent?key='+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}]})});let j=await r.json();if(r.ok&&j.candidates)return j.candidates[0].content.parts[0].text;err=(j.error&&j.error.message)||('Gemini '+r.status);}catch(e){err=e.message;}}}throw new Error('Gemini: '+err);}
+ if(brain==='openrouter'){let k=get('zyphere_openrouter_key');if(!k)throw new Error('ยังไม่ได้ใส่ OpenRouter Key - ใส่ sk-or-v1-');let r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:'meta-llama/llama-3.3-70b-instruct:free',messages:[{role:'user',content:text}]})});let j=await r.json();if(r.ok&&j.choices)return j.choices[0].message.content;throw new Error('OpenRouter: '+((j.error&&j.error.message)||r.status));}
+ if(brain==='hf'){let k=get('zyphere_hf_key');if(!k)throw new Error('ยังไม่ได้ใส่ HF Key - ใส่ hf_');let r=await fetch('https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({inputs:text,parameters:{max_new_tokens:800}})});let j=await r.json();if(Array.isArray(j)&&j[0])return j[0].generated_text||JSON.stringify(j);if(j.error)throw new Error('HF: '+j.error);return JSON.stringify(j);}
  throw new Error('เลือกสมองไม่ถูก');
 }
-let sending=false;async function send(){if(sending)return;sending=true;try{let q=document.getElementById('q');let t=q.value.trim();if(!t)return;q.value='';add(t,'user');let brain=document.getElementById('brain').value;let b=add('กำลังคิด...','ai');try{let ans=await callAI(t,brain);b.textContent=ans;}catch(e){b.textContent='เกิดข้อผิดพลาด: '+e.message+'\n\nกด ตั้งค่า ใส่คีย์ใหม่ได้เลย ไม่ต้องอัพไฟล์';}sending=false;}
+async function send(){let q=document.getElementById('q');let t=q.value.trim();if(!t)return;q.value='';add(t,'user');let brain=document.getElementById('brain').value;let b=add('กำลังคิด...','ai');try{let ans=cleanText(await callAI(t,brain));b.innerHTML='';let s=document.createElement('span');s.textContent=ans;let pb=document.createElement('button');pb.textContent='▶';pb.title='ฟังเสียง';pb.style.cssText='margin-left:8px;border:1px solid #ddd;background:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:12px';pb.onclick=()=>{if(window.speechSynthesis&&window.speechSynthesis.speaking){window.speechSynthesis.cancel();pb.textContent='▶';return;}speakText(ans,pb);};b.appendChild(s);b.appendChild(pb);if(voiceOn)setTimeout(()=>speakText(ans,pb),300);}catch(e){b.textContent='เกิดข้อผิดพลาด: '+e.message;}}
+document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();send();}});
+document.getElementById('sendBtn').addEventListener('click',function(){send();});
 </script></body></html>
