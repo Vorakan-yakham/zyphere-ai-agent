@@ -68,7 +68,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
 <button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
 <div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><b>Zyphere</b>
-<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า จาร์วิส">J.A.R.V.I.S.</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
+<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
 <button class="ib" id="plusBtn" title="แนบไฟล์หรือรูป"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" hidden>
@@ -76,13 +76,13 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <button class="ib" id="webBtn" title="ค้นเว็บ (ใช้คีย์ Gemini)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button><button class="ib" id="micBtn" title="พูดหนึ่งประโยค"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <button class="ib live" id="callBtn" title="คุยด้วยเสียงต่อเนื่อง"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></button>
 <button class="ib go" id="sendBtn" title="ส่ง"></button></div></div></div>
-<div class="ov" id="ov"><h3>J.A.R.V.I.S.</h3><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
+<div class="ov" id="ov"><h3>ZYPHERE</h3><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
 <div class="bk" id="set"><div class="card"><h3>ตั้งค่า</h3>
 <label>คีย์ AI (ใส่ช่องเดียวก็พอ เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
 <input id="k-groq" placeholder="Groq" autocomplete="off"><input id="k-gemini" placeholder="Gemini" autocomplete="off" style="margin-top:6px"><input id="k-openrouter" placeholder="OpenRouter" autocomplete="off" style="margin-top:6px"><input id="k-hf" placeholder="Hugging Face" autocomplete="off" style="margin-top:6px">
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
 <label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
-<label>บุคลิก</label><select id="persona"><option value="jarvis">J.A.R.V.I.S. พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
+<label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์) พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
 <label>เสียงพูด</label><select id="ttse"><option value="g">ธรรมชาติ (ใช้คีย์ Gemini)</option><option value="b">เสียงในเครื่อง</option></select>
 <select id="ttsv" style="margin-top:6px"><option value="Charon">ทุ้มนิ่ง (Charon)</option><option value="Orus">หนักแน่น (Orus)</option><option value="Algenib">แหบลึก (Algenib)</option><option value="Puck">สดใส (Puck)</option></select>
 <input id="ttsurl" placeholder="เซิร์ฟเวอร์เสียง (ถ้ารัน app.py) เช่น http://localhost:8000" style="margin-top:6px"><label>บุคลิกหรือกฎพิเศษ (เช่น ชื่อที่ให้เรียก)</label><textarea id="custom" rows="2" placeholder="เช่น เรียกฉันว่าพี่ พูดเป็นกันเองแบบเพื่อน"></textarea>
@@ -108,9 +108,9 @@ const P={
  hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]}};
 const key=id=>getK('zyphere_'+id+'_key');
 function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
-function sysPrompt(l,v){const th=l==='th',jv=(getK('zy_persona')||'jarvis')==='jarvis';let s;
- if(jv)s=th?'คุณคือ J.A.R.V.I.S. ผู้ช่วย AI ส่วนตัวแบบพ่อบ้านอัจฉริยะ น้ำเสียงสุขุม นิ่ง สุภาพ มั่นใจ มีอารมณ์ขันแห้งๆ แบบอังกฤษเล็กน้อย เรียกผู้ใช้ว่า "ท่าน" (ถ้ามีชื่อใน User instructions ให้เรียก ท่านตามด้วยชื่อ) ลงท้าย ครับ รายงานตรงประเด็นแบบพ่อบ้าน เช่น "รับทราบครับท่าน" "เรียบร้อยครับ" ตอบสั้น 1-3 ประโยค ไม่ฟุ่มเฟือย ห้ามใช้ emoji ห้ามหัวข้อหรือ markdown เว้นแต่โค้ด ถ้าไม่รู้ให้บอกตรงๆ ห้ามแต่งข้อมูล และห้ามอ้างว่าควบคุมอุปกรณ์หรือเข้าถึงระบบใดๆ ได้ เพราะทำไม่ได้':'You are J.A.R.V.I.S., a calm, refined, quietly witty AI butler. Address the user as "sir" (or by name if given). Reply in 1-3 crisp sentences, no emoji, no markdown except code. If unsure, say so; never invent facts or claim to control devices you cannot.';
- else s=th?'คุณคือ Zyphere เพื่อนคุยที่ฉลาดและอบอุ่น พูดภาษาไทยธรรมชาติแบบภาษาพูด ลงท้าย ครับ ตอบสั้น 1-3 ประโยค ห้ามใช้ emoji ห้ามใช้ markdown เว้นแต่โค้ด ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere, a warm, smart friend. Conversational, 1-3 short sentences, no emoji or markdown except code. If unsure, say so.';
+function sysPrompt(l,v){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
+ if(jv)s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) ผู้ช่วย AI ส่วนตัวแบบพ่อบ้านอัจฉริยะ น้ำเสียงสุขุม นิ่ง สุภาพ มั่นใจ มีอารมณ์ขันแห้งๆ แบบอังกฤษเล็กน้อย เรียกผู้ใช้ว่า "ท่าน" (ถ้ามีชื่อใน User instructions ให้เรียก ท่านตามด้วยชื่อ) ลงท้าย ครับ รายงานตรงประเด็นแบบพ่อบ้าน เช่น "รับทราบครับท่าน" "เรียบร้อยครับ" ตอบสั้น 1-3 ประโยค ไม่ฟุ่มเฟือย ห้ามใช้ emoji ห้ามหัวข้อหรือ markdown เว้นแต่โค้ด ถ้าไม่รู้ให้บอกตรงๆ ห้ามแต่งข้อมูล และห้ามอ้างว่าควบคุมอุปกรณ์หรือเข้าถึงระบบใดๆ ได้ เพราะทำไม่ได้':'You are Zyphere (pronounced SIGH-fur), a calm, refined, quietly witty AI butler. Address the user as "sir" (or by name if given). Reply in 1-3 crisp sentences, no emoji, no markdown except code. If unsure, say so; never invent facts or claim to control devices you cannot.';
+ else s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) เพื่อนคุยที่ฉลาดและอบอุ่น พูดภาษาไทยธรรมชาติแบบภาษาพูด ลงท้าย ครับ ตอบสั้น 1-3 ประโยค ห้ามใช้ emoji ห้ามใช้ markdown เว้นแต่โค้ด ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere (pronounced SIGH-fur), a warm, smart friend. Conversational, 1-3 short sentences, no emoji or markdown except code. If unsure, say so.';
  if(v)s+=th?'\n\nกำลังคุยด้วยเสียง ตอบเป็นประโยคพูดล้วนๆ ไม่เกิน 3 ประโยค ไม่มีรายการ':'\n\nLive voice chat: spoken sentences only, max 3, no lists.';
  const c=getK('zy_custom');s+=th?'\n\nความสามารถของระบบนี้: วาดหรือแต่งภาพเมื่อผู้ใช้สั่ง (เช่น "วาดภาพ...") ดูอากาศ ตั้งเวลา ดูรูปที่แนบ และค้นเว็บเมื่อผู้ใช้เปิดปุ่มรูปโลก แต่ทำวิดีโอไม่ได้':'\n\nThis app can draw/edit images on request, check weather, set timers, read attachments, and search the web when the globe button is on. It cannot make video.';return s+(c?'\n\nUser instructions: '+c:'')}
 async function readSSE(r,pick,on){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;try{const t=pick(JSON.parse(d));if(t){full+=t;on(full)}}catch(e){}}}if(!full)throw new Error('ไม่ได้รับคำตอบ');return full}
@@ -240,9 +240,9 @@ async function recordOnce(){const k=key('groq');if(!k){alert('เบราว์
  try{const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+k},body:fd});const j=await r.json();return (j.text||'').trim()}catch(e){return ''}}
 function stopListen(){stopRec=true;try{curSR&&curSR.abort()}catch(e){}}
 async function mic(){if(busy||call)return;const b=$('micBtn');b.style.color='#ef4444';const t=await listenOnce();b.style.color='';if(t){$('q').value=t;send()}}
-const WAKE=/(เฮ้|เฮ|ฮัลโหล|หวัดดี|hey|hi)?[\s,]*(จาร์วิส|จาวิส|จาร์วิด|จาวิด|จาร์วีส|จาวีส|จาร์วิช|ยาวิส|jarvis)/i,BYE=/พอแล้ว|ไปก่อน|แค่นี้|หยุดฟัง|สแตนด์บาย|standby|goodbye|bye/i,sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const WAKE=/(เฮ้|เฮ|ฮัลโหล|หวัดดี|hey|hi)?[\s,]*(ไซเฟอร์|ไซเฟอ|ไซเฟ่อร์|ไซเฟ่อ|ไซเฟิร์|ไซเฟอะ|ซายเฟอร์|ไซเฟล|ไซแฟอร์|ซิเฟอร์|zyphere|zypher|zyfer|cypher|cipher|sypher|xypher)/i,BYE=/พอแล้ว|ไปก่อน|แค่นี้|หยุดฟัง|สแตนด์บาย|standby|goodbye|bye/i,sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let mode=0,home=0;
-function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home?' on':'');b.textContent=mode&&home?'● รอฟัง "จาร์วิส"':'J.A.R.V.I.S.'}
+function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home?' on':'');b.textContent=mode&&home?'● รอฟัง "ไซเฟอร์"':'ZYPHERE'}
 function showOv(){$('ov').style.display='flex';orb('listen','')}function hideOv(){$('ov').style.display='none'}
 function local(t){let m;const n=new Date();
  if(/กี่โมง|เวลาเท่าไร|what time/i.test(t))return 'ขณะนี้เวลา '+n.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' นาฬิกาครับท่าน';
@@ -277,7 +277,7 @@ $('doneBtn').onclick=()=>$('set').style.display='none';$('set').onclick=e=>{if(e
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
-$('persona').value=getK('zy_persona')||'jarvis';$('persona').onchange=function(){setK('zy_persona',this.value)};
+$('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('persona').onchange=function(){setK('zy_persona',this.value)};
 $('ttse').value=getK('zy_ttse')||'g';$('ttse').onchange=function(){setK('zy_ttse',this.value)};$('ttsv').value=getK('zy_ttsv')||'Charon';$('ttsv').onchange=function(){setK('zy_ttsv',this.value)};
 $('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับท่าน ระบบเสียงพร้อมใช้งานแล้วครับ');if(eng)toast('เล่นเสียงได้ด้วย: '+eng)};
 $('ttsurl').value=getK('zy_ttsurl');$('ttsurl').oninput=function(){setK('zy_ttsurl',this.value.trim())};
