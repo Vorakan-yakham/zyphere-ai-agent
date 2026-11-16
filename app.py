@@ -7,7 +7,7 @@ st.markdown("""
 [data-testid="stToolbar"]{display:none !important}
 footer{display:none !important}
 .stApp{background: radial-gradient(700px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), #fff !important}
-section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px !important}
+section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px !important; display:block !important; visibility:visible !important; transform:none !important} section[data-testid="stSidebar"][aria-expanded="false"]{display:block !important; visibility:visible !important; margin-left:0 !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important} [data-testid="stSidebarCollapsedControl"]{display:flex !important}
 .hero{font-size:32px;font-weight:500;text-align:center;margin-top:110px}
 .pill-center{max-width:680px;margin:24px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 18px}
 .pill-center div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
@@ -52,9 +52,17 @@ def make_male_audio(text):
         buf=io.BytesIO(); gTTS(text=text,lang="th",slow=False).write_to_fp(buf); return buf.getvalue(), "gTTS - สำรอง"
     except Exception as e: return None, str(e)
 def show_audio(data):
+    # Light player - no black bar, just small play button like Gemini
     b64=base64.b64encode(data).decode()
     import streamlit.components.v1 as components
-    components.html(f'<audio autoplay controls style="width:100%"><source src="data:audio/mp3;base64,{b64}" type="audio/mp3"></audio>', height=60)
+    components.html(f'''
+    <div style="display:flex;align-items:center;gap:10px;background:#f0f4f9;border-radius:999px;padding:8px 14px;max-width:680px">
+      <audio id="zy" autoplay src="data:audio/mp3;base64,{b64}" style="display:none"></audio>
+      <button onclick="document.getElementById('zy').play()" style="border:none;background:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;box-shadow:0 1px 4px rgba(0,0,0,0.15)">&#9654;</button>
+      <span style="font-family:Prompt;font-size:13px;color:#444">🔊 Zyphere กำลังพูด... กด ▶ ถ้าเสียงไม่ดัง</span>
+      <button onclick="document.getElementById('zy').play()" style="border:none;background:transparent;cursor:pointer;font-size:13px;color:#1a73e8">ฟังอีกครั้ง</button>
+    </div>
+    ''', height=56)
 if "messages" not in st.session_state: st.session_state.messages=[]
 if "pending" not in st.session_state: st.session_state.pending=""
 if "last_audio" not in st.session_state: st.session_state.last_audio=None
@@ -98,7 +106,7 @@ with st.sidebar:
     brain = st.selectbox("เลือกสมอง", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"], key="brain_side")
     voice = st.checkbox("◉ ให้ Zyphere พูดตอบกลับ (เสียงผู้ชาย)", value=True)
     if st.session_state.last_audio:
-        st.markdown("**🔊 เสียงล่าสุด**"); st.audio(st.session_state.last_audio, format="audio/mp3"); st.caption(st.session_state.last_audio_label)
+        st.markdown(f"🔊 เสียงล่าสุดพร้อมแล้ว ({st.session_state.last_audio_label})")
     # ============ LOGIN - BOTTOM LEFT LIKE GEMINI ============
     st.markdown("---")
     st.markdown('<div style="font-size:12px;color:#5f6368;padding:4px 12px">บัญชีของฉัน</div>', unsafe_allow_html=True)
@@ -125,6 +133,7 @@ with st.sidebar:
         with c2:
             if st.button("↩  ออก", use_container_width=True):
                 st.session_state.logged_in=False; st.session_state.user_name=""; st.session_state.messages=[]; st.rerun()
+st.markdown('<div style="background:#fff3cd;border:1px solid #ffe69c;border-radius:10px;padding:8px 14px;max-width:680px;margin:8px auto;font-size:13px">👈 ถ้าไม่เห็นเมนูซ้าย ให้กดปุ่ม <b>&gt;</b> ที่มุมซ้ายบน 1 ครั้ง เมนูจะกางออกมา</div>', unsafe_allow_html=True)
 st.markdown('<div class="topbar"><button class="top-gray">↓ ดาวน์โหลดแอป</button><button class="top-blue">✦ อัปเกรด</button><button class="top-gray">✦</button></div>', unsafe_allow_html=True)
 has_chat = len(st.session_state.messages)>0 or bool(st.session_state.pending)
 if not has_chat:
@@ -148,9 +157,8 @@ else:
             st.markdown(f'<div class="chat-ai">{m["content"]}</div>', unsafe_allow_html=True)
             st.markdown('<div style="max-width:680px;margin:6px auto;font-size:16px;color:#888">👍 👎 ↻ ⧉ ⋯ &nbsp; 🔊</div>', unsafe_allow_html=True)
     if st.session_state.last_audio:
-        st.markdown('<div style="max-width:680px;margin:0 auto"><b>🔊 เสียง Zyphere (ผู้ชาย)</b></div>', unsafe_allow_html=True)
+        pass  # no black bar, light player only
         show_audio(st.session_state.last_audio)
-        if st.button("🔊 ฟังอีกครั้ง", key="replay_main"): show_audio(st.session_state.last_audio)
     inp2 = st.chat_input("ถาม Zyphere")
     prompt = st.session_state.pending or inp2 or ""
     if st.session_state.pending: st.session_state.pending=""
@@ -189,7 +197,7 @@ if prompt:
                 if data:
                     st.session_state.last_audio=data; st.session_state.last_audio_label=label
                     st.markdown(f'<div style="max-width:680px;margin:6px auto;color:#2e7d32">🔊 เสียงพร้อมแล้ว ({label})</div>', unsafe_allow_html=True)
-                    show_audio(data); st.audio(data, format="audio/mp3")
+                    show_audio(data)
                 else: st.warning(f"ทำเสียงไม่ได้: {label}")
             st.rerun()
         except Exception as e: st.error(f"Error: {e}")
