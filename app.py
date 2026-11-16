@@ -98,25 +98,11 @@ with st.sidebar:
     # Gemini has no 'แชท' header - direct list
     # removed duplicate new chat - already at top
     if st.button("⌕  ค้นหา                                          Ctrl+K", use_container_width=True): go("สรุปให้หน่อยว่าฉันเคยคุยเรื่องอะไรบ้าง")
-    if st.button("🖼  สื่อ", use_container_width=True): go("เปิดสื่อ รูป วิดีโอ ที่เคยทำ")
     if st.button("◈  อาร์ติแฟกต์", use_container_width=True): go("เปิดอาร์ติแฟกต์ งานที่เคยสร้าง")
-    if st.button("⊞  คลัง", use_container_width=True): go("เปิดคลังงานของฉัน สรุปงานที่เคยทำ")
     if st.button("◷  กำหนดเวลาแล้ว", use_container_width=True): go("ดูงานที่กำหนดเวลาไว้วันนี้ แล้วจัดลำดับให้หน่อย")
     if st.button("✎  ปรับแต่ง Zyphere", use_container_width=True): go("ปรับแต่งให้เธอพูดแบบเพื่อนร่วมงาน ตรงๆ อบอุ่น")
     if st.button("▶  Vibes", use_container_width=True): go("เปิด Vibes โหมดชิลๆ")
-    if st.button("▷  วิดีโอ", use_container_width=True): go("ช่วยคิดสคริปต์วิดีโอสั้นๆ ให้หน่อย")
-    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">เครื่องมือ</div>', unsafe_allow_html=True)
-    if st.button("🎙  พูดคุยด้วยเสียง", use_container_width=True): go("คุยกับฉันด้วยเสียง พูดตอบกลับเป็นภาษาไทย เสียงผู้ชาย")
-    if st.button("✓  รายการงานของฉัน", use_container_width=True): go("ทำรายการงานวันนี้ให้หน่อย แบบเช็กลิสต์")
-    if st.button("⌨  เขียนโค้ดให้หน่อย", use_container_width=True): go("เขียนโค้ดให้หน่อย อธิบายทีละบรรทัด")
-    if st.button("▤  สรุปงาน", use_container_width=True): go("สรุปงานวันนี้ให้สั้นๆ เข้าใจง่าย")
-    if st.button("✦  คิดไอเดีย", use_container_width=True): go("คิดไอเดียใหม่ๆ ให้หน่อย 5 ไอเดีย")
-    if st.button("◉  อธิบายลึกๆ", use_container_width=True): go("อธิบายเรื่องนี้ให้ลึกๆ แบบเข้าใจง่าย")
-    if st.button("📝  เขียนอีเมล / เอกสาร", use_container_width=True): go("ช่วยร่างอีเมลให้หน่อย สุภาพ เป็นทางการ")
-    if st.button("🌐  แปลภาษา", use_container_width=True): go("ช่วยแปลภาษา ไทย-อังกฤษ ให้หน่อย")
-    if st.button("🧮  คิดเลข / วางแผน", use_container_width=True): go("ช่วยคิดเลขและวางแผนให้หน่อย")
     st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">Notebook</div>', unsafe_allow_html=True)
-    if st.button("＋  Notebook ใหม่", use_container_width=True): go("สร้าง Notebook ใหม่ สรุปเรื่องที่ฉันจะถาม")
     if st.session_state.messages:
         st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">ประวัติ - บทความที่เคยสนทนา</div>', unsafe_allow_html=True)
         seen=[]
