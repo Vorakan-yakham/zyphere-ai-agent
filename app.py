@@ -16,7 +16,7 @@ if nav:
     if nav=='new': st.session_state.messages=[]
     elif nav in MAP and MAP[nav]: st.session_state.pending=MAP[nav]
     st.query_params.clear(); st.rerun()
-st.markdown("<style>.stApp{font-family:Prompt,sans-serif!important;background:#fff} [data-testid='stToolbar']{display:none} footer{display:none} header{visibility:visible} [data-testid='stHeader']{background:transparent} [data-testid='collapsedControl']{display:flex!important;visibility:visible!important} section[data-testid='stSidebar']{background:#fff!important;visibility:visible!important;transform:none!important;width:280px!important;min-width:280px!important;border-right:1px solid #f0f0f0} div[data-testid='stSidebarContent']{padding:0!important} .g{padding:0 8px} .top{display:flex;align-items:center;gap:10px;padding:14px 12px 0 12px} .logo{width:26px;height:26px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px} .tt{font-size:17px;font-weight:500} .gap28{height:28px} .it{display:flex;align-items:center;gap:12px;padding:0 12px;height:40px;border-radius:999px;text-decoration:none!important;color:#1f1f1f!important;font-size:14px} .it:hover{background:#f0f4f9!important} .it.on{background:#f0f4f9!important} .ic{width:22px;text-align:center;font-size:15px} .lb{font-size:12px;color:#5f6368;padding:22px 12px 8px} .user{display:flex;align-items:center;gap:10px;padding:14px 12px;margin-top:28px} .hero{font-size:28px;text-align:center;margin-top:110px;color:#1f1f1f} .center{max-width:720px;margin:22px auto 0;position:relative} .blob{position:absolute;inset:-40px -80px auto -80px;height:220px;background:radial-gradient(ellipse at center, rgba(66,133,244,.18), rgba(155,114,203,.12) 45%, transparent 70%);filter:blur(10px);z-index:0} .pill{position:relative;z-index:1;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:10px 12px 10px 18px} .chips{display:flex;gap:8px;justify-content:center;margin-top:16px} .chip{border:1px solid #eee;border-radius:999px;padding:7px 14px;font-size:13px;color:#444;background:#fff} .chat-ai{max-width:760px;margin:6px auto;font-size:15px;line-height:1.6}</style>", unsafe_allow_html=True)
+st.markdown("<style>.stApp{font-family:Prompt,sans-serif!important;background:#fff} [data-testid='stToolbar']{display:none} footer{display:none} header{visibility:visible} [data-testid='stHeader']{background:transparent} [data-testid='collapsedControl']{display:flex!important;visibility:visible!important} section[data-testid='stSidebar']{background:#fff!important;visibility:visible!important;transform:none!important;width:280px!important;min-width:280px!important;border-right:1px solid #f0f0f0} div[data-testid='stSidebarContent']{padding:0!important} .g{padding:0 8px} .top{display:flex;align-items:center;gap:10px;padding:14px 12px 0 12px} .logo{width:26px;height:26px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px} .tt{font-size:17px;font-weight:500} .gap28{height:28px} .stButton>button{background:transparent!important;border:none!important;box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;padding:0 12px!important;height:40px!important;border-radius:999px!important;font-size:14px!important;color:#1f1f1f!important;width:100%!important} .stButton>button:hover{background:#f0f4f9!important} .stButton>button:focus{box-shadow:none!important} .it{display:flex;align-items:center;gap:12px;padding:0 12px;height:40px;border-radius:999px;text-decoration:none!important;color:#1f1f1f!important;font-size:14px} .it:hover{background:#f0f4f9!important} .it.on{background:#f0f4f9!important} .ic{width:22px;text-align:center;font-size:15px} .lb{font-size:12px;color:#5f6368;padding:22px 12px 8px} .user{display:flex;align-items:center;gap:10px;padding:14px 12px;margin-top:28px} .hero{font-size:28px;text-align:center;margin-top:110px;color:#1f1f1f} .center{max-width:720px;margin:22px auto 0;position:relative} .blob{position:absolute;inset:-40px -80px auto -80px;height:220px;background:radial-gradient(ellipse at center, rgba(66,133,244,.18), rgba(155,114,203,.12) 45%, transparent 70%);filter:blur(10px);z-index:0} .pill{position:relative;z-index:1;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:10px 12px 10px 18px} .chips{display:flex;gap:8px;justify-content:center;margin-top:16px} .chip{border:1px solid #eee;border-radius:999px;padding:7px 14px;font-size:13px;color:#444;background:#fff} .chat-ai{max-width:760px;margin:6px auto;font-size:15px;line-height:1.6}</style>", unsafe_allow_html=True)
 def get_key(n):
     try: return st.secrets.get(n,'')
     except: return os.getenv(n,'')
@@ -43,15 +43,24 @@ def show_audio(d):
     h="<div style='max-width:760px;margin:6px auto'><div style='display:inline-flex;align-items:center;gap:8px;background:#f0f4f9;border-radius:999px;padding:6px 12px 6px 6px'><audio id='z' autoplay src='data:audio/mp3;base64,"+b64+"' style='display:none'></audio><button onclick=\"document.getElementById('z').play()\" style='border:none;background:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer'>\u25b6</button><span style='font-size:13px'>\U0001f50a Zyphere กำลังพูด...</span></div></div>"
     comp.html(h, height=56)
 with st.sidebar:
-    a=st.session_state.active
-    def it(k,ic,txt): return "<a class='it"+(" on" if a==k else "")+"' href='?nav="+k+"'><span class='ic'>"+ic+"</span>"+txt+"</a>"
-    hist=''
-    seen=[]
+    st.markdown("<div class='g'><div class='top'><div class='logo'>✦</div><div class='tt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>⌕</div></div><div class='gap28'></div></div>", unsafe_allow_html=True)
+    if st.button('✎  แชทใหม่', key='sb_new'): st.session_state.messages=[]; st.session_state.active='new'; st.rerun()
+    if st.button('▦  คลัง', key='sb_media'): st.session_state.pending='เปิดสื่อ'; st.session_state.active='media'; st.rerun()
+    if st.button('◷  กำหนดเวลาแล้ว', key='sb_sched'): st.session_state.pending='ดูงานวันนี้'; st.session_state.active='scheduled'; st.rerun()
+    if st.button('◎  ปรับแต่ง', key='sb_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.session_state.active='custom'; st.rerun()
+    if st.button('▢  วิดีโอ', key='sb_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.session_state.active='video'; st.rerun()
+    st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
+    if st.button('＋  Notebook ใหม่', key='sb_nb'): st.session_state.messages=[]; st.session_state.active='new'; st.rerun()
+    st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
+    _seen=[]
+    _has=False
     for m in st.session_state.messages:
-        if m['role']=='user' and m['content'] not in seen: seen.append(m['content']); hist+="<a class='it' href='?nav=search'><span class='ic'>\U0001f4ac</span>"+m['content'][:30]+"</a>"
-    if not hist: hist="<a class='it' href='?nav=new'><span class='ic'>\U0001f4ac</span>เริ่มต้นการสนทนา</a>"
-    html="<div class='g'><div class='top'><div class='logo'>\u2726</div><div class='tt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>\u2315</div></div><div class='gap28'></div>"+it('new','\u270e','แชทใหม่')+it('media','\u25a6','คลัง')+it('scheduled','\u25f7','กำหนดเวลาแล้ว')+it('custom','\u25ce','ปรับแต่ง')+it('video','\u25a1','วิดีโอ')+"<div class='lb'>Notebook</div><a class='it' href='?nav=new'><span class='ic'>＋</span>Notebook ใหม่</a><div class='lb'>ทั้งหมด</div>"+hist+"<div class='user'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b></div><span style='margin-left:auto'>\u2699</span></div></div>"
-    st.markdown(html, unsafe_allow_html=True)
+        if m['role']=='user' and m['content'] not in _seen:
+            _seen.append(m['content']); _has=True
+            if st.button('💬  '+m['content'][:30], key='hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+    if not _has:
+        if st.button('💬  เริ่มต้นการสนทนา', key='sb_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+    st.markdown("<div class='user'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b></div><span style='margin-left:auto'>⚙</span></div></div>", unsafe_allow_html=True)
     brain=st.selectbox('สมอง',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed')
     voice=st.checkbox('ให้ Zyphere พูดตอบกลับ (เสียงผู้ชาย)', value=True)
 has_chat=len(st.session_state.messages)>0 or bool(st.session_state.pending)
@@ -72,7 +81,8 @@ if not has_chat:
 
     with st.form('f', clear_on_submit=True):
         c1,c2,c3,c4=st.columns([0.4,4,1.7,0.5])
-        with c1: st.markdown("<a href='?add=1' style='font-size:22px;text-align:center;display:block;text-decoration:none;color:#1f1f1f'>＋</a>", unsafe_allow_html=True)
+        with c1:
+            if st.form_submit_button('＋'): st.session_state.show_add=not st.session_state.show_add
         with c2: inp=st.text_input('q', placeholder='ถาม Zyphere', label_visibility='collapsed')
         with c3: bp=st.selectbox('m',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed')
         with c4: sent=st.form_submit_button('↑')
