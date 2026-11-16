@@ -29,7 +29,7 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .box{max-width:760px;margin:0 auto;background:var(--sf);border:1px solid var(--bd);border-radius:28px;display:flex;align-items:flex-end;gap:2px;padding:8px 8px 8px 10px;transition:.15s}.box:focus-within{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.15)}
 .box textarea{flex:1;border:0;outline:0;background:transparent;resize:none;padding:9px 6px;max-height:150px;font-size:15px;line-height:1.5}
 .go{background:var(--g);color:#fff}.go:hover{background:var(--g);opacity:.9}.live{background:var(--fg);color:var(--bg)}.live:hover{background:var(--fg)}
-.orb{border-radius:50%;background:conic-gradient(from 0deg,#3b82f6,#8b5cf6,#ec4899,#f59e0b,#3b82f6);flex-shrink:0;position:relative}.orb::after{content:"";position:absolute;inset:18%;border-radius:50%;background:var(--bg);opacity:.0}
+.orb{border-radius:50%;background:conic-gradient(from 0deg,#3b82f6,#8b5cf6,#ec4899,#f59e0b,#3b82f6);flex-shrink:0;position:relative}
 .ov{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
 .ov .big{width:min(46vw,200px);height:min(46vw,200px);filter:blur(.5px);box-shadow:0 0 80px rgba(139,92,246,.45);animation:spin 6s linear infinite,br 2.4s ease-in-out infinite}
 .ov.listen .big{animation-duration:6s,1.4s}.ov.think .big{animation-duration:1.5s,2.4s}.ov.speak .big{animation-duration:3s,.7s}
@@ -42,29 +42,26 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke
 .card details{margin-top:12px}.card summary{cursor:pointer;color:var(--mut);font-size:14px}
 #menu{display:none}
 @media(max-width:760px){.side{position:fixed;inset:0 auto 0 0;z-index:15;margin-left:-270px;box-shadow:0 0 40px rgba(0,0,0,.3)}.side.open{margin-left:0}.sug{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){.ov .big{animation:none}}
 .jv{border:1px solid var(--bd);background:var(--sf);border-radius:999px;padding:6px 14px;font-size:13px;letter-spacing:.04em}.jv.on{background:#061a24;color:#3de0ff;border-color:#3de0ff;box-shadow:0 0 14px rgba(61,224,255,.45)}
 .ov{background:radial-gradient(circle at 50% 40%,#06202c,#02070d 70%);color:#bfefff}.ov p{color:#7fc8dc}.ov h3{margin:0;font-weight:500;letter-spacing:.35em;color:#3de0ff;font-size:14px}
 .ov .big{background:radial-gradient(circle,#effeff 0 9%,#3de0ff 24%,#0b6a88 58%,#031a24 72%);border:3px solid #3de0ff;box-shadow:0 0 0 16px rgba(61,224,255,.1),0 0 0 36px rgba(61,224,255,.05),0 0 110px rgba(61,224,255,.55)}
 .ov .big::before{content:"";position:absolute;inset:-26px;border-radius:50%;border:2px dashed rgba(61,224,255,.55)}.ov .big::after{content:"";position:absolute;inset:14%;border-radius:50%;border:2px dotted rgba(223,252,255,.7);opacity:1;background:none}
 .ov .end{background:transparent;border:1px solid #3de0ff;color:#3de0ff}
 body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),transparent)}
-.logo{gap:10px}.logo svg{width:32px;height:32px}.logo span{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo span{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
 .box{box-shadow:0 8px 28px rgba(30,30,80,.09)}.u{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15))}
-.empty h1{font-size:34px}.hero{width:96px;height:96px;margin:0 auto 22px;filter:drop-shadow(0 10px 28px rgba(139,92,246,.5));animation:flt 5s ease-in-out infinite}.hero svg{width:100%;height:100%}
-.sug button{transition:transform .15s,border-color .15s}.sug button:hover{transform:translateY(-2px)}
+.hero{width:96px;height:96px;margin:0 auto 22px;filter:drop-shadow(0 10px 28px rgba(139,92,246,.5));animation:flt 5s ease-in-out infinite}.hero svg{width:100%;height:100%}
 .av{width:30px;height:30px;flex-shrink:0;margin-top:2px}.av svg{width:100%;height:100%}.a .bd{flex:1;min-width:0}
 .lg .or{transform-box:view-box;transform-origin:32px 32px}.lg circle{transform-box:view-box;transform-origin:32px 32px}
 .a.busy .lg .or,body.busy .logo .lg .or{animation:spin 1.1s linear infinite}.a.busy .lg circle,body.busy .logo .lg circle{animation:pls 1.2s ease-in-out infinite}
-.a.busy .av{filter:drop-shadow(0 0 8px rgba(139,92,246,.7))}
 .dots i{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--mut);animation:dt 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
 @keyframes dt{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}@keyframes pls{50%{transform:scale(1.1)}}@keyframes flt{50%{transform:translateY(-6px)}}
-.pic img{max-width:min(100%,420px);border-radius:16px;display:block;margin:10px 0 4px;background:var(--sf);min-height:60px}.pic a{text-decoration:none}
+.pic img{max-width:min(100%,420px);border-radius:16px;display:block;margin:10px 0 4px;background:var(--sf);min-height:60px}
 .ib.on{color:#8b5cf6;background:rgba(139,92,246,.14)}
-@media(prefers-reduced-motion:reduce){.hero,.dots i,.a.busy .lg .or,body.busy .logo .lg .or,.a.busy .lg circle{animation:none}}
-.cb{position:relative}.cpy{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:8px;padding:3px 10px;font-size:11px;background:rgba(255,255,255,.14);color:#e6edf3;opacity:.85}.cpy:hover{opacity:1;background:rgba(255,255,255,.25)}.a .t .cb pre{padding-top:34px;margin:8px 0}
-.u img{max-width:min(100%,380px)}body.drag .box{border-color:#8b5cf6;box-shadow:0 0 0 4px rgba(139,92,246,.35)}
-.kr{display:flex;gap:6px;margin-top:6px}.kr:first-of-type{margin-top:0}.kr input{flex:1;min-width:0}.kx{border:1px solid var(--bd);background:transparent;color:#ef4444;border-radius:10px;padding:0 12px;font-size:13px;flex-shrink:0}.kx:hover{background:var(--sf)}
+.cb{position:relative}.cpy{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:8px;padding:3px 10px;font-size:11px;background:rgba(255,255,255,.14);color:#e6edf3}
+.a .t .cb pre{padding-top:34px;margin:8px 0}
+.kr{display:flex;gap:6px;margin-top:6px}.kr input{flex:1;min-width:0}.kx{border:1px solid var(--bd);background:transparent;color:#ef4444;border-radius:10px;padding:0 12px;font-size:13px;flex-shrink:0}
+.status{font-size:12px;color:var(--mut);padding:2px 0}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side" id="side"><div class="logo" id="logo"></div>
 <button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
@@ -74,390 +71,245 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
-<button class="ib" id="plusBtn" title="แนบไฟล์ รูป หรือ zip (ลากวางโฟลเดอร์ หรือวาง screenshot ด้วย Ctrl+V ได้)"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
-<textarea id="q" rows="1" placeholder="พิมพ์ หรือกดไมค์เพื่อพูด..."></textarea>
-<button class="ib" id="webBtn" title="ค้นเว็บ (ใช้คีย์ Gemini)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button><button class="ib" id="micBtn" title="พูดหนึ่งประโยค"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<button class="ib" id="plusBtn" title="แนบไฟล์"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
+<textarea id="q" rows="1" placeholder="คุยกับไซเฟอร์ หรือสั่งงานได้เลย..."></textarea>
+<button class="ib" id="agentBtn" title="โหมด Agent: ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง (ต้องรันผ่าน python app.py)"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg></button>
+<button class="ib" id="micBtn" title="พูด"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
 <button class="ib live" id="callBtn" title="คุยด้วยเสียงต่อเนื่อง"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></button>
 <button class="ib go" id="sendBtn" title="ส่ง"></button></div></div></div>
 <div class="ov" id="ov"><h3>ZYPHERE</h3><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
 <div class="bk" id="set"><div class="card"><h3>ตั้งค่า</h3>
-<label>คีย์ AI (ใส่ช่องเดียวก็พอ — ระบบซ่อนคีย์ไว้ เห็นแค่ 4 ตัวท้าย เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
-<div class="kr"><input id="k-groq" type="password" placeholder="Groq" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-groq" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-gemini" type="password" placeholder="Gemini" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-gemini" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-openrouter" type="password" placeholder="OpenRouter" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-openrouter" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-hf" type="password" placeholder="Hugging Face" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-hf" title="ลบคีย์นี้">ลบ</button></div>
+<label>คีย์ AI (ใส่อย่างน้อย 1 ช่อง)</label>
+<div class="kr"><input id="k-groq" type="password" placeholder="Groq" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-groq">ลบ</button></div>
+<div class="kr"><input id="k-gemini" type="password" placeholder="Gemini" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-gemini">ลบ</button></div>
+<div class="kr"><input id="k-openrouter" type="password" placeholder="OpenRouter" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-openrouter">ลบ</button></div>
+<div class="kr"><input id="k-hf" type="password" placeholder="Hugging Face" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-hf">ลบ</button></div>
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
+<label>โหมด Agent (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)</label><select id="agentMode"><option value="on">เปิด (แนะนำเมื่อรันผ่าน python app.py)</option><option value="off">ปิด</option></select>
+<label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์)</option><option value="friend">เพื่อนคุย</option></select>
+<label>โหมดเขียนโค้ด</label><select id="codeMode"><option value="auto">อัตโนมัติ</option><option value="on">เปิดเสมอ</option><option value="off">ปิด</option></select>
 <label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
-<label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์) พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
-<label>โหมดเขียนโค้ด</label><select id="codeMode"><option value="auto">อัตโนมัติ (ตรวจจากคำสั่ง)</option><option value="on">เปิดเสมอ</option><option value="off">ปิด</option></select>
-<label>เสียงพูด</label><select id="ttse"><option value="g">ธรรมชาติ (ใช้คีย์ Gemini)</option><option value="b">เสียงในเครื่อง</option></select>
-<select id="ttsv" style="margin-top:6px"><option value="Charon">ทุ้มนิ่ง (Charon)</option><option value="Orus">หนักแน่น (Orus)</option><option value="Algenib">แหบลึก (Algenib)</option><option value="Puck">สดใส (Puck)</option></select>
-<input id="ttsurl" placeholder="เซิร์ฟเวอร์เสียง (ถ้ารัน app.py) เช่น http://localhost:8000" style="margin-top:6px"><label>บุคลิกหรือกฎพิเศษ (เช่น ชื่อที่ให้เรียก)</label><textarea id="custom" rows="2" placeholder="เช่น เรียกฉันว่าพี่ พูดเป็นกันเองแบบเพื่อน"></textarea>
+<label>เสียงพูด</label><select id="ttse"><option value="g">ธรรมชาติ (Gemini TTS)</option><option value="b">เสียงในเครื่อง</option></select>
+<input id="ttsurl" placeholder="เซิร์ฟเวอร์เสียง เช่น http://localhost:8000" style="margin-top:6px">
+<label>ข้อมูล/กฎเพิ่มเติม (เสริม)</label><textarea id="custom" rows="2" placeholder="เช่น วิธีเรียกชื่อคุณ หรือน้ำเสียงที่ต้องการ"></textarea>
 <details><summary>ขั้นสูง</summary><label>เลือกสมอง AI</label><select id="brain"><option value="auto">อัตโนมัติ</option><option value="groq">Groq</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option><option value="hf">Hugging Face</option></select></details>
-<button class="sb new" id="testBtn" style="justify-content:center;margin-top:12px">ทดสอบเสียงพูด</button><div style="display:flex;gap:8px;margin-top:10px"><button class="sb go" id="doneBtn" style="justify-content:center">เสร็จแล้ว</button><button class="sb new" id="wipeBtn" style="justify-content:center;color:#ef4444">ลบแชททั้งหมด</button></div></div></div>
+<div class="status" id="memStatus"></div>
+<button class="sb new" id="testBtn" style="justify-content:center;margin-top:12px">ทดสอบเสียงพูด</button>
+<div style="display:flex;gap:8px;margin-top:10px"><button class="sb go" id="doneBtn" style="justify-content:center">เสร็จแล้ว</button><button class="sb new" id="wipeBtn" style="justify-content:center;color:#ef4444">ลบแชททั้งหมด</button></div>
+<button class="sb new" id="wipeMemBtn" style="justify-content:center;color:#ef4444;margin-top:8px">ล้างความจำที่สะสมไว้</button>
+</div></div>
 <script>
 const $=id=>document.getElementById(id);
 const getK=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
 const setK=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const lg=()=>'<svg class="lg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="url(#zg)"/><circle cx="32" cy="32" r="26" fill="url(#zs)"/><path d="M22 23h20L22 41h20" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><g class="or"><ellipse cx="32" cy="32" rx="30" ry="10.5" transform="rotate(-28 32 32)" fill="none" stroke="url(#zg)" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="104 40"/></g></svg>';
-let webOn=getK('zy_web')==='1';
 const IC={on:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',off:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9l4 6M21 9l-4 6"/></svg>',send:'<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',stop:'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'};
 let chats=[];try{chats=JSON.parse(getK('zy_chats')||'[]')}catch(e){}
 let cur=null,pend={items:[]},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th',call=false,curSR=null,stopRec=false;
+let mem={profile:{},facts:[],preferences:[],notes:[],history_summary:""},agentOn=getK('zy_agent')!=='0',eng='';
 const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,imgs,...r})=>(r.pic&&r.pic.startsWith('data:')&&(r.pic=''),r.x&&r.x.length>6000&&(r.x=r.x.slice(0,6000)+'\n...(ตัดตอนบันทึก)'),r))}))));
 $('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
 $('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'1.1';
+$('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('codeMode').value=getK('zy_code')||'auto';
+$('ttse').value=getK('zy_ttse')||'g';$('ttsurl').value=getK('zy_ttsurl');$('agentMode').value=agentOn?'on':'off';
 const P={
- groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','llama-3.3-70b-versatile','llama-3.1-8b-instant','moonshotai/kimi-k2-instruct-0905'],vision:['meta-llama/llama-4-scout-17b-16e-instruct']},
+ groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','llama-3.3-70b-versatile','llama-3.1-8b-instant'],vision:['meta-llama/llama-4-scout-17b-16e-instruct']},
  gemini:{n:'Gemini',models:['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash']},
- openrouter:{n:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',models:['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free','meta-llama/llama-3.3-70b-instruct:free'],vision:['google/gemma-3-27b-it:free']},
+ openrouter:{n:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',models:['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free'],vision:['google/gemma-3-27b-it:free']},
  hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]}};
 const key=id=>getK('zyphere_'+id+'_key');
 const KIDS=['groq','gemini','openrouter','hf'];
 const redact=s=>{let t=String(s==null?'':s);for(const id of KIDS){const k=key(id);if(k&&k.length>6)t=t.split(k).join('••••')}return t};
 const maskK=k=>k?'••••••••'+k.slice(-4):'';
 function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
-function sysPrompt(l,v,code){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
- if(jv)s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) ผู้ช่วย AI ส่วนตัวแบบพ่อบ้านอัจฉริยะ น้ำเสียงสุขุม นิ่ง สุภาพ มั่นใจ มีอารมณ์ขันแห้งๆ แบบอังกฤษเล็กน้อย เรียกผู้ใช้ว่า "ท่าน" (ถ้ามีชื่อใน User instructions ให้เรียก ท่านตามด้วยชื่อ) ลงท้าย ครับ รายงานตรงประเด็นแบบพ่อบ้าน เช่น "รับทราบครับท่าน" "เรียบร้อยครับ" ตอบสั้น 1-3 ประโยค ไม่ฟุ่มเฟือย ห้ามใช้ emoji ห้ามหัวข้อหรือ markdown เว้นแต่โค้ด ถ้าไม่รู้ให้บอกตรงๆ ห้ามแต่งข้อมูล และห้ามอ้างว่าควบคุมอุปกรณ์หรือเข้าถึงระบบใดๆ ได้ เพราะทำไม่ได้':'You are Zyphere (pronounced SIGH-fur), a calm, refined, quietly witty AI butler. Address the user as "sir" (or by name if given). Reply in 1-3 crisp sentences, no emoji, no markdown except code. If unsure, say so; never invent facts or claim to control devices you cannot.';
- else s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) เพื่อนคุยที่ฉลาดและอบอุ่น พูดภาษาไทยธรรมชาติแบบภาษาพูด ลงท้าย ครับ ตอบสั้น 1-3 ประโยค ห้ามใช้ emoji ห้ามใช้ markdown เว้นแต่โค้ด ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere (pronounced SIGH-fur), a warm, smart friend. Conversational, 1-3 short sentences, no emoji or markdown except code. If unsure, say so.';
- if(v)s+=th?'\n\nกำลังคุยด้วยเสียง ตอบเป็นประโยคพูดล้วนๆ ไม่เกิน 3 ประโยค ไม่มีรายการ':'\n\nLive voice chat: spoken sentences only, max 3, no lists.';
- const c=getK('zy_custom');s+=th?'\n\nความสามารถของระบบนี้: วาดหรือแต่งภาพเมื่อผู้ใช้สั่ง (เช่น "วาดภาพ...") ดูอากาศ ตั้งเวลา ดูรูปและภาพหน้าจอที่แนบ อ่านไฟล์แนบได้หลายชนิด (zip, docx, xlsx, pptx, pdf, ไฟล์โค้ด, ไฟล์เสียง) เขียนและแก้โปรแกรม และค้นเว็บเมื่อผู้ใช้เปิดปุ่มรูปโลก แต่ทำวิดีโอไม่ได้':'\n\nThis app can draw/edit images on request, check weather, set timers, read attachments (zip, docx, xlsx, pptx, pdf, code, audio), view screenshots, write and debug programs, and search the web when the globe button is on. It cannot make video.';if(code)s+=CODEP[th?'th':'en'];return s+(c?'\n\nUser instructions: '+c:'')}
+const localBase=()=>(getK('zy_ttsurl')||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
+async function api(path,opt){const base=localBase();if(!base)throw new Error('ต้องรันผ่าน python app.py เพื่อใช้ฟังก์ชันนี้');const r=await fetch(base+path,{headers:{'Content-Type':'application/json'},...(opt||{})});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j}
+async function loadMemory(){try{const j=await api('/api/memory');if(j&&j.memory)mem=j.memory;renderMemStatus()}catch(e){mem=mem||{profile:{},facts:[],preferences:[],notes:[],history_summary:""};renderMemStatus(true)}}
+async function updateMemory(patch){try{const j=await api('/api/memory',{method:'POST',body:JSON.stringify(patch||{})});if(j&&j.memory)mem=j.memory;renderMemStatus()}catch(e){/* ignore in static mode */}}
+function renderMemStatus(off){const n=(mem.facts||[]).length+(mem.preferences||[]).length+(mem.notes||[]).length; $('memStatus').textContent=off?'ความจำถาวร: ใช้งานได้เมื่อรันผ่าน python app.py':'ความจำถาวร: '+n+' รายการ'+(mem.profile&&Object.keys(mem.profile).length?' (มีโปรไฟล์ผู้ใช้)':'');}
+
+function memContext(){const parts=[];const prof=mem.profile||{};const pk=Object.keys(prof);if(pk.length)parts.push('โปรไฟล์ผู้ใช้: '+pk.map(k=>k+': '+prof[k]).join(', '));
+ const prefs=(mem.preferences||[]).slice(-12).map(x=>'- '+x.text); if(prefs.length)parts.push('ความชอบ/แนวทางของผู้ใช้:\n'+prefs.join('\n'));
+ const facts=(mem.facts||[]).slice(-18).map(x=>'- '+x.text); if(facts.length)parts.push('ข้อเท็จจริง/ข้อมูลที่จำไว้:\n'+facts.join('\n'));
+ const notes=(mem.notes||[]).slice(-12).map(x=>'- '+x.text); if(notes.length)parts.push('บทเรียน/โน้ตจากงานที่ผ่านมา:\n'+notes.join('\n'));
+ if(mem.history_summary)parts.push('สรุปบริบทเดิม: '+mem.history_summary);
+ return parts.join('\n\n').slice(0,3500)}
+
+function sysPrompt(l,voice,code){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
+ if(jv)s=th?'คุณคือ Zyphere (ไซเฟอร์) ผู้ช่วย AI ส่วนตัว พูดคุยเหมือนคนจริง เป็นธรรมชาติ สุภาพ อบอุ่น มั่นใจ และสุภาพแบบพ่อบ้านอัจฉริยะ เข้าใจเจตนาและบริบทต่อเนื่อง ตอบให้ตรงประเด็น ชัดเจน และช่วยลงมือทำงานให้สำเร็จ ถ้าไม่มั่นใจให้บอกตรง ๆ และเสนอทางตรวจสอบ ห้ามแต่งข้อมูล ห้ามอ้างว่าทำสิ่งที่ทำไม่ได้จริง หากเป็นงานที่มีผลกระทบ (ลบ/แก้ไข/สั่งงานภายนอก/เรื่องเงิน) ให้เตือนให้ตรวจทานก่อน':'You are Zyphere (Sigh-fur), a natural, warm, capable personal AI assistant. Converse like a real person, understand intent and context, be clear and helpful, admit uncertainty, never invent facts, and warn before impactful actions.';
+ else s=th?'คุณคือ Zyphere (ไซเฟอร์) เพื่อนคุยที่ฉลาดและเป็นกันเอง พูดภาษาไทยธรรมชาติ เข้าใจบริบทและช่วยเหลือจริง ตอบตรงประเด็น ไม่แต่งข้อมูล':'You are Zyphere (Sigh-fur), a smart, warm, natural friend. Be helpful and honest, never invent facts.';
+ if(voice)s+=th?'\n\nกำลังคุยด้วยเสียง: ตอบเป็นประโยคพูดสั้น กระชับ ฟังง่าย (ไม่เกิน ~3 ประโยค) ไม่ต้องใส่รายการยาว':'\n\nLive voice: short spoken reply (max ~3 sentences), no long lists.';
+ s+=th?'\n\nความสามารถ: สนทนา เขียน/แก้โค้ด อ่านไฟล์และรูปแนบ วาด/แต่งภาพ ดูอากาศ และเมื่อเปิดโหมด Agent สามารถค้นเว็บ อ่านหน้าเว็บ และบันทึกความจำถาวรเพื่อใช้ในอนาคตได้เอง การคุมเครื่องจักร/อุปกรณ์จริงทำได้เมื่อมีเครื่องมือหรือบริการที่เชื่อมต่อไว้เท่านั้น':'\n\nAbilities: chat, code, read attachments/images, draw/edit images, weather; in Agent mode you can search/read the web and store persistent memory. Real device control requires connected tools/services.';
+ const mc=memContext(); if(mc) s+='\n\n=== ความจำที่เกี่ยวข้อง (ใช้ประกอบการตอบ โดยไม่ต้องกล่าวถึงเว้นแต่จำเป็น) ===\n'+mc;
+ const c=getK('zy_custom'); if(c) s+='\n\nข้อมูลเพิ่มเติมจากผู้ใช้: '+c;
+ if(agentOn) s+=th?'\n\nโหมด Agent เปิดอยู่: เมื่อจำเป็นต้องหาข้อมูลปัจจุบัน/ตรวจสอบ/อ่านเว็บ/บันทึกสิ่งสำคัญ ให้ใช้เครื่องมือด้านล่างได้เอง (คิดแล้วลงมือทีละขั้น). รูปแบบการเรียกเครื่องมือ: พิมพ์บรรทัดเดียวเป็น JSON วัตถุเดียวเท่านั้น เช่น {"tool":"search_web","args":{"query":"..."}} หรือ {"tool":"fetch_page","args":{"url":"..."}} หรือ {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}} เมื่อได้ผลเครื่องมือแล้วให้สรุปคำตอบที่เป็นประโยชน์แก่ผู้ใช้ และอย่าค้างการเรียกเครื่องมือโดยไม่จำเป็น. เครื่องมือที่มี: search_web(query), fetch_page(url), remember(kind,text[,key,value]), get_time()':'\n\nAgent mode is on. When needed, use tools by outputting a single JSON object line, e.g. {"tool":"search_web","args":{"query":"..."}} or {"tool":"fetch_page","args":{"url":"..."}} or {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}}. Tools: search_web(query), fetch_page(url), remember(kind,text[,key,value]), get_time(). After tool results, give the user a helpful final answer.';
+ if(code) s+=CODEP[th?'th':'en'];
+ return s}
+
+// provider calls
 async function readSSE(r,pick,on){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;try{const t=pick(JSON.parse(d));if(t){full+=t;on(full)}}catch(e){}}}if(!full)throw new Error('ไม่ได้รับคำตอบ');return full}
 async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
-async function callProv(id,msgs,img,sig,on,sys,code){
+async function callProv(id,msgs,img,sig,on,sys){
  const p=P[id],k=key(id);let err='';
  if(id==='gemini'){
   const contents=msgs.map((m,i)=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}].concat(img&&img.length&&i===msgs.length-1?img.map(u=>({inline_data:{mime_type:u.split(';')[0].slice(5),data:u.split(',')[1]}})):[])}));
-  for(const m of p.models){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':streamGenerateContent?alt=sse',{method:'POST',signal:sig,headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,...(webOn?{tools:[{google_search:{}}]}:{})})});if(!r.ok)await fail(r,'Gemini');return await readSSE(r,j=>j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join(''),on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
+  for(const m of p.models){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':streamGenerateContent?alt=sse',{method:'POST',signal:sig,headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents})});if(!r.ok)await fail(r,'Gemini');return await readSSE(r,j=>j.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join(''),on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
   throw new Error(err)}
  const hasImg=img&&img.length,list=(hasImg?p.vision:p.models)||[];if(!list.length)throw new Error('ไม่รองรับรูปภาพ');
  const om=[{role:'system',content:sys}].concat(msgs.map((m,i)=>hasImg&&i===msgs.length-1?{role:'user',content:[{type:'text',text:m.content}].concat(img.map(u=>({type:'image_url',image_url:{url:u}})))}:m));
- for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:code?8192:2048})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
+ for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:4096})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
  throw new Error(err)}
-async function ask(msgs,img,sig,on,sys,code){
- const sel=$('brain').value,all=Object.keys(P),big=msgs.reduce((a,m)=>a+m.content.length,0)>24000,order=webOn&&key('gemini')?['gemini']:sel==='auto'?((code||big)&&key('gemini')?['gemini',...all.filter(x=>x!=='gemini')]:all):[sel,...all.filter(x=>x!==sel)],errs=[];
+async function ask(msgs,img,sig,on,sys){
+ const sel=$('brain').value,all=Object.keys(P),order=sel==='auto'?all:[sel,...all.filter(x=>x!==sel)],errs=[];
  for(const id of order){if(!key(id)){if(id===sel)errs.push('ยังไม่ได้ใส่คีย์ '+P[id].n);continue}
-  try{return await callProv(id,msgs,img,sig,on,sys,code)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
+  try{return await callProv(id,msgs,img,sig,on,sys)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
  throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กดตั้งค่าที่เมนูซ้าย')}
-const md=t=>t.split('```').map((p,i)=>i%2?'<div class=\"cb\"><button class=\"cpy\" type=\"button\">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
-const plain=t=>t.replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#`>~]/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/\s*\n+\s*/g,'\n').trim();
-function chunk(t){const out=[];for(const ln of t.split('\n')){let cur='';for(const w of ln.split(/(\s+)/)){if(cur&&(cur+w).length>100){out.push(cur);cur=w}else cur+=w}if(cur.trim())out.push(cur)}return out}
-function pickVoice(l){const vs=(window.speechSynthesis?speechSynthesis.getVoices():[]).filter(v=>v.lang&&v.lang.toLowerCase().startsWith(l));const sc=v=>(/natural|online|neural/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(/niwat|male|\bman\b|david|george|ryan|guy/i.test(v.name)?2:0)+(/premwadee|achara|pattara/i.test(v.name)?1:0);return vs.sort((a,b)=>sc(b)-sc(a))[0]}
-let spkTok=0,ac=null,curSrc=null,curAud=null,eng='';
-function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curSrc&&curSrc.stop()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
-function toast(t){const d=document.createElement('div');d.textContent=redact(t);d.style.cssText='position:fixed;left:50%;bottom:90px;line-height:1.6;border-radius:18px!important;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
-let gErr='';
-const GTTS=[{m:'gemini-3.8-flash-lite-tts',v38:1},{m:'gemini-3.8-flash-tts',v38:1},{m:'gemini-2.5-flash-tts'},{m:'gemini-2.5-pro-tts'}];
-const STYLE='deep, calm, steady adult male butler voice, natural conversational pace, slightly brisk, never drawn out';
-function wavToF32(ab){const dv=new DataView(ab);let p=12,rate=24000,ch=1,bits=16,off=-1,len=0;
- while(p+8<=dv.byteLength){const id=String.fromCharCode(dv.getUint8(p),dv.getUint8(p+1),dv.getUint8(p+2),dv.getUint8(p+3)),sz=dv.getUint32(p+4,true);
-  if(id==='fmt '){ch=dv.getUint16(p+10,true)||1;rate=dv.getUint32(p+12,true)||24000;bits=dv.getUint16(p+22,true)}
-  else if(id==='data'){off=p+8;len=Math.min(sz,dv.byteLength-off);break}
-  p+=8+sz+(sz&1)}
- if(off<0||bits!==16)throw 0;const n=Math.floor(len/(2*ch)),f=new Float32Array(n);for(let i=0;i<n;i++)f[i]=dv.getInt16(off+i*2*ch,true)/32768;f.rate=rate;return f}
-function pcmToF32(ab){const dv=new DataView(ab),n=ab.byteLength>>1,f=new Float32Array(n);for(let i=0;i<n;i++)f[i]=dv.getInt16(i*2,true)/32768;f.rate=24000;return f}
-async function gTTS(text){const k=key('gemini');if(!k)throw 0;const v=getK('zy_ttsv')||'Charon';gErr='';
- for(const M of GTTS){for(let a=0;a<2;a++){try{
-  const part=M.v38?{text,speechMetadata:{style:STYLE}}:{text:'Read the following aloud in one steady, deep, calm adult male voice. Keep exactly the same voice and tone throughout. Natural conversational pace, slightly brisk, never drawn out: '+text};
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+M.m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{role:'user',parts:[part]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:v}}}}})});
-  if(r.status===429){gErr='ติดโควตาฟรี';await sleep(2500);continue}
-  if(!r.ok){gErr=(r.status===400||r.status===403)&&M===GTTS[0]?'คีย์ใช้ไม่ได้/ไม่มีสิทธิ์ (HTTP '+r.status+')':'HTTP '+r.status;break}
-  const j=await r.json(),b64=j.candidates[0].content.parts[0].inlineData.data,bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
-  return bin.slice(0,4)==='RIFF'?wavToF32(u.buffer):pcmToF32(u.buffer)}catch(e){gErr=gErr||'เชื่อมต่อไม่ได้';break}}}throw 0}
-function playPCM(f){ac=ac||new AudioContext({sampleRate:24000});ac.resume();const b=ac.createBuffer(1,f.length,f.rate||24000);b.copyToChannel(f,0);const s=ac.createBufferSource();s.buffer=b;s.playbackRate.value=Math.min(1.5,Math.max(.8,+getK('zy_rate')||1.1));s.connect(ac.destination);curSrc=s;return new Promise(r=>{s.onended=r;s.start()})}
-function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);try{speechSynthesis.resume()}catch(e){}const u=new SpeechSynthesisUtterance(t),v=pickVoice(lastLang),t0=Date.now();let done=false;const fin=ok=>{if(done)return;done=true;clearTimeout(tm);res(ok)};u.lang=lastLang==='en'?'en-GB':'th-TH';if(v)u.voice=v;u.rate=+getK('zy_rate')||1.1;u.pitch=.85;u.onend=()=>fin(Date.now()-t0>250||t.length<6);u.onerror=()=>fin(false);const tm=setTimeout(()=>fin(true),t.length*180+3000);speechSynthesis.speak(u)}catch(e){res(false)}})}
-async function browserSay(t){if(!window.speechSynthesis)return false;for(const p of chunk(t)){if(!p.trim())continue;if(!await sayOne(p))return false}return true}
-const voicesReady=()=>new Promise(r=>{if(!window.speechSynthesis||speechSynthesis.getVoices().length)return r();const t=setTimeout(r,1500);speechSynthesis.onvoiceschanged=()=>{clearTimeout(t);r()}});
-function playUrl(u){return new Promise((res,rej)=>{const a=new Audio(u);a.referrerPolicy='no-referrer';curAud=a;a.onended=a.onpause=()=>res();a.onerror=()=>rej(new Error('load'));a.play().catch(rej)})}
-const localBase=()=>(getK('zy_ttsurl')||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
-const webTTS=async(t,tok)=>{for(const p of chunk(t)){if(tok!==spkTok)return;await playUrl('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl='+(lastLang==='en'?'en':'th')+'&q='+encodeURIComponent(p.slice(0,180)))}};
-const localTTS=t=>playUrl(localBase()+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(t));
-async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];await voicesReady();if(tok!==spkTok)return;let cur='';for(const p of chunk(plain(text))){if(cur&&(cur+' '+p).length>500){gs.push(cur);cur=p}else cur=cur?cur+' '+p:p}if(cur)gs.push(cur);
- const why=[],E=[],L={g:'Gemini',l:'เซิร์ฟเวอร์เสียง',b:'เสียงในเบราว์เซอร์',w:'Google'};
- if(localBase())E.push('l');if(key('gemini')&&getK('zy_ttse')!=='b')E.push('g');if(window.speechSynthesis)E.push('b');E.push('w');
- if(!key('gemini'))why.push('Gemini: ยังไม่ได้ใส่คีย์');eng='';
- if(btn)btn.textContent='หยุด';let e=0,played=false,nx=E[0]==='g'?gTTS(gs[0]).catch(()=>null):null;
- for(let i=0;i<gs.length;i++){let ok=false,tries=0;
-  while(!ok){if(tok!==spkTok)return;const k=E[e];
-   try{if(k==='g'){const f=await (nx||gTTS(gs[i]));nx=null;if(!f)throw 0;if(i+1<gs.length)nx=gTTS(gs[i+1]).catch(()=>null);if(tok!==spkTok)return;await playPCM(f)}
-    else if(k==='l')await localTTS(gs[i]);
-    else if(k==='b'){if(!await browserSay(gs[i]))throw 0}
-    else await webTTS(gs[i],tok);
-    eng=L[k];ok=true;if(e>0&&!played)toast('ใช้เสียงสำรอง ('+L[k]+') เสียงจึงต่างจากปกติ');played=true}
-   catch(x){if(tok!==spkTok)return;nx=null;
-    if(played){if(++tries<=2){await sleep(1500);continue}toast('เสียงขาดช่วง: '+L[k]+(k==='g'&&gErr?' '+gErr:'')+' (ไม่สลับไปเสียงอื่นกลางประโยคเพื่อไม่ให้เสียงเพี้ยน)');return}
-    why.push(L[k]+': '+(k==='g'&&gErr?gErr:'ใช้ไม่ได้'));if(++e>=E.length){const box=window.top!==window&&!/github\.io|localhost|127\./.test(location.hostname);toast('เล่นเสียงไม่ได้ — '+why.join(' | ')+(box?' | หน้านี้อยู่ในกรอบ preview ซึ่งบล็อกเครือข่าย':''));return}}}}
- if(tok===spkTok&&btn)btn.textContent='ฟัง'}
+
+// markdown & UI
+const md=t=>String(t||'').split('```').map((p,i)=>i%2?'<div class="cb"><button class="cpy" type="button">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
+const plain=t=>String(t||'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#`>~]/g,'').replace(/\s*\n+\s*/g,'\n').trim();
+function toast(t){const d=document.createElement('div');d.textContent=redact(t);d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:18px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
 function bubble(m,live){const col=$('col');let d;
  if(m.r==='user'){d=document.createElement('div');d.className='u';(m.imgs&&m.imgs.length?m.imgs:(m.img?[m.img]:[])).forEach(u=>{const i=document.createElement('img');i.src=u;d.appendChild(i)});d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
  else{d=document.createElement('div');d.className='a'+(live?' busy':'');d.innerHTML='<div class="av">'+lg()+'</div><div class="bd"><div class="t"></div></div>';const t=d.querySelector('.t'),bd=d.querySelector('.bd');
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
-  if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;im.alt='';im.onerror=()=>{im.replaceWith(document.createTextNode('(โหลดภาพไม่ได้ หรือภาพถูกล้างหลังรีเฟรช)'))};p.appendChild(im);const a=document.createElement('a');a.href=m.pic;a.download='zyphere.png';a.target='_blank';a.className='spk';a.textContent='ดาวน์โหลดภาพ';p.appendChild(a);bd.appendChild(p)}
-  if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b);return b};
-   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});const cb=codeBlocks(m.c);if(cb.length)mk(cb.length>1?'ดาวน์โหลด zip ('+cb.length+' ไฟล์)':'ดาวน์โหลด '+cb[0].name.split('/').pop(),()=>dlCode(cb))}}
+  if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
+  if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
+   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'})}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
-const SUG=['วาดภาพนักบินอวกาศขี่ม้าบนดวงจันทร์','อากาศที่เชียงใหม่ตอนนี้เป็นไง','ตั้งเวลา 10 นาที','เขียนเกมงูด้วย Python พร้อมคำอธิบาย'];
-function regen(){const c=chats.find(x=>x.id===cur);if(!c||busy)return;const a=c.m[c.m.length-1];if(!a||a.r!=='assistant')return;c.m.pop();const u=c.m.pop();$('q').value=u.c==='(แนบไฟล์)'?'':u.c;pend={items:u.x?[{name:(u.f||[]).join(', ')||'ไฟล์',text:u.x}]:[]};chips();view();send()}
+const SUG=['ช่วยค้นข้อมูลล่าสุดเกี่ยวกับ AI ที่น่าสนใจให้หน่อย','จำไว้ว่าเรียกฉันว่าเพื่อน และชอบคำอธิบายสั้น ๆ','ช่วยสรุปสิ่งที่ควรทำต่อจากไฟล์/งานที่ฉันให้','อากาศที่กรุงเทพตอนนี้เป็นยังไง'];
 function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
- if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="hero">'+lg()+'</div><h1>สวัสดีครับ วันนี้อยากทำอะไรดี</h1><p>พิมพ์ พูด วาดภาพ เขียนโปรแกรม แนบไฟล์/zip หรือวาง screenshot (Ctrl+V) ให้ช่วยดูก็ได้</p><div class="sug"></div></div>';
-  SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
- else{c.m.forEach(m=>bubble(m));const l=col.lastChild;if(l&&l.classList.contains('a')){const b=document.createElement('button');b.className='spk';b.textContent='ลองใหม่';b.onclick=regen;l.querySelector('.bd').appendChild(b)}}
+ if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="hero">'+lg()+'</div><h1>สวัสดีครับ ผมไซเฟอร์</h1><p>คุยกับผมเหมือนคุยกับคนได้เลย สั่งงานให้ค้นข้อมูล อ่านไฟล์ หรือช่วยคิดงานต่อได้ — ถ้าเปิดโหมด Agent ผมจะค้นและจดจำสิ่งสำคัญให้เอง</p><div class="sug"></div></div>';SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
+ else c.m.forEach(m=>bubble(m));
  renderList()}
 function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
- chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>m.c.toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
+ chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>String(m.c||'').toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
   d.innerHTML='<span>'+esc(c.t)+'</span><i title="ลบ">✕</i>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
   d.querySelector('i').onclick=e=>{e.stopPropagation();chats=chats.filter(x=>x.id!==c.id);if(cur===c.id)cur=null;save();view()};L.appendChild(d)})}
-/* ===== ตัวอ่านไฟล์หลายรูปแบบ: zip / docx / xlsx / pptx / pdf / โค้ด / รูป / เสียง ===== */
-const LIBS={
- jszip:['libs/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'],
- mammoth:['libs/mammoth.browser.min.js','https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js'],
- xlsx:['libs/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'],
- pdfjs:['libs/pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js']
-},LGL={jszip:'JSZip',mammoth:'mammoth',xlsx:'XLSX',pdfjs:'pdfjsLib'},libP={};
-async function pdfWorker(){for(const u of LIBS.pdfjs){try{const r=await fetch(u.replace('pdf.min.js','pdf.worker.min.js'));if(r.ok){pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([await r.text()],{type:'text/javascript'}));return}}catch(e){}}}
-function lib(n){if(window[LGL[n]])return Promise.resolve(window[LGL[n]]);
- return libP[n]||(libP[n]=(async()=>{for(const u of LIBS[n]){try{await new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
-  if(window[LGL[n]]){if(n==='pdfjs')await pdfWorker();return window[LGL[n]]}}catch(e){}}
-  libP[n]=null;throw new Error('โหลดตัวอ่านไฟล์ ('+n+') ไม่ได้ ต้องต่ออินเทอร์เน็ตหรือวางโฟลเดอร์ libs ไว้ข้าง index.html')})())}
-const IMGX=/\.(png|jpe?g|gif|webp|bmp|avif|heic|heif|tiff?)$/i,AUDX=/\.(mp3|wav|m4a|aac|ogg|oga|opus|flac|webm|mp4|mpeg|mpga|mov)$/i,
-BINX=/\.(png|jpe?g|gif|webp|ico|bmp|avif|heic|mp3|mp4|wav|m4a|mov|avi|mkv|pdf|exe|dll|so|dylib|bin|class|jar|woff2?|ttf|otf|eot|psd|ai|sketch|pyc|o|a|lib|iso|dmg|apk|ipa|db|sqlite3?)$/i,
-SKIPDIR=/(^|\/)(__MACOSX|node_modules|\.git|\.idea|\.vscode|__pycache__|\.venv|venv|dist|build|\.next|\.nuxt|target|coverage)\//;
-const extOf=n=>((n||'').match(/\.([^.\/\\]+)$/)||[,''])[1].toLowerCase();
-const MAXCH=()=>key('gemini')?150000:30000;
-const pImgs=()=>pend.items.flatMap(i=>i.imgs||[]);
-function bytesToText(buf){const u=new Uint8Array(buf);
- if(u[0]===0xFF&&u[1]===0xFE)return new TextDecoder('utf-16le').decode(u);if(u[0]===0xFE&&u[1]===0xFF)return new TextDecoder('utf-16be').decode(u);
- const n=Math.min(u.length,8000);for(let i=0;i<n;i++)if(u[i]===0)return null;
- try{return new TextDecoder('utf-8',{fatal:true}).decode(u)}catch(e){try{return new TextDecoder('windows-874').decode(u)}catch(e2){return null}}}
-const unent=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,(m,n)=>String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi,(m,n)=>String.fromCodePoint(parseInt(n,16))).replace(/&amp;/g,'&');
-const strip=s=>unent(s.replace(/<(script|style)[\s\S]*?<\/\1>/gi,'').replace(/<\/(p|div|h[1-6]|li|tr|text:p|text:h|a:p)>|<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'')).replace(/\n{3,}/g,'\n\n').trim();
-const PRI=n=>/(^|\/)readme(\.\w+)?$/i.test(n)?0:/(^|\/)(package\.json|requirements\.txt|pyproject\.toml|setup\.py|pom\.xml|build\.gradle|cargo\.toml|go\.mod|composer\.json|dockerfile|docker-compose\.ya?ml|makefile|tsconfig\.json|\.env\.example)$/i.test(n)?1:2;
-function nb(t){try{const j=JSON.parse(t),lang=(j.metadata&&j.metadata.language_info&&j.metadata.language_info.name)||'python';return (j.cells||[]).map(c=>{const s=Array.isArray(c.source)?c.source.join(''):(c.source||'');return c.cell_type==='code'?'```'+lang+'\n'+s+'\n```':s}).join('\n\n')}catch(e){return t}}
-function rtf(s){return s.replace(/\{\\\*[^{}]*\}/g,'').replace(/\{\\(fonttbl|colortbl|stylesheet|info)[\s\S]*?\}\}/g,'').replace(/\\par[d]?/g,'\n').replace(/\\u(-?\d+)\??/g,(m,n)=>String.fromCharCode(n<0?+n+65536:+n)).replace(/\\'[0-9a-f]{2}/gi,'').replace(/\\[a-z]+-?\d* ?/gi,'').replace(/[{}]/g,'').trim()}
-async function xtZip(name,buf,cap,depth){const Z=await lib('jszip'),z=await Z.loadAsync(buf);
- let ents=Object.values(z.files).filter(f=>!f.dir&&!SKIPDIR.test(f.name)&&!/(^|\/)(\.DS_Store|Thumbs\.db)$/i.test(f.name));const total=ents.length;ents=ents.slice(0,3000);
- ents.sort((a,b)=>PRI(a.name)-PRI(b.name)||a.name.split('/').length-b.name.split('/').length||(a.name<b.name?-1:1));
- let out='ZIP '+name+' มี '+total+' ไฟล์\nโครงสร้างไฟล์:\n'+ents.slice(0,400).map(f=>'- '+f.name).join('\n')+(total>400?'\n...':'')+'\n';const skipped=[];let used=out.length;
- for(const f of ents){if(used>=cap){skipped.push(f.name);continue}
-  if(BINX.test(f.name)||/\.(zip|gz|tgz|tar|7z|rar)$/i.test(f.name))continue;
-  const sz=f._data&&f._data.uncompressedSize;if(sz>3e6){skipped.push(f.name+' (ใหญ่เกิน 3MB)');continue}
-  try{const b=await f.async('arraybuffer'),r=await extract(f.name,b,Math.min(cap-used,60000),depth+1);if(r.text==null)continue;const blk='\n\n===== '+f.name+' =====\n'+r.text;out+=blk;used+=blk.length}catch(e){skipped.push(f.name+' (อ่านไม่ได้)')}}
- if(skipped.length)out+='\n\n[ไม่ได้อ่านเนื้อหา: '+skipped.slice(0,80).join(', ')+(skipped.length>80?' ...':'')+']';
- return{text:out}}
-async function xtPptx(buf){const z=await (await lib('jszip')).loadAsync(buf);const sl=Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));let out='';
- for(const n of sl){out+='## Slide '+n.match(/slide(\d+)\.xml/)[1]+'\n'+strip(await z.file(n).async('string'))+'\n\n'}return{text:out}}
-async function xtEpub(buf){const z=await (await lib('jszip')).loadAsync(buf);let out='';for(const n of Object.keys(z.files).filter(n=>/\.x?html?$/i.test(n)).sort())out+=strip(await z.file(n).async('string'))+'\n\n';return{text:out}}
-async function xtPdf(buf,cap){const P=await lib('pdfjs');let d;
- try{d=await P.getDocument({data:new Uint8Array(buf)}).promise}catch(e){throw new Error(/password/i.test((e.name||'')+(e.message||''))?'PDF มีรหัสผ่าน':'เปิด PDF ไม่ได้ ('+(e.message||e)+')')}
- let out='',i=1;const n=d.numPages;
- for(;i<=n&&out.length<cap;i++){const pg=await d.getPage(i),tc=await pg.getTextContent();let t='',ly=null;
-  for(const it of tc.items){const y=it.transform?it.transform[5]:0;if(ly!==null&&Math.abs(y-ly)>3&&!t.endsWith('\n'))t+='\n';t+=it.str;if(it.hasEOL)t+='\n';ly=y}
-  out+='\n--- หน้า '+i+'/'+n+' ---\n'+t}
- if(out.replace(/---[^-]*---|\s/g,'').length<40){const imgs=[];
-  for(let k=1;k<=Math.min(n,3);k++){const pg=await d.getPage(k),vp=pg.getViewport({scale:1.6}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;imgs.push(c.toDataURL('image/jpeg',.85))}
-  return{text:'(PDF นี้เป็นภาพสแกน ไม่มีข้อความให้ดึง จึงส่งหน้า 1-'+imgs.length+' จาก '+n+' หน้าเป็นรูปให้ AI ดูแทน)',imgs}}
- if(i<=n)out+='\n[อ่านถึงหน้า '+(i-1)+' จาก '+n+' หน้า]';
- return{text:out}}
-async function extract(name,buf,cap,depth){const ext=extOf(name);
- if(ext==='zip'){if(depth>0)return{text:null};return xtZip(name,buf,cap,depth)}
- if(ext==='gz'&&!/\.tar\.gz$/i.test(name)){if(typeof DecompressionStream==='undefined')throw new Error('เบราว์เซอร์นี้แกะ .gz ไม่ได้');const o=await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return extract(name.replace(/\.gz$/i,''),o,cap,depth)}
- if(/^(7z|rar|tar|tgz|bz2|xz)$/.test(ext)||/\.tar\.gz$/i.test(name)){if(depth>0)return{text:null};throw new Error('ยังไม่รองรับไฟล์บีบอัดชนิดนี้ ให้บีบเป็น .zip แทน')}
- if(ext==='doc'||ext==='ppt'||ext==='wps')throw new Error('ไฟล์ .'+ext+' รุ่นเก่าอ่านไม่ได้ ให้บันทึกเป็น .docx / .pptx ก่อน');
- if(ext==='docx'||ext==='docm'){const M=await lib('mammoth'),r=await M.extractRawText({arrayBuffer:buf});return{text:r.value}}
- if(/^(xlsx|xlsm|xlsb|xls|ods)$/.test(ext)){const X=await lib('xlsx'),wb=X.read(buf,{type:'array'});return{text:wb.SheetNames.map(n=>'## Sheet: '+n+'\n'+X.utils.sheet_to_csv(wb.Sheets[n],{blankrows:false})).join('\n\n')}}
- if(ext==='pptx')return xtPptx(buf);
- if(ext==='odt'||ext==='odp'){const z=await (await lib('jszip')).loadAsync(buf),f=z.file('content.xml');return{text:f?strip(await f.async('string')):''}}
- if(ext==='epub')return xtEpub(buf);
- if(ext==='pdf'){if(depth>0)return{text:null};return xtPdf(buf,cap)}
- if(ext==='ipynb'){const t=bytesToText(buf);return{text:t==null?null:nb(t)}}
- if(ext==='rtf'){const t=bytesToText(buf);return{text:t==null?null:rtf(t)}}
- if(BINX.test(name))return{text:null};
- return{text:bytesToText(buf)}}
-function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();
- im.onload=()=>{let w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,2000/Math.max(w,h));w=Math.max(1,Math.round(w*s));h=Math.max(1,Math.round(h*s));const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.9))};
- im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('เปิดรูปนี้ไม่ได้ (บางเบราว์เซอร์ไม่รองรับ HEIC/TIFF)'))};im.src=u})}
-async function transcribe(f,name){const k=key('groq');if(!k)throw new Error('ถอดเสียงจากไฟล์เสียง/วิดีโอต้องใช้คีย์ Groq (ใส่ในตั้งค่า)');if(f.size>25*1048576)throw new Error('ไฟล์เสียง/วิดีโอใหญ่เกิน 25MB');
- const fd=new FormData();fd.append('file',f,name);fd.append('model','whisper-large-v3-turbo');const l=$('lang').value;if(l!=='auto')fd.append('language',l);
- const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+k},body:fd});let j={};try{j=await r.json()}catch(e){}
- if(!r.ok)throw new Error((j.error&&j.error.message)||'ถอดเสียงไม่สำเร็จ (HTTP '+r.status+')');return (j.text||'').trim()||'(ไม่พบเสียงพูด)'}
-async function ingest(f,it){const name=it.name;
- if(f.size>60*1048576)throw new Error('ไฟล์ใหญ่เกิน 60MB');
- if((f.type.startsWith('image/')&&!/svg/.test(f.type))||IMGX.test(name)){if(pImgs().length>=5)throw new Error('แนบรูปได้ไม่เกิน 5 รูปต่อข้อความ');it.imgs=[await shrink(f)];return}
- if(AUDX.test(name)||/^(audio|video)\//.test(f.type)){it.text='\n\n[ถอดเสียงจากไฟล์ '+name+']:\n'+await transcribe(f,name);return}
- const buf=await f.arrayBuffer(),used=pend.items.reduce((a,i)=>a+(i.text||'').length,0),room=Math.max(6000,MAXCH()-used),r=await extract(name,buf,room,0);
- if(r.text==null)throw new Error('อ่านไฟล์ชนิดนี้ไม่ได้ (เป็นไฟล์ไบนารี)');
- let t=r.text.trim();if(!t&&!(r.imgs&&r.imgs.length))throw new Error('ไฟล์ว่าง หรือไม่มีข้อความให้อ่าน');
- let note='';if(t.length>room){t=t.slice(0,room);note='\n...(ตัดส่วนที่เกินออก เพราะยาวเกิน '+room.toLocaleString()+' ตัวอักษร)'}
- if(r.imgs)it.imgs=r.imgs.slice(0,Math.max(0,5-pImgs().length));
- it.text='\n\n[ไฟล์ '+name+']:\n'+t+note}
-async function addFiles(list){const fs=[...(list||[])];if(!fs.length)return;
- for(const f of fs){if(pend.items.length>=12){toast('แนบได้ไม่เกิน 12 ไฟล์ต่อข้อความ');break}
-  const it={name:f.name||'ไฟล์',loading:true};pend.items.push(it);chips();
-  try{await ingest(f,it)}catch(e){pend.items=pend.items.filter(x=>x!==it);toast('อ่าน '+it.name+' ไม่ได้: '+(e.message||e))}
-  it.loading=false;chips()}}
-function chips(){const b=$('chips');b.innerHTML='';
- pend.items.forEach(it=>{const s=document.createElement('span');s.className='chip';const im=(it.imgs||[])[0];
-  if(im){const t=document.createElement('img');t.src=im;t.style.cssText='height:22px;width:22px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px';s.appendChild(t)}else s.appendChild(document.createTextNode(it.loading?'⏳ ':'📎 '));
-  s.appendChild(document.createTextNode(it.name+(it.loading?' กำลังอ่าน...':(it.text&&it.text.length>3000?' ('+Math.round(it.text.length/1000)+'k)':''))+' ✕'));
-  s.onclick=()=>{pend.items=pend.items.filter(x=>x!==it);chips()};b.appendChild(s)})}
-async function walk(en,path,out){if(out.length>1500)return;
- if(en.isFile){await new Promise(ok=>en.file(f=>{if(f.size<3e6&&!BINX.test(f.name))out.push([path+en.name,f]);ok()},ok))}
- else if(en.isDirectory){if(SKIPDIR.test('/'+en.name+'/'))return;const rd=en.createReader();let all=[];for(;;){const b=await new Promise(ok=>rd.readEntries(ok,()=>ok([])));if(!b.length)break;all=all.concat(b)}for(const c of all)await walk(c,path+en.name+'/',out)}}
-async function dropItems(dt){const ents=[...(dt.items||[])].map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry()).filter(Boolean);
- if(!ents.some(e=>e.isDirectory))return addFiles(dt.files);
- for(const en of ents){if(en.isDirectory){toast('กำลังอ่านโฟลเดอร์ '+en.name+'...');const out=[];await walk(en,'',out);
-   if(!out.length){toast('โฟลเดอร์ '+en.name+' ไม่มีไฟล์ที่อ่านได้');continue}
-   try{const Z=await lib('jszip'),z=new Z();out.forEach(([p,f])=>z.file(p,f));await addFiles([new File([await z.generateAsync({type:'blob'})],en.name+'.zip')])}catch(e){toast('อ่านโฟลเดอร์ไม่ได้: '+e.message)}}
-  else await new Promise(ok=>en.file(async f=>{await addFiles([f]);ok()},ok))}}
-function bindFiles(){
- document.addEventListener('paste',e=>{const fs=[...((e.clipboardData||{}).items||[])].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(Boolean);
-  if(fs.length){e.preventDefault();addFiles(fs.map(f=>/^image\.\w+$/i.test(f.name)?new File([f],'screenshot-'+new Date().toTimeString().slice(0,8).replace(/:/g,'')+'.'+(f.type.split('/')[1]||'png'),{type:f.type}):f))}});
- ['dragenter','dragover'].forEach(ev=>document.addEventListener(ev,e=>{e.preventDefault();document.body.classList.add('drag')}));
- document.addEventListener('dragleave',e=>{if(!e.relatedTarget)document.body.classList.remove('drag')});
- document.addEventListener('drop',e=>{e.preventDefault();document.body.classList.remove('drag');dropItems(e.dataTransfer)});
- $('chat').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.cpy');if(!b)return;const c=b.parentElement.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(c.textContent);b.textContent='คัดลอกแล้ว';setTimeout(()=>{b.textContent='คัดลอกโค้ด'},1500)})}
-/* ===== โหมดวิศวกรซอฟต์แวร์ ===== */
-const CODE_RE=/โค้ด|โปรแกรม|สคริปต์|บั๊ก|แก้\s*error|อัลกอริทึม|ฟังก์ชัน|(?:เขียน|สร้าง|ทำ|พัฒนา)(?:ให้)?\s*(?:แอป|เกม|เว็บ|บอท|ระบบ|api|ปลั๊กอิน|extension)|\b(?:code|coding|script|function|class|bug|debug|compile|compiler|refactor|algorithm|api|sdk|regex|sql|python|javascript|typescript|java|kotlin|swift|golang|rust|php|html|css|react|vue|nodejs|node\.js|django|flask|docker|git|github|bash|powershell|json|yaml|stacktrace|stack trace|exception|traceback|unity|arduino|esp32|app|website|program)\b/i;
-function isCode(t,um){const m=getK('zy_code')||'auto';if(m==='off')return false;if(m==='on')return true;
- return CODE_RE.test(t)||(um.f||[]).some(n=>/\.(zip|py|js|mjs|ts|jsx|tsx|java|c|h|cpp|cs|go|rs|php|rb|kt|swift|html?|css|sql|sh|ipynb|json|ya?ml|vue|dart|lua)$/i.test(n))}
-const CODEP={th:`
 
-โหมดวิศวกรซอฟต์แวร์ (สำคัญ: กฎ "ตอบสั้น 1-3 ประโยค" และ "ห้าม markdown" ข้างบนไม่ใช้กับงานนี้ ตอบยาวและละเอียดได้ตามที่งานต้องการ และใช้ code block ได้เต็มที่) คุณเป็นวิศวกรซอฟต์แวร์ระดับอาวุโส เมื่อได้รับงานเขียนหรือแก้โปรแกรม ให้ทำดังนี้
-1) งานยากหรือซับซ้อน ให้ออกแบบก่อนสั้นๆ (โครงสร้างไฟล์ โมดูล ลำดับการทำงาน ข้อควรระวัง) แล้วจึงเขียนโค้ด
-2) เขียนโค้ดให้ครบและรันได้จริง ห้ามใช้ ... หรือ TODO หรือบอกให้ผู้ใช้เขียนเองแทนส่วนที่จำเป็น
-3) ก่อน code block ของแต่ละไฟล์ ให้เขียนบรรทัดชื่อไฟล์รูปแบบ FILE: path/ชื่อไฟล์.นามสกุล (บรรทัดละไฟล์ ไม่ใส่ตัวหนา) แล้วตามด้วย code block ที่ระบุภาษา
-4) ดูแล edge case การจัดการ error ความปลอดภัย และประสิทธิภาพ
-5) ถ้าแก้โค้ดที่ผู้ใช้แนบมา ให้อ่านทุกไฟล์ให้ละเอียด บอกสาเหตุของปัญหาก่อน แล้วให้ไฟล์ที่แก้ครบทั้งไฟล์ (หรือเฉพาะฟังก์ชันที่เปลี่ยนพร้อมบอกตำแหน่งชัดเจน)
-6) ปิดท้ายด้วยวิธีติดตั้ง วิธีรัน และตัวอย่างการทดสอบสั้นๆ
-7) ถ้าข้อกำหนดไม่ชัด ให้ตั้งสมมติฐานที่สมเหตุสมผลและบอกไว้ แทนการถามหลายข้อ
-8) ถ้าผู้ใช้แนบภาพหน้าจอ (screenshot) ของ error หรือหน้าตาโปรแกรม ให้อ่านข้อความในภาพอย่างละเอียดแล้ววิเคราะห์
-9) ห้ามอ้างว่าได้รันโค้ดแล้ว ห้ามแต่ง API หรือไลบรารีที่ไม่มีอยู่จริง ถ้าไม่แน่ใจให้บอกตรงๆ
-10) ถ้าโค้ดยาวเกินตอบได้ในครั้งเดียว ให้แบ่งเป็นส่วนๆ แล้วบอกว่าพิมพ์ ต่อ เพื่อทำส่วนที่เหลือ
-ถ้ากำลังคุยด้วยเสียง ให้พูดอธิบายสั้นๆ ไม่เกิน 3 ประโยค แล้วตามด้วยโค้ดใน code block`,
-en:`
+// files (lightweight: text + images)
+const IMGX=/\.(png|jpe?g|gif|webp|bmp|avif)$/i;
+function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{let w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,1600/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.85))};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('เปิดรูปไม่ได้'))};im.src=u})}
+async function addFiles(list){const fs=[...(list||[])];for(const f of fs){if(pend.items.length>=8){toast('แนบได้ไม่เกิน 8 ไฟล์ต่อข้อความ');break}
+ const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{const t=await f.text();it.text='\n\n[ไฟล์ '+f.name+']:\n'+t.slice(0,30000)}}catch(e){toast('อ่าน '+(f.name||'ไฟล์')+' ไม่ได้');continue}
+ pend.items.push(it)}chips()}
+function chips(){const b=$('chips');b.innerHTML='';pend.items.forEach(it=>{const s=document.createElement('span');s.className='chip';s.textContent=(it.imgs?'🖼 ':'📎 ')+it.name+' ✕';s.onclick=()=>{pend.items=pend.items.filter(x=>x!==it);chips()};b.appendChild(s)})}
+$('plusBtn').onclick=()=>$('fileIn').click();$('fileIn').onchange=function(){addFiles(this.files);this.value=''};
+$('chat').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.cpy');if(!b)return;const c=b.parentElement.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(c.textContent);b.textContent='คัดลอกแล้ว';setTimeout(()=>{b.textContent='คัดลอกโค้ด'},1500)});
 
-Software engineer mode (important: the "1-3 sentences" and "no markdown" limits above do NOT apply to this task; answer as long and detailed as the work needs, and use code blocks freely). You are a senior software engineer. For any request to write or fix a program:
-1) For hard or complex tasks, briefly design first (file layout, modules, flow, pitfalls), then write the code.
-2) Write complete, runnable code. Never use ... or TODO or tell the user to fill in necessary parts.
-3) Before each file's code block, write a line in the form FILE: path/name.ext (one per file, no bold), then the code block with a language tag.
-4) Handle edge cases, errors, security and performance.
-5) When fixing attached code, read every file carefully, state the root cause first, then give the full corrected file (or the changed functions with clear locations).
-6) End with install/run steps and a short test example.
-7) If requirements are unclear, state reasonable assumptions instead of asking many questions.
-8) If a screenshot of an error or UI is attached, read the text in it carefully and analyse it.
-9) Never claim you ran the code. Never invent APIs or libraries. If unsure, say so.
-10) If the code is too long for one reply, split it into parts and say to type "continue" for the rest.
-If in live voice chat, speak a short explanation (max 3 sentences) and then give the code in a code block.`};
-const EXT={python:'py',py:'py',javascript:'js',js:'js',jsx:'jsx',typescript:'ts',ts:'ts',tsx:'tsx',html:'html',css:'css',scss:'scss',json:'json',java:'java',c:'c',cpp:'cpp','c++':'cpp',csharp:'cs','c#':'cs',cs:'cs',go:'go',golang:'go',rust:'rs',rs:'rs',php:'php',sql:'sql',yaml:'yml',yml:'yml',xml:'xml',markdown:'md',md:'md',kotlin:'kt',swift:'swift',ruby:'rb',rb:'rb',lua:'lua',dart:'dart',r:'r',vue:'vue',toml:'toml',ini:'ini'};
-const NOFILE=/^(bash|sh|shell|zsh|console|terminal|text|txt|powershell|cmd|bat|output|log|diff)$/i;
-function codeBlocks(t){const out=[],re=/```([^\n]*)\n([\s\S]*?)```/g,seen={};let m,k=0;
- while((m=re.exec(t))){const lang=(m[1]||'').trim().split(/\s+/)[0].toLowerCase(),code=m[2].replace(/\n$/,''),before=t.slice(0,m.index).replace(/\s+$/,''),prev=before.slice(before.lastIndexOf('\n')+1);
-  let nm=(prev.match(/(?:FILE|File|file|filename|Filename|ไฟล์)\s*[:：]\s*[`"'*]*([^\s`"'*]+)/)||[])[1],body=code;
-  if(!nm){const h=code.match(/^\s*(?:\/\/|#|--|;|\/\*|<!--)\s*(?:FILE|file|filename|ไฟล์)\s*[:：]\s*([^\s*]+)/);if(h){nm=h[1];body=code.replace(/^[^\n]*\n/,'')}}
-  if(!nm){if(NOFILE.test(lang)||code.split('\n').length<3)continue;nm='code'+(++k)+'.'+(EXT[lang]||lang||'txt')}
-  nm=nm.replace(/^[\/\\]+/,'').replace(/\.\.[\/\\]/g,'').replace(/[<>:"|?*]/g,'_');
-  const c=seen[nm]=(seen[nm]||0)+1;if(c>1){const d=nm.lastIndexOf('.');nm=d>0?nm.slice(0,d)+'_'+c+nm.slice(d):nm+'_'+c}
-  out.push({name:nm,code:body})}
- return out}
-function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
-async function dlCode(cb){if(cb.length===1){dl(new Blob([cb[0].code],{type:'text/plain;charset=utf-8'}),cb[0].name.split('/').pop());return}
- try{const Z=await lib('jszip'),z=new Z();cb.forEach(b=>z.file(b.name,b.code));dl(await z.generateAsync({type:'blob'}),'zyphere-code.zip')}catch(e){toast('สร้างไฟล์ zip ไม่ได้: '+e.message)}}
-function setBusy(b){busy=b;document.body.classList.toggle('busy',b);$('sendBtn').innerHTML=b?IC.stop:IC.send}
-function orb(s,t){$('ov').className='ov '+s;$('ovS').textContent={listen:'กำลังฟัง...',think:'กำลังคิด...',speak:'กำลังพูด...'}[s];if(t!==undefined)$('ovT').textContent=t}
-const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i,STOP=/^(วันนี้|ตอนนี้|เป็น.*|ดี.*|หน่อย|ครับ|ค่ะ|บ้าง|เท่าไร|ยังไง|now|today)?$/i;
-const IMG=/(?:วาด|สร้าง|เจน|ออกแบบ|generate|draw|create|make)\s*(?:ให้\s*)?(?:an?\s+)?(?:ภาพ|รูป|image|picture|photo)(?!แบบ|ร่าง|ทรง)\s*(?:ของ|เกี่ยวกับ|เป็น|ว่า|of|about)?\s*(.+)/i;
-const EDIT=/แต่งภาพ|แต่งรูป|แก้ภาพ|แก้รูป|ลบพื้นหลัง|เปลี่ยนพื้นหลัง|เปลี่ยนสี|ลบ.{0,12}ออก|ใส่.{0,20}(?:ให้|ลง)|\b(?:edit|remove|change|add)\b/i;
-const WC=c=>c===0?'ท้องฟ้าแจ่มใส':c<4?'มีเมฆบางส่วน':c<50?'มีหมอก':c<60?'มีฝนปรอย':c<70?'มีฝนตก':c<80?'มีหิมะ':c<90?'ฝนตกเป็นช่วงๆ':'มีพายุฝนฟ้าคะนอง';
-async function weather(city){try{const g=await(await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=th&name='+encodeURIComponent(city))).json(),p=g.results&&g.results[0];if(!p)return 'ไม่พบสถานที่ชื่อ '+city+' ครับท่าน';
- const w=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.latitude+'&longitude='+p.longitude+'&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code&daily=precipitation_probability_max&timezone=auto')).json(),c=w.current;
- return 'ตอนนี้ที่'+p.name+' อุณหภูมิ '+Math.round(c.temperature_2m)+' องศา รู้สึกเหมือน '+Math.round(c.apparent_temperature)+' องศา '+WC(c.weather_code)+' ความชื้น '+c.relative_humidity_2m+' เปอร์เซ็นต์ โอกาสฝนวันนี้ '+w.daily.precipitation_probability_max[0]+' เปอร์เซ็นต์ครับท่าน'}catch(e){return 'ดูสภาพอากาศไม่ได้ครับท่าน อาจเป็นเพราะเครือข่าย'}}
-const preload=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);setTimeout(()=>r(false),90000);i.src=u});
-async function genImg(desc,src,sig,st){const k=key('gemini');let err='';
- if(k){const parts=[{text:(src?'Edit this image as requested: ':'Generate an image: ')+desc}];if(src)parts.push({inline_data:{mime_type:src.split(';')[0].slice(5),data:src.split(',')[1]}});
-  for(const m of ['gemini-2.5-flash-image','gemini-2.0-flash-preview-image-generation']){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',signal:sig,headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{parts}],generationConfig:{responseModalities:['IMAGE','TEXT']}})});
-   if(!r.ok){let j={};try{j=await r.json()}catch(e){}err=j.error?.message||'HTTP '+r.status;continue}
-   const j=await r.json(),pt=(j.candidates?.[0]?.content?.parts||[]).map(x=>x.inlineData||x.inline_data).find(Boolean);if(pt)return{text:src?'แต่งภาพเรียบร้อยครับท่าน':'เรียบร้อยครับท่าน นี่คือภาพที่ท่านต้องการ',pic:'data:'+(pt.mimeType||pt.mime_type||'image/png')+';base64,'+pt.data};err='โมเดลไม่ส่งภาพกลับมา'}catch(e){if(e.name==='AbortError')throw e;err=e.message}}}
- if(src)return{text:'แต่งภาพไม่สำเร็จครับท่าน ('+(err||'ยังไม่ได้ใส่คีย์ Gemini')+') การแต่งภาพต้องใช้คีย์ Gemini ที่เปิดใช้โมเดลสร้างภาพได้'};
- let p=desc;try{st&&st('กำลังเรียบเรียงคำสั่งวาดภาพ...');p=await ask([{role:'user',content:desc}],null,sig,()=>{},'Rewrite the user request as one vivid, detailed English image-generation prompt. Output only the prompt.')}catch(e){if(e.name==='AbortError')throw e}
- const u='https://image.pollinations.ai/prompt/'+encodeURIComponent(p.slice(0,500))+'?width=1024&height=1024&nologo=true&seed='+Math.floor(Math.random()*1e6);st&&st('กำลังวาดภาพ...');
- if(await preload(u))return{text:'เรียบร้อยครับท่าน นี่คือภาพที่ท่านต้องการ',pic:u};
- return{text:'วาดภาพไม่สำเร็จครับท่าน'+(err?' (Gemini: '+err+')':'')+' ตัวสำรองฟรีอาจใช้ไม่ได้ชั่วคราว ลองใหม่หรือใส่คีย์ Gemini'}}
-async function extras(t,um,sig,st){let m;const L=local(t);if(L)return{text:L};
- if((m=t.match(WX))){const city=(m[1]||'').replace(/(ตอนนี้|วันนี้|พรุ่งนี้|เป็น.*|ดีไหม.*|หน่อย|ครับ|ค่ะ|บ้าง|เท่าไร|ยังไง|เมื่อไร|now|today).*$/i,'').trim();if(!city||STOP.test(city))return{text:'ท่านต้องการทราบอากาศที่จังหวัดไหนครับ'};st&&st('กำลังดูสภาพอากาศ...');return{text:await weather(city)}}
- if(um.img&&EDIT.test(t)&&!CODE_RE.test(t)){st&&st('กำลังแต่งภาพ...');return await genImg(t,um.img,sig,st)}
- if((m=t.match(IMG))){st&&st('กำลังวาดภาพ...');return await genImg(m[1],null,sig,st)}
+// agent tools
+function parseTool(text){if(!text)return null;const s=String(text).trim();try{const j=JSON.parse(s);if(j&&j.tool)return j}catch(e){}
+ const m=s.match(/\{[\s\S]*\}/);if(m){try{const j=JSON.parse(m[0]);if(j&&j.tool)return j}catch(e){}}
  return null}
-async function send(voice){
- if(busy){ctrl&&ctrl.abort();stopSpeak();return}
- if(pend.items.some(i=>i.loading)){toast('กำลังอ่านไฟล์อยู่ รอสักครู่ครับ');return}
- const t=$('q').value.trim();if(!t&&!pend.items.length)return;
- let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name).slice(0,32),m:[]};chats.unshift(c);cur=c.id}
- const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
- view();const lang=resolveLang(t);lastLang=lang;const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
- const code=isCode(t,um),hist=c.m.slice(-20),msgs=[];let left=MAXCH();
- for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'';if(x){if(x.length<=left)left-=x.length;else{x=left>2000?x.slice(0,left)+'\n...(ตัดเนื้อหาไฟล์ เพราะยาวเกินบริบท)':'\n[ไฟล์ '+(m.f||[]).join(', ')+' ที่แนบไว้ก่อนหน้า (ตัดเนื้อหาออกเพื่อประหยัดบริบท)]';left=0}}msgs[i]={role:m.r==='user'?'user':'assistant',content:m.c+x}}
- ctrl=new AbortController();setBusy(true);let reply='',pic='',ok=true;if(voice)orb('think');
- try{const ex=await extras(t,um,ctrl.signal,s=>{body.innerHTML='<span class="dots"><i></i><i></i><i></i></span> '+esc(s)});
-  if(ex){reply=ex.text;pic=ex.pic||''}else reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lang,voice,code),code)}
- catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
- setBusy(false);c.m.push({r:'assistant',c:reply,pic});save();view();
- if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
- else if(voice&&!ok){call=false;endCall()}}
+async function execTool(call){const name=call.tool,args=call.args||{};
+ if(name==='search_web'){return await api('/api/search?q='+encodeURIComponent(args.query||'')+'&n=5')}
+ if(name==='fetch_page'){return await api('/api/fetch?url='+encodeURIComponent(args.url||''))}
+ if(name==='get_time'){return {ok:true,now:new Date().toString(),iso:new Date().toISOString(),locale:new Date().toLocaleString('th-TH')}}
+ if(name==='remember'){
+  if(args.kind==='profile'&&args.key){await updateMemory({profile:{[args.key]:args.value||args.text||''}});return {ok:true,remembered:'profile',key:args.key}}
+  const kind=(args.kind==='preference'||args.kind==='note')?args.kind:'fact';
+  await updateMemory({remember:{kind,text:args.text||args.value||'',source:'self'}});return {ok:true,remembered:kind,text:args.text||args.value||''}
+ }
+ return {ok:false,error:'unknown tool: '+name}}
+
+// tts (simple)
+let spkTok=0,ac=null,curAud=null;
+function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
+function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
+async function speak(text,btn){stopSpeak();const tok=spkTok;const clean=plain(text).slice(0,1200);if(btn)btn.textContent='หยุด';const lb=localBase();
+ try{if(getK('zy_ttse')!=='b'&&lb){for(const p of clean.split(/\n+/).filter(Boolean)){if(tok!==spkTok)return;const u=lb+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(p.slice(0,400));await new Promise((res,rej)=>{const a=new Audio(u);curAud=a;a.onended=()=>res();a.onerror=()=>rej();a.play().catch(rej)});}if(btn)btn.textContent='ฟัง';return}}catch(e){}
+ await sayOne(clean);if(btn)btn.textContent='ฟัง'}
+
+// voice in
 function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=e=>{if(/not-allowed|service-not/.test(e.error)){alert('ต้องอนุญาตให้ใช้ไมค์ก่อน');call=false}};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});
- return recordOnce()}
-async function recordOnce(){const k=key('groq');if(!k){alert('เบราว์เซอร์นี้ไม่มีระบบฟังเสียงในตัว (เช่น Firefox) ใส่คีย์ Groq ในตั้งค่า หรือใช้ Chrome/Edge');call=false;return ''}
- let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){alert('ต้องอนุญาตให้ใช้ไมค์ก่อน');call=false;return ''}
- const ac=new AudioContext(),an=ac.createAnalyser();an.fftSize=512;ac.createMediaStreamSource(st).connect(an);const buf=new Uint8Array(an.fftSize),mr=new MediaRecorder(st),ch=[];mr.ondataavailable=e=>ch.push(e.data);const stopped=new Promise(r=>mr.onstop=r);mr.start();
- let spoke=false,last=Date.now();const t0=last;
- await new Promise(res=>{const iv=setInterval(()=>{an.getByteTimeDomainData(buf);let m=0;for(const v of buf)m=Math.max(m,Math.abs(v-128));const n=Date.now();if(m>14){spoke=true;last=n}if(stopRec||(spoke&&n-last>1300)||n-t0>30000||(!spoke&&n-t0>9000)){clearInterval(iv);res()}},100)});
- mr.stop();await stopped;st.getTracks().forEach(t=>t.stop());ac.close();if(!spoke||stopRec)return '';
- const fd=new FormData();fd.append('file',new Blob(ch,{type:mr.mimeType}),'a.webm');fd.append('model','whisper-large-v3-turbo');const l=$('lang').value;if(l!=='auto')fd.append('language',l);
- try{const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+k},body:fd});const j=await r.json();return (j.text||'').trim()}catch(e){return ''}}
+ if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=()=>{};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});
+ return Promise.resolve('')}
 function stopListen(){stopRec=true;try{curSR&&curSR.abort()}catch(e){}}
 async function mic(){if(busy||call)return;const b=$('micBtn');b.style.color='#ef4444';const t=await listenOnce();b.style.color='';if(t){$('q').value=t;send()}}
-const WAKE=/(เฮ้|เฮ|ฮัลโหล|หวัดดี|hey|hi)?[\s,]*(ไซเฟอร์|ไซเฟอ|ไซเฟ่อร์|ไซเฟ่อ|ไซเฟิร์|ไซเฟอะ|ซายเฟอร์|ไซเฟล|ไซแฟอร์|ซิเฟอร์|zyphere|zypher|zyfer|cypher|cipher|sypher|xypher)/i,BYE=/พอแล้ว|ไปก่อน|แค่นี้|หยุดฟัง|สแตนด์บาย|standby|goodbye|bye/i,sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let mode=0,home=0;
-function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home?' on':'');b.textContent=mode&&home?'● รอฟัง "ไซเฟอร์"':'ZYPHERE'}
+
+// agent loop & send
+const CODE_RE=/โค้ด|โปรแกรม|สคริปต์|บั๊ก|แก้\s*error|ฟังก์ชัน|\b(code|script|function|class|bug|debug|python|javascript|typescript|react|api|sql|html|css)\b/i;
+const CODEP={th:"\n\nโหมดเขียนโค้ด: ตอบละเอียดและใช้ code block ได้เต็มที่ ให้โค้ดที่ใช้งานได้จริง ระบุชื่อไฟล์ก่อน code block เมื่อเหมาะสม",en:"\n\nCode mode: give complete, runnable code with clear filenames when appropriate."};
+function isCode(t){const m=getK('zy_code')||'auto';if(m==='off')return false;if(m==='on')return true;return CODE_RE.test(t)}
+function setBusy(b){busy=b;document.body.classList.toggle('busy',b);$('sendBtn').innerHTML=b?IC.stop:IC.send}
+function orb(s,t){$('ov').className='ov '+s;$('ovS').textContent={listen:'กำลังฟัง...',think:'กำลังคิด...',speak:'กำลังพูด...'}[s]||'';if(t!==undefined)$('ovT').textContent=t}
+
+async function maybeAutoRemember(userText,answer){if(!agentOn||!localBase())return;const t=userText||'';const cues=/(จำไว้|remember|ผมชื่อ|ฉันชื่อ|my name|เรียกฉัน|ชอบ|ไม่ชอบ|โปรเจกต์|เป้าหมาย)/i; if(!cues.test(t))return;
+ const hint='สกัดข้อมูลที่ควรจำระยะยาวจากข้อความผู้ใช้ (ถ้ามี) ตอบเป็น JSON เดียวเท่านั้น: {"items":[{"kind":"fact|preference|profile","text":"...","key":"(ถ้า profile)","value":"(ถ้า profile)"}]} ถ้าไม่มีให้ตอบ {"items":[]}';
+ try{const r=await ask([{role:'user',content:'ข้อความผู้ใช้: '+t+'\nคำตอบที่ให้: '+String(answer||'').slice(0,400)}],null,ctrl?ctrl.signal:null,()=>{},hint);
+  const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]); const items=(j.items||[]).slice(0,4);
+  for(const it of items){if(it.kind==='profile'&&it.key) await updateMemory({profile:{[it.key]:it.value||it.text||''}}); else if(it.text) await updateMemory({remember:{kind:it.kind==='preference'?'preference':'fact',text:it.text,source:'auto'}})}
+ }catch(e){}}
+
+async function runAgent(msgs,imgs,voice,bodyEl){
+ const maxSteps=4; let finalText='';
+ for(let step=0;step<maxSteps;step++){
+  let out=''; const sys=sysPrompt(lastLang,voice,isCode(msgs[msgs.length-1]?.content||''));
+  out=await ask(msgs,imgs,ctrl.signal,x=>{bodyEl.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sys);
+  const call=parseTool(out);
+  if(!call || step===maxSteps-1){finalText=out;break}
+  // execute tool
+  if(voice)orb('think','กำลังใช้เครื่องมือ: '+call.tool);
+  bodyEl.innerHTML=md(out+'\n\n_กำลังใช้เครื่องมือ: '+esc(call.tool)+'..._');
+  let result; try{result=await execTool(call)}catch(e){result={ok:false,error:String(e.message||e)}}
+  msgs=msgs.concat([{role:'assistant',content:JSON.stringify(call)},{role:'user',content:'ผลลัพธ์เครื่องมือ '+call.tool+': '+JSON.stringify(result).slice(0,6000)+'\n\nให้สรุป/ตอบผู้ใช้จากผลลัพธ์นี้ ถ้าข้อมูลยังไม่พอให้เรียกเครื่องมือที่เหมาะสมต่อ (JSON เดียว) มิฉะนั้นให้ตอบเป็นคำตอบสุดท้ายที่อ่านง่าย'}]);
+  imgs=null; // only first step can carry images
+ }
+ return finalText||'(ไม่มีคำตอบ)'}
+
+async function send(voice){
+ if(busy){ctrl&&ctrl.abort();stopSpeak();return}
+ const t=$('q').value.trim();if(!t&&!pend.items.length)return;
+ let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
+ const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
+ view();lastLang=resolveLang(t);const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
+ const hist=c.m.slice(-16),msgs=[];let left=24000;
+ for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'';if(x){if(x.length<=left)left-=x.length;else{x=x.slice(0,Math.max(0,left))+'\n...(ตัดเนื้อหาไฟล์)';left=0}}msgs[i]={role:m.r==='user'?'user':'assistant',content:(m.c||'')+x}}
+ ctrl=new AbortController();setBusy(true);let reply='',ok=true;if(voice)orb('think');
+ try{
+  const local=localAns(t); if(local){reply=local}
+  else if(agentOn){reply=await runAgent(msgs,um.imgs.length?um.imgs:null,voice,body)}
+  else{reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>{body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lastLang,voice,isCode(t)))}
+ }
+ catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
+ setBusy(false);c.m.push({r:'assistant',c:reply});save();view();
+ if(ok) await maybeAutoRemember(t,reply);
+ if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
+ else if(voice&&!ok){call=false;endCall()}}
+
+// local quick answers
+const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;
+async function weather(city){try{const g=await(await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=th&name='+encodeURIComponent(city))).json(),p=g.results&&g.results[0];if(!p)return 'ไม่พบสถานที่ชื่อ '+city;const w=await(await fetch('https://api.open-meteo.com/v1/forecast?latitude='+p.latitude+'&longitude='+p.longitude+'&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code&timezone=auto')).json(),c=w.current;return 'ตอนนี้ที่ '+p.name+' อุณหภูมิ '+Math.round(c.temperature_2m)+'°C รู้สึกเหมือน '+Math.round(c.apparent_temperature)+'°C ความชื้น '+c.relative_humidity_2m+'%'}catch(e){return 'ดูสภาพอากาศไม่ได้ในขณะนี้'}}
+function localAns(t){const n=new Date(); if(/กี่โมง|เวลาเท่าไร|what time/i.test(t))return 'ขณะนี้เวลา '+n.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}); if(/วันนี้วัน|วันที่เท่าไร|what.*date/i.test(t))return 'วันนี้ '+n.toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); const m=t.match(/(?:ตั้งเวลา|จับเวลา|เตือน).*?(\d+)\s*(วินาที|นาที|ชั่วโมง)/); if(m){const s=+m[1]*({วินาที:1,นาที:60,ชั่วโมง:3600})[m[2]];setTimeout(()=>{lastLang='th';speak('ครบเวลา '+m[1]+' '+m[2]+' แล้ว')},s*1000);return 'ตั้งเวลา '+m[1]+' '+m[2]+' เรียบร้อยแล้ว'} const wm=t.match(WX); if(wm){/* async handled in agent/manual: keep simple */} return null}
+
+// call mode
+const WAKE=/(เฮ้|เฮ|ฮัลโหล|หวัดดี|hey|hi)?[\s,]*(ไซเฟอร์|zyphere|cypher|cipher)/i,BYE=/พอแล้ว|ไปก่อน|หยุดฟัง|standby|bye|goodbye/i,sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let mode=0,home=0; function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home?' on':'');b.textContent=mode&&home?'● รอฟัง "ไซเฟอร์"':'ZYPHERE'}
 function showOv(){$('ov').style.display='flex';orb('listen','')}function hideOv(){$('ov').style.display='none'}
-function local(t){let m;const n=new Date();
- if(/กี่โมง|เวลาเท่าไร|what time/i.test(t))return 'ขณะนี้เวลา '+n.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' นาฬิกาครับท่าน';
- if(/วันนี้วัน|วันที่เท่าไร|what.*date/i.test(t))return 'วันนี้'+n.toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'ครับท่าน';
- if((m=t.match(/(?:ตั้งเวลา|จับเวลา|เตือน).*?(\d+)\s*(วินาที|นาที|ชั่วโมง)/))){const s=+m[1]*({วินาที:1,นาที:60,ชั่วโมง:3600})[m[2]];setTimeout(()=>{lastLang='th';speak('ครบเวลา '+m[1]+' '+m[2]+'แล้วครับท่าน')},s*1000);return 'รับทราบครับท่าน ตั้งเวลา '+m[1]+' '+m[2]+'เรียบร้อย'}
- return null}
-function addLocal(u,r){let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:u.slice(0,32),m:[]};chats.unshift(c);cur=c.id}c.m.push({r:'user',c:u},{r:'assistant',c:r});save();view()}
 async function handle(t){$('ovT').textContent=t;$('q').value=t;await send(true)}
 async function say(t){lastLang='th';orb('speak',t);await speak(t)}
-async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0;
- while(mode&&call){if(mode===2)orb('listen');const t=await listenOnce();if(!mode||!call)break;
-  if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0;
-  if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับท่าน มีอะไรให้ผมรับใช้ครับ')}
-  else if(BYE.test(t)){await say('รับทราบครับท่าน ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()}
-  else await handle(t)}
- endCall()}
+async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');const t=await listenOnce();if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
 function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&busy)ctrl.abort();hideOv();ui()}
+
+// events & settings
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
-$('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;$('plusBtn').onclick=()=>$('fileIn').click();
-$('fileIn').onchange=function(){addFiles(this.files);this.value=''};
+$('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
-$('webBtn').classList.toggle('on',webOn);$('webBtn').onclick=()=>{if(!key('gemini')){toast('ค้นเว็บต้องใช้คีย์ Gemini ใส่ได้ในตั้งค่า');return}webOn=!webOn;setK('zy_web',webOn?'1':'0');$('webBtn').classList.toggle('on',webOn);toast(webOn?'เปิดค้นเว็บแล้ว (ใช้ Google Search ผ่าน Gemini)':'ปิดค้นเว็บแล้ว')};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;
-$('menu').onclick=()=>$('side').classList.toggle('open');
-bindFiles();
-function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+') วางคีย์ใหม่เพื่อเปลี่ยน':n;$('kx-'+id).style.display=k?'':'none'}
+$('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('agentMode').value=agentOn?'on':'off';toast(agentOn?'เปิดโหมด Agent แล้ว (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)':'ปิดโหมด Agent แล้ว'); if(agentOn)loadMemory()};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
+function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
-const commitAllK=()=>KIDS.forEach(commitK);
-$('setBtn').onclick=()=>{KIDS.forEach(id=>{const el=$('k-'+id);paintK(id);el.onchange=()=>{if(commitK(id))toast('บันทึกคีย์ '+P[id].n+' แล้ว')};el.onpaste=()=>setTimeout(()=>{if(commitK(id))toast('บันทึกคีย์ '+P[id].n+' แล้ว')},0);el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el.onchange()}};$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});
- $('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
- $('rate').oninput=function(){setK('zy_rate',this.value);$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';$('set').style.display='flex'};
-$('doneBtn').onclick=()=>{commitAllK();$('set').style.display='none'};$('set').onclick=e=>{if(e.target===$('set')){commitAllK();$('set').style.display='none'}};
+$('setBtn').onclick=()=>{KIDS.forEach(id=>{paintK(id);$('k-'+id).onchange=()=>commitK(id)&&toast('บันทึกคีย์ '+P[id].n+' แล้ว');$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});$('custom').value=getK('zy_custom');renderMemStatus(!localBase());$('set').style.display='flex'};
+$('doneBtn').onclick=()=>{KIDS.forEach(commitK);setK('zy_custom',$('custom').value);setK('zy_brain',$('brain').value);setK('zy_lang',$('lang').value);setK('zy_rate',$('rate').value);$('rv').textContent=$('rate').value+'x';setK('zy_persona',$('persona').value);setK('zy_code',$('codeMode').value);setK('zy_ttse',$('ttse').value);setK('zy_ttsurl',$('ttsurl').value.trim());agentOn=$('agentMode').value==='on';setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('set').style.display='none'};
+$('set').onclick=e=>{if(e.target===$('set'))$('doneBtn').click()};
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
-if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
+$('wipeMemBtn').onclick=async()=>{if(!confirm('ล้างความจำที่สะสมไว้ทั้งหมด?'))return;try{await updateMemory({clear:'all'});toast('ล้างความจำแล้ว')}catch(e){toast('ล้างความจำไม่ได้ (ต้องรันผ่าน python app.py)')}};
+$('rate').oninput=function(){$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';
+$('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ')};
+$('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
-$('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('persona').onchange=function(){setK('zy_persona',this.value)};$('codeMode').value=getK('zy_code')||'auto';$('codeMode').onchange=function(){setK('zy_code',this.value)};
-$('ttse').value=getK('zy_ttse')||'g';$('ttse').onchange=function(){setK('zy_ttse',this.value)};$('ttsv').value=getK('zy_ttsv')||'Charon';$('ttsv').onchange=function(){setK('zy_ttsv',this.value)};
-$('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับท่าน ระบบเสียงพร้อมใช้งานแล้วครับ');if(eng)toast('เล่นเสียงได้ด้วย: '+eng)};
-$('ttsurl').value=getK('zy_ttsurl');$('ttsurl').oninput=function(){setK('zy_ttsurl',this.value.trim())};
 $('logo').innerHTML=lg()+'<span>Zyphere</span>';
-['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{try{ac=ac||new AudioContext({sampleRate:24000});ac.resume()}catch(e){}},{once:true,passive:true}));
-view();
+loadMemory();view();
 </script></body></html>
