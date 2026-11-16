@@ -1,14 +1,16 @@
-# 🧠 ZYP HERE AI AGENT V3.1
-AI ส่วนตัวของ Vorakan Yakham
+# 🧠 ZYP HERE V3.2
 
-## วิธีรันให้ฉลาดเต็มที่ (บนเครื่องตัวเอง)
-```
-pip install -r requirements.txt
+## แก้ Connection refused
+V3.1 เช็คแค่ import ollama ได้ไหม เลยขึ้น Local หลอกๆ
+V3.2 เช็คด้วย ollama.list() ต้องต่อเซิร์ฟเวอร์ได้จริงถึงจะขึ้น Local
+
+## วิธีทำให้ฉลาดบน Cloud ฟรี
+1. สมัคร https://console.groq.com ฟรี -> Create API Key
+2. Streamlit Cloud > Manage app > Secrets ใส่:
+GROQ_API_KEY = "gsk_xxx"
+3. Reboot
+
+## วิธีรันบนเครื่อง
 ollama pull qwen3:14b
 ollama serve
 streamlit run app.py
-```
-
-## วิธีรันบน Streamlit Cloud
-อัพไฟล์ขึ้น Github แล้ว Deploy ได้เลย จะขึ้นโหมด Demo ไม่พังแล้ว
-ถ้าอยากฉลาดเต็มที่ ต้องรันบนเครื่องตัวเองเท่านั้น เพราะ Cloud ไม่มี Ollama
