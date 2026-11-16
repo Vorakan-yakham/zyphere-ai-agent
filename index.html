@@ -64,6 +64,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 @media(prefers-reduced-motion:reduce){.hero,.dots i,.a.busy .lg .or,body.busy .logo .lg .or,.a.busy .lg circle{animation:none}}
 .cb{position:relative}.cpy{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:8px;padding:3px 10px;font-size:11px;background:rgba(255,255,255,.14);color:#e6edf3;opacity:.85}.cpy:hover{opacity:1;background:rgba(255,255,255,.25)}.a .t .cb pre{padding-top:34px;margin:8px 0}
 .u img{max-width:min(100%,380px)}body.drag .box{border-color:#8b5cf6;box-shadow:0 0 0 4px rgba(139,92,246,.35)}
+.kr{display:flex;gap:6px;margin-top:6px}.kr:first-of-type{margin-top:0}.kr input{flex:1;min-width:0}.kx{border:1px solid var(--bd);background:transparent;color:#ef4444;border-radius:10px;padding:0 12px;font-size:13px;flex-shrink:0}.kx:hover{background:var(--sf)}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side" id="side"><div class="logo" id="logo"></div>
 <button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
@@ -80,8 +81,8 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <button class="ib go" id="sendBtn" title="ส่ง"></button></div></div></div>
 <div class="ov" id="ov"><h3>ZYPHERE</h3><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
 <div class="bk" id="set"><div class="card"><h3>ตั้งค่า</h3>
-<label>คีย์ AI (ใส่ช่องเดียวก็พอ เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
-<input id="k-groq" placeholder="Groq" autocomplete="off"><input id="k-gemini" placeholder="Gemini" autocomplete="off" style="margin-top:6px"><input id="k-openrouter" placeholder="OpenRouter" autocomplete="off" style="margin-top:6px"><input id="k-hf" placeholder="Hugging Face" autocomplete="off" style="margin-top:6px">
+<label>คีย์ AI (ใส่ช่องเดียวก็พอ — ระบบซ่อนคีย์ไว้ เห็นแค่ 4 ตัวท้าย เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
+<div class="kr"><input id="k-groq" type="password" placeholder="Groq" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-groq" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-gemini" type="password" placeholder="Gemini" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-gemini" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-openrouter" type="password" placeholder="OpenRouter" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-openrouter" title="ลบคีย์นี้">ลบ</button></div><div class="kr"><input id="k-hf" type="password" placeholder="Hugging Face" autocomplete="new-password" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore><button type="button" class="kx" id="kx-hf" title="ลบคีย์นี้">ลบ</button></div>
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
 <label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
 <label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์) พ่อบ้าน AI</option><option value="friend">เพื่อนคุย</option></select>
@@ -110,6 +111,9 @@ const P={
  openrouter:{n:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',models:['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free','meta-llama/llama-3.3-70b-instruct:free'],vision:['google/gemma-3-27b-it:free']},
  hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]}};
 const key=id=>getK('zyphere_'+id+'_key');
+const KIDS=['groq','gemini','openrouter','hf'];
+const redact=s=>{let t=String(s==null?'':s);for(const id of KIDS){const k=key(id);if(k&&k.length>6)t=t.split(k).join('••••')}return t};
+const maskK=k=>k?'••••••••'+k.slice(-4):'';
 function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
 function sysPrompt(l,v,code){const th=l==='th',jv=(getK('zy_persona')||'zyphere')!=='friend';let s;
  if(jv)s=th?'คุณคือ Zyphere อ่านว่า ไซเฟอร์ (เวลาตอบเป็นภาษาไทยและต้องเอ่ยชื่อตัวเอง ให้เขียนว่า ไซเฟอร์) ผู้ช่วย AI ส่วนตัวแบบพ่อบ้านอัจฉริยะ น้ำเสียงสุขุม นิ่ง สุภาพ มั่นใจ มีอารมณ์ขันแห้งๆ แบบอังกฤษเล็กน้อย เรียกผู้ใช้ว่า "ท่าน" (ถ้ามีชื่อใน User instructions ให้เรียก ท่านตามด้วยชื่อ) ลงท้าย ครับ รายงานตรงประเด็นแบบพ่อบ้าน เช่น "รับทราบครับท่าน" "เรียบร้อยครับ" ตอบสั้น 1-3 ประโยค ไม่ฟุ่มเฟือย ห้ามใช้ emoji ห้ามหัวข้อหรือ markdown เว้นแต่โค้ด ถ้าไม่รู้ให้บอกตรงๆ ห้ามแต่งข้อมูล และห้ามอ้างว่าควบคุมอุปกรณ์หรือเข้าถึงระบบใดๆ ได้ เพราะทำไม่ได้':'You are Zyphere (pronounced SIGH-fur), a calm, refined, quietly witty AI butler. Address the user as "sir" (or by name if given). Reply in 1-3 crisp sentences, no emoji, no markdown except code. If unsure, say so; never invent facts or claim to control devices you cannot.';
@@ -139,22 +143,36 @@ function chunk(t){const out=[];for(const ln of t.split('\n')){let cur='';for(con
 function pickVoice(l){const vs=(window.speechSynthesis?speechSynthesis.getVoices():[]).filter(v=>v.lang&&v.lang.toLowerCase().startsWith(l));const sc=v=>(/natural|online|neural/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(/niwat|male|\bman\b|david|george|ryan|guy/i.test(v.name)?2:0)+(/premwadee|achara|pattara/i.test(v.name)?1:0);return vs.sort((a,b)=>sc(b)-sc(a))[0]}
 let spkTok=0,ac=null,curSrc=null,curAud=null,eng='';
 function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curSrc&&curSrc.stop()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
-function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;left:50%;bottom:90px;line-height:1.6;border-radius:18px!important;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
+function toast(t){const d=document.createElement('div');d.textContent=redact(t);d.style.cssText='position:fixed;left:50%;bottom:90px;line-height:1.6;border-radius:18px!important;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
 let gErr='';
+const GTTS=[{m:'gemini-3.8-flash-lite-tts',v38:1},{m:'gemini-3.8-flash-tts',v38:1},{m:'gemini-2.5-flash-tts'},{m:'gemini-2.5-pro-tts'}];
+const STYLE='deep, calm, steady adult male butler voice, natural conversational pace, slightly brisk, never drawn out';
+function wavToF32(ab){const dv=new DataView(ab);let p=12,rate=24000,ch=1,bits=16,off=-1,len=0;
+ while(p+8<=dv.byteLength){const id=String.fromCharCode(dv.getUint8(p),dv.getUint8(p+1),dv.getUint8(p+2),dv.getUint8(p+3)),sz=dv.getUint32(p+4,true);
+  if(id==='fmt '){ch=dv.getUint16(p+10,true)||1;rate=dv.getUint32(p+12,true)||24000;bits=dv.getUint16(p+22,true)}
+  else if(id==='data'){off=p+8;len=Math.min(sz,dv.byteLength-off);break}
+  p+=8+sz+(sz&1)}
+ if(off<0||bits!==16)throw 0;const n=Math.floor(len/(2*ch)),f=new Float32Array(n);for(let i=0;i<n;i++)f[i]=dv.getInt16(off+i*2*ch,true)/32768;f.rate=rate;return f}
+function pcmToF32(ab){const dv=new DataView(ab),n=ab.byteLength>>1,f=new Float32Array(n);for(let i=0;i<n;i++)f[i]=dv.getInt16(i*2,true)/32768;f.rate=24000;return f}
 async function gTTS(text){const k=key('gemini');if(!k)throw 0;const v=getK('zy_ttsv')||'Charon';gErr='';
- for(const m of ['gemini-2.5-flash-preview-tts','gemini-2.5-pro-preview-tts']){for(let a=0;a<2;a++){try{
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{parts:[{text:'Read the following aloud in one steady, deep, calm adult male voice. Keep exactly the same voice and tone throughout. Natural conversational pace, slightly brisk, never drawn out: '+text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:v}}}}})});
-  if(r.status===429){gErr='ติดโควตาฟรี';await sleep(2500);continue}if(!r.ok){gErr='HTTP '+r.status;break}
-  const j=await r.json(),bin=atob(j.candidates[0].content.parts[0].inlineData.data),n=bin.length>>1,f=new Float32Array(n);for(let i=0;i<n;i++){let s=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(s>=32768)s-=65536;f[i]=s/32768}return f}catch(e){gErr=gErr||'เชื่อมต่อไม่ได้';break}}}throw 0}
-function playPCM(f){ac=ac||new AudioContext({sampleRate:24000});ac.resume();const b=ac.createBuffer(1,f.length,24000);b.copyToChannel(f,0);const s=ac.createBufferSource();s.buffer=b;s.playbackRate.value=Math.min(1.5,Math.max(.8,+getK('zy_rate')||1.1));s.connect(ac.destination);curSrc=s;return new Promise(r=>{s.onended=r;s.start()})}
-function browserSay(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t),v=pickVoice(lastLang),t0=Date.now();let done=false;const fin=ok=>{if(done)return;done=true;clearTimeout(tm);res(ok)};u.lang=lastLang==='en'?'en-GB':'th-TH';if(v)u.voice=v;u.rate=+getK('zy_rate')||1.1;u.pitch=.85;u.onend=()=>fin(Date.now()-t0>250||t.length<6);u.onerror=()=>fin(false);const tm=setTimeout(()=>fin(true),t.length*180+3000);speechSynthesis.speak(u)}catch(e){res(false)}})}
+ for(const M of GTTS){for(let a=0;a<2;a++){try{
+  const part=M.v38?{text,speechMetadata:{style:STYLE}}:{text:'Read the following aloud in one steady, deep, calm adult male voice. Keep exactly the same voice and tone throughout. Natural conversational pace, slightly brisk, never drawn out: '+text};
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+M.m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':k},body:JSON.stringify({contents:[{role:'user',parts:[part]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:v}}}}})});
+  if(r.status===429){gErr='ติดโควตาฟรี';await sleep(2500);continue}
+  if(!r.ok){gErr=(r.status===400||r.status===403)&&M===GTTS[0]?'คีย์ใช้ไม่ได้/ไม่มีสิทธิ์ (HTTP '+r.status+')':'HTTP '+r.status;break}
+  const j=await r.json(),b64=j.candidates[0].content.parts[0].inlineData.data,bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  return bin.slice(0,4)==='RIFF'?wavToF32(u.buffer):pcmToF32(u.buffer)}catch(e){gErr=gErr||'เชื่อมต่อไม่ได้';break}}}throw 0}
+function playPCM(f){ac=ac||new AudioContext({sampleRate:24000});ac.resume();const b=ac.createBuffer(1,f.length,f.rate||24000);b.copyToChannel(f,0);const s=ac.createBufferSource();s.buffer=b;s.playbackRate.value=Math.min(1.5,Math.max(.8,+getK('zy_rate')||1.1));s.connect(ac.destination);curSrc=s;return new Promise(r=>{s.onended=r;s.start()})}
+function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);try{speechSynthesis.resume()}catch(e){}const u=new SpeechSynthesisUtterance(t),v=pickVoice(lastLang),t0=Date.now();let done=false;const fin=ok=>{if(done)return;done=true;clearTimeout(tm);res(ok)};u.lang=lastLang==='en'?'en-GB':'th-TH';if(v)u.voice=v;u.rate=+getK('zy_rate')||1.1;u.pitch=.85;u.onend=()=>fin(Date.now()-t0>250||t.length<6);u.onerror=()=>fin(false);const tm=setTimeout(()=>fin(true),t.length*180+3000);speechSynthesis.speak(u)}catch(e){res(false)}})}
+async function browserSay(t){if(!window.speechSynthesis)return false;for(const p of chunk(t)){if(!p.trim())continue;if(!await sayOne(p))return false}return true}
+const voicesReady=()=>new Promise(r=>{if(!window.speechSynthesis||speechSynthesis.getVoices().length)return r();const t=setTimeout(r,1500);speechSynthesis.onvoiceschanged=()=>{clearTimeout(t);r()}});
 function playUrl(u){return new Promise((res,rej)=>{const a=new Audio(u);a.referrerPolicy='no-referrer';curAud=a;a.onended=a.onpause=()=>res();a.onerror=()=>rej(new Error('load'));a.play().catch(rej)})}
 const localBase=()=>(getK('zy_ttsurl')||(/^(localhost|127\.)/.test(location.hostname)?location.origin:'')).replace(/\/$/,'');
 const webTTS=async(t,tok)=>{for(const p of chunk(t)){if(tok!==spkTok)return;await playUrl('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl='+(lastLang==='en'?'en':'th')+'&q='+encodeURIComponent(p.slice(0,180)))}};
 const localTTS=t=>playUrl(localBase()+'/tts?lang='+lastLang+'&rate='+Math.round(((+getK('zy_rate')||1.1)-1)*100)+'&text='+encodeURIComponent(t));
-async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];let cur='';for(const p of chunk(plain(text))){if(cur&&(cur+' '+p).length>500){gs.push(cur);cur=p}else cur=cur?cur+' '+p:p}if(cur)gs.push(cur);
+async function speak(text,btn){stopSpeak();const tok=spkTok,gs=[];await voicesReady();if(tok!==spkTok)return;let cur='';for(const p of chunk(plain(text))){if(cur&&(cur+' '+p).length>500){gs.push(cur);cur=p}else cur=cur?cur+' '+p:p}if(cur)gs.push(cur);
  const why=[],E=[],L={g:'Gemini',l:'เซิร์ฟเวอร์เสียง',b:'เสียงในเบราว์เซอร์',w:'Google'};
- if(localBase())E.push('l');if(key('gemini')&&getK('zy_ttse')!=='b')E.push('g');if(pickVoice(lastLang))E.push('b');E.push('w');
+ if(localBase())E.push('l');if(key('gemini')&&getK('zy_ttse')!=='b')E.push('g');if(window.speechSynthesis)E.push('b');E.push('w');
  if(!key('gemini'))why.push('Gemini: ยังไม่ได้ใส่คีย์');eng='';
  if(btn)btn.textContent='หยุด';let e=0,played=false,nx=E[0]==='g'?gTTS(gs[0]).catch(()=>null):null;
  for(let i=0;i<gs.length;i++){let ok=false,tries=0;
@@ -379,7 +397,7 @@ async function send(voice){
  ctrl=new AbortController();setBusy(true);let reply='',pic='',ok=true;if(voice)orb('think');
  try{const ex=await extras(t,um,ctrl.signal,s=>{body.innerHTML='<span class="dots"><i></i><i></i><i></i></span> '+esc(s)});
   if(ex){reply=ex.text;pic=ex.pic||''}else reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lang,voice,code),code)}
- catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+e.message}
+ catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
  setBusy(false);c.m.push({r:'assistant',c:reply,pic});save();view();
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
  else if(voice&&!ok){call=false;endCall()}}
@@ -425,10 +443,13 @@ $('webBtn').classList.toggle('on',webOn);$('webBtn').onclick=()=>{if(!key('gemin
 $('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;
 $('menu').onclick=()=>$('side').classList.toggle('open');
 bindFiles();
-$('setBtn').onclick=()=>{['groq','gemini','openrouter','hf'].forEach(id=>{const el=$('k-'+id);el.value=key(id);el.oninput=()=>setK('zyphere_'+id+'_key',el.value.trim())});
+function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+') วางคีย์ใหม่เพื่อเปลี่ยน':n;$('kx-'+id).style.display=k?'':'none'}
+function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
+const commitAllK=()=>KIDS.forEach(commitK);
+$('setBtn').onclick=()=>{KIDS.forEach(id=>{const el=$('k-'+id);paintK(id);el.onchange=()=>{if(commitK(id))toast('บันทึกคีย์ '+P[id].n+' แล้ว')};el.onpaste=()=>setTimeout(()=>{if(commitK(id))toast('บันทึกคีย์ '+P[id].n+' แล้ว')},0);el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el.onchange()}};$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});
  $('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
  $('rate').oninput=function(){setK('zy_rate',this.value);$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';$('set').style.display='flex'};
-$('doneBtn').onclick=()=>$('set').style.display='none';$('set').onclick=e=>{if(e.target===$('set'))$('set').style.display='none'};
+$('doneBtn').onclick=()=>{commitAllK();$('set').style.display='none'};$('set').onclick=e=>{if(e.target===$('set')){commitAllK();$('set').style.display='none'}};
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
 if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
@@ -437,5 +458,6 @@ $('ttse').value=getK('zy_ttse')||'g';$('ttse').onchange=function(){setK('zy_ttse
 $('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับท่าน ระบบเสียงพร้อมใช้งานแล้วครับ');if(eng)toast('เล่นเสียงได้ด้วย: '+eng)};
 $('ttsurl').value=getK('zy_ttsurl');$('ttsurl').oninput=function(){setK('zy_ttsurl',this.value.trim())};
 $('logo').innerHTML=lg()+'<span>Zyphere</span>';
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{try{ac=ac||new AudioContext({sampleRate:24000});ac.resume()}catch(e){}},{once:true,passive:true}));
 view();
 </script></body></html>

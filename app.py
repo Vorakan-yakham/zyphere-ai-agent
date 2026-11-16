@@ -1,5 +1,5 @@
 """Zyphere local server: เปิดเว็บ + เสียงพูดไทยคุณภาพสูง (Microsoft Edge neural) ใช้ได้ทุกเบราว์เซอร์
-ติดตั้ง:  pip install edge-tts      รัน:  python app.py      แล้วเปิด http://localhost:8000
+ติดตั้ง:  pip install -U edge-tts      รัน:  python app.py      แล้วเปิด http://localhost:8000
 """
 import asyncio, http.server, socketserver, urllib.parse, webbrowser
 try:
@@ -37,7 +37,8 @@ class H(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(data)
         except Exception as e:
-            self.send_error(500, str(e))
+            # ข้อความ error ต้องเป็น ASCII เท่านั้น ไม่งั้น http.server จะส่งคำตอบไม่ได้และเสียงเงียบ
+            self.send_error(500, "TTS failed", str(e).encode("ascii", "ignore").decode()[:200])
 
 class S(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address = True
