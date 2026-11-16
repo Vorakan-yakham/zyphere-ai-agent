@@ -3,16 +3,23 @@ st.set_page_config(page_title="ZYP HERE", page_icon="✦", layout="wide", initia
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-* { font-family:'Prompt',sans-serif !important; }
+/* DO NOT use * selector - it breaks Streamlit icons. Only text elements get Prompt */
+.stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp span, .stApp div, .stApp input, .stApp textarea, .stApp button, .stApp label { font-family:'Prompt',sans-serif !important; }
+/* Restore Material icon font for sidebar toggle */
+[data-testid="collapsedControl"] span, [data-testid="stSidebarCollapsedControl"] span { font-family:'Material Symbols',sans-serif !important; }
+[data-testid="stToolbar"]{display:none !important}
+footer{display:none !important}
 .stApp{background: radial-gradient(680px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), #fff !important}
 section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:280px !important}
-.hero{font-size:32px;font-weight:500;text-align:center;margin-top:90px}
+.hero{font-size:32px;font-weight:500;text-align:center;margin-top:100px}
 .sub{font-size:14px;color:#5f6368;text-align:center;margin-top:4px}
 div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;height:38px !important;border-radius:999px !important;font-size:14px !important}
 div[data-testid="stSidebar"] button:hover{background:#e3e3e3 !important}
-/* chat input = pill center, single row */
-div[data-testid="stChatInput"]{max-width:680px !important; margin:18px auto 0 auto !important}
-div[data-testid="stChatInput"] > div{border-radius:999px !important; box-shadow:0 4px 24px rgba(0,0,0,0.12) !important; border:none !important}
+/* CENTER PILL - one capsule, form in middle */
+.pill-box{max-width:680px;margin:24px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 18px}
+.pill-box div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
+.pill-box div[data-testid="stSelectbox"] > div > div{border:none !important;box-shadow:none !important;background:transparent !important;font-size:13px !important}
+.pill-box button{border:none !important;background:#f0f4f9 !important;box-shadow:none !important;border-radius:50% !important;width:38px !important;height:38px !important}
 </style>
 """, unsafe_allow_html=True)
 def get_key(n):
@@ -20,10 +27,7 @@ def get_key(n):
     except: return os.getenv(n,"")
 if "messages" not in st.session_state: st.session_state.messages=[]
 if "pending" not in st.session_state: st.session_state.pending=""
-def go(prompt):
-    st.session_state.pending = prompt
-    st.rerun()
-# ---------- LEFT : native buttons - always visible ----------
+def go(p): st.session_state.pending=p; st.rerun()
 with st.sidebar:
     st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:14px"><div style="width:38px;height:38px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px">✦</div><div><div style="font-size:17px;font-weight:600">Zyphere</div><div style="font-size:11px;color:#5f6368">เพื่อนร่วมงานของคุณ</div></div></div>', unsafe_allow_html=True)
     if st.button("✎  แชทใหม่", use_container_width=True):
@@ -48,17 +52,23 @@ with st.sidebar:
     brain = st.selectbox("เลือกสมอง", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"], key="brain_side")
     voice = st.checkbox("◉ ให้ Zyphere พูดตอบกลับ", value=True)
     st.markdown('<div style="padding:14px 12px;font-size:14px">○ Whisp &nbsp; ⚙</div>', unsafe_allow_html=True)
-# ---------- CENTER ----------
 if not st.session_state.messages and not st.session_state.pending:
     st.markdown('<div class="hero">เราจะเริ่มจากตรงไหนก่อนดี</div><div class="sub">Zyphere เพื่อนร่วมงานของคุณ — พิมพ์แล้วกด Enter ได้เลย</div>', unsafe_allow_html=True)
 else:
     for m in st.session_state.messages:
         with st.chat_message(m["role"]): st.markdown(m["content"])
-# Native chat_input - Enter works 100%, no iframe
-user_input = st.chat_input("ถาม Zyphere")
-prompt = st.session_state.pending or user_input
-if st.session_state.pending:
-    st.session_state.pending = ""
+# CENTER PILL - native form, Enter works, single capsule
+st.markdown('<div class="pill-box">', unsafe_allow_html=True)
+with st.form("pill", clear_on_submit=True):
+    c1,c2,c3,c4 = st.columns([0.4,4,1.6,0.5])
+    with c1: st.markdown('<div style="font-size:24px;text-align:center;padding-top:6px">＋</div>', unsafe_allow_html=True)
+    with c2: user_input = st.text_input("q", placeholder="ถาม Zyphere", label_visibility="collapsed")
+    with c3: brain_pill = st.selectbox("m", ["Zyphere อัตโนมัติ","01 GROQ - FAST","02 GROQ - DEEP","03 GEMINI - LONG","04 OPENROUTER - BIG"], label_visibility="collapsed")
+    with c4: sent = st.form_submit_button("↑")
+st.markdown('</div>', unsafe_allow_html=True)
+prompt = st.session_state.pending or (user_input if sent or user_input else "")
+if st.session_state.pending: st.session_state.pending=""
+if brain_pill != "Zyphere อัตโนมัติ": brain = brain_pill
 if prompt:
     st.session_state.messages.append({"role":"user","content":prompt})
     with st.chat_message("user"): st.markdown(prompt)
