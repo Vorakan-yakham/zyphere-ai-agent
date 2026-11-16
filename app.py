@@ -40,8 +40,8 @@ def make_audio(t):
     except: return None
 def show_audio(d):
     b64=base64.b64encode(d).decode(); import streamlit.components.v1 as comp
-    h="<div style='max-width:760px;margin:6px auto'><div style='display:inline-flex;align-items:center;gap:8px;background:#f0f4f9;border-radius:999px;padding:6px 12px 6px 6px'><audio id='z' autoplay src='data:audio/mp3;base64,"+b64+"' style='display:none'></audio><button onclick=\"document.getElementById('z').play()\" style='border:none;background:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer'>\u25b6</button><span style='font-size:13px'>\U0001f50a Zyphere กำลังพูด...</span></div></div>"
-    comp.html(h, height=56)
+    h="<div style='max-width:760px;margin:6px auto'><audio id='z' src='data:audio/mp3;base64,"+b64+"' style='display:none'></audio><button onclick=\"document.getElementById('z').play()\" style='border:1px solid #eee;background:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer'>\u25b6</button></div>"
+    comp.html(h, height=40)
 with st.sidebar:
     st.markdown("<div class='g'><div class='top'><div class='logo'>✦</div><div class='tt'>Zyphere</div><div style='margin-left:auto;font-size:16px'>⌕</div></div><div class='gap28'></div></div>", unsafe_allow_html=True)
     if st.button('✎  แชทใหม่', key='sb_new'): st.session_state.messages=[]; st.session_state.active='new'; st.rerun()
@@ -57,12 +57,12 @@ with st.sidebar:
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button('💬  '+m['content'][:30], key='hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('💬  เริ่มต้นการสนทนา', key='sb_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='sb_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div class='user'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b></div><span style='margin-left:auto'>⚙</span></div></div>", unsafe_allow_html=True)
     brain=st.selectbox('สมอง',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed')
-    voice=st.checkbox('ให้ Zyphere พูดตอบกลับ (เสียงผู้ชาย)', value=True)
+    voice=st.checkbox('ให้ Zyphere พูดตอบกลับ (เสียงผู้ชาย)', value=False)
 has_chat=len(st.session_state.messages)>0 or bool(st.session_state.pending)
 prompt=''
 if not has_chat:
@@ -104,7 +104,7 @@ if prompt:
     if _extra: prompt=prompt+_extra
     with st.spinner('Zyphere กำลังคิด...'):
         try:
-            sys='You are Zyphere, coworker friend. Talk Thai warm direct.'; ans=''
+            sys='You are Zyphere, smart coworker. Talk Thai, direct, professional, smart. NEVER use emoji, emoticons, icons, smiley faces, or symbols like :) :( :D. Answer with clean text only, no emoji. No greeting emoji. Be concise and intelligent.'; ans=''
             if 'GEMINI' in brain:
                 import google.generativeai as genai; genai.configure(api_key=get_key('GEMINI_API_KEY')); mm=genai.GenerativeModel('gemini-2.5-flash', system_instruction=sys); ans=mm.generate_content(prompt).text
             elif 'OPENROUTER' in brain:
@@ -115,6 +115,9 @@ if prompt:
                     try: ans=cl.chat.completions.create(model=mdl, messages=[{'role':'system','content':sys}]+st.session_state.messages, temperature=0.8, max_tokens=2000).choices[0].message.content; break
                     except Exception as e: last=str(e); continue
                 if not ans: ans='Groq ติด: '+last
+            import re as _re
+            ans=_re.sub(r'[\U0001F000-\U0001FAFF\u2600-\u27BF\u2700-\u27BF\uFE0F\u200D]+','',ans)
+            ans=ans.replace('😊','').replace('🙂','').replace('😀','').replace('😄','').replace('👍','').replace('🔊','').replace(':)','').replace(':-)','').strip()
             st.session_state.messages.append({'role':'assistant','content':ans})
             if voice:
                 d=make_audio(ans)
