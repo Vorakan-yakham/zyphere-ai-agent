@@ -19,7 +19,20 @@ section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px 
 .pill-center div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
 .pill-center div[data-testid="stSelectbox"] > div > div{border:none !important;box-shadow:none !important;background:transparent !important;font-size:13px !important}
 .pill-center button{border:none !important;background:#d3e3fd !important;box-shadow:none !important;border-radius:50% !important;width:38px !important;height:38px !important}
-div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;justify-content:flex-start !important;height:32px !important;padding:4px 8px 4px 12px !important;margin:0 !important;border-radius:999px !important;color:#1f1f1f !important}border-radius:999px !important;font-size:14px !important}
+
+div[data-testid="stSidebar"] .stButton > button, div[data-testid="stSidebar"] button{
+  border:none !important; border-width:0 !important; outline:none !important;
+  background:transparent !important; background-color:transparent !important;
+  box-shadow:none !important; -webkit-box-shadow:none !important;
+  text-align:left !important; justify-content:flex-start !important; align-items:center !important;
+  height:36px !important; padding:0 12px 0 12px !important; margin:0 !important;
+  border-radius:999px !important; color:#1f1f1f !important; font-size:14px !important; font-weight:400 !important;
+}
+div[data-testid="stSidebar"] .stButton > button:hover{background:#e8eaed !important}
+    div[data-testid="stSidebar"] .stButton:first-of-type > button{background:#e8eaed !important; font-weight:500 !important}
+div[data-testid="stSidebar"] .stButton > button:active, div[data-testid="stSidebar"] .stButton > button:focus{border:none !important; box-shadow:none !important; outline:none !important}
+div[data-testid="stSidebar"] .stButton{margin:0 !important; padding:0 !important; border:none !important}
+border-radius:999px !important;font-size:14px !important}
 div[data-testid="stSidebar"] button:hover{background:#e3e3e3 !important}
 div[data-testid="stSidebar"] button[kind="primary"]{background:#f0f4f9 !important; color:#1f1f1f !important; font-weight:500 !important}
 div[data-testid="stChatInput"]{max-width:768px !important; margin:0 auto !important}
@@ -29,7 +42,7 @@ div[data-testid="stChatInput"] > div{border-radius:999px !important; box-shadow:
 .top-gray{background:#eef2f7;border:none;border-radius:999px;padding:8px 14px;font-size:13px}
 .top-blue{background:#d3e3fd;border:none;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:500}
 .login-box{background:#fff;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
-.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border-radius:999px;margin:10px 0}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:transparent}
 .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
 </style>
 """, unsafe_allow_html=True)
@@ -80,16 +93,16 @@ def go(p): st.session_state.pending=p; st.rerun()
 def home(): st.session_state.messages=[]; st.session_state.pending=""; st.session_state.last_audio=None; st.rerun()
 # ================= LEFT MENU =================
 with st.sidebar:
-    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:6px 12px 8px 12px;margin-top:0"><div style="width:30px;height:30px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
-    if st.button("🏠  กลับหน้าแรก", use_container_width=True, type="primary"): home()
-    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">แชท</div>', unsafe_allow_html=True)
-    if st.button("✎  แชทใหม่", use_container_width=True): home()
+    st.markdown('<div style="display:flex;align-items:center;gap:10px;padding:10px 12px 6px 12px;margin-top:0"><div style="width:24px;height:24px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px">✦</div><b style="font-size:18px">Zyphere</b><span style="margin-left:auto;font-size:13px;color:#555">⌕</span></div>', unsafe_allow_html=True)
+    if st.button("✎  แชทใหม่", use_container_width=True, key="gemini_newchat"): home()
+    # Gemini has no 'แชท' header - direct list
+    # removed duplicate new chat - already at top
     if st.button("⌕  ค้นหาแชท", use_container_width=True): go("สรุปให้หน่อยว่าฉันเคยคุยเรื่องอะไรบ้าง")
     if st.button("⊞  คลัง", use_container_width=True): go("เปิดคลังงานของฉัน สรุปงานที่เคยทำ")
     if st.button("◷  กำหนดเวลาแล้ว", use_container_width=True): go("ดูงานที่กำหนดเวลาไว้วันนี้ แล้วจัดลำดับให้หน่อย")
     if st.button("✎  ปรับแต่ง Zyphere", use_container_width=True): go("ปรับแต่งให้เธอพูดแบบเพื่อนร่วมงาน ตรงๆ อบอุ่น")
     if st.button("▷  วิดีโอ", use_container_width=True): go("ช่วยคิดสคริปต์วิดีโอสั้นๆ ให้หน่อย")
-    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">เครื่องมือที่ใช้บ่อย</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size:12px;color:#5f6368;padding:14px 12px 6px">เครื่องมือ</div>', unsafe_allow_html=True)
     if st.button("🎙  พูดคุยด้วยเสียง", use_container_width=True): go("คุยกับฉันด้วยเสียง พูดตอบกลับเป็นภาษาไทย เสียงผู้ชาย")
     if st.button("✓  รายการงานของฉัน", use_container_width=True): go("ทำรายการงานวันนี้ให้หน่อย แบบเช็กลิสต์")
     if st.button("⌨  เขียนโค้ดให้หน่อย", use_container_width=True): go("เขียนโค้ดให้หน่อย อธิบายทีละบรรทัด")
@@ -132,7 +145,7 @@ with st.sidebar:
             st.caption("ยังไม่เข้าสู่ระบบ — กด 👤 เข้าสู่ระบบ แล้ว Zyphere จะทักชื่อคุณ")
     else:
         initial = st.session_state.user_name[:1].upper() if st.session_state.user_name else "W"
-        st.markdown(f'<div class="user-card"><div class="avatar">{initial}</div><div><b style="font-size:14px">{st.session_state.user_name}</b><br><span style="font-size:12px;color:#5f6368">เจ้าของ Zyphere</span></div><span style="margin-left:auto">⚙</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:transparent"><div class="avatar">{initial}</div><div><b style="font-size:14px">{st.session_state.user_name}</b><br><span style="font-size:12px;color:#5f6368">เจ้าของ Zyphere</span></div><span style="margin-left:auto">⚙</span></div>', unsafe_allow_html=True)
         c1,c2 = st.columns(2)
         with c1:
             if st.button("⚙  ตั้งค่า", use_container_width=True): go("เปิดตั้งค่า Zyphere")
