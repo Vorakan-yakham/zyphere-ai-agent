@@ -1,4 +1,4 @@
-# ZYPHERE 4 BRAINS - Grok / Gemini / OpenRouter / Hugging Face - GitHub Pages + Streamlit
+# ZYPHERE META AI SIDEBAR + GOOGLE LOGIN - GitHub Pages + Streamlit
 import streamlit as st, pathlib
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide')
 st.markdown("<style>[data-testid='stSidebar']{display:none} [data-testid='stToolbar']{display:none} footer{display:none} .main .block-container{padding:0!important;max-width:100%!important}</style>", unsafe_allow_html=True)
