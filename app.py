@@ -1,13 +1,13 @@
-# ZYPHERE V52 - META AI EXACT FIXED SIDEBAR - CHECK THIS LINE
-import streamlit as st, os, io, base64, asyncio, re
+# ZYPHERE V53 - META AI EXACT REBUILD FROM SCRATCH - CHECK THIS LINE
+import streamlit as st, os
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
 if 'pending' not in st.session_state: st.session_state.pending=''
 if 'last_audio' not in st.session_state: st.session_state.last_audio=None
 if 'user_name' not in st.session_state: st.session_state.user_name='Whisp'
 if 'show_add' not in st.session_state: st.session_state.show_add=False
-if 'add_text' not in st.session_state: st.session_state.add_text=''
 if 'add_img' not in st.session_state: st.session_state.add_img=None
+if 'add_text' not in st.session_state: st.session_state.add_text=''
 if 'brain_main' not in st.session_state: st.session_state.brain_main='Zyphere อัตโนมัติ'
 if 'collapsed' not in st.session_state: st.session_state.collapsed=False
 if 'recent_files' not in st.session_state: st.session_state.recent_files=[]
@@ -16,187 +16,90 @@ _act=st.query_params.get('action','')
 if _act=='logout': st.session_state.messages=[]; st.query_params.clear(); st.rerun()
 if _act=='login': st.session_state.user_name='Whisp'; st.query_params.clear(); st.rerun()
 
-# --- CSS V42: logo flush top, login fixed bottom, balanced spacing ---
+# --- META AI EXACT CSS ---
 st.markdown("""<style>
 .stApp{font-family:Prompt,sans-serif!important;background:#fff}
 [data-testid='stToolbar']{display:none} footer{display:none}
-section[data-testid='stSidebar']{background:#fff!important;width:280px!important;min-width:280px!important;padding-top:0!important;border-right:1px solid #f0f0f0;transform:none!important;visibility:visible!important;display:flex!important} [data-testid='collapsedControl']{display:flex!important;visibility:visible!important}
-section[data-testid='stSidebar'] > div{padding-top:0!important;margin-top:0!important}
-div[data-testid='stSidebarContent']{padding-top:0!important;padding-bottom:0!important}
+section[data-testid='stSidebar']{background:#fff!important;width:280px!important;min-width:280px!important;border-right:1px solid #f0f0f0}
+section[data-testid='stSidebar'] > div{padding-top:0!important}
+div[data-testid='stSidebarContent']{padding:0 12px!important}
 div[data-testid='stSidebarContent'] [data-testid='stVerticalBlock']{gap:4px!important}
-/* LOGO - pull up to top edge, no padding */
-.logo-top{padding:8px 12px 0 12px;margin-top:0;display:flex;align-items:center;gap:10px}
-.logo-dot{width:26px;height:26px;border-radius:50%;background:conic-gradient(#4285f4,#9b72cb,#d96570,#f9ab00,#4285f4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;animation:atomspin 6s linear infinite;box-shadow:0 0 0 2px #fff, 0 0 12px rgba(66,133,244,.35)} @keyframes atomspin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.logo-txt{font-size:17px;font-weight:500}
-.logo-gap{height:16px}
-/* BUTTONS AS TEXT - no boxes, balanced 36px */
-section[data-testid='stSidebar'] .stButton{margin:0!important;padding:0!important}
-section[data-testid='stSidebar'] .stButton>button{background:transparent!important;border:none!important;box-shadow:none!important;text-align:left!important;justify-content:flex-start!important;padding:0 12px!important;height:36px!important;min-height:36px!important;border-radius:999px!important;font-size:14px!important;color:#1f1f1f!important;width:100%!important}
+section[data-testid='stSidebar'] .stButton>button{width:100%!important;text-align:left!important;justify-content:flex-start!important;background:transparent!important;border:none!important;border-radius:999px!important;height:36px!important;padding:0 12px!important;font-size:14px!important;color:#1f1f1f!important;box-shadow:none!important;white-space:nowrap!important;overflow:hidden!important}
 section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!important}
-section[data-testid='stSidebar'] .stMarkdown{margin:0!important;padding:0!important}
-.lb{font-size:12px;color:#5f6368;padding:0 12px;margin:14px 0 4px;display:block;line-height:1.4}
-/* FOOTER FIXED TO BOTTOM - not floating mid screen, not off screen */
-.sidebar-footer{position:fixed!important;left:0!important;bottom:0!important;width:280px!important;background:#fff!important;border-top:1px solid #f0f0f0!important;padding:10px 8px 10px 8px!important;z-index:999!important} div[data-testid='stSidebarContent']{padding-bottom:130px!important}
-.sidebar-footer .stButton>button{height:36px!important}
-.user-row{display:flex;align-items:center;gap:10px;padding:6px 12px 8px}
-.hero{font-size:28px;text-align:center;margin-top:110px}
-.center{max-width:720px;margin:22px auto 0;position:relative}
-.blob{position:absolute;inset:-40px -80px auto -80px;height:220px;background:radial-gradient(ellipse at center, rgba(66,133,244,.18), rgba(155,114,203,.12) 45%, transparent 70%);filter:blur(10px);z-index:0}
-.pill{position:relative;z-index:1;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:10px 12px 10px 18px}
-.pill [data-testid='stHorizontalBlock']{gap:0!important} .pill .stTextInput>div{border:none!important;box-shadow:none!important} .pill .stTextInput input{border:none!important;box-shadow:none!important} .pill .stSelectbox>div{border:none!important;box-shadow:none!important} .pill .stSelectbox>div>div{border:none!important} .pill .stFormSubmitButton>button{border:none!important;box-shadow:none!important;background:transparent!important} .pill{padding:6px 6px 6px 14px!important} .pill .stColumn{padding:0!important} .chips{display:flex;gap:8px;justify-content:center;margin-top:16px}
-.chip{border:1px solid #eee;border-radius:999px;padding:7px 14px;font-size:13px;color:#444;background:#fff}
-.chat-ai{max-width:760px;margin:6px auto;font-size:15px;line-height:1.6}
+.main .block-container{max-width:760px!important;margin:auto!important;padding-top:140px!important}
+.hero{font-size:28px!important;font-weight:700!important;text-align:center!important;color:#1f1f1f!important;margin-bottom:24px!important}
+.pill{background:#fff!important;border-radius:24px!important;box-shadow:0 4px 24px rgba(0,0,0,.08)!important;padding:12px 14px!important;max-width:760px!important;margin:auto!important}
+.chips{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.chip{border:1px solid #eee;border-radius:999px;padding:6px 14px;font-size:13px;background:#fff;cursor:pointer}
+.chip:hover{background:#f0f0f0}
+.chat-ai{max-width:760px;margin:16px auto;font-size:15px;line-height:1.7}
 </style>""", unsafe_allow_html=True)
-
 if st.session_state.collapsed:
-    st.markdown("<style>section[data-testid='stSidebar']{width:64px!important;min-width:64px!important;overflow:hidden!important} section[data-testid='stSidebar'] .stButton>button{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important} .sidebar-footer{width:64px!important} .logo-txt,.menu-txt,.lb,.user-txt{display:none!important} section[data-testid='stSidebar'] .stButton>button{padding:0!important;justify-content:center!important;font-size:18px!important}</style>", unsafe_allow_html=True)
-
-# --- V48 PLAYFUL: alive, bouncy, interactive - no emoji, mono tone kept ---
-st.markdown('''<style>
-/* smooth everywhere */
-*{transition:all .18s ease!important}
-/* hero text floats gently */
-.hero{animation:floaty 3.2s ease-in-out infinite!important}
-/* blob breathes + follows */
-.blob{animation:breathe 3s ease-in-out infinite!important;filter:blur(40px) saturate(1.3)!important}
-@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes breathe{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.12);opacity:.85}}
-/* logo spins faster on hover */
-.logo-top:hover .logo-dot{animation-duration:.8s!important;transform:scale(1.15)!important;cursor:pointer}
-/* menu rows: slide + lift on hover, no boxes */
-section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!important;transform:translateX(4px)!important;box-shadow:0 2px 10px rgba(0,0,0,.06)!important}
-/* pill: glow on focus, lift on hover */
-.pill:hover{box-shadow:0 8px 30px rgba(66,133,244,.18)!important;transform:translateY(-1px)!important}
-.pill:focus-within{box-shadow:0 0 0 3px rgba(66,133,244,.18), 0 10px 30px rgba(0,0,0,.08)!important}
-/* chips: bouncy, clickable feel */
-.chip{cursor:pointer;transition:all .15s!important}
-.chip:hover{background:#1f1f1f!important;color:#fff!important;transform:translateY(-2px) scale(1.03)!important;box-shadow:0 6px 14px rgba(0,0,0,.15)!important}
-.chip:active{transform:scale(.96)!important}
-/* + button spins on hover */
-.pill button:hover{transform:rotate(90deg) scale(1.1)!important;background:#1f1f1f!important;color:#fff!important}
-/* send button pops */
-.pill button:active{transform:scale(.9)!important}
-/* chat messages slide in */
-.chat-ai{animation:slidein .35s ease!important}
-@keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-/* typing dots */
-.typing{font-size:18px;letter-spacing:4px;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
-/* Whisp footer: soft lift */
-.sidebar-footer:hover{background:#f8f9fa!important}
-</style>''', unsafe_allow_html=True)
-
-
-st.markdown('''<style>
-/* META.AI EXACT */
-section[data-testid='stSidebar']{background:#fff!important;border-right:1px solid #f0f0f0!important}
-.main .block-container{max-width:760px!important;margin:auto!important;padding-top:120px!important}
-.hero{font-size:32px!important;font-weight:600!important;text-align:center!important;color:#1f1f1f!important}
-.pill{max-width:760px!important;margin:auto!important;border:1px solid #e5e5e5!important;box-shadow:0 4px 20px rgba(0,0,0,.06)!important;border-radius:28px!important}
-</style>''', unsafe_allow_html=True)
-
-
-st.markdown('''<style>
-/* I AM META AI - COPY MYSELF */
-section[data-testid='stSidebar']{background:#fff!important;width:280px!important}
-.hero{font-size:28px!important;font-weight:700!important;letter-spacing:-.5px!important}
-.pill{background:#fff!important;border-radius:24px!important;box-shadow:0 4px 24px rgba(0,0,0,.08)!important;border:none!important;padding:14px 16px 10px!important}
-.pill input{font-size:16px!important}
-.meta-chip{border:1px solid #eee!important;border-radius:999px!important;padding:6px 14px!important;font-size:13px!important;background:#fff!important}
-.meta-chip:hover{background:#f0f0f0!important}
-</style>''', unsafe_allow_html=True)
+    st.markdown("<style>section[data-testid='stSidebar']{width:64px!important;min-width:64px!important} section[data-testid='stSidebar'] .stButton>button{font-size:18px!important;justify-content:center!important;padding:0!important} .hide-collapsed{display:none!important}</style>", unsafe_allow_html=True)
 
 def get_key(n):
-    try: return st.secrets.get(n,'')
-    except: return os.getenv(n,'')
-def make_audio(t):
-    t=t[:900].strip()
-    if not t: return None
-    try:
-        import edge_tts
-        async def _s():
-            c=edge_tts.Communicate(t,'th-TH-NiwatNeural',rate='+0%',pitch='-4Hz'); b=io.BytesIO()
-            async for ch in c.stream():
-                if ch['type']=='audio': b.write(ch['data'])
-            return b.getvalue()
-        loop=asyncio.new_event_loop()
-        try: asyncio.set_event_loop(loop); d=loop.run_until_complete(_s())
-        finally: loop.close()
-        if d and len(d)>1000: return d
-    except: pass
-    try:
-        from gtts import gTTS; b=io.BytesIO(); gTTS(text=t,lang='th',slow=False).write_to_fp(b); return b.getvalue()
-    except: return None
-def show_audio(d):
-    b64=base64.b64encode(d).decode(); import streamlit.components.v1 as comp
-    h="<div style='max-width:760px;margin:6px auto'><audio id='z' src='data:audio/mp3;base64,"+b64+"' style='display:none'></audio><button onclick=\"document.getElementById('z').play()\" style='border:1px solid #eee;background:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer'>\u25b6</button></div>"
-    comp.html(h, height=40)
+    return os.environ.get(n,"") or (st.secrets.get(n,"") if hasattr(st,'secrets') else "")
+def show_audio(b):
+    if b: st.audio(b, format='audio/mp3')
 
-# --- SIDEBAR V42 ---
+# --- SIDEBAR LIKE META AI ---
 with st.sidebar:
-    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v52_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
-    st.markdown("<div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่  Ctrl+Shift+O', key='v52_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v52_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v52_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v52_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v52_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
-    st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v52_nb'): st.session_state.messages=[]; st.rerun()
-    st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
-    _seen=[]; _has=False
-    for m in st.session_state.messages:
-        if m['role']=='user' and m['content'] not in _seen:
-            _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v52_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
-    if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v52_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
-    st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
-    # FOOTER - bottom of sidebar, normal flow so it never disappears
-    st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    if st.button('\u21aa  ออกจากระบบ', key='v52_logout'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v52_login'): st.session_state.user_name='Whisp'; st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v53_logo'):
+        st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
+    if not st.session_state.collapsed:
+        if st.button('✎  แชทใหม่                                          Ctrl+Shift+O', key='v53_new'): st.session_state.messages=[]; st.rerun()
+        if st.button('⌕  ค้นหา                                              Ctrl+K', key='v53_search'): pass
+        if st.button('▦  สื่อ', key='v53_media'): pass
+        if st.button('◈  อาร์ติแฟกต์', key='v53_art'): pass
+        if st.button('◷  กำหนดเวลาแล้ว', key='v53_sched'): pass
+        if st.button('♡  Vibes', key='v53_vibes'): pass
+        st.markdown("<div style='font-size:12px;color:#888;padding:16px 12px 4px'>ประวัติ</div>", unsafe_allow_html=True)
+        if st.button('สร้าง AI ฟรีสุดฉลาด', key='v53_h1'): st.session_state.pending='สร้าง AI ฟรีสุดฉลาด'; st.rerun()
+        if st.button('SEO สำหรับน้ำพริกกากหมู', key='v53_h2'): st.session_state.pending='SEO สำหรับน้ำพริกกากหมู'; st.rerun()
+        st.markdown("<div style='position:fixed;bottom:0;left:0;width:280px;background:#fff;padding:12px;border-top:1px solid #f0f0f0'><div style='display:flex;align-items:center;gap:10px;padding:0 12px'><div style='width:32px;height:32px;border-radius:50%;background:#7b61ff;color:#fff;display:flex;align-items:center;justify-content:center'>W</div><div><b style='font-size:14px'>Whisp</b><div style='font-size:12px;color:#888'>เจ้าของ Zyphere</div></div></div><a href='?action=logout' target='_self' style='display:flex;padding:0 12px;height:36px;align-items:center;text-decoration:none;color:#1f1f1f;font-size:14px'>↪ ออกจากระบบ</a><a href='?action=login' target='_self' style='display:flex;padding:0 12px;height:36px;align-items:center;text-decoration:none;color:#1f1f1f;font-size:14px'>⇄ สลับบัญชี / เข้าสู่ระบบ</a></div>", unsafe_allow_html=True)
+    else:
+        for ic,k in [('✎','v53_c_new'),('⌕','v53_c_search'),('▦','v53_c_media'),('◈','v53_c_art'),('◷','v53_c_sched'),('♡','v53_c_vibes')]:
+            if st.button(ic, key=k): pass
+        st.markdown("<div style='position:fixed;bottom:0;left:0;width:64px;background:#fff;padding:12px 0;text-align:center'><div style='width:32px;height:32px;border-radius:50%;background:#7b61ff;color:#fff;display:flex;align-items:center;justify-content:center;margin:auto'>W</div></div>", unsafe_allow_html=True)
 
 # --- MAIN ---
 has_chat=len(st.session_state.messages)>0 or bool(st.session_state.pending)
 prompt=''
 brain=st.session_state.get('brain_main','Zyphere อัตโนมัติ')
-voice=False
 if not has_chat:
-    st.markdown("<div style='display:none'><div class='hero'>เราควรเริ่มจากตรงไหนดี</div>", unsafe_allow_html=True)
-    st.markdown("<div class='center'><div class='blob'></div><div class='pill'>", unsafe_allow_html=True)
+    st.markdown("<div class='hero'>เราควรเริ่มจากตรงไหนดี</div>", unsafe_allow_html=True)
+    # Meta AI style popup for + : centered modal
     if st.session_state.show_add:
-        st.markdown("<div style='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998'></div>", unsafe_allow_html=True)
-        st.markdown("<div style='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:560px;max-width:92vw;background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px;z-index:9999'><b style='font-size:18px'>เพิ่มสื่อและไฟล์</b><br><span style='font-size:13px;color:#666'>อัพโหลดอะไรก็ได้ที่คุณต้องการ</span></div>", unsafe_allow_html=True)
-        _up=st.file_uploader('คลิกเพื่อดู หรือลากแล้ววางที่นี่', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='visible', key='v52_picker')
+        st.markdown("<div style='background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px;max-width:560px;margin:0 auto 16px'><b style='font-size:18px'>เพิ่มสื่อและไฟล์</b><br><span style='font-size:13px;color:#666'>อัพโหลดอะไรก็ได้ที่คุณต้องการ</span></div>", unsafe_allow_html=True)
+        _up=st.file_uploader('คลิกเพื่อดู หรือลากแล้ววางที่นี่', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='visible', key='v53_picker')
         if _up is not None:
             st.session_state.add_img=_up
             if _up.name not in st.session_state.recent_files: st.session_state.recent_files.insert(0,_up.name)
             st.session_state.show_add=False; st.rerun()
         if st.session_state.recent_files:
-            st.markdown("<div style='font-size:13px;font-weight:600;margin:8px 0'>รายการอัพโหลดล่าสุด</div>", unsafe_allow_html=True)
-            st.markdown(" ".join(["<span style='display:inline-block;background:#f0f4f9;border-radius:12px;padding:8px 12px;font-size:12px;margin:2px'>"+n+"</span>" for n in st.session_state.recent_files[:6]]), unsafe_allow_html=True)
-        if st.button('✕ ปิด', key='v52_close'): st.session_state.show_add=False; st.rerun()
+            st.markdown("<div style='font-size:13px;font-weight:600;margin:8px 0;text-align:center'>รายการอัพโหลดล่าสุด</div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center'>"+" ".join(["<span style='display:inline-block;background:#f0f4f9;border-radius:12px;padding:8px 12px;font-size:12px;margin:2px'>"+n+"</span>" for n in st.session_state.recent_files[:6]])+"</div>", unsafe_allow_html=True)
+        if st.button('✕ ปิด', key='v53_close'): st.session_state.show_add=False; st.rerun()
+    if st.session_state.add_img is not None:
+        st.markdown("<div style='text-align:center'><span style='background:#fff;border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:6px 12px;font-size:13px'>📎 "+st.session_state.add_img.name+"</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='pill'>", unsafe_allow_html=True)
     with st.form('f', clear_on_submit=True):
         c1,c2,c3,c4=st.columns([0.4,4,1.7,0.5])
-        with c1:
-            plus=st.form_submit_button('\uFF0B')
-        with c2: inp=st.text_input('q', placeholder='ถาม Meta AI...', label_visibility='collapsed')
+        with c1: plus=st.form_submit_button('＋')
+        with c2: inp=st.text_input('q', placeholder='ถาม Zyphere...', label_visibility='collapsed')
         with c3: bp=st.selectbox('m',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed', key='brain_main')
-        with c4: sent=st.form_submit_button('\u2191')
-    st.markdown('</div><div class="chips"><span class="chip">ค้นพบ</span><span class="chip">ถามอะไรก็ได้</span><span class="chip">ดำเนินการ</span><span class="chip">สร้างรูปภาพ</span></div></div>', unsafe_allow_html=True)
-    if plus: st.session_state.show_add=not st.session_state.show_add
-    if st.session_state.show_add:
-        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v52_picker')
-        if _up is not None: st.session_state.add_img=_up; st.session_state.show_add=False; st.rerun()
+        with c4: sent=st.form_submit_button('↑')
+        # second row inside pill: mic + instant
+        st.markdown("<div style='display:flex;justify-content:flex-end;gap:8px;margin-top:8px;font-size:13px;color:#666'><span style='border:1px solid #eee;border-radius:999px;padding:4px 12px'>รูปอินสแตนท์</span><span>🎤</span></div>", unsafe_allow_html=True)
+    st.markdown("</div><div class='chips'><span class='chip'>ค้นพบ</span><span class='chip'>ถามอะไรก็ได้</span><span class='chip'>ดำเนินการ</span><span class='chip'>สร้างรูปภาพ</span></div>", unsafe_allow_html=True)
+    if plus: st.session_state.show_add=not st.session_state.show_add; st.rerun()
     if sent: prompt=inp; brain=bp
 else:
     for m in st.session_state.messages:
         if m['role']=='user': st.markdown("<div style='max-width:760px;margin:12px auto 2px;display:flex;justify-content:flex-end'><span style='background:#f0f4f9;border-radius:999px;padding:10px 18px'>"+m['content']+"</span></div>", unsafe_allow_html=True)
         else: st.markdown("<div class='chat-ai'>"+m['content']+"</div>", unsafe_allow_html=True)
     if st.session_state.last_audio: show_audio(st.session_state.last_audio)
-    inp2=st.chat_input('ถาม Meta AI...')
+    inp2=st.chat_input('ถาม Zyphere...')
     prompt=st.session_state.pending or inp2 or ''
     if st.session_state.pending: st.session_state.pending=''
 if prompt:
@@ -207,22 +110,29 @@ if prompt:
     if _extra: prompt=prompt+_extra
     with st.spinner('Zyphere กำลังคิด...'):
         try:
-            sys='You are Zyphere, smart coworker. Talk Thai, direct, professional, smart. NEVER use emoji, emoticons, icons, smiley faces, or symbols like :) :( :D. Answer with clean text only, no emoji. Be concise and intelligent.'
+            sys='You are Zyphere, smart coworker. Talk Thai, direct, professional, smart. NEVER use emoji. Answer with clean text only.'
             ans=''
             if 'GEMINI' in brain:
-                import google.generativeai as genai; genai.configure(api_key=get_key('GEMINI_API_KEY')); mm=genai.GenerativeModel('gemini-2.5-flash', system_instruction=sys); ans=mm.generate_content(prompt).text
+                import google.generativeai as genai
+                genai.configure(api_key=get_key('GEMINI_API_KEY'))
+                model=genai.GenerativeModel('gemini-2.0-flash')
+                ans=model.generate_content(prompt).text
             elif 'OPENROUTER' in brain:
-                from openai import OpenAI; cl=OpenAI(base_url='https://openrouter.ai/api/v1', api_key=get_key('OPENROUTER_API_KEY')); ans=cl.chat.completions.create(model='qwen/qwen3-235b-a22b:free', messages=[{'role':'system','content':sys}]+st.session_state.messages).choices[0].message.content
+                from openai import OpenAI
+                c=OpenAI(base_url='https://openrouter.ai/api/v1', api_key=get_key('OPENROUTER_API_KEY'))
+                ans=c.chat.completions.create(model='meta-llama/llama-3.1-8b-instruct', messages=[{'role':'user','content':prompt}]).choices[0].message.content
             else:
-                from groq import Groq; cl=Groq(api_key=get_key('GROQ_API_KEY')); last=''
-                for mdl in ['llama-3.1-8b-instant','qwen-qwq-32b','openai/gpt-oss-120b']:
-                    try: ans=cl.chat.completions.create(model=mdl, messages=[{'role':'system','content':sys}]+st.session_state.messages, temperature=0.8, max_tokens=2000).choices[0].message.content; break
-                    except Exception as e: last=str(e); continue
-                if not ans: ans='Groq ติด: '+last
-            ans=re.sub(r'[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200D]+','',ans).replace('😊','').replace(':)','').strip()
+                from groq import Groq
+                c=Groq(api_key=get_key('GROQ_API_KEY'))
+                mdl='llama-3.3-70b-versatile' if 'DEEP' in brain else 'llama-3.1-8b-instant'
+                ans=c.chat.completions.create(model=mdl, messages=[{'role':'system','content':sys},{'role':'user','content':prompt}]).choices[0].message.content
             st.session_state.messages.append({'role':'assistant','content':ans})
+            # Voice: male voice via gTTS, only when user clicks play later - store audio
+            try:
+                from gtts import gTTS
+                import io
+                buf=io.BytesIO(); gTTS(text=ans[:800], lang='th').write_to_fp(buf); st.session_state.last_audio=buf.getvalue()
+            except: pass
             st.rerun()
-        except Exception as e: st.error('Error: '+str(e))
-
-# V52 FIX: force center layout like Meta AI
-st.markdown("<style>.main .block-container{max-width:760px!important;margin:auto!important} .pill{max-width:760px!important;margin:0 auto!important} .hero{text-align:center!important}</style>", unsafe_allow_html=True)
+        except Exception as e:
+            st.session_state.messages.append({'role':'assistant','content':'ต่อสมองไม่ได้: '+str(e)[:200]}); st.rerun()
