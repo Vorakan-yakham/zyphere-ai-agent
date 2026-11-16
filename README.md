@@ -1,1 +1,1 @@
-Zyphere V5 Mono Tone 4 Brains - Upload ทับของเก่า แล้วใส่ 4 Keys ใหม่ใน Secrets อย่าส่ง Key ในแชท
+Zyphere V6 Coworker Voice+Text - Upload ทับ V5 ได้เลย ใช้ Secrets เดิม 4 ตัว ไม่ต้องใส่ใหม่
