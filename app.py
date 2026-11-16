@@ -1,4 +1,4 @@
-# ZYPHERE V48 - PLAYFUL ALIVE - CHECK THIS LINE
+# ZYPHERE V51 - I AM META AI - COPY MYSELF EXACT - CHECK THIS LINE
 import streamlit as st, os, io, base64, asyncio, re
 st.set_page_config(page_title='Zyphere', page_icon='✦', layout='wide', initial_sidebar_state='expanded')
 if 'messages' not in st.session_state: st.session_state.messages=[]
@@ -10,6 +10,8 @@ if 'add_text' not in st.session_state: st.session_state.add_text=''
 if 'add_img' not in st.session_state: st.session_state.add_img=None
 if 'brain_main' not in st.session_state: st.session_state.brain_main='Zyphere อัตโนมัติ'
 if 'collapsed' not in st.session_state: st.session_state.collapsed=False
+if 'recent_files' not in st.session_state: st.session_state.recent_files=[]
+if 'voice_on' not in st.session_state: st.session_state.voice_on=True
 _act=st.query_params.get('action','')
 if _act=='logout': st.session_state.messages=[]; st.query_params.clear(); st.rerun()
 if _act=='login': st.session_state.user_name='Whisp'; st.query_params.clear(); st.rerun()
@@ -84,6 +86,26 @@ section[data-testid='stSidebar'] .stButton>button:hover{background:#f0f4f9!impor
 .sidebar-footer:hover{background:#f8f9fa!important}
 </style>''', unsafe_allow_html=True)
 
+
+st.markdown('''<style>
+/* META.AI EXACT */
+section[data-testid='stSidebar']{background:#fff!important;border-right:1px solid #f0f0f0!important}
+.main .block-container{max-width:760px!important;margin:auto!important;padding-top:120px!important}
+.hero{font-size:32px!important;font-weight:600!important;text-align:center!important;color:#1f1f1f!important}
+.pill{max-width:760px!important;margin:auto!important;border:1px solid #e5e5e5!important;box-shadow:0 4px 20px rgba(0,0,0,.06)!important;border-radius:28px!important}
+</style>''', unsafe_allow_html=True)
+
+
+st.markdown('''<style>
+/* I AM META AI - COPY MYSELF */
+section[data-testid='stSidebar']{background:#fff!important;width:280px!important}
+.hero{font-size:28px!important;font-weight:700!important;letter-spacing:-.5px!important}
+.pill{background:#fff!important;border-radius:24px!important;box-shadow:0 4px 24px rgba(0,0,0,.08)!important;border:none!important;padding:14px 16px 10px!important}
+.pill input{font-size:16px!important}
+.meta-chip{border:1px solid #eee!important;border-radius:999px!important;padding:6px 14px!important;font-size:13px!important;background:#fff!important}
+.meta-chip:hover{background:#f0f0f0!important}
+</style>''', unsafe_allow_html=True)
+
 def get_key(n):
     try: return st.secrets.get(n,'')
     except: return os.getenv(n,'')
@@ -112,28 +134,28 @@ def show_audio(d):
 
 # --- SIDEBAR V42 ---
 with st.sidebar:
-    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v48_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
+    if st.button('✦ Zyphere' if not st.session_state.collapsed else '✦', key='v51_logo'): st.session_state.collapsed=not st.session_state.collapsed; st.rerun()
     st.markdown("<div class='logo-gap'></div>", unsafe_allow_html=True)
-    if st.button('\u270e  แชทใหม่', key='v48_new'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u25a6  คลัง', key='v48_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
-    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v48_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
-    if st.button('\u25ce  ปรับแต่ง', key='v48_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
-    if st.button('\u25a1  วิดีโอ', key='v48_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
+    if st.button('\u270e  แชทใหม่  Ctrl+Shift+O', key='v51_new'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u25a6  คลัง', key='v51_media'): st.session_state.pending='เปิดสื่อ'; st.rerun()
+    if st.button('\u25f7  กำหนดเวลาแล้ว', key='v51_sched'): st.session_state.pending='ดูงานวันนี้'; st.rerun()
+    if st.button('\u25ce  ปรับแต่ง', key='v51_custom'): st.session_state.pending='ปรับแต่ง Zyphere'; st.rerun()
+    if st.button('\u25a1  วิดีโอ', key='v51_video'): st.session_state.pending='คิดสคริปต์วิดีโอ'; st.rerun()
     st.markdown("<div class='lb'>Notebook</div>", unsafe_allow_html=True)
-    if st.button('\uFF0B  Notebook ใหม่', key='v48_nb'): st.session_state.messages=[]; st.rerun()
+    if st.button('\uFF0B  Notebook ใหม่', key='v51_nb'): st.session_state.messages=[]; st.rerun()
     st.markdown("<div class='lb'>ทั้งหมด</div>", unsafe_allow_html=True)
     _seen=[]; _has=False
     for m in st.session_state.messages:
         if m['role']=='user' and m['content'] not in _seen:
             _seen.append(m['content']); _has=True
-            if st.button(m['content'][:30], key='v48_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
+            if st.button(m['content'][:30], key='v51_hist_'+str(len(_seen))): st.session_state.pending=m['content']; st.rerun()
     if not _has:
-        if st.button('เริ่มต้นการสนทนา', key='v48_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
+        if st.button('เริ่มต้นการสนทนา', key='v51_start'): st.session_state.pending='เริ่มต้นการสนทนา'; st.rerun()
     st.markdown("<div style='flex:1;min-height:40px'></div>", unsafe_allow_html=True)
     # FOOTER - bottom of sidebar, normal flow so it never disappears
     st.markdown("<div class='sidebar-footer'><div class='user-row'><div style='width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600'>W</div><div><b>Whisp</b><br><span style='font-size:11px;color:#5f6368'>เจ้าของ Zyphere</span></div><span style='margin-left:auto'>\u2699</span></div>", unsafe_allow_html=True)
-    if st.button('\u21aa  ออกจากระบบ', key='v48_logout'): st.session_state.messages=[]; st.rerun()
-    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v48_login'): st.session_state.user_name='Whisp'; st.rerun()
+    if st.button('\u21aa  ออกจากระบบ', key='v51_logout'): st.session_state.messages=[]; st.rerun()
+    if st.button('\u21c4  สลับบัญชี / เข้าสู่ระบบ', key='v51_login'): st.session_state.user_name='Whisp'; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # --- MAIN ---
@@ -142,27 +164,31 @@ prompt=''
 brain=st.session_state.get('brain_main','Zyphere อัตโนมัติ')
 voice=False
 if not has_chat:
-    st.markdown("<div style='font-size:13px;text-align:center;color:#888;margin-bottom:6px;animation:floaty 3s infinite'>วันนี้อยากให้ช่วยอะไรดี</div><div class='hero'>เราจะเริ่มจากตรงไหนก่อนดี</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:13px;text-align:center;color:#888;margin-bottom:6px;animation:floaty 3s infinite'>วันนี้อยากให้ช่วยอะไรดี</div><div class='hero'>เราควรเริ่มจากตรงไหนดี</div>", unsafe_allow_html=True)
     st.markdown("<div class='center'><div class='blob'></div><div class='pill'>", unsafe_allow_html=True)
     if st.session_state.show_add:
-        st.markdown("<div style='background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:14px;margin-bottom:10px'><b>\uFF0B เพิ่มให้ Zyphere ทำงาน</b><br><span style='font-size:13px;color:#666'>เพิ่มรูป / ไฟล์ / ข้อความ แล้วพิมพ์สั่งข้างล่าง</span></div>", unsafe_allow_html=True)
-        up=st.file_uploader('เพิ่มรูป / ไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed')
-        if up is not None:
-            st.session_state.add_img=up; st.success('เพิ่มแล้ว: '+up.name)
-            if up.type and 'image' in up.type: st.image(up, width=200)
-        st.session_state.add_text=st.text_area('เพิ่มข้อความ', value=st.session_state.add_text, placeholder='วางข้อความยาวๆ ตรงนี้...', height=100)
-        if st.button('\uFF0B เพิ่มการสนทนาใหม่'): st.session_state.messages=[]; st.session_state.show_add=False; st.rerun()
+        st.markdown("<div style='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:560px;max-width:92vw;background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:24px;z-index:9999'><b style='font-size:18px'>เพิ่มสื่อและไฟล์</b><br><span style='font-size:13px;color:#666'>อัพโหลดอะไรก็ได้ที่คุณต้องการ</span></div>", unsafe_allow_html=True)
+        _up=st.file_uploader('คลิกเพื่อดู หรือลากแล้ววางที่นี่', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='visible', key='v51_picker')
+        if _up is not None:
+            st.session_state.add_img=_up
+            if _up.name not in st.session_state.recent_files: st.session_state.recent_files.insert(0,_up.name)
+            st.session_state.show_add=False; st.rerun()
+        if st.session_state.recent_files:
+            st.markdown("<div style='font-size:13px;font-weight:600;margin:8px 0'>รายการอัพโหลดล่าสุด</div>", unsafe_allow_html=True)
+            st.markdown(" ".join(["<span style='display:inline-block;background:#f0f4f9;border-radius:12px;padding:8px 12px;font-size:12px;margin:2px'>"+n+"</span>" for n in st.session_state.recent_files[:6]]), unsafe_allow_html=True)
+        if st.button('✕ ปิด', key='v51_close'): st.session_state.show_add=False; st.rerun()
     with st.form('f', clear_on_submit=True):
         c1,c2,c3,c4=st.columns([0.4,4,1.7,0.5])
         with c1:
             plus=st.form_submit_button('\uFF0B')
-        with c2: inp=st.text_input('q', placeholder='ถาม Zyphere', label_visibility='collapsed')
+        with c2: inp=st.text_input('q', placeholder='ถาม Meta AI...', label_visibility='collapsed')
         with c3: bp=st.selectbox('m',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed', key='brain_main')
         with c4: sent=st.form_submit_button('\u2191')
     st.markdown('</div><div class="chips"><span class="chip">ค้นพบ</span><span class="chip">ถามอะไรก็ได้</span><span class="chip">ดำเนินการ</span><span class="chip">สร้างรูปภาพ</span></div></div>', unsafe_allow_html=True)
     if plus: st.session_state.show_add=not st.session_state.show_add
     if st.session_state.show_add:
-        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v48_picker')
+        _up=st.file_uploader('เลือกไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed', key='v51_picker')
         if _up is not None: st.session_state.add_img=_up; st.session_state.show_add=False; st.rerun()
     if sent: prompt=inp; brain=bp
 else:
@@ -170,7 +196,7 @@ else:
         if m['role']=='user': st.markdown("<div style='max-width:760px;margin:12px auto 2px;display:flex;justify-content:flex-end'><span style='background:#f0f4f9;border-radius:999px;padding:10px 18px'>"+m['content']+"</span></div>", unsafe_allow_html=True)
         else: st.markdown("<div class='chat-ai'>"+m['content']+"</div>", unsafe_allow_html=True)
     if st.session_state.last_audio: show_audio(st.session_state.last_audio)
-    inp2=st.chat_input('ถาม Zyphere')
+    inp2=st.chat_input('ถาม Meta AI...')
     prompt=st.session_state.pending or inp2 or ''
     if st.session_state.pending: st.session_state.pending=''
 if prompt:
