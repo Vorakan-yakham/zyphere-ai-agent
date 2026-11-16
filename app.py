@@ -571,6 +571,8 @@ def _default_learning():
         "last_topic": "",
         "last_status": "",
         "updated_at": 0,
+        "frontier": [],
+        "expanded": 0,
     }
 
 
@@ -749,6 +751,8 @@ def learning_public_config():
         "last_status": cfg.get("last_status") or "",
         "knowledge_count": knowledge_count(),
         "curriculum_count": len(CURRICULUM),
+        "frontier_count": len([x for x in (cfg.get("frontier") or []) if isinstance(x, dict) and x.get("status") != "done"]),
+        "expanded": int(cfg.get("expanded") or 0),
         "topics": CURRICULUM,
         "server_llm": bool(
             os.environ.get("GROQ_API_KEY")
@@ -1203,6 +1207,95 @@ def related_topics(item, items=None, limit=3):
     } for x in scored[:max(1, min(int(limit or 3), 6))]]
 
 
+def frontier_add(candidates, parent="", depth=0):
+    cfg = load_learning()
+    fr = cfg.get("frontier") if isinstance(cfg.get("frontier"), list) else []
+    known = set()
+    for it in (load_knowledge().get("items") or []):
+        known.add(_norm_topic(it.get("topic")))
+    for w in (load_watch().get("topics") or []):
+        known.add(_norm_topic(w.get("topic")))
+    seen = set(known)
+    for x in fr:
+        seen.add(_norm_topic(x.get("topic")) if isinstance(x, dict) else _norm_topic(x))
+    added = []
+    for c in (candidates or []):
+        t = _clip(str(c or ""), 120)
+        if not t or _norm_topic(t) in seen or "\ufffd" in t or t.count("?") >= 3:
+            continue
+        seen.add(_norm_topic(t))
+        fr.append({"topic": t, "parent": _clip(str(parent or ""), 120), "depth": max(0, min(int(depth or 0), 8)), "added_at": int(time.time()), "status": "queued"})
+        added.append(t)
+        if len(added) >= 4:
+            break
+    cfg["frontier"] = fr[-200:]
+    save_learning(cfg)
+    return added
+
+
+def frontier_pick(count=1):
+    cfg = load_learning()
+    fr = cfg.get("frontier") if isinstance(cfg.get("frontier"), list) else []
+    picked = []
+    for x in list(fr):
+        if len(picked) >= count:
+            break
+        if not isinstance(x, dict) or x.get("status") == "done":
+            continue
+        t = str(x.get("topic") or "").strip()
+        if not t:
+            continue
+        x["status"] = "taken"
+        x["taken_at"] = int(time.time())
+        picked.append(t)
+    cfg["frontier"] = fr
+    save_learning(cfg)
+    return picked
+
+
+def expand_from_entry(entry):
+    entry = entry or {}
+    topic = str(entry.get("topic") or "")
+    if not topic or "\ufffd" in topic or topic.count("?") >= 3:
+        return []
+    depth = max(0, min(int(entry.get("depth") or 0) + 1, 8))
+    blob = " ".join([str(entry.get("summary") or "")] + [str(x) for x in (entry.get("points") or [])] + [str(x) for x in (entry.get("tags") or [])])
+    cands = []
+    try:
+        raw = _server_llm_json(
+            "You are a curious self-learning assistant. From ONE learned topic, propose the next small sub-questions to study, from tiny to broader: who discovered or invented it, what its name or symbol means, how many types or symbols exist, simple examples, then one broader related topic. Return JSON only: {\"topics\":[\"...\",\"...\"]}. Use short searchable phrases of 2-6 words.",
+            "Learned topic: " + topic + "\nNotes: " + blob[:2500],
+        )
+        j = _extract_json(raw or "")
+        if isinstance(j, dict):
+            cands = [str(x) for x in (j.get("topics") or []) if str(x).strip()]
+    except Exception:
+        pass
+    if not cands:
+        cands = ["Who discovered " + topic, "Meaning of the symbol of " + topic, "How many types of " + topic, "History of " + topic]
+        proper = re.findall(r"\b[A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]{2,}){0,2}\b", blob)
+        proper = [x for x in proper if x.casefold() not in {"the", "this", "that", "and", "for", "from", "with", "some", "many", "they", "their", "these", "those", "also", "such", "more", "most", "other", "into", "about", "over", "under", "between", "during", "while", "where", "which", "what", "when", "who", "how", "why", "all", "one", "two", "there", "here", "used", "using", "known", "called", "named", "first", "last", "some", "can", "has", "have", "its", "are", "was", "were"}]
+        if proper:
+            cands.append("Who was " + proper[0])
+        cands += [str(x) for x in (entry.get("tags") or []) if len(str(x)) > 3]
+    out = []
+    for c in cands:
+        c = c.strip(" .,:;()[]\"'")
+        if len(c) < 3 or len(c) > 90 or c.casefold() == topic.casefold():
+            continue
+        out.append(c)
+        if len(out) >= 5:
+            break
+    added = frontier_add(out, topic, depth)
+    try:
+        cfg = load_learning()
+        cfg["expanded"] = int(cfg.get("expanded") or 0) + len(added)
+        save_learning(cfg)
+    except Exception:
+        pass
+    return added
+
+
 def _learn_job_update(job_id, **kw):
     with LEARN_JOB_LOCK:
         job = LEARN_JOBS.get(job_id)
@@ -1236,6 +1329,9 @@ def learn_jobs_list():
 
 def _pick_curriculum(count):
     count = max(1, min(int(count or 1), 3))
+    picked = frontier_pick(count)
+    if picked:
+        return picked
     cfg = load_learning()
     n = len(CURRICULUM)
     cur = int(cfg.get("cursor") or 0) % n
@@ -1355,6 +1451,7 @@ def _wiki_summary(topic, lang):
             )
             if not r.ok:
                 continue
+            r.encoding = "utf-8"
             pages = (r.json().get("query") or {}).get("pages") or {}
             for p in pages.values():
                 text = (p.get("extract") or "").strip()
@@ -1711,6 +1808,12 @@ def _learn_worker(job_id, topics, reason):
         try:
             entry = learn_one(topic)
             watch_mark(topic, entry)
+            try:
+                added = expand_from_entry(entry)
+                if added:
+                    _learn_job_update(job_id, stage="ขยายความรู้: " + ", ".join(added[:2]))
+            except Exception:
+                pass
             learned.append({
                 "id": entry.get("id"),
                 "topic": entry.get("topic"),
@@ -2904,6 +3007,10 @@ class Handler(SimpleHTTPRequestHandler):
             try:
                 entry = learn_one(topic)
                 watch_mark(topic, entry)
+                try:
+                    expand_from_entry(entry)
+                except Exception:
+                    pass
                 cfg = load_learning()
                 cfg["last_run"] = int(time.time())
                 cfg["last_topic"] = topic
