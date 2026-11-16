@@ -5,21 +5,21 @@ st.markdown("""
 <style>
 .stApp, .stApp p, .stApp h1, .stApp span, .stApp div, .stApp input, .stApp button, .stApp label { font-family:'Prompt',sans-serif !important; }
 [data-testid="stToolbar"]{display:none !important}
-footer{display:none !important}
+footer{display:none !important} .block-container{padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important} [data-testid="stVerticalBlock"]{gap:4px !important} .stMarkdown{margin:0 !important; padding:0 !important}
 .stApp{background: radial-gradient(700px 420px at 62% 55%, #cfe0ff 0%, transparent 62%), #fff !important}
 section[data-testid="stSidebar"]{background:#f0f4f9 !important; min-width:290px !important; display:block !important; visibility:visible !important; transform:none !important} section[data-testid="stSidebar"][aria-expanded="false"]{display:block !important; visibility:visible !important; margin-left:0 !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important} [data-testid="stSidebarCollapsedControl"]{display:flex !important}
-.hero{font-size:32px;font-weight:500;text-align:center;margin-top:110px}
-.pill-center{max-width:680px;margin:24px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 18px}
+.hero{font-size:28px;font-weight:400;text-align:center;margin-top:36px;margin-bottom:0;line-height:1.4;color:#1f1f1f}
+.pill-center{max-width:768px;margin:12px auto 0;background:#fff;border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,0.12);padding:8px 10px 8px 18px}
 .pill-center div[data-testid="stTextInput"] > div > div > input{border:none !important;box-shadow:none !important;background:transparent !important;font-size:15px !important;height:44px !important}
 .pill-center div[data-testid="stSelectbox"] > div > div{border:none !important;box-shadow:none !important;background:transparent !important;font-size:13px !important}
 .pill-center button{border:none !important;background:#d3e3fd !important;box-shadow:none !important;border-radius:50% !important;width:38px !important;height:38px !important}
-div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;height:38px !important;border-radius:999px !important;font-size:14px !important}
+div[data-testid="stSidebar"] button{border:none !important;background:transparent !important;box-shadow:none !important;text-align:left !important;height:32px !important;padding:4px 12px !important;margin:1px 0 !important;border-radius:999px !important;font-size:14px !important}
 div[data-testid="stSidebar"] button:hover{background:#e3e3e3 !important}
 div[data-testid="stSidebar"] button[kind="primary"]{background:#1f1f1f !important; color:#fff !important}
-div[data-testid="stChatInput"]{max-width:680px !important; margin:0 auto !important}
+div[data-testid="stChatInput"]{max-width:768px !important; margin:0 auto !important}
 div[data-testid="stChatInput"] > div{border-radius:999px !important; box-shadow:0 4px 24px rgba(0,0,0,0.12) !important; border:none !important}
-.chat-ai{max-width:680px;margin:14px auto;font-size:15px;line-height:1.7}
-.topbar{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px 0 0}
+.chat-ai{max-width:768px;margin:4px auto 2px;font-size:15px;line-height:1.55;padding:2px 0}
+.topbar{display:flex;justify-content:flex-end;gap:6px;padding:8px 14px 0 0}
 .top-gray{background:#eef2f7;border:none;border-radius:999px;padding:8px 14px;font-size:13px}
 .top-blue{background:#d3e3fd;border:none;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:500}
 .login-box{background:#fff;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
@@ -133,7 +133,7 @@ with st.sidebar:
         with c2:
             if st.button("↩  ออก", use_container_width=True):
                 st.session_state.logged_in=False; st.session_state.user_name=""; st.session_state.messages=[]; st.rerun()
-st.markdown('<div style="background:#fff3cd;border:1px solid #ffe69c;border-radius:10px;padding:8px 14px;max-width:680px;margin:8px auto;font-size:13px">👈 ถ้าไม่เห็นเมนูซ้าย ให้กดปุ่ม <b>&gt;</b> ที่มุมซ้ายบน 1 ครั้ง เมนูจะกางออกมา</div>', unsafe_allow_html=True)
+# banner removed - Gemini has no gap
 st.markdown('<div class="topbar"><button class="top-gray">↓ ดาวน์โหลดแอป</button><button class="top-blue">✦ อัปเกรด</button><button class="top-gray">✦</button></div>', unsafe_allow_html=True)
 has_chat = len(st.session_state.messages)>0 or bool(st.session_state.pending)
 if not has_chat:
@@ -152,10 +152,10 @@ if not has_chat:
 else:
     for m in st.session_state.messages:
         if m["role"]=="user":
-            st.markdown(f'<div style="max-width:680px;margin:18px auto 6px;display:flex;justify-content:flex-end"><span style="background:#f0f4f9;border-radius:999px;padding:10px 18px;font-size:15px">{m["content"]}</span></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="max-width:768px;margin:12px auto 2px;display:flex;justify-content:flex-end"><span style="background:#f0f4f9;border-radius:999px;padding:10px 18px;font-size:15px">{m["content"]}</span></div>', unsafe_allow_html=True)
         else:
             st.markdown(f'<div class="chat-ai">{m["content"]}</div>', unsafe_allow_html=True)
-            st.markdown('<div style="max-width:680px;margin:6px auto;font-size:16px;color:#888">👍 👎 ↻ ⧉ ⋯ &nbsp; 🔊</div>', unsafe_allow_html=True)
+            st.markdown('<div style="max-width:768px;margin:0 auto 10px;font-size:14px;color:#888">👍 👎 ↻ ⧉ ⋯ &nbsp; 🔊</div>', unsafe_allow_html=True)
     if st.session_state.last_audio:
         pass  # no black bar, light player only
         show_audio(st.session_state.last_audio)
@@ -165,7 +165,7 @@ else:
 if prompt:
     if prompt not in [m["content"] for m in st.session_state.messages if m["role"]=="user"]:
         st.session_state.messages.append({"role":"user","content":prompt})
-    st.markdown(f'<div style="max-width:680px;margin:18px auto 6px;display:flex;justify-content:flex-end"><span style="background:#f0f4f9;border-radius:999px;padding:10px 18px;font-size:15px">{prompt}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="max-width:768px;margin:12px auto 2px;display:flex;justify-content:flex-end"><span style="background:#f0f4f9;border-radius:999px;padding:10px 18px;font-size:15px">{prompt}</span></div>', unsafe_allow_html=True)
     with st.spinner("Zyphere กำลังคิด..."):
         try:
             uname = st.session_state.user_name or "Whisp"
