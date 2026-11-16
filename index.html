@@ -243,8 +243,8 @@ function sysPrompt(l,voice,code){const th=l==='th',jv=(getK('zy_persona')||'zyph
  const mc=memContext(); if(mc) s+='\n\n=== ความจำที่เกี่ยวข้อง (ใช้ประกอบการตอบ โดยไม่ต้องกล่าวถึงเว้นแต่จำเป็น) ===\n'+mc;
  if(knowCtx) s+='\n\n=== ความรู้ที่สะสมไว้และเกี่ยวข้อง (อาจเก่า/ไม่ครบ ใช้ประกอบและอ้างอิงอย่างระวัง) ===\n'+knowCtx;
  const c=getK('zy_custom'); if(c) s+='\n\nข้อมูลเพิ่มเติมจากผู้ใช้: '+c;
- if(agentOn) s+=th?'\n\nโหมด Agent เปิดอยู่: เมื่อจำเป็นต้องหาข้อมูลปัจจุบัน/ตรวจสอบ/อ่านเว็บ/เรียนรู้/บันทึกสิ่งสำคัญ ให้ใช้เครื่องมือด้านล่างได้เอง (คิดแล้วลงมือทีละขั้น). รูปแบบการเรียกเครื่องมือ: พิมพ์บรรทัดเดียวเป็น JSON วัตถุเดียวเท่านั้น เช่น {"tool":"search_web","args":{"query":"..."}} หรือ {"tool":"fetch_page","args":{"url":"..."}} หรือ {"tool":"recall_knowledge","args":{"query":"..."}} หรือ {"tool":"learn_topic","args":{"topic":"..."}} หรือ {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}} เมื่อได้ผลเครื่องมือแล้วให้สรุปคำตอบที่เป็นประโยชน์แก่ผู้ใช้ และอย่าค้างการเรียกเครื่องมือโดยไม่จำเป็น. เครื่องมือที่มี: search_web(query), fetch_page(url), recall_knowledge(query), learn_topic(topic), remember(kind,text[,key,value]), get_time()':'\n\nAgent mode is on. When needed, use tools by outputting a single JSON object line, e.g. {"tool":"search_web","args":{"query":"..."}} or {"tool":"fetch_page","args":{"url":"..."}} or {"tool":"recall_knowledge","args":{"query":"..."}} or {"tool":"learn_topic","args":{"topic":"..."}} or {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}}. Tools: search_web(query), fetch_page(url), recall_knowledge(query), learn_topic(topic), remember(kind,text[,key,value]), get_time(). After tool results, give the user a helpful final answer.';
- if(code) s+=CODEP[th?'th':'en'];
+ if(agentOn) s+=th?'\n\nโหมด Agent เปิดอยู่: เมื่อจำเป็นต้องหาข้อมูลปัจจุบัน/ตรวจสอบ/อ่านเว็บ/เรียนรู้/บันทึกสิ่งสำคัญ ให้ใช้เครื่องมือด้านล่างได้เอง (คิดแล้วลงมือทีละขั้น). รูปแบบการเรียกเครื่องมือ: พิมพ์บรรทัดเดียวเป็น JSON วัตถุเดียวเท่านั้น เช่น {"tool":"search_web","args":{"query":"..."}} หรือ {"tool":"fetch_page","args":{"url":"..."}} หรือ {"tool":"recall_knowledge","args":{"query":"..."}} หรือ {"tool":"learn_topic","args":{"topic":"..."}} หรือ {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}} เมื่อได้ผลเครื่องมือแล้วให้สรุปคำตอบที่เป็นประโยชน์แก่ผู้ใช้ และอย่าค้างการเรียกเครื่องมือโดยไม่จำเป็น. เครื่องมือที่มี: search_web(query), fetch_page(url), recall_knowledge(query), learn_topic(topic), remember(kind,text[,key,value]), get_time(), translate_text(text,target,source), detect_language(text), polish_text(text,lang)':'\n\nAgent mode is on. When needed, use tools by outputting a single JSON object line, e.g. {"tool":"search_web","args":{"query":"..."}} or {"tool":"fetch_page","args":{"url":"..."}} or {"tool":"recall_knowledge","args":{"query":"..."}} or {"tool":"learn_topic","args":{"topic":"..."}} or {"tool":"remember","args":{"kind":"fact|preference|note|profile","text":"...","key":"...","value":"..."}}. Tools: search_web(query), fetch_page(url), recall_knowledge(query), learn_topic(topic), remember(kind,text[,key,value]), get_time(), translate_text(text,target,source), detect_language(text), polish_text(text,lang). After tool results, give the user a helpful final answer.';
+ s+=th?'\n\nการเขียนภาษาไทย: ใช้สำนวนธรรมชาติ เรียงความคิดต่อเนื่อง เว้นวรรคหลังเครื่องหมาย แบ่งย่อหน้าเมื่อเปลี่ยนประเด็น หลีกเลี่ยงประโยคยาวและคำซ้ำ ถ้าข้อความอ่านยากให้เรียบเรียงใหม่ก่อนตอบ':'Write clearly with natural phrasing, short sentences, correct spacing and paragraph breaks; rewrite confusing text first.';if(code) s+=CODEP[th?'th':'en'];
  return s}
 
 // provider calls
@@ -514,7 +514,10 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  if(name==='fetch_page'){return await api('/api/fetch?url='+encodeURIComponent(args.url||'')+'&chars='+Math.max(2000,Math.min(60000,parseInt(args.chars||args.max_chars||15000,10)||15000)))}
  if(name==='recall_knowledge'){const j=await api('/api/knowledge?q='+encodeURIComponent(args.query||args.q||'')+'&limit=5');return {ok:true,total:j.total||0,items:(j.items||[]).map(x=>({topic:x.topic,title:x.title,summary:x.summary,points:x.points,sources:(x.sources||[]).slice(0,3),updated:x.created_at}))}}
  if(name==='learn_topic'){const topic=String(args.topic||args.query||'').trim();if(!topic)return {ok:false,error:'missing topic'};const j=await api('/api/learn/once',{method:'POST',body:JSON.stringify({topic})});return {ok:!!j.ok,entry:j.entry?{topic:j.entry.topic,title:j.entry.title,summary:j.entry.summary,points:j.entry.points}:null,total:j.total,error:j.error}}
- if(name==='get_time'){return {ok:true,now:new Date().toString(),iso:new Date().toISOString(),locale:new Date().toLocaleString('th-TH')}}
+ if(name==='polish_text'){return await api('/api/text/polish',{method:'POST',body:JSON.stringify({text:args.text||'',lang:args.lang||'th'})})}
+  if(name==='detect_language'){return await api('/api/lang/detect?text='+encodeURIComponent(args.text||''))}
+  if(name==='translate_text'){return await api('/api/translate',{method:'POST',body:JSON.stringify({text:args.text||'',target:args.target||'th',source:args.source||''})})}
+  if(name==='get_time'){return {ok:true,now:new Date().toString(),iso:new Date().toISOString(),locale:new Date().toLocaleString('th-TH')}}
  if(name==='remember'){
   if(args.kind==='profile'&&args.key){await updateMemory({profile:{[args.key]:args.value||args.text||''}});return {ok:true,remembered:'profile',key:args.key}}
   const kind=(args.kind==='preference'||args.kind==='note')?args.kind:'fact';
@@ -824,6 +827,10 @@ async function localCommand(t){
  }
  m=t.match(/^\s*(?:จำไว้(?:ว่า)?|remember(?: that)?)[\s:]+([\s\S]+)$/i);
  if(m){const text=m[1].trim().slice(0,500);try{await updateMemory({remember:{kind:'fact',text,source:'chat'}});return 'จำไว้แล้วครับ: '+text}catch(e){return 'บันทึกความจำไม่ได้: '+redact(e.message)}}
+  m=t.match(/^\s*(?:แปลเป็นไทย|แปล|translate(?:\s+to\s+thai)?)\s*[:：]?\s*([\s\S]{2,})$/i);
+  if(m){try{const j=await api('/api/translate',{method:'POST',body:JSON.stringify({text:m[1].trim(),target:'th'})});const d=await api('/api/lang/detect?text='+encodeURIComponent(m[1].trim()));return 'แปลจาก'+(d.name||d.code)+':\n'+j.text}catch(e){return 'แปลไม่ได้: '+redact(e.message)}}
+  m=t.match(/^\s*(?:เรียบเรียง|จัดรูปแบบข้อความ|จัดวางข้อความ|polish)\s*[:：]?\s*([\s\S]{4,})$/i);
+  if(m){try{const j=await api('/api/text/polish',{method:'POST',body:JSON.stringify({text:m[1].trim(),lang:lastLang})});return j.text}catch(e){return 'เรียบเรียงไม่ได้: '+redact(e.message)}}
  return null;
 }
 
@@ -840,7 +847,7 @@ function stamp(ts){
 function renderLearnStats(cfg){cfg=cfg||{};knowTotal=cfg.knowledge_count||knowTotal||0;
  const last=cfg.last_run?stamp(cfg.last_run):'ยังไม่มี';
  $('learnStatus').textContent='การเรียนรู้: '+(cfg.enabled?'เปิด':'ปิด')+' · ทุก '+(cfg.interval_hours||6)+' ชม. · ความรู้ '+knowTotal+' เรื่อง'+(cfg.last_topic?' · ล่าสุด: '+cfg.last_topic:'');
- $('kStats').textContent='ความรู้ '+knowTotal+' เรื่อง · กำลังขยายเอง '+(cfg.frontier_count||0)+' หัวข้อ (แตกแล้ว '+(cfg.expanded||0)+') · ขั้น '+(cfg.stage||'เริ่มต้น')+(cfg.track?' · สาย '+cfg.track:'')+' · หลักสูตร '+(cfg.curriculum_count||'—')+' หัวข้อ'+(cfg.server_llm?' · สรุปด้วย AI (เซิร์ฟเวอร์)':' · สรุปแบบสกัดข้อความ')+'\nรอบล่าสุด: '+last+(cfg.last_topic?' · '+cfg.last_topic:'');
+ $('kStats').textContent='ความรู้ '+knowTotal+' เรื่อง · กำลังขยายเอง '+(cfg.frontier_count||0)+' หัวข้อ (แตกแล้ว '+(cfg.expanded||0)+') · ขั้น '+(cfg.stage||'เริ่มต้น')+(cfg.kind?' ('+cfg.kind+')':'')+(cfg.track?' · สาย '+cfg.track:'')+' · หลักสูตร '+(cfg.curriculum_count||'—')+' หัวข้อ'+(cfg.server_llm?' · สรุปด้วย AI (เซิร์ฟเวอร์)':' · สรุปแบบสกัดข้อความ')+'\nรอบล่าสุด: '+last+(cfg.last_topic?' · '+cfg.last_topic:'');
 }
 async function loadLearnInfo(){if(!localBase()){$('learnStatus').textContent='การเรียนรู้: ต้องเชื่อมเซิร์ฟเวอร์ Zyphere';return}
  try{const j=await api('/api/learn/config');const c=j.config||{};renderLearnStats(c);

@@ -369,6 +369,65 @@ def memory_update(payload):
 # ----------------------------------------------------------------------------
 # web search / fetch (Agent tools)
 # ----------------------------------------------------------------------------
+LANG_NAMES = {"th":"ไทย","en":"อังกฤษ","zh":"จีน","ja":"ญี่ปุ่น","ko":"เกาหลี","ar":"อาหรับ","ru":"รัสเซีย","hi":"ฮินดี","vi":"เวียดนาม"}
+
+def detect_lang(text):
+    t = str(text or "")
+    ranges = [("th", 0x0E00, 0x0E7F), ("zh", 0x4E00, 0x9FFF), ("ja", 0x3040, 0x30FF), ("ko", 0xAC00, 0xD7AF), ("ar", 0x0600, 0x06FF), ("ru", 0x0400, 0x04FF), ("hi", 0x0900, 0x097F), ("el", 0x0370, 0x03FF)]
+    scored = [(sum(1 for c in t if a <= ord(c) <= b), code) for code, a, b in ranges]
+    n, code = max(scored)
+    if n == 0:
+        return "en" if re.search(r"[A-Za-z]", t) else "unknown"
+    return code
+
+
+def translate_text(text, target="th", source=""):
+    text = _clip(str(text or ""), 900)
+    if not text:
+        raise RuntimeError("missing text")
+    src = _clip(str(source or detect_lang(text)), 12)
+    tgt = _clip(str(target or "th"), 12)
+    try:
+        r = requests.get("https://api.mymemory.translated.net/get", params={"q": text, "langpair": src + "|" + tgt}, timeout=15, headers={"User-Agent": UA})
+        if r.ok:
+            out = (r.json().get("responseData") or {}).get("translatedText") or ""
+            if out and "MYMEMORY WARNING" not in out.upper():
+                return {"ok": True, "text": out, "source": src, "target": tgt, "engine": "mymemory"}
+    except Exception:
+        pass
+    try:
+        raw = _server_llm_json("You are a precise translator. Translate the user text into the target language. Return JSON only: {\"text\":\"...\"}", "From " + src + " to " + tgt + ": " + text)
+        j = _extract_json(raw or "")
+        if isinstance(j, dict) and j.get("text"):
+            return {"ok": True, "text": str(j["text"]), "source": src, "target": tgt, "engine": "llm"}
+    except Exception:
+        pass
+    raise RuntimeError("แปลไม่ได้ในขณะนี้")
+
+
+def polish_text(text, lang="th"):
+    t = str(text or "").replace("\r\n", "\n").replace("\r", "\n")
+    if not t.strip():
+        raise RuntimeError("missing text")
+    try:
+        raw = _server_llm_json(
+            "You are a Thai/English writing editor. Rewrite the text to be clear, natural and easy to understand. Fix awkward word order, add correct spacing between sentences, break into short paragraphs, use punctuation properly, keep the original meaning and facts, never invent content, and avoid emoji. Return JSON only: {\"text\":\"...\"}",
+            "Language: " + str(lang or "th") + "\n\nTEXT:\n" + t[:6000],
+        )
+        j = _extract_json(raw or "")
+        if isinstance(j, dict) and j.get("text"):
+            return {"ok": True, "text": str(j["text"]), "engine": "llm"}
+    except Exception:
+        pass
+    out = re.sub(r"[ \t]+", " ", t)
+    out = re.sub(r"\n{3,}", "\n\n", out)
+    out = re.sub(r"([.!?。！？])(?=[A-Za-z])", r"\1 ", out)
+    out = re.sub(r",(?=[A-Za-z])", ", ", out)
+    out = re.sub(r"([.!?。！？])\s*(?=[ก-๙])", r"\1 ", out)
+    out = "\n".join(x.strip() for x in out.split("\n"))
+    return {"ok": True, "text": out.strip(), "engine": "heuristic"}
+
+
 def search_web(query, max_results=5):
     q = _clip(query, 300)
     if not q:
@@ -499,10 +558,43 @@ DEV_STAGES = [
  ("วัยทำงานเรียนรู้ตลอดชีวิต", ["การเงินส่วนตัวและภาษี", "การเจรจาขายและสื่อสาร", "การจัดการอารมณ์เลี้ยงลูก", "ซ่อมของในบ้านเอาตัวรอด", "รู้เท่าทันสื่อและใช้เทคโนโลยี"], ["สายราชการรัฐวิสาหกิจ", "สายเอกชนวิศวกรโปรแกรมเมอร์การตลาด", "สายอาชีพอิสระช่างเกษตรกรค้าขาย", "สายธุรกิจส่วนตัวฟรีแลนซ์ครีเอเตอร์", "สายวิชาชีพเฉพาะทนายนักบินนักวิจัย"]),
 ]
 
+DEV_INNER = [
+ ["ความรักและการผูกพัน", "ความกลัวและความปลอดภัย", "สติสัมปชัญญะเริ่มต้น"],
+ ["นิทานศีลธรรม", "การเห็นอกเห็นใจ", "คำอธิษฐานและพิธีกรรมง่าย"],
+ ["ศาสนาและประเพณีไทย", "ความดีความจริงความงาม", "การขอโทษและการอภัย", "การแบ่งปันและกตัญญู"],
+ ["ปรัชญาชีวิตเบื้องต้น", "จิตวิทยาอารมณ์และตัวตน", "ศาสนาเปรียบเทียบโลก", "จุดหมายและคุณค่าส่วนตัว"],
+ ["จริยธรรมและศีลธรรม", "สมาธิและการฝึกสติ", "ความตายและการจากลา", "สัญลักษณ์ทางศาสนา"],
+ ["ปรัชญาตะวันออกและตะวันตก", "จิตวิทยาเชิงบวกและความหมายชีวิต", "การเปลี่ยนแปลงและการปล่อยวาง", "การเยียวยาและความเมตตา"],
+ ["การจัดการความเครียด", "การให้ความหมายกับงาน", "ความเงียบและการทบทวนตนเอง", "การใช้ชีวิตตามคุณค่า"],
+]
+
+DEV_LANG = [
+ ["ภาษาคือเสียงและสัญลักษณ์", "ชื่อเรียกในหลายภาษา"],
+ ["ก-ฮ และ A-Z", "ตัวเลขในหลายภาษา", "คำทักทายง่าย"],
+ ["ภาษาอังกฤษคำศัพท์พื้นฐาน", "ภาษาจีนตัวอักษรและการออกเสียง", "ภาษาญี่ปุ่นฮิรางานะ", "ภาษาเกาหลีฮังกึล", "ภาษาไทยการสะกดคำ"],
+ ["อังกฤษไวยากรณ์", "การแปลเบื้องต้น", "คำเหมือนแต่ต่างความหมาย"],
+ ["ภาษาสเปนฝรั่งเศสเยอรมัน", "ภาษารัสเซียอักษรซีริลลิก", "ภาษาอาหรับ", "ภาษาฮินดีเทวนาครี", "ภาษาเวียดนาม"],
+ ["ภาษาศาสตร์และไวยากรณ์โลก", "ศิลปะการแปลและตีความ", "ภาษากับวัฒนธรรม", "คำยืมและคำเทียม"],
+ ["ภาษาสำหรับทำงานและเจรจา", "เรียนภาษาใหม่ด้วยตัวเอง", "เทคนิคจำคำศัพท์", "หลายภาษาในชีวิตประจำวัน"],
+]
+
+LANG_CRAFT = [
+ ["การเว้นวรรคและจังหวะประโยค"],
+ ["การใช้เครื่องหมายวรรคตอน", "การแบ่งย่อหน้า"],
+ ["การเรียงลำดับความคิด", "ประโยคสั้นต่อเนื่อง", "การใช้สรรพนามให้ชัด"],
+ ["โครงสร้างบทความหัวข้อนำเนื้อหาสรุป", "การเขียนให้กระชับ", "คำซ้ำและคำเกิน"],
+ ["การเขียนบทสนทนาให้เป็นธรรมชาติ", "การเชื่อมประโยคด้วยคำเชื่อม", "น้ำเสียงสุภาพ"],
+ ["การจัดรูปแบบ Markdown", "การเขียนเชิงวิเคราะห์และอธิบาย", "การอ่านแล้วเรียบเรียงใหม่"],
+ ["การเขียนให้ผู้อ่านเข้าใจครั้งเดียว", "การตรวจแก้ไขข้อความของตนเอง", "การแปลแล้วปรับสำนวน"],
+]
+
 def dev_items():
     out=[]
-    for stage,life,world in DEV_STAGES:
+    for si,(stage,life,world) in enumerate(DEV_STAGES):
         for t in life: out.append({"stage":stage,"kind":"life","topic":t})
+        for t in (DEV_INNER[si] if si < len(DEV_INNER) else []): out.append({"stage":stage,"kind":"inner","topic":t})
+        for t in (DEV_LANG[si] if si < len(DEV_LANG) else []): out.append({"stage":stage,"kind":"lang","topic":t})
+        for t in (LANG_CRAFT[si] if si < len(LANG_CRAFT) else []): out.append({"stage":stage,"kind":"craft","topic":t})
         for t in world: out.append({"stage":stage,"kind":"world","topic":t})
     return out
 
@@ -2898,6 +2990,12 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/video/list":
             self._send_json(200, {"ok": True, "jobs": list_jobs()})
             return
+        if u.path == "/api/lang/detect":
+            q = urllib.parse.parse_qs(u.query)
+            txt = q.get("text", [""])[0]
+            code = detect_lang(txt)
+            self._send_json(200, {"ok": True, "code": code, "name": LANG_NAMES.get(code, code)})
+            return
         if u.path == "/api/health":
             self._send_json(200, {
                 "ok": True,
@@ -2940,6 +3038,20 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/text/polish":
+            try:
+                result = polish_text(body.get("text") or "", body.get("lang") or "th")
+                self._send_json(200, result)
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
+            return
+        if u.path == "/api/translate":
+            try:
+                result = translate_text(body.get("text") or "", body.get("target") or "th", body.get("source") or "")
+                self._send_json(200, result)
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
+            return
         if u.path == "/api/memory":
             mem = memory_update(body)
             self._send_json(200, {"ok": True, "memory": mem})
