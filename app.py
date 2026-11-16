@@ -5,7 +5,11 @@ if 'pending' not in st.session_state: st.session_state.pending=''
 if 'last_audio' not in st.session_state: st.session_state.last_audio=None
 if 'user_name' not in st.session_state: st.session_state.user_name='Whisp'
 if 'active' not in st.session_state: st.session_state.active='new'
+if 'show_add' not in st.session_state: st.session_state.show_add=False
+if 'add_text' not in st.session_state: st.session_state.add_text=''
+if 'add_img' not in st.session_state: st.session_state.add_img=None
 nav=st.query_params.get('nav','')
+if st.query_params.get('add','')=='1': st.session_state.show_add=not st.session_state.show_add; st.query_params.clear(); st.rerun()
 MAP={'new':'','search':'ค้นหา','media':'เปิดสื่อ','artifacts':'เปิดอาร์ติแฟกต์','scheduled':'ดูงานวันนี้','custom':'ปรับแต่ง Zyphere','video':'คิดสคริปต์วิดีโอ','vibes':'เปิด Vibes'}
 if nav:
     st.session_state.active=nav
@@ -55,9 +59,20 @@ prompt=''
 if not has_chat:
     st.markdown("<div class='hero'>เราจะเริ่มจากตรงไหนก่อนดี</div>", unsafe_allow_html=True)
     st.markdown("<div class='center'><div class='blob'></div><div class='pill'>", unsafe_allow_html=True)
+    if st.session_state.show_add:
+        st.markdown("<div style='background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.10);padding:14px;margin-bottom:10px'><b>＋ เพิ่มให้ Zyphere ทำงาน</b><br><span style='font-size:13px;color:#666'>เพิ่มรูป / ไฟล์ / ข้อความ แล้วพิมพ์สั่งข้างล่าง Zyphere จะเอาไปทำงานด้วย</span></div>", unsafe_allow_html=True)
+        up=st.file_uploader('เพิ่มรูป / ไฟล์', type=['png','jpg','jpeg','webp','pdf','txt','docx','csv'], label_visibility='collapsed')
+        if up is not None:
+            st.session_state.add_img=up
+            st.success('เพิ่มแล้ว: '+up.name+' - Zyphere จะเห็นไฟล์นี้ตอนคุณพิมพ์สั่ง')
+            if up.type and 'image' in up.type: st.image(up, width=200)
+        st.session_state.add_text=st.text_area('เพิ่มข้อความ / คำสั่งยาวๆ', value=st.session_state.add_text, placeholder='วางข้อความยาวๆ ตรงนี้ เช่น บทความ โค้ด เนื้อหาที่จะให้ Zyphere สรุป...', height=100)
+        if st.button('＋ เพิ่มการสนทนาใหม่ (เริ่มแชทใหม่ + เก็บแชทเก่าไว้)'):
+            st.session_state.messages=[]; st.session_state.show_add=False; st.rerun()
+
     with st.form('f', clear_on_submit=True):
         c1,c2,c3,c4=st.columns([0.4,4,1.7,0.5])
-        with c1: st.markdown("<div style='font-size:22px;text-align:center;padding-top:4px'>＋</div>", unsafe_allow_html=True)
+        with c1: st.markdown("<a href='?add=1' style='font-size:22px;text-align:center;display:block;text-decoration:none;color:#1f1f1f'>＋</a>", unsafe_allow_html=True)
         with c2: inp=st.text_input('q', placeholder='ถาม Zyphere', label_visibility='collapsed')
         with c3: bp=st.selectbox('m',['Zyphere อัตโนมัติ','01 GROQ - FAST','02 GROQ - DEEP','03 GEMINI - LONG','04 OPENROUTER - BIG'], label_visibility='collapsed')
         with c4: sent=st.form_submit_button('↑')
@@ -72,7 +87,11 @@ else:
     prompt=st.session_state.pending or inp2 or ''
     if st.session_state.pending: st.session_state.pending=''
 if prompt:
+    _extra=''
+    if st.session_state.add_text: _extra='\n\n[ข้อความที่แนบมา]\n'+st.session_state.add_text
+    if st.session_state.add_img is not None: _extra+='\n\n[ผู้ใช้แนบไฟล์: '+st.session_state.add_img.name+']'
     if prompt not in [m['content'] for m in st.session_state.messages if m['role']=='user']: st.session_state.messages.append({'role':'user','content':prompt})
+    if _extra: prompt=prompt+_extra
     with st.spinner('Zyphere กำลังคิด...'):
         try:
             sys='You are Zyphere, coworker friend. Talk Thai warm direct.'; ans=''
