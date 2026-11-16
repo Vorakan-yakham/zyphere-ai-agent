@@ -1,66 +1,94 @@
 <!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zyphere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--fg:#1c1e21;--bd:#e4e6eb;--ai:#f0f2f5;--pr:#0084ff;--mut:#888}
-@media(prefers-color-scheme:dark){:root{--bg:#18191a;--fg:#e4e6eb;--bd:#3a3b3c;--ai:#242526;--mut:#aaa}}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;height:100vh;height:100dvh}
-button,select,input,textarea{font:inherit;color:inherit;background:var(--bg)}
-.side{width:250px;border-right:1px solid var(--bd);padding:12px;display:flex;flex-direction:column;gap:6px}
-.side .list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
-.it{display:flex;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}
-.it:hover,.it.on{background:var(--ai)}.it span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it i{font-style:normal;color:var(--mut);padding-left:6px}
-.sb{padding:9px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;text-align:left}
-.main{flex:1;display:flex;flex-direction:column;max-width:900px;margin:0 auto;width:100%;min-width:0}
-.top{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:12px}
-.chat{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.b{max-width:85%;padding:12px 16px;border-radius:16px;white-space:pre-wrap;line-height:1.6;word-break:break-word}
-.u{align-self:flex-end;background:var(--pr);color:#fff}.a{align-self:flex-start;background:var(--ai)}
-.b img{max-width:240px;border-radius:10px;display:block;margin-bottom:6px}
-.b pre{background:#0d1117;color:#e6edf3;padding:10px;border-radius:8px;overflow:auto;white-space:pre;margin:8px 0}
-.b code{font-family:ui-monospace,monospace;font-size:.92em}.b :not(pre)>code{background:rgba(127,127,127,.2);padding:1px 5px;border-radius:4px}
-.act{margin-top:6px;display:flex;gap:6px}.act button{border:1px solid var(--bd);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer}
-.chips{padding:0 14px;display:flex;gap:6px;flex-wrap:wrap}.chip{background:var(--ai);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
-.box{padding:12px 14px;display:flex;gap:8px;border-top:1px solid var(--bd);align-items:center}
-.box textarea{flex:1;padding:12px 16px;border-radius:20px;border:1px solid var(--bd);outline:none;resize:none;max-height:140px;font-size:15px}
-.box select{padding:8px;border-radius:999px;border:1px solid var(--bd);max-width:120px}
-.send{width:46px;height:46px;border-radius:50%;border:0;background:var(--pr);color:#fff;font-size:20px;cursor:pointer;flex-shrink:0}
-.mini{width:42px;height:42px;border-radius:50%;border:1px solid var(--bd);cursor:pointer;flex-shrink:0}
-.ok{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9}
-.card{background:var(--bg);width:520px;max-width:92vw;max-height:90vh;overflow:auto;border-radius:16px;padding:20px}
-.card input,.card textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);margin:4px 0 8px}
+:root{--bg:#fff;--sf:#f4f6fb;--fg:#1f2430;--mut:#6b7280;--bd:#e5e8ef;--g:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#ec4899)}
+@media(prefers-color-scheme:dark){:root{--bg:#131519;--sf:#1d2026;--fg:#eceef3;--mut:#9aa1ad;--bd:#2c3038}}
+*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;height:100vh;height:100dvh}
+button,select,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.side{width:260px;background:var(--sf);padding:14px 10px;display:flex;flex-direction:column;gap:6px;transition:margin .2s}.side.hide{margin-left:-260px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:20px;padding:4px 8px 10px}.logo .orb{width:26px;height:26px}
+.sb{display:flex;align-items:center;gap:8px;padding:10px 12px;border:0;border-radius:12px;background:transparent;text-align:left;width:100%}.sb:hover{background:var(--bd)}
+.new{background:var(--bg);border:1px solid var(--bd)}
+#search{background:var(--bg);border:1px solid var(--bd);outline:0}
+.list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.it{display:flex;justify-content:space-between;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:14px;color:var(--mut)}.it:hover,.it.on{background:var(--bd);color:var(--fg)}.it span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it i{font-style:normal;opacity:.6;padding-left:6px}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+.top{display:flex;align-items:center;gap:6px;padding:10px 14px}.top b{font-weight:500;color:var(--mut);flex:1}
+.ib{width:40px;height:40px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;flex-shrink:0}.ib:hover{background:var(--sf)}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.chat{flex:1;overflow:auto;padding:8px 16px 16px}.col{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px;min-height:100%}
+.empty{margin:auto;text-align:center;padding:20px 0}.empty .orb{width:84px;height:84px;margin:0 auto 22px}
+.empty h1{font-size:30px;font-weight:600;margin:0 0 6px;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}.empty p{margin:0 0 26px;color:var(--mut)}
+.sug{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:560px;margin:0 auto}.sug button{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:14px;text-align:left;font-size:14px}.sug button:hover{border-color:#8b5cf6}
+.u{align-self:flex-end;max-width:80%;background:var(--sf);padding:11px 18px;border-radius:22px;white-space:pre-wrap;line-height:1.6;word-break:break-word}
+.a{display:flex;gap:12px;align-items:flex-start}.a .orb{width:28px;height:28px;margin-top:2px}.a .t{flex:1;line-height:1.85;white-space:pre-wrap;word-break:break-word;min-width:0}
+.a .t pre{background:#0d1117;color:#e6edf3;padding:12px;border-radius:12px;overflow:auto;white-space:pre}.a .t code{font-family:ui-monospace,monospace;font-size:.9em}
+.spk{border:0;background:transparent;color:var(--mut);padding:2px 8px;font-size:12px;border-radius:999px}.spk:hover{background:var(--sf)}
+.u img{max-width:220px;border-radius:12px;display:block;margin-bottom:6px}
+.dock{padding:6px 16px 16px}.chips{max-width:760px;margin:0 auto 6px;display:flex;gap:6px;flex-wrap:wrap}.chip{background:var(--sf);border-radius:999px;padding:4px 12px;font-size:12px;cursor:pointer}
+.box{max-width:760px;margin:0 auto;background:var(--sf);border:1px solid var(--bd);border-radius:28px;display:flex;align-items:flex-end;gap:2px;padding:8px 8px 8px 10px;transition:.15s}.box:focus-within{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+.box textarea{flex:1;border:0;outline:0;background:transparent;resize:none;padding:9px 6px;max-height:150px;font-size:15px;line-height:1.5}
+.go{background:var(--g);color:#fff}.go:hover{background:var(--g);opacity:.9}.live{background:var(--fg);color:var(--bg)}.live:hover{background:var(--fg)}
+.orb{border-radius:50%;background:conic-gradient(from 0deg,#3b82f6,#8b5cf6,#ec4899,#f59e0b,#3b82f6);flex-shrink:0;position:relative}.orb::after{content:"";position:absolute;inset:18%;border-radius:50%;background:var(--bg);opacity:.0}
+.ov{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px;text-align:center}
+.ov .big{width:min(46vw,200px);height:min(46vw,200px);filter:blur(.5px);box-shadow:0 0 80px rgba(139,92,246,.45);animation:spin 6s linear infinite,br 2.4s ease-in-out infinite}
+.ov.listen .big{animation-duration:6s,1.4s}.ov.think .big{animation-duration:1.5s,2.4s}.ov.speak .big{animation-duration:3s,.7s}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes br{50%{scale:1.14}}
+.ov h2{margin:0;font-weight:500;font-size:20px}.ov p{margin:0;color:var(--mut);max-width:560px;max-height:30vh;overflow:auto;line-height:1.7}
+.ov .end{background:#ef4444;color:#fff;border:0;border-radius:999px;padding:12px 28px;font-size:15px}
+.bk{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:30}
+.card{background:var(--bg);width:520px;max-width:92vw;max-height:90vh;overflow:auto;border-radius:24px;padding:22px}.card h3{margin:0 0 12px}
+.card label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}.card input,.card textarea,.card select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--bd);background:var(--sf)}
+.card details{margin-top:12px}.card summary{cursor:pointer;color:var(--mut);font-size:14px}
 #menu{display:none}
-@media(max-width:700px){.side{position:fixed;inset:0 auto 0 0;z-index:5;background:var(--bg);transform:translateX(-100%);transition:.2s}.side.open{transform:none}#menu{display:inline-block}.box select{max-width:84px;font-size:12px}}
+@media(max-width:760px){.side{position:fixed;inset:0 auto 0 0;z-index:15;margin-left:-270px;box-shadow:0 0 40px rgba(0,0,0,.3)}.side.open{margin-left:0}.sug{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ov .big{animation:none}}
 </style></head><body>
-<div class="side" id="side"><b style="font-size:22px">✦ Zyphere</b>
-<button class="sb" id="newBtn">✎ แชทใหม่</button><input id="search" class="sb" placeholder="⌕ ค้นหาแชท" autocomplete="off">
-<div class="list" id="list"></div><button class="sb" id="setBtn">⚙ ตั้งค่า / ใส่คีย์</button></div>
-<div class="main"><div class="top"><button class="mini" id="menu">☰</button><span>Zyphere • ไทย/English • จำบทสนทนาได้ • สลับสมองอัตโนมัติถ้าตัวหนึ่งล่ม</span></div>
-<div class="chat" id="chat"></div><div class="chips" id="chips"></div>
-<div class="box"><select id="lang"><option value="auto">ภาษา: อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
-<select id="brain"><option value="groq">Groq</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option><option value="hf">Hugging Face</option></select>
-<textarea id="q" rows="1" placeholder="ถาม Zyphere... (Enter ส่ง, Shift+Enter ขึ้นบรรทัดใหม่)"></textarea>
-<button class="mini" id="plusBtn" title="แนบไฟล์/รูป">+</button><input type="file" id="fileIn" style="display:none">
-<button class="mini" id="micBtn" title="พูด">🎤</button><button class="mini" id="voiceBtn" title="เปิด/ปิดเสียงตอบ">🔊</button><button class="send" id="sendBtn">↑</button></div></div>
-<div class="ok" id="set"><div class="card"><h3 style="margin:0 0 6px">ตั้งค่า</h3><p style="font-size:13px;color:var(--mut);margin:0 0 8px">ใส่คีย์ช่องเดียวก็พอ คีย์เก็บในเบราว์เซอร์คุณเท่านั้น</p>
-Groq (gsk_)<input id="k-groq" autocomplete="off">Gemini (AQ. / AIza)<input id="k-gemini" autocomplete="off">OpenRouter (sk-or-v1-)<input id="k-openrouter" autocomplete="off">Hugging Face (hf_)<input id="k-hf" autocomplete="off">
-คำสั่งพิเศษให้ AI (บุคลิก/กฎที่ต้องจำ)<textarea id="custom" rows="3" placeholder="เช่น เรียกฉันว่าพี่ ตอบแบบเป็นกันเอง"></textarea>
-<button id="doneBtn" class="sb" style="background:#16a34a;color:#fff">เสร็จแล้ว</button> <button id="wipeBtn" class="sb" style="color:#d33">ลบแชททั้งหมด</button></div></div>
+<aside class="side" id="side"><div class="logo"><div class="orb"></div>Zyphere</div>
+<button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
+<input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
+<button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
+<div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><b>Zyphere</b>
+<button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
+<div class="chat" id="chat"><div class="col" id="col"></div></div>
+<div class="dock"><div class="chips" id="chips"></div><div class="box">
+<button class="ib" id="plusBtn" title="แนบไฟล์หรือรูป"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" hidden>
+<textarea id="q" rows="1" placeholder="พิมพ์ หรือกดไมค์เพื่อพูด..."></textarea>
+<button class="ib" id="micBtn" title="พูดหนึ่งประโยค"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+<button class="ib live" id="callBtn" title="คุยด้วยเสียงต่อเนื่อง"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg></button>
+<button class="ib go" id="sendBtn" title="ส่ง"></button></div></div></div>
+<div class="ov" id="ov"><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
+<div class="bk" id="set"><div class="card"><h3>ตั้งค่า</h3>
+<label>คีย์ AI (ใส่ช่องเดียวก็พอ เก็บในเบราว์เซอร์คุณเท่านั้น)</label>
+<input id="k-groq" placeholder="Groq" autocomplete="off"><input id="k-gemini" placeholder="Gemini" autocomplete="off" style="margin-top:6px"><input id="k-openrouter" placeholder="OpenRouter" autocomplete="off" style="margin-top:6px"><input id="k-hf" placeholder="Hugging Face" autocomplete="off" style="margin-top:6px">
+<label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
+<label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.7" max="1.4" step="0.05">
+<label>บุคลิกหรือกฎพิเศษ</label><textarea id="custom" rows="2" placeholder="เช่น เรียกฉันว่าพี่ พูดเป็นกันเองแบบเพื่อน"></textarea>
+<details><summary>ขั้นสูง</summary><label>เลือกสมอง AI</label><select id="brain"><option value="auto">อัตโนมัติ</option><option value="groq">Groq</option><option value="gemini">Gemini</option><option value="openrouter">OpenRouter</option><option value="hf">Hugging Face</option></select></details>
+<div style="display:flex;gap:8px;margin-top:16px"><button class="sb go" id="doneBtn" style="justify-content:center">เสร็จแล้ว</button><button class="sb new" id="wipeBtn" style="justify-content:center;color:#ef4444">ลบแชททั้งหมด</button></div></div></div>
 <script>
 const $=id=>document.getElementById(id);
 const getK=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
 const setK=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const IC={on:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',off:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9l4 6M21 9l-4 6"/></svg>',send:'<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',stop:'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>'};
 let chats=[];try{chats=JSON.parse(getK('zy_chats')||'[]')}catch(e){}
-let cur=null,pend={text:'',names:[],img:null},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th';
-$('brain').value=getK('zy_brain')||'groq';$('lang').value=getK('zy_lang')||'auto';$('voiceBtn').textContent=voiceOn?'🔊':'🔇';
+let cur=null,pend={text:'',names:[],img:null},busy=false,ctrl=null,voiceOn=getK('zy_voice')!=='0',lastLang='th',call=false,curSR=null,stopRec=false;
 const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,...r})=>r)}))));
+$('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
+$('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'1';
 const P={
  groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','llama-3.3-70b-versatile','llama-3.1-8b-instant','moonshotai/kimi-k2-instruct-0905'],vision:['meta-llama/llama-4-scout-17b-16e-instruct']},
+ gemini:{n:'Gemini',models:['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash']},
  openrouter:{n:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',models:['deepseek/deepseek-chat-v3.1:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free','meta-llama/llama-3.3-70b-instruct:free'],vision:['google/gemma-3-27b-it:free']},
- hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]},
- gemini:{n:'Gemini',models:['gemini-3.8-flash','gemini-2.5-flash','gemini-2.0-flash']}};
+ hf:{n:'Hugging Face',url:'https://router.huggingface.co/v1/chat/completions',models:['meta-llama/Meta-Llama-3-8B-Instruct','Qwen/Qwen2.5-7B-Instruct'],vision:[]}};
 const key=id=>getK('zyphere_'+id+'_key');
 function resolveLang(t){const s=$('lang').value;return s!=='auto'?s:(/[\u0E00-\u0E7F]/.test(t)?'th':'en')}
-function sysPrompt(l){return (l==='th'?'คุณคือ Zyphere ผู้ช่วย AI ตอบเป็นภาษาไทย กระชับ ชัดเจน ถูกต้อง ใช้ markdown ได้ โค้ดใส่ใน ``` ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล':'You are Zyphere, a helpful AI assistant. Reply in English, concise and accurate. Markdown allowed, code in ``` fences. If unsure, say so; never invent facts.')+(getK('zy_custom')?'\n\nUser instructions: '+getK('zy_custom'):'')}
+function sysPrompt(l,v){const th=l==='th';
+ let s=th?'คุณคือ Zyphere เพื่อนคุยที่ฉลาดและอบอุ่น พูดภาษาไทยธรรมชาติแบบภาษาพูดที่คนไทยคุยกันจริงๆ ลงท้าย ครับ เป็นหลัก ตอบสั้น 1-3 ประโยคก่อน ขยายความเมื่อถูกถามหรือเรื่องซับซ้อน ถามกลับสั้นๆ ได้เมื่อเหมาะสม ห้ามขึ้นต้นด้วยคำอย่าง "แน่นอน" หรือ "ในฐานะ AI" ห้ามใช้ emoji ห้ามใช้หัวข้อหรือสัญลักษณ์ markdown เว้นแต่เป็นโค้ด ถ้าไม่แน่ใจให้บอกตรงๆ ห้ามแต่งข้อมูล'
+ :'You are Zyphere, a warm, smart friend to talk with. Speak naturally and conversationally, 1-3 short sentences first, expand only when asked or when the topic is complex. No emoji, no headings or markdown except code. If unsure, say so; never invent facts.';
+ if(v)s+=th?'\n\nตอนนี้กำลังคุยด้วยเสียง ตอบเป็นประโยคพูดล้วนๆ สั้นไม่เกิน 3 ประโยค ไม่มีรายการ ไม่มีตัวเลขหัวข้อ':'\n\nThis is a live voice chat: spoken sentences only, max 3 sentences, no lists.';
+ const c=getK('zy_custom');return s+(c?'\n\nUser instructions: '+c:'')}
 async function readSSE(r,pick,on){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;try{const t=pick(JSON.parse(d));if(t){full+=t;on(full)}}catch(e){}}}if(!full)throw new Error('ไม่ได้รับคำตอบ');return full}
 async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
 async function callProv(id,msgs,img,sig,on,sys){
@@ -74,22 +102,28 @@ async function callProv(id,msgs,img,sig,on,sys){
  for(const m of list){try{const r=await fetch(p.url,{method:'POST',signal:sig,headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,messages:om,stream:true,max_tokens:2048})});if(!r.ok)await fail(r,p.n);return await readSSE(r,j=>j.choices?.[0]?.delta?.content,on)}catch(e){if(e.name==='AbortError')throw e;err=e.message}}
  throw new Error(err)}
 async function ask(msgs,img,sig,on,sys){
- const sel=$('brain').value,order=[sel,...Object.keys(P).filter(x=>x!==sel)],errs=[];
+ const sel=$('brain').value,all=Object.keys(P),order=sel==='auto'?all:[sel,...all.filter(x=>x!==sel)],errs=[];
  for(const id of order){if(!key(id)){if(id===sel)errs.push('ยังไม่ได้ใส่คีย์ '+P[id].n);continue}
-  try{return{text:await callProv(id,msgs,img,sig,on,sys),id}}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
- throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กด ⚙ ตั้งค่า')}
-function md(t){return t.split('```').map((p,i)=>i%2?'<pre><code>'+esc(p.replace(/^[\w+-]*\n/,''))+'</code></pre>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>')).join('')}
-function plain(t){return t.replace(/```[\s\S]*?```/g,' ').replace(/[*_#`]/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'')}
-function speak(t,btn){try{const s=window.speechSynthesis;if(!s)return;if(s.speaking){s.cancel();if(btn)btn.textContent='▶ ฟัง';return}const u=new SpeechSynthesisUtterance(plain(t));u.lang=lastLang==='en'?'en-US':'th-TH';const v=s.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith(lastLang));if(v)u.voice=v;u.onend=u.onerror=()=>{if(btn)btn.textContent='▶ ฟัง'};if(btn)btn.textContent='⏹ หยุด';s.speak(u)}catch(e){}}
-function bubble(m){const d=document.createElement('div');d.className='b '+(m.r==='user'?'u':'a');const c=document.createElement('div');d.appendChild(c);
- if(m.img){const i=document.createElement('img');i.src=m.img;d.insertBefore(i,c)}
- if(m.r==='user'){c.textContent=m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')}else{c.innerHTML=md(m.c);
-  const a=document.createElement('div');a.className='act';a.innerHTML='<button>คัดลอก</button><button>▶ ฟัง</button>';
-  a.children[0].onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);e.target.textContent='คัดลอกแล้ว'};a.children[1].onclick=e=>speak(m.c,e.target);d.appendChild(a)}
- $('chat').appendChild(d);$('chat').scrollTop=1e9;return d}
-function view(){const ch=$('chat');ch.innerHTML='';const c=chats.find(x=>x.id===cur);
- if(!c||!c.m.length)bubble({r:'assistant',c:'สวัสดีครับ ผม Zyphere พิมพ์ กดไมค์ หรือกด + แนบไฟล์/รูปได้เลย ผมจำบทสนทนาในแชทนี้ได้ และถ้าสมองที่เลือกล่มจะสลับไปตัวอื่นให้อัตโนมัติ'});
- else c.m.forEach(bubble);renderList()}
+  try{return await callProv(id,msgs,img,sig,on,sys)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
+ throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กดตั้งค่าที่เมนูซ้าย')}
+const md=t=>t.split('```').map((p,i)=>i%2?'<pre><code>'+esc(p.replace(/^[\w+-]*\n/,''))+'</code></pre>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
+const plain=t=>t.replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#`>~]/g,'').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').replace(/\s*\n+\s*/g,'\n').trim();
+function chunk(t){const out=[];for(const ln of t.split('\n')){let cur='';for(const w of ln.split(/(\s+)/)){if(cur&&(cur+w).length>100){out.push(cur);cur=w}else cur+=w}if(cur.trim())out.push(cur)}return out}
+function pickVoice(l){const vs=(window.speechSynthesis?speechSynthesis.getVoices():[]).filter(v=>v.lang&&v.lang.toLowerCase().startsWith(l));const sc=v=>(/natural|online|neural/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(/premwadee|niwat|achara|pattara/i.test(v.name)?1:0);return vs.sort((a,b)=>sc(b)-sc(a))[0]}
+let spkTok=0;
+function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}}
+function speak(text,btn){return new Promise(res=>{try{if(!window.speechSynthesis)return res();stopSpeak();const tok=spkTok,parts=chunk(plain(text)),v=pickVoice(lastLang);if(btn)btn.textContent='หยุด';let i=0;const fin=()=>{if(btn)btn.textContent='ฟัง';res()};
+ const next=()=>{if(tok!==spkTok||i>=parts.length)return tok===spkTok?fin():res();const u=new SpeechSynthesisUtterance(parts[i++]);u.lang=lastLang==='en'?'en-US':'th-TH';if(v)u.voice=v;u.rate=+getK('zy_rate')||1;u.pitch=1;u.onend=next;u.onerror=next;speechSynthesis.speak(u)};next()}catch(e){res()}})}
+function bubble(m,live){const col=$('col');let d;
+ if(m.r==='user'){d=document.createElement('div');d.className='u';if(m.img){const i=document.createElement('img');i.src=m.img;d.appendChild(i)}d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
+ else{d=document.createElement('div');d.className='a';d.innerHTML='<div class="orb"></div><div><div class="t"></div></div>';const t=d.querySelector('.t');t.innerHTML=md(m.c);
+  if(!live){const b=document.createElement('button');b.className='spk';b.textContent='ฟัง';b.onclick=()=>{lastLang=resolveLang(m.c);speak(m.c,b)};t.parentNode.appendChild(b)}}
+ col.appendChild(d);$('chat').scrollTop=1e9;return d}
+const SUG=['ช่วยอธิบายเรื่องยากๆ ให้ฟังง่ายๆ หน่อย','แนะนำที่เที่ยวสบายๆ ช่วงสุดสัปดาห์','ช่วยร่างข้อความตอบลูกค้าให้สุภาพ','คุยเล่นเป็นเพื่อนหน่อย วันนี้เหนื่อยมาก'];
+function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
+ if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="orb"></div><h1>สวัสดีครับ วันนี้อยากคุยเรื่องอะไร</h1><p>พิมพ์ หรือกดปุ่มคลื่นเสียงเพื่อคุยกันด้วยเสียงได้เลย</p><div class="sug"></div></div>';
+  SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
+ else c.m.forEach(m=>bubble(m));renderList()}
 function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
  chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>m.c.toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
   d.innerHTML='<span>'+esc(c.t)+'</span><i title="ลบ">✕</i>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
@@ -98,31 +132,53 @@ function chips(){const b=$('chips');b.innerHTML='';pend.names.forEach(n=>{const 
 function addFile(f){if(!f)return;if(f.type.startsWith('image/')){const r=new FileReader();r.onload=()=>{pend.img=r.result;pend.names.push(f.name||'รูป');chips()};r.readAsDataURL(f);return}
  if(/\.(zip|rar|7z|exe|mp3|mp4|pdf|docx?|xlsx?)$/i.test(f.name)){alert('อ่านไฟล์ประเภทนี้ตรงๆ ไม่ได้ ให้แปลงเป็น .txt .md .json .csv .html .js .py ก่อน');return}
  const r=new FileReader();r.onload=()=>{const t=String(r.result||'');pend.text+='\n\n[ไฟล์ '+f.name+']:\n'+t.slice(0,30000)+(t.length>30000?'\n...(ตัดส่วนที่เกิน 30,000 ตัวอักษร)':'');pend.names.push(f.name);chips()};r.readAsText(f)}
-function setBusy(b){busy=b;$('sendBtn').textContent=b?'■':'↑'}
-async function send(){
- if(busy){ctrl&&ctrl.abort();return}
+function setBusy(b){busy=b;$('sendBtn').innerHTML=b?IC.stop:IC.send}
+function orb(s,t){$('ov').className='ov '+s;$('ovS').textContent={listen:'กำลังฟัง...',think:'กำลังคิด...',speak:'กำลังพูด...'}[s];if(t!==undefined)$('ovT').textContent=t}
+async function send(voice){
+ if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();if(!t&&!pend.names.length)return;
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.names[0]).slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  const um={r:'user',c:t||'(แนบไฟล์)',x:pend.text,f:pend.names.slice(),img:pend.img};c.m.push(um);pend={text:'',names:[],img:null};chips();$('q').value='';$('q').style.height='';
- view();const lang=resolveLang(t);lastLang=lang;const ab=bubble({r:'assistant',c:'กำลังคิด...'});const body=ab.firstChild;
+ view();const lang=resolveLang(t);lastLang=lang;const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
  const msgs=c.m.slice(-20).map(m=>({role:m.r==='user'?'user':'assistant',content:m.c+(m.x||'')}));
- ctrl=new AbortController();setBusy(true);let reply='';
- try{const r=await ask(msgs,um.img,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9},sysPrompt(lang));reply=r.text;if(r.id!==$('brain').value)reply+='\n\n(ใช้ '+P[r.id].n+' แทน เพราะตัวที่เลือกใช้ไม่ได้)'}
- catch(e){if(e.name==='AbortError'){reply=reply||'(หยุดแล้ว)'}else{reply='เกิดข้อผิดพลาด:\n'+e.message}}
- setBusy(false);c.m.push({r:'assistant',c:reply});save();view();if(voiceOn&&!/^เกิดข้อผิดพลาด/.test(reply)){const b=$('chat').lastChild.querySelector('.act button:last-child');speak(reply,b)}}
-function listen(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('เบราว์เซอร์นี้ไม่รองรับไมค์ ให้พิมพ์แทน');return}
- const r=new SR(),b=$('micBtn'),l=$('lang').value;r.lang=l==='en'?'en-US':'th-TH';b.textContent='🔴';r.onresult=e=>{$('q').value=e.results[0][0].transcript;send()};r.onerror=r.onend=()=>{b.textContent='🎤'};try{r.start()}catch(e){b.textContent='🎤'}}
+ ctrl=new AbortController();setBusy(true);let reply='',ok=true;if(voice)orb('think');
+ try{reply=await ask(msgs,um.img,ctrl.signal,x=>{reply=x;body.innerHTML=md(x);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(x)},sysPrompt(lang,voice))}
+ catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+e.message}
+ setBusy(false);c.m.push({r:'assistant',c:reply});save();view();
+ if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
+ else if(voice&&!ok){call=false;endCall()}}
+function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=e=>{if(/not-allowed|service-not/.test(e.error)){alert('ต้องอนุญาตให้ใช้ไมค์ก่อน');call=false}};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});
+ return recordOnce()}
+async function recordOnce(){const k=key('groq');if(!k){alert('เบราว์เซอร์นี้ไม่มีระบบฟังเสียงในตัว (เช่น Firefox) ใส่คีย์ Groq ในตั้งค่า หรือใช้ Chrome/Edge');call=false;return ''}
+ let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){alert('ต้องอนุญาตให้ใช้ไมค์ก่อน');call=false;return ''}
+ const ac=new AudioContext(),an=ac.createAnalyser();an.fftSize=512;ac.createMediaStreamSource(st).connect(an);const buf=new Uint8Array(an.fftSize),mr=new MediaRecorder(st),ch=[];mr.ondataavailable=e=>ch.push(e.data);const stopped=new Promise(r=>mr.onstop=r);mr.start();
+ let spoke=false,last=Date.now();const t0=last;
+ await new Promise(res=>{const iv=setInterval(()=>{an.getByteTimeDomainData(buf);let m=0;for(const v of buf)m=Math.max(m,Math.abs(v-128));const n=Date.now();if(m>14){spoke=true;last=n}if(stopRec||(spoke&&n-last>1300)||n-t0>30000||(!spoke&&n-t0>9000)){clearInterval(iv);res()}},100)});
+ mr.stop();await stopped;st.getTracks().forEach(t=>t.stop());ac.close();if(!spoke||stopRec)return '';
+ const fd=new FormData();fd.append('file',new Blob(ch,{type:mr.mimeType}),'a.webm');fd.append('model','whisper-large-v3-turbo');const l=$('lang').value;if(l!=='auto')fd.append('language',l);
+ try{const r=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+k},body:fd});const j=await r.json();return (j.text||'').trim()}catch(e){return ''}}
+function stopListen(){stopRec=true;try{curSR&&curSR.abort()}catch(e){}}
+async function mic(){if(busy||call)return;const b=$('micBtn');b.style.color='#ef4444';const t=await listenOnce();b.style.color='';if(t){$('q').value=t;send()}}
+async function startCall(){if(call)return;call=true;$('ov').style.display='flex';orb('listen','');
+ while(call){orb('listen');const t=await listenOnce();if(!call)break;if(!t){await new Promise(r=>setTimeout(r,250));continue}$('ovT').textContent=t;$('q').value=t;await send(true)}
+ endCall()}
+function endCall(){call=false;stopListen();stopSpeak();if(ctrl&&busy)ctrl.abort();$('ov').style.display='none'}
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
-$('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px'});
-$('sendBtn').onclick=send;$('micBtn').onclick=listen;$('plusBtn').onclick=()=>$('fileIn').click();
+$('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
+$('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=startCall;$('endBtn').onclick=endCall;$('plusBtn').onclick=()=>$('fileIn').click();
 $('fileIn').onchange=function(){addFile(this.files[0]);this.value=''};
-$('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').textContent=voiceOn?'🔊':'🔇';if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel()};
-$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
+$('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open');$('q').focus()};$('search').oninput=renderList;
+$('menu').onclick=()=>$('side').classList.toggle('open');
 document.addEventListener('paste',e=>{const it=[...(e.clipboardData||{}).items||[]].find(i=>i.kind==='file');if(it){e.preventDefault();addFile(it.getAsFile())}});
 $('chat').addEventListener('dragover',e=>e.preventDefault());$('chat').addEventListener('drop',e=>{e.preventDefault();addFile(e.dataTransfer.files[0])});
-$('setBtn').onclick=()=>{['groq','gemini','openrouter','hf'].forEach(id=>{const el=$('k-'+id);el.value=key(id);el.oninput=()=>setK('zyphere_'+id+'_key',el.value.trim())});$('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('set').style.display='flex'};
+$('setBtn').onclick=()=>{['groq','gemini','openrouter','hf'].forEach(id=>{const el=$('k-'+id);el.value=key(id);el.oninput=()=>setK('zyphere_'+id+'_key',el.value.trim())});
+ $('custom').value=getK('zy_custom');$('custom').oninput=function(){setK('zy_custom',this.value)};$('brain').onchange=function(){setK('zy_brain',this.value)};$('lang').onchange=function(){setK('zy_lang',this.value)};
+ $('rate').oninput=function(){setK('zy_rate',this.value);$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';$('set').style.display='flex'};
 $('doneBtn').onclick=()=>$('set').style.display='none';$('set').onclick=e=>{if(e.target===$('set'))$('set').style.display='none'};
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
+if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
 view();
 </script></body></html>
