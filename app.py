@@ -5,7 +5,7 @@ st.markdown("""
 <style>
 .stApp, .stApp p, .stApp h1, .stApp span, .stApp div, .stApp input, .stApp button, .stApp label { font-family:'Prompt',sans-serif !important; }
 [data-testid="stToolbar"]{display:none !important}
-footer{display:none !important} div[data-testid="stSidebar"] .stButton{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button:hover{background:#ececec !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important; color:#1f1f1f !important}
+footer{display:none !important} div[data-testid='stSidebar'] .stButton>button{border:none !important;background:transparent !important;box-shadow:none !important} div[data-testid="stSidebar"] .stButton{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button{border:none !important; background:transparent !important; box-shadow:none !important} div[data-testid="stSidebar"] .stButton > button:hover{background:#ececec !important} [data-testid="collapsedControl"]{display:flex !important; visibility:visible !important; color:#1f1f1f !important}
     section[data-testid="stSidebar"]{padding-top:0 !important}
     section[data-testid="stSidebar"] > div{padding-top:0 !important}
     div[data-testid="stSidebar"] div[data-testid="stVerticalBlock"]{gap:0 !important}
@@ -119,12 +119,12 @@ with st.sidebar:
     st.markdown("---")
     st.markdown('<div style="font-size:12px;color:#5f6368;padding:4px 12px">บัญชีของฉัน</div>', unsafe_allow_html=True)
     if not st.session_state.logged_in:
-        if st.button("👤  เข้าสู่ระบบ", use_container_width=True, type="primary"):
+        if st.button("👤  เข้าสู่ระบบ", use_container_width=True, type="secondary"):
             st.session_state.show_login=True; st.rerun()
         if st.session_state.show_login:
             st.markdown('<div class="login-box"><b>👋 เข้าสู่ระบบ Zyphere</b><br><span style="font-size:13px;color:#666">ใส่ชื่อเล่นของคุณ Zyphere จะจำได้</span></div>', unsafe_allow_html=True)
             name = st.text_input("ชื่อเล่น", value="Whisp", placeholder="เช่น Whisp / Vorakan", key="login_name")
-            if st.button("➜  เข้าสู่ระบบเลย", use_container_width=True, type="primary"):
+            if st.button("➜  เข้าสู่ระบบเลย", use_container_width=True, type="secondary"):
                 st.session_state.user_name = name.strip() or "Whisp"
                 st.session_state.logged_in=True; st.session_state.show_login=False; st.rerun()
             if st.button("✕  ปิด", use_container_width=True):
