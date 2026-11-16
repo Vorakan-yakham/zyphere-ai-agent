@@ -489,6 +489,23 @@ LEARN_JOB_LOCK = threading.RLock()
 LEARN_JOBS = {}
 
 # A broad, rotating curriculum: world knowledge + learning theories/methods.
+DEV_STAGES = [
+ ("เกิด-3ขวบ", ["คว่ำคลานเดินวิ่ง", "หยิบจับกินเองขับถ่าย", "จำหน้าคนใกล้ชิด", "ยิ้มหัวเราะร้องไห้สื่อสาร", "กลัวคนแปลกหน้าเล่นสมมติ"], ["เสียงภาษาและคำแรก", "ประโยคสั้นและชื่อตัวเอง", "ร้อนเย็นนุ่มแข็ง", "หวานเปรี้ยวสีเสียงกลิ่น"]),
+ ("อนุบาล3-6", ["เข้าคิวแบ่งของขอโทษขอบคุณ", "ระบายสีตัดกระดาษปั้นดิน", "กระโดดปีนป่ายกล้ามเนื้อ", "นิทานเพลงวาดรูปเล่นบทบาท"], ["ก-ฮ และ A-Z", "นับ1-10 และ1-100", "เขียนตามรอย"]),
+ ("ประถม1-6", ["หน้าที่พลเมืองศาสนาประเพณีมารยาท", "สุขอนามัยกีฬาดูแลร่างกาย", "วาดภาพร้องเพลงงานฝีมืองานบ้าน", "ใช้เมาส์คีย์บอร์ดพิมพ์ค้นหา"], ["อ่านเขียนสะกดแต่งประโยคย่อความ", "บวกลบคูณหารเศษส่วนทศนิยมเรขาคณิต", "พืชสัตว์ร่างกายดินน้ำอากาศแรงพลังงาน", "ประวัติศาสตร์ไทยภูมิศาสตร์แผนที่", "ภาษาอังกฤษคำศัพท์ประโยคพื้นฐาน"]),
+ ("มัธยมต้น", ["เพศศึกษาการเงินเบื้องต้นป้องกันภัย", "ทำงานกลุ่มและรู้จักตัวเอง"], ["ฟิสิกส์เคมีชีววิทยาโลกอวกาศ", "พีชคณิตสมการกราฟสถิติความน่าจะเป็น", "ภาษาไทยวิเคราะห์อังกฤษไวยากรณ์", "เศรษฐศาสตร์กฎหมายประวัติศาสตร์โลก"]),
+ ("มัธยมปลายเลือกสาย", ["ช่างยนต์ไฟฟ้าก่อสร้าง", "อาหารโรงแรมเสริมสวยการท่องเที่ยว", "เกษตรและเทคโนโลยีการผลิต", "กีฬาดนตรีศิลปะเฉพาะทาง"], ["ฟิสิกส์เคมีชีวะคณิตเข้มข้น", "บริหารบัญชีเศรษฐศาสตร์นิติศาสตร์", "ภาษาอังกฤษจีนญี่ปุ่นเกาหลีฝรั่งเศส", "ประวัติศาสตร์ภูมิศาสตร์รัฐศาสตร์"]),
+ ("มหาวิทยาลัยเชี่ยวชาญ", ["การเงินภาษีการลงทุนการเจรจาการขาย", "การสื่อสารจัดการอารมณ์เลี้ยงลูก", "ซ่อมของเอาตัวรอดรู้เท่าทันสื่อใช้เทคโนโลยี"], ["AIหุ่นยนต์วิศวกรรมวิทยาศาสตร์ข้อมูล", "แพทย์เภสัชทันตสัตวแพทย์สาธารณสุข", "ปรัชญาจิตวิทยาสังคมวิทยารัฐศาสตร์", "การตลาดโลจิสติกส์บริหารทรัพยากร", "นิเทศศาสตร์ภาพยนตร์แอนิเมชันออกแบบ", "เกษตรประมงป่าไม้สิ่งแวดล้อมธรณี"]),
+ ("วัยทำงานเรียนรู้ตลอดชีวิต", ["การเงินส่วนตัวและภาษี", "การเจรจาขายและสื่อสาร", "การจัดการอารมณ์เลี้ยงลูก", "ซ่อมของในบ้านเอาตัวรอด", "รู้เท่าทันสื่อและใช้เทคโนโลยี"], ["สายราชการรัฐวิสาหกิจ", "สายเอกชนวิศวกรโปรแกรมเมอร์การตลาด", "สายอาชีพอิสระช่างเกษตรกรค้าขาย", "สายธุรกิจส่วนตัวฟรีแลนซ์ครีเอเตอร์", "สายวิชาชีพเฉพาะทนายนักบินนักวิจัย"]),
+]
+
+def dev_items():
+    out=[]
+    for stage,life,world in DEV_STAGES:
+        for t in life: out.append({"stage":stage,"kind":"life","topic":t})
+        for t in world: out.append({"stage":stage,"kind":"world","topic":t})
+    return out
+
 CURRICULUM = [
     "กำเนิดจักรวาลและดาราศาสตร์",
     "ระบบสุริยะและอวกาศ",
@@ -573,6 +590,10 @@ def _default_learning():
         "updated_at": 0,
         "frontier": [],
         "expanded": 0,
+        "dev_cursor": 0,
+        "stage": "",
+        "kind": "",
+        "track": "",
     }
 
 
@@ -753,6 +774,10 @@ def learning_public_config():
         "curriculum_count": len(CURRICULUM),
         "frontier_count": len([x for x in (cfg.get("frontier") or []) if isinstance(x, dict) and x.get("status") != "done"]),
         "expanded": int(cfg.get("expanded") or 0),
+        "stage": cfg.get("stage") or "",
+        "kind": cfg.get("kind") or "",
+        "track": cfg.get("track") or "",
+        "dev_total": len(dev_items()),
         "topics": CURRICULUM,
         "server_llm": bool(
             os.environ.get("GROQ_API_KEY")
@@ -1327,9 +1352,53 @@ def learn_jobs_list():
         return sorted([dict(v) for v in LEARN_JOBS.values()], key=lambda x: x.get("created_at", 0), reverse=True)[:20]
 
 
+TRACKS = {
+    "วิทย์-เทคโนโลยี": ("วิทย์", "ฟิสิกส์", "เคมี", "ชีวะ", "คณิต", "AI", "วิศว", "โปรแกรม", "หุ่นยนต์", "ข้อมูล"),
+    "สุขภาพ": ("แพทย์", "สุขภาพ", "ชีวะ", "เภสัช", "โภชนา", "กีฬา", "จิตวิทยา"),
+    "ธุรกิจ-การเงิน": ("ธุรกิจ", "การเงิน", "บัญชี", "ตลาด", "เศรษฐ", "บริหาร", "ภาษี", "ลงทุน"),
+    "ภาษา-ศิลปะ": ("ภาษา", "อังกฤษ", "จีน", "ญี่ปุ่น", "ศิลปะ", "ดนตรี", "วรรณ", "ภาพยนตร์", "นิเทศ"),
+    "สังคม-กฎหมาย": ("ประวัติ", "สังคม", "รัฐ", "กฎหมาย", "นิติ", "การเมือง", "ศาสนา", "วัฒนธรรม"),
+    "เกษตร-สิ่งแวดล้อม": ("เกษตร", "สิ่งแวดล้อม", "ป่าไม้", "ประมง", "ธรณี", "ภูมิอากาศ", "นิเวศ"),
+}
+
+
+def infer_track():
+    blob = " ".join([str(x.get("topic") or "") + " " + " ".join(str(t) for t in (x.get("tags") or [])) for x in (load_knowledge().get("items") or [])])
+    blob += " " + " ".join(str(w.get("topic") or "") for w in (load_watch().get("topics") or []))
+    best, score = "ทั่วไป", 0
+    low = blob.casefold()
+    for name, kws in TRACKS.items():
+        s = sum(low.count(str(k).casefold()) for k in kws)
+        if s > score:
+            best, score = name, s
+    return best
+
+
+def dev_pick(count=1):
+    cfg = load_learning()
+    items = dev_items()
+    n = len(items)
+    cur = int(cfg.get("dev_cursor") or 0) % n
+    if cur >= sum(len(s[1]) + len(s[2]) for s in DEV_STAGES[:4]) and not cfg.get("track"):
+        cfg["track"] = infer_track()
+    picked = [items[(cur + i) % n]["topic"] for i in range(max(1, min(count or 1, 3)))]
+    cfg["dev_cursor"] = (cur + len(picked)) % n
+    cfg["stage"] = items[cur]["stage"]
+    cfg["kind"] = items[cur]["kind"]
+    save_learning(cfg)
+    return picked
+
+
 def _pick_curriculum(count):
     count = max(1, min(int(count or 1), 3))
+    if int(load_learning().get("dev_cursor") or 0) < 31:
+        picked = dev_pick(count)
+        if picked:
+            return picked
     picked = frontier_pick(count)
+    if picked:
+        return picked
+    picked = dev_pick(count)
     if picked:
         return picked
     cfg = load_learning()

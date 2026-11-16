@@ -840,7 +840,7 @@ function stamp(ts){
 function renderLearnStats(cfg){cfg=cfg||{};knowTotal=cfg.knowledge_count||knowTotal||0;
  const last=cfg.last_run?stamp(cfg.last_run):'ยังไม่มี';
  $('learnStatus').textContent='การเรียนรู้: '+(cfg.enabled?'เปิด':'ปิด')+' · ทุก '+(cfg.interval_hours||6)+' ชม. · ความรู้ '+knowTotal+' เรื่อง'+(cfg.last_topic?' · ล่าสุด: '+cfg.last_topic:'');
- $('kStats').textContent='ความรู้ '+knowTotal+' เรื่อง · กำลังขยายเอง '+(cfg.frontier_count||0)+' หัวข้อ (แตกแล้ว '+(cfg.expanded||0)+') · หลักสูตร '+(cfg.curriculum_count||'—')+' หัวข้อ'+(cfg.server_llm?' · สรุปด้วย AI (เซิร์ฟเวอร์)':' · สรุปแบบสกัดข้อความ')+'\nรอบล่าสุด: '+last+(cfg.last_topic?' · '+cfg.last_topic:'');
+ $('kStats').textContent='ความรู้ '+knowTotal+' เรื่อง · กำลังขยายเอง '+(cfg.frontier_count||0)+' หัวข้อ (แตกแล้ว '+(cfg.expanded||0)+') · ขั้น '+(cfg.stage||'เริ่มต้น')+(cfg.track?' · สาย '+cfg.track:'')+' · หลักสูตร '+(cfg.curriculum_count||'—')+' หัวข้อ'+(cfg.server_llm?' · สรุปด้วย AI (เซิร์ฟเวอร์)':' · สรุปแบบสกัดข้อความ')+'\nรอบล่าสุด: '+last+(cfg.last_topic?' · '+cfg.last_topic:'');
 }
 async function loadLearnInfo(){if(!localBase()){$('learnStatus').textContent='การเรียนรู้: ต้องเชื่อมเซิร์ฟเวอร์ Zyphere';return}
  try{const j=await api('/api/learn/config');const c=j.config||{};renderLearnStats(c);
