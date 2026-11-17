@@ -69,6 +69,15 @@ class DevBrain:
     def _extract(self, text, role):
         """Abstract facts from text without any external model."""
         got = []
+        # Teacher/elder lessons are already structured facts line-by-line.
+        # Keep each meaningful line as a 'knows' lesson so the child really learns.
+        if role in ("teacher", "elder_teacher"):
+            for line in re.split(r"[\n•\-]+", str(text)):
+                line = re.sub(r"^\s*\d+[.)]\s*", "", line)
+                line = line.split(":", 1)
+                fact = (line[1] if len(line) > 1 else line[0]).strip(" .,!?。:-")
+                if 6 <= len(fact) <= 180:
+                    got.append(("ไซเฟอร์", "knows", fact[:180]))
         for m in re.finditer(
             r"([\u0E00-\u0E7FA-Za-z0-9_ ]{1,50}?)\s*(?:คือ|เป็น|is|are|คือชื่อ|ชื่อ)\s+([\u0E00-\u0E7FA-Za-z0-9_ ]{1,60})",
             text, re.I):
