@@ -48,6 +48,14 @@ def verify():
     r = subprocess.run([sys.executable, "-m", "py_compile", "app.py"], cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
         return False
+    app_src = open(os.path.join(ROOT, "app.py"), encoding="utf-8").read()
+    idx_src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+    for x in ("/api/transcribe", "def build_briefing", "DEV_STAGES", "frontier_pick"):
+        if x not in app_src:
+            return False
+    for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send("):
+        if x not in idx_src:
+            return False
     port = str(random.randint(8200, 8900))
     env = dict(os.environ, PORT=port)
     srv = subprocess.Popen([sys.executable, "app.py"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
