@@ -203,6 +203,16 @@ try:
     FEEDBACK = FeedbackLoop(os.path.join(DATA_DIR, "feedback_loop.json"))
 except Exception:
     FEEDBACK = None
+try:
+    from safety import SafetyEngine
+    SAFETY = SafetyEngine(os.path.join(DATA_DIR, "safety.json"))
+except Exception:
+    SAFETY = None
+try:
+    from eval_loop import EvalLoop
+    EVAL = EvalLoop(os.path.join(DATA_DIR, "eval.json"))
+except Exception:
+    EVAL = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -259,6 +269,8 @@ REMOTE_KEYS = {
     "works": "zyphere:works",
     "voice": "zyphere:voice",
     "feedback_loop": "zyphere:feedback_loop",
+    "safety": "zyphere:safety",
+    "eval": "zyphere:eval",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -370,7 +382,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval"):
         try:
             data = {
                 "memory": load_mem,
@@ -387,6 +399,8 @@ def remote_push_all():
                 "works": (WORKS.snapshot() if WORKS else None),
                 "voice": (VOICE.snapshot() if VOICE else None),
                 "feedback_loop": (FEEDBACK.snapshot() if FEEDBACK else None),
+                "safety": (SAFETY.snapshot() if SAFETY else None),
+                "eval": (EVAL.snapshot() if EVAL else None),
             }[name]()
         except Exception:
             continue
@@ -415,6 +429,8 @@ def remote_pull_all():
         "works": os.path.join(DATA_DIR, "works.json"),
         "voice": os.path.join(DATA_DIR, "voice.json"),
         "feedback_loop": os.path.join(DATA_DIR, "feedback_loop.json"),
+        "safety": os.path.join(DATA_DIR, "safety.json"),
+        "eval": os.path.join(DATA_DIR, "eval.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -446,6 +462,13 @@ def remote_pull_all():
             continue
         if name == "feedback_loop" and FEEDBACK:
             if FEEDBACK.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
+            continue
+        if name in ("safety", "eval"):
+            obj = SAFETY if name == "safety" else EVAL
+            if obj and obj.restore(data):
                 restored.append(name)
             else:
                 skipped.append(name)
@@ -3360,6 +3383,12 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/safety/stats":
+            self._send_json(200, {"ok": True, "stats": SAFETY.stats() if SAFETY else {}})
+            return
+        if u.path == "/api/eval/stats":
+            self._send_json(200, {"ok": True, "stats": EVAL.stats() if EVAL else {}})
+            return
         if u.path == "/api/feedback/guidance":
             self._send_json(200, {"ok": True, "guidance": FEEDBACK.guidance() if FEEDBACK else {"guidance": "ปกติ"}})
             return
@@ -4088,6 +4117,15 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
             return
+        if u.path == "/api/safety/check":
+            res = SAFETY.evaluate(str(body.get("text") or ""), str(body.get("context") or "")) if SAFETY else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/eval/run":
+            res = EVAL.evaluate(str(body.get("question") or ""), str(body.get("answer") or ""),
+                                body.get("sources") or []) if EVAL else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/feedback/record":
             res = FEEDBACK.record(str(body.get("kind") or "positive"),
                                   str(body.get("signal") or ""), str(body.get("topic") or "")) if FEEDBACK else {"ok": False, "error": "unavailable"}
@@ -4367,6 +4405,16 @@ class Handler(SimpleHTTPRequestHandler):
             if not clean:
                 self._send_json(400, {"ok": False, "error": "empty message"})
                 return
+            # Safety gate (Zyphere's own #1 gap) — check user text before LLM
+            if SAFETY:
+                try:
+                    dec = SAFETY.evaluate(str(msgs[-1].get("content", "")))
+                    if dec.get("decision") == "BLOCK":
+                        self._send_json(403, {"ok": False, "error": dec.get("message", "blocked"),
+                                              "safety": True})
+                        return
+                except Exception:
+                    pass
             # Apply learned feedback guidance (HCAI feedback loop) to the system prompt
             if FEEDBACK:
                 try:
