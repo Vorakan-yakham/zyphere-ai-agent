@@ -539,7 +539,9 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  }
  return {ok:false,error:'unknown tool: '+name}}
 
-// Simple TTS utilities\nlet speakToken=0;let audioCtx=null;let currentAudio=null;\nfunction stopSpeak(){speakToken++;speechSynthesis.cancel();if(currentAudio){currentAudio.pause();currentAudio.currentTime=0;}}\nfunction sayOne(text){return new Promise(resolve=>{if(!window.speechSynthesis)return resolve(false);const utter=new SpeechSynthesisUtterance(text);utter.onend=()=>resolve(true);utter.onerror=()=>resolve(false);speechSynthesis.speak(utter);});}w SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
+let spkTok=0,ac=null,curAud=null;
+function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
+function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
@@ -661,8 +663,8 @@ async function send(voice){
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
  if(ok&&!local&&knowCtx&&reply.length<8000&&getK('zy_critique')==='1')reply=await critiqueAnswer(t,reply,knowCtx);
   setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
+ if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');speak(reply,b)}
  if(ok) await maybeAutoRemember(t,reply);
- if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
  else if(voice&&!ok){call=false;endCall()}}
 
 // video maker
