@@ -238,6 +238,11 @@ try:
     BEHAVIOR = Behavior(os.path.join(DATA_DIR, "behavior.json"))
 except Exception:
     BEHAVIOR = None
+try:
+    from authz import Authz
+    AUTHZ = Authz(USERS)
+except Exception:
+    AUTHZ = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3416,6 +3421,14 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/authz/policy":
+            self._send_json(200, AUTHZ.policy() if AUTHZ else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/authz/check":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            act = urllib.parse.parse_qs(u.query).get("action", ["chat"])[0]
+            self._send_json(200, AUTHZ.check(tok, act) if AUTHZ else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/behavior/profile":
             self._send_json(200, BEHAVIOR.profile() if BEHAVIOR else {"ok": False, "error": "unavailable"})

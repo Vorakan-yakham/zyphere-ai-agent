@@ -239,6 +239,9 @@ def main():
         bh.link_modal("m1", text="ควอนตัม", image="q.png", audio="q.mp3")
         rc = bh.recall_modal("ควอนตัม")
         assert rc["hits"] and rc["hits"][0]["image"] == "q.png", "cross-modal memory failed"
+        from authz import Authz
+        az = Authz(None)
+        assert az.check("", "chat")["allowed"] and not az.check("", "backup")["allowed"], "authz failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
