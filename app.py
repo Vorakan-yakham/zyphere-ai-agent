@@ -287,6 +287,11 @@ try:
     DELIVERY = Delivery(os.path.join(DATA_DIR, "delivery.json"))
 except Exception:
     DELIVERY = None
+try:
+    from packbuilder import PackBuilder
+    PACKS = PackBuilder(MEDIA_DIR, os.path.join(DATA_DIR, "packs"))
+except Exception:
+    PACKS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -353,6 +358,7 @@ REMOTE_KEYS = {
     "privacy": "zyphere:privacy",
     "guard": "zyphere:guard",
     "delivery": "zyphere:delivery",
+    "packs": "zyphere:packs",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -4270,6 +4276,12 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/pack/build":
+            res = PACKS.build(str(body.get("title") or "แพ็กสื่อ Zyphere"),
+                              int(body.get("price") or 999),
+                              body.get("files") or [], str(body.get("note") or "")) if PACKS else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/billing/confirm":
             r = BILLING.confirm(body.get("id")) if BILLING else {"ok": False}
             if r.get("ok") and DELIVERY:
@@ -4282,6 +4294,10 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/pack/list":
+            self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],
+                                  "stats": PACKS.stats() if PACKS else {}})
             return
         if u.path == "/api/delivery/stats":
             self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
