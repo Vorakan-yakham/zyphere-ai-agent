@@ -292,6 +292,11 @@ try:
     PACKS = PackBuilder(MEDIA_DIR, os.path.join(DATA_DIR, "packs"))
 except Exception:
     PACKS = None
+try:
+    from moneyfield import MoneyField
+    MONEYFIELD = MoneyField(os.path.join(DATA_DIR, "moneyfield.json"))
+except Exception:
+    MONEYFIELD = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -359,6 +364,7 @@ REMOTE_KEYS = {
     "guard": "zyphere:guard",
     "delivery": "zyphere:delivery",
     "packs": "zyphere:packs",
+    "moneyfield": "zyphere:moneyfield",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -470,7 +476,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield"):
         try:
             data = {
                 "memory": load_mem,
@@ -4276,6 +4282,13 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/money/generate":
+            res = MONEYFIELD.generate(str(body.get("field") or ""),
+                                     str(body.get("zyphere_answer") or "")) if MONEYFIELD else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("moneyfield", MONEYFIELD.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/pack/build":
             res = PACKS.build(str(body.get("title") or "แพ็กสื่อ Zyphere"),
                               int(body.get("price") or 999),
@@ -4294,6 +4307,13 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/money/fields":
+            self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/money/catalog":
+            self._send_json(200, {"ok": True, "catalog": MONEYFIELD.catalog_list() if MONEYFIELD else [],
+                                  "stats": MONEYFIELD.stats() if MONEYFIELD else {}})
             return
         if u.path == "/api/pack/list":
             self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],

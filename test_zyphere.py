@@ -272,6 +272,14 @@ def main():
         dl = Delivery(dpath)
         dr = dl.deliver("o_1", "pro", "vorayakham")
         assert dr["ok"] and dl.stats()["deliveries"] == 1, "delivery failed"
+        from moneyfield import MoneyField
+        mpath = os.path.join(tempfile.gettempdir(), "zy_moneyfield_test.json")
+        if os.path.exists(mpath): os.remove(mpath)
+        mf = MoneyField(mpath)
+        assert len(mf.fields()["fields"]) >= 18, "moneyfield catalog too small"
+        r1 = mf.generate("กฎหมาย")
+        r2 = mf.generate("การแพทย์/สุขภาพ")
+        assert r1["product"] != r2["product"], "field fidelity failed (same product for different fields)"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
