@@ -6,7 +6,7 @@
 | B02 | `WX is not defined` | ตัวแปรถูกลบแต่ยังใช้ | Fixed | token ต้องอยู่ใน test |
 | B03 | เสียงรัว | streaming TTS ตัดบรรทัดสั้น ๆ ของเพลง | Fixed | noStreamTTS สำหรับเพลง/นิทาน |
 | B04 | ทักทายแทนคำขอ | regex กว้างเกินไป | Fixed | isPureGreeting + selfTest |
-| B05 | dev agent ทำลายโค้ดที่ทำงานอยู่ | patch ไม่มี syntax gate | Open | PAUSED; ต้องแก้ guard ก่อนเปิด |
+| B05 | dev agent ทำลายโค้ด + หลาย process รันพร้อมกัน | ไม่มี syntax gate / single-instance lock | Fixed | ปิด default ด้วย `DEV_ENABLE=1`; ตรวจไม่มี process ค้าง |
 | B06 | live knowledge=1 | ไม่มี remote KV/cron | Open | Milestone 2 |
 
 กฎ: ห้ามปิด bug โดยไม่มีหลักฐานทดสอบ

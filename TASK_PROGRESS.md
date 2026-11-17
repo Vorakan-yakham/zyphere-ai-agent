@@ -9,6 +9,7 @@
 - ปัญหา: dev agent ยัง PAUSED; live knowledge=1 เรื่อง
 - Milestone 2 สำเร็จ: เพิ่ม localSong/localStory ให้เพลง/นิทานใช้ได้โดยไม่มีคีย์ AI
 - ทดสอบ Milestone 2: test PASS, browser ไม่มี error
+- Milestone 1 ปิด: ปิด dev agent ด้วย DEV_ENABLE guard (ตรวจแล้วไม่มี process ค้าง, test ผ่าน)
 - งานต่อไป: Milestone 2 ต่อ — ตั้ง remote KV + cron เพื่อให้ความรู้บน live โตจริง
 
 ## สถานะศัพท์

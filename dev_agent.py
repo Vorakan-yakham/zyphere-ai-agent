@@ -1,4 +1,7 @@
 ﻿import json, os, random, re, shutil, subprocess, sys, tempfile, time, urllib.request, urllib.error
+if os.environ.get("DEV_ENABLE") != "1":
+    print("dev_agent DISABLED by default. Set DEV_ENABLE=1 only after explicit review.")
+    sys.exit(0)
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ALLOWED = {"app.py", "index.html"}
 CANDIDATES = []

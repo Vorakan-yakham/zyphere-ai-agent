@@ -5,8 +5,8 @@
 - [x] สำรวจของจริง (git status, test, endpoints, live health)
 - [x] คืน baseline ที่ผ่าน test
 - [x] สร้าง 9 เอกสารกำกับโปรเจกต์
-- [ ] ตรวจ dev agent ก่อนเปิดใช้งานอีกครั้ง
-- [ ] เกณฑ์ผ่าน: test_zyphere.py + node --check + browser 3 คำสั่ง
+- [x] ตรวจ dev agent → ตัดสินใจปิดถาวร (DEV_ENABLE guard), ฆ่า process ค้าง
+- [x] เกณฑ์ผ่าน: test_zyphere.py + node --check + browser 3 คำสั่ง
 
 ## Milestone 2 — Live Knowledge Growth (ยังไม่เริ่ม)
 - ตั้ง remote KV จริง

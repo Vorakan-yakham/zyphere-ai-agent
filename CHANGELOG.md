@@ -35,4 +35,10 @@
 - พิมพ์ “อ่านนิทาน…” โดยไม่มีคีย์ AI → error → **หลัง: ได้นิทานจริงจาก localStory()**
 - ทั้งสองยังพยายามใช้ AI ก่อน ถ้าไม่มีคีย์ค่อย fallback (backward compatible)
 
+## ปิด Milestone 1 — Anti-Loop
+ก่อน → หลัง
+- ก่อน: dev agent หลาย process รันพร้อมกัน, push ซ้ำ, ทำลาย working code
+- หลัง: `dev_agent.py` ปิด default (`DEV_ENABLE=1`), ตรวจไม่มี process ค้าง, test ผ่าน
+- บทเรียน: กลยุทธ์ auto-patch ล้มเหลว → เปลี่ยนเป็น human-reviewed commit
+
 หลักการ: ทุก commit ต้องระบุ “ก่อน/หลัง” แบบวัดได้ ไม่ใช่แค่ “เปลี่ยนแล้ว”
