@@ -2521,6 +2521,18 @@ def _learn_worker(job_id, topics, reason):
         save_learning(cfg)
     except Exception:
         pass
+    # JARVIS: report to owner automatically after each learning run
+    if JARVIS and learned:
+        try:
+            bst = DEV_BRAIN.stats() if DEV_BRAIN else {}
+            rst = RESEARCH.stats() if RESEARCH else {}
+            wst = WORKS.count() if WORKS else 0
+            JARVIS.make_briefing({"facts": bst.get("facts", 0), "documents": rst.get("documents", 0),
+                                  "works": wst, "rank": "หัดคิด"})
+            if remote_enabled():
+                remote_push("jarvis", JARVIS.snapshot())
+        except Exception:
+            pass
     if learned:
         _learn_job_update(job_id, status="done", progress=100, stage="เรียนรู้เสร็จแล้ว", learned=learned, errors=errors, finished_at=now)
     else:
