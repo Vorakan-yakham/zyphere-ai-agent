@@ -603,17 +603,23 @@ async function runAgent(msgs,imgs,voice,bodyEl){
  }
  return finalText||'(ไม่มีคำตอบ)'}
 
-async function knowledgeContext(q){
- if(!localBase()||!q||q.trim().length<2)return '';
- try{
-  const j=await api('/api/knowledge?q='+encodeURIComponent(q.slice(0,200))+'&limit=4');
-  const items=(j.items||[]).filter(x=>x&&x.summary);
-  if(!items.length)return '';
-  return items.map(x=>{
-   const pts=(x.points||[]).slice(0,4).map(p=>'- '+p).join('\n');
-   return '['+(x.topic||'ความรู้')+'] '+(x.summary||'')+(pts?'\n'+pts:'');
-  }).join('\n\n').slice(0,2400);
- }catch(e){return ''}
+async function knowledgeContext(query) {
+  if (!localBase() || !query || query.trim().length < 2) return '';
+  try {
+    const url = `/api/knowledge?q=${encodeURIComponent(query.slice(0,200))}&limit=4`;
+    const { items = [] } = await api(url);
+    const snippets = items
+      .filter(item => item?.summary)
+      .slice(0, 4)
+      .map(item => {
+        const points = (item.points || []).slice(0, 4).map(p => `- ${p}`).join('\n');
+        const header = `[${item.topic || 'ความรู้'}] ${item.summary}`;
+        return points ? `${header}\n${points}` : header;
+      });
+    return snippets.join('\n\n').slice(0, 2400);
+  } catch {
+    return '';
+  }
 }
 
 async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
@@ -857,6 +863,7 @@ async function localCommand(t){
  if(!localBase())return null;
   let s=t.match(/^\s*(?:เขียนเพลง|แต่งเพลง|write\s+(?:a\s+)?song(?:\s+about)?)\s*[:：]?\s*([\s\S]{2,})$/i);
   if(s){noStreamTTS=true;try{return await writeSong(s[1].trim())}catch(e){return '??????????????: '+redact(e.message)}}
+  if(/^\s*(?:คำสั่ง|ช่วยเหลือ|help|commands)\s*[?？]?\s*$/i.test(t))return 'คำสั่งที่ใช้ได้ครับ:\n• มีอะไรใหม่ — สรุปความเคลื่อนไหว\n• ติดตาม หัวข้อ — ให้ไซเฟอร์คอยอัปเดต\n• จำไว้ว่า ... — บันทึกความจำ\n• เป้าหมาย: ... — ตั้งเป้า / สถานะเป้าหมาย — ดูความคืบหน้า\n• วิเคราะห์ ... — แยกแยะแบบมีโครงสร้าง\n• แก้ปัญหา ... — คิดหลายรอบ\n• เขียนเพลง ... / แต่งเพลง ... — แต่งเพลง\n• แปล ... — แปลเป็นไทย\n• เรียบเรียง ... — จัดรูปแบบข้อความ\n• เวอร์ชัน — เช็กเวอร์ชัน';
  let m=t.match(/^\s*(?:ติดตาม|เฝ้าดู|watch)\s*(?:หัวข้อ|เรื่อง|:)?\s*([\s\S]{2,})$/i);
  if(m){const topic=m[1].trim().replace(/^["'“”]+|["'“”]+$/g,'');try{const j=await api('/api/watch',{method:'POST',body:JSON.stringify({topic,learn:true})});loadWatch();loadLearnInfo();if(j.job)watchJobPoll(j.job.id,topic);return 'ติดตามหัวข้อ “'+topic+'” แล้วครับ'+(j.job?' กำลังเรียนรู้และจะอัปเดตให้ทันที':' จะอัปเดตในรอบถัดไป')}catch(e){return 'ติดตามไม่สำเร็จ: '+redact(e.message)}}
  if(/^\s*(?:มีอะไรใหม่|มีอะไรอัปเดต|อัปเดตอะไรบ้าง|สรุปสิ่งที่เรียนรู้|สรุปความเคลื่อนไหว|what'?s new|briefing)\s*[?？]?\s*$/i.test(t)){
@@ -1010,6 +1017,20 @@ const GREET={
 };
 function greetLang(t){if(/[\u0E00-\u0E7F]/.test(t))return 'th';if(/[\u3040-\u30FF]/.test(t))return 'ja';if(/[\uAC00-\uD7AF]/.test(t))return 'ko';if(/[\u4E00-\u9FFF]/.test(t))return 'zh';if(/[\u0600-\u06FF]/.test(t))return 'ar';if(/[\u0900-\u097F]/.test(t))return 'hi';if(/\b(hello|hi|hey|good morning|good evening)\b/i.test(t))return 'en';if(/\b(hola|buenas|buenos)\b/i.test(t))return 'es';if(/\b(bonjour|salut|bonsoir)\b/i.test(t))return 'fr';if(/\b(hallo|guten tag)\b/i.test(t))return 'de';if(/привет|здравствуй/i.test(t))return 'ru';if(/xin chào|chào bạn/i.test(t))return 'vi';if(/halo|selamat pagi/i.test(t))return 'id';if(/assalamualaikum|selamat/i.test(t))return 'ms';return null}
 function isPureGreeting(t){const s=String(t||'').trim();if(s.length>45)return false;const rest=s.replace(/^\s*(สวัสดีครับ|สวัสดีค่ะ|สวัสดี|ไฮ|hi|hello|เฮลโหล)/i,'').replace(/[\sครับค่ะคะ!?.,~]/gi,'');return rest===''}
+function selfTest(){
+ const cases=[
+  ['สวัสดีครับ',true],
+  ['สวัสดี',true],
+  ['Hello',true],
+  ['เขียนเพลงให้หน่อยสิ',false],
+  ['สวัสดีครับ ช่วยเขียนเพลงให้หน่อย',false],
+  ['แต่งเพลง',false],
+  ['มีอะไรใหม่',false]
+ ];
+ const bad=cases.filter(c=>isPureGreeting(c[0])!==c[1]);
+ return {ok:bad.length===0,bad:bad.map(c=>c[0])};
+}
+
 function localAns(t){const n=new Date();
  if(/^\s*(เวอร์ชัน|version|v)\s*[?？]?\s*$/i.test(t))return 'Zyphere v22 · build 10:20 · ระบบตอบทักทายแบบหมุนเวียนเปิดอยู่ครับ ('+(getK('zy_greet_i')||'0')+')';
  const gl=isPureGreeting(t)?greetLang(t):null;

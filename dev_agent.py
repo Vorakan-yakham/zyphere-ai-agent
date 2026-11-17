@@ -2,7 +2,7 @@
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ALLOWED = {"app.py", "index.html"}
 CANDIDATES = []
-PROTECTED = ("function speak(", "function sayOne(", "spkTok", "curAud", "function localAns(", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(")
+PROTECTED = ("function speak(", "function sayOne(", "spkTok", "curAud", "function localAns(", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(", "function selfTest(")
 INTERVAL = int(os.environ.get("DEV_INTERVAL", "900"))
 MAX = int(os.environ.get("DEV_MAX", "6"))
 DRY = os.environ.get("DEV_DRY") == "1"
@@ -72,7 +72,7 @@ def verify():
     for x in ("/api/transcribe", "def build_briefing", "DEV_STAGES", "frontier_pick"):
         if x not in app_src:
             return False
-    for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send(", "spkTok", "curAud", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather("):
+    for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send(", "spkTok", "curAud", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(", "function selfTest("):
         if x not in idx_src:
             return False
     r = subprocess.run([sys.executable, "test_zyphere.py"], cwd=ROOT, capture_output=True, text=True)

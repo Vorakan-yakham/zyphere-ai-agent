@@ -37,7 +37,7 @@ def main():
         for f in ("stt", "goals", "feedback", "remote_kv"):
             assert f in h.get("features", []), "missing feature " + f
         html = get("/").decode("utf-8", "replace")
-        for tok in ("zy_greet_i", "function send(", "localAns", "api/goals", "api/transcribe", "ttsNorm", "GREET", "greetLang", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(", "id=\"sendBtn\"", "id=\"know\""):
+        for tok in ("zy_greet_i", "function send(", "localAns", "api/goals", "api/transcribe", "ttsNorm", "GREET", "greetLang", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(", "function selfTest(", "id=\"sendBtn\"", "id=\"know\""):
             assert tok in html, "missing UI token " + tok
         assert html.count("<body") <= 1 and html.count("</body>") <= 1, "broken body structure"
         assert jget("/api/goals").get("ok"), "goals endpoint failed"
