@@ -138,7 +138,10 @@ button,input,textarea,select{font-family:inherit}
 .sug button:hover{border-color:var(--blue);background:var(--blue2);box-shadow:none;transform:none}
 .u{background:var(--sf2);border-radius:18px;padding:12px 18px;max-width:80%;font-size:15px;box-shadow:none}
 .a .orb{width:30px;height:30px}
-.a .t{font-size:15px;line-height:1.75}
+.a .t{font-size:15px;line-height:1.5;white-space:normal}
+.a .t p,.a .t ul,.a .t ol,.a .t h1,.a .t h2,.a .t h3,.a .t h4{margin:0 0 4px;line-height:1.5}
+.a .t li{margin:0 0 2px;line-height:1.5}
+.a .t hr,.a .t br{display:none}
 .a .t pre{background:var(--sf2);color:var(--fg);border:1px solid var(--bd);border-radius:12px}
 .cpy{background:var(--bd2);color:var(--fg)}
 
@@ -670,11 +673,48 @@ function voiceAlive(me){return me===voiceOwner}
 function stopSpeak(){spkTok++;ttsQ=[];speaking=false;try{curSR&&curSR.abort()}catch(e){}try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
-function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
+const TTS_SYMBOLS={
+  '&':'และ', '@':'ที่', '#':'แฮช', '$':'ดอลลาร์', '%':'เปอร์เซ็นต์',
+  '=':'เท่ากับ', '+':'บวก', '<':'น้อยกว่า', '>':'มากกว่า',
+  '~':'ประมาณ', '^':'ยกกำลัง', '\\':'หรือ', '/':'หรือ',
+  '→':'ไปยัง', '←':'จาก', '≥':'มากกว่าหรือเท่ากับ', '≤':'น้อยกว่าหรือเท่ากับ',
+  '∞':'อนันต์', '±':'บวกหรือลบ', '×':'คูณ', '÷':'หาร',
+  '•':'', '·':'', '►':'', '✓':'', '●':'',
+  '"':' ', "'":' ', '“':' ', '”':' ', '‘':' ', '’':' ',
+  ':':' ', ';':' ', ',':' ', '(':' ', ')':' ',
+  '...':' จบประโยค ', '…':' จบประโยค '
+};
+function ttsNorm(t){let s=String(t||'')
+  .replace(/https?:\/\/\S+/g,' ')
+  .replace(/^\s*([-—=_])\1{2,}\s*$/gm,' ')   // --- === ___ rule
+  .replace(/^\s*#{1,6}\s*/gm,'')             // ### heading
+  .replace(/^\s*[-*+•●]\s+/gm,'')            // bullets
+  .replace(/^\s*\d+[.)]\s+/gm,'')            // numbered
+  .replace(/\*\*(.+?)\*\*/g,'$1')            // bold markers
+  .replace(/__(.+?)__/g,'$1')                // bold underscore
+  .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g,'$1') // italic
+  .replace(/`([^`]+)`/g,'$1')                // inline code
+  .replace(/\[([^\]]+)\]\([^)]+\)/g,'$1')    // [text](url)
+  .replace(/[*_`#>|\[\]{}]/g,' ');           // strip remaining markup
+  // replace symbols with spoken words (longest first)
+  Object.keys(TTS_SYMBOLS).sort((a,b)=>b.length-a.length).forEach(k=>{
+    s=s.split(k).join(TTS_SYMBOLS[k]);
+  });
+  // all line-breaks / whitespace runs -> single space (continuous narration)
+  s=s.replace(/\s*\n+\s*/g,' ').replace(/[\t\u00A0]+/g,' ').replace(/ {2,}/g,' ');
+  // digits to Thai words (integers; decimals read as 'จุด')
+  s=s.replace(/\d+(?:[.,]\d+)?/g,m=>{
+    const p=m.replace(',','.').split('.');
+    let out='';
+    for(const ch of p[0]) out+=THD[+ch];
+    if(p[1]) out+=' จุด '+p[1].split('').map(c=>THD[+c]).join('');
+    return out;
+  });
+  return s.trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){
  const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];
- const sents=s.match(/[^.!?。！？\n]+[.!?。！？]?/g)||[s];
+ const sents=s.match(/[^.!?。！？\n…]+[.!?。！？…]?/g)||[s];
  const out=[];let cur='';
  for(const sn of sents){
   const w=sn.trim();if(!w)continue;
