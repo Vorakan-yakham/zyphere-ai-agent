@@ -189,6 +189,20 @@ try:
     META_LEARN = MetaLearning()
 except Exception:
     META_LEARN = None
+try:
+    from proactive import Proactive
+    PROACTIVE = Proactive()
+except Exception:
+    PROACTIVE = None
+try:
+    import visualize as VISUALIZE
+except Exception:
+    VISUALIZE = None
+try:
+    from feedback import FeedbackLoop
+    FEEDBACK = FeedbackLoop(os.path.join(DATA_DIR, "feedback_loop.json"))
+except Exception:
+    FEEDBACK = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -244,6 +258,7 @@ REMOTE_KEYS = {
     "creative": "zyphere:creative",
     "works": "zyphere:works",
     "voice": "zyphere:voice",
+    "feedback_loop": "zyphere:feedback_loop",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -355,7 +370,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop"):
         try:
             data = {
                 "memory": load_mem,
@@ -371,6 +386,7 @@ def remote_push_all():
                 "creative": (CREATIVE.snapshot() if CREATIVE else None),
                 "works": (WORKS.snapshot() if WORKS else None),
                 "voice": (VOICE.snapshot() if VOICE else None),
+                "feedback_loop": (FEEDBACK.snapshot() if FEEDBACK else None),
             }[name]()
         except Exception:
             continue
@@ -398,6 +414,7 @@ def remote_pull_all():
         "creative": os.path.join(DATA_DIR, "creative.json"),
         "works": os.path.join(DATA_DIR, "works.json"),
         "voice": os.path.join(DATA_DIR, "voice.json"),
+        "feedback_loop": os.path.join(DATA_DIR, "feedback_loop.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -423,6 +440,12 @@ def remote_pull_all():
             continue
         if name == "voice" and VOICE:
             if VOICE.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
+            continue
+        if name == "feedback_loop" and FEEDBACK:
+            if FEEDBACK.restore(data):
                 restored.append(name)
             else:
                 skipped.append(name)
@@ -3337,6 +3360,18 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/feedback/guidance":
+            self._send_json(200, {"ok": True, "guidance": FEEDBACK.guidance() if FEEDBACK else {"guidance": "ปกติ"}})
+            return
+        if u.path == "/api/proactive/suggest":
+            ctx = {}
+            if DEV_BRAIN:
+                ctx["gaps"] = [{"need": g.get("q")} for g in (DEV_BRAIN.curiosities or []) if g.get("status") == "open"][:3]
+            if WORKS:
+                ctx["pending_works"] = WORKS.list_works(3)
+            res = PROACTIVE.suggest(ctx) if PROACTIVE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/meta/retrospective":
             self._send_json(200, META_LEARN.retrospective() if META_LEARN else {"ok": False, "error": "unavailable"})
             return
@@ -4053,6 +4088,13 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
             return
+        if u.path == "/api/feedback/record":
+            res = FEEDBACK.record(str(body.get("kind") or "positive"),
+                                  str(body.get("signal") or ""), str(body.get("topic") or "")) if FEEDBACK else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("feedback_loop", FEEDBACK.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/meta/reflect":
             res = META_LEARN.reflect() if META_LEARN else {"ok": False, "error": "unavailable"}
             if res.get("ok") and DEV_BRAIN:
@@ -4325,6 +4367,14 @@ class Handler(SimpleHTTPRequestHandler):
             if not clean:
                 self._send_json(400, {"ok": False, "error": "empty message"})
                 return
+            # Apply learned feedback guidance (HCAI feedback loop) to the system prompt
+            if FEEDBACK:
+                try:
+                    g = FEEDBACK.guidance().get("guidance", "")
+                    if g and g != "ตอบตามปกติ":
+                        sys_p = (sys_p + "\n\n[-user preference learned]: " + g)[:6000]
+                except Exception:
+                    pass
             if sys_p:
                 clean.insert(0, {"role": "system", "content": sys_p[:6000]})
             try:

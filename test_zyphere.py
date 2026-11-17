@@ -194,6 +194,15 @@ def main():
         rf = ml.reflect()
         assert rf.get("ok") and len(rf["principles"]) == 10, "meta reflect failed"
         assert ml.retrospective()["self_lessons"] and ml.peers()["peer_patterns"], "retro/peers failed"
+        assert any("เรียนรู้ไว" in s["lesson"] for s in ml.retrospective()["self_lessons"]), "learn-fast lesson missing"
+        from feedback import FeedbackLoop
+        fpath = os.path.join(tempfile.gettempdir(), "zy_feedback_test.json")
+        if os.path.exists(fpath): os.remove(fpath)
+        fl = FeedbackLoop(fpath)
+        for _ in range(4):
+            fl.record("correction", "ตอบสั้น ๆ กระชับหน่อย", "general")
+        g = fl.guidance()
+        assert g["events"] == 4 and "กระชับ" in g["guidance"], "feedback loop failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
