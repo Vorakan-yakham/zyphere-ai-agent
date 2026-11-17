@@ -3171,8 +3171,17 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
         if u.path == "/api/plans":
-            self._send_json(200, {"ok": True, "plans": PLANS,
-                                  "revenue": BILLING.stats() if BILLING else {}})
+            # public: show plans only — revenue is admin-only
+            self._send_json(200, {"ok": True, "plans": PLANS})
+            return
+        if u.path == "/api/admin":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            self._send_json(200, {"ok": True, "revenue": BILLING.stats() if BILLING else {},
+                                  "users": USERS.stats() if USERS else {},
+                                  "brain": BRAIN.stats() if BRAIN else {}})
             return
         if u.path == "/api/billing/status":
             email = urllib.parse.parse_qs(u.query).get("email", [""])[0]
@@ -3185,6 +3194,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
         if u.path == "/api/support":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
             try:
                 with open(os.path.join(DATA_DIR, "support.json"), "r", encoding="utf-8") as f:
                     info = json.load(f)
@@ -3362,8 +3375,17 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "gap": gap, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
         if u.path == "/api/plans":
-            self._send_json(200, {"ok": True, "plans": PLANS,
-                                  "revenue": BILLING.stats() if BILLING else {}})
+            # public: show plans only — revenue is admin-only
+            self._send_json(200, {"ok": True, "plans": PLANS})
+            return
+        if u.path == "/api/admin":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            self._send_json(200, {"ok": True, "revenue": BILLING.stats() if BILLING else {},
+                                  "users": USERS.stats() if USERS else {},
+                                  "brain": BRAIN.stats() if BRAIN else {}})
             return
         if u.path == "/api/billing/status":
             email = urllib.parse.parse_qs(u.query).get("email", [""])[0]
@@ -3376,6 +3398,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
         if u.path == "/api/support":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
             try:
                 with open(os.path.join(DATA_DIR, "support.json"), "r", encoding="utf-8") as f:
                     info = json.load(f)
