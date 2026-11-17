@@ -3189,18 +3189,6 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
-        if u.path == "/api/email/send":
-            tok = str(body.get("token") or "")
-            if not admin_token_ok(tok):
-                self._send_json(403, {"ok": False, "error": "forbidden"})
-                return
-            try:
-                from mailer import send_mail
-                result = send_mail(body.get("to"), body.get("subject"), body.get("body"))
-            except Exception as e:
-                result = {"ok": False, "error": str(e)[:200]}
-            self._send_json(200 if result.get("ok") else 400, result)
-            return
         if u.path == "/api/notifications":
             # pending events for admin (paid orders, new users, feedback, gaps)
             events = []
@@ -3226,16 +3214,6 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
-            return
-        if u.path == "/api/admin/login":
-            import hashlib as _hl
-            uh = _hl.sha256(str(body.get("user") or "").encode()).hexdigest()[:16]
-            ph = _hl.sha256(str(body.get("password") or "").encode()).hexdigest()
-            if uh == ADMIN_USER_HASH and ph == ADMIN_PW_HASH:
-                tok = os.environ.get("BACKUP_TOKEN", "").strip() or ADMIN_PW_HASH[:16]
-                self._send_json(200, {"ok": True, "token": tok})
-            else:
-                self._send_json(401, {"ok": False, "error": "invalid admin credentials"})
             return
         if u.path == "/api/admin":
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
@@ -3462,6 +3440,18 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
+            return
+        if u.path == "/api/email/send":
+            tok = str(body.get("token") or "")
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            try:
+                from mailer import send_mail
+                result = send_mail(body.get("to"), body.get("subject"), body.get("body"))
+            except Exception as e:
+                result = {"ok": False, "error": str(e)[:200]}
+            self._send_json(200 if result.get("ok") else 400, result)
             return
         if u.path == "/api/admin/login":
             import hashlib as _hl
