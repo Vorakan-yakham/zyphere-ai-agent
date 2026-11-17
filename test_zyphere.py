@@ -43,6 +43,7 @@ def main():
         assert jget("/api/goals").get("ok"), "goals endpoint failed"
         cfg = jget("/api/learn/config").get("config", {})
         assert cfg.get("dev_total", 0) >= 100, "curriculum too small"
+        assert cfg.get("learn_count", 0) >= 1, "learn_count missing"
         assert jget("/api/briefing?since=0&limit=1").get("ok"), "briefing failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0

@@ -58,4 +58,11 @@
 - หลัง: ลบ CNAME ออก → Pages กลับมาที่ `vorakan-yakham.github.io/zyphere-ai-agent/`
 - ต้องรอ short link ให้ Pages deploy เสร็จก่อนชี้ TinyURL
 
+## ซ่อม B09 — เสียง 2 คนแทรกกัน + นิทานโบราณ
+ก่อน → หลัง
+- ก่อน: `speak()` ใช้ `play().then(res)` → resolve ทันที → server TTS ยังเล่นอยู่แล้ว fallback browser TTS ก็เริ่ม → 2 เสียงแทรกกัน
+- หลัง: `voiceOwner` arbiter + รอ `onended` จริง + ทุกทางเช็ก `voiceAlive()` → มีเสียงเดียวต่อรอบ
+- ตรวจจริง: `speechSynthesis.speak` ถูกยิง 0 ครั้ง (`utt=0`), ไม่มี console error
+- นิทาน: แม่แบบเดียวซ้ำ → เปลี่ยนเป็นหลายโครงเรื่องสุ่มตามชื่อหัวข้อ (ตัวละคร/สถานที่/ปัญหา/บทเรียน)
+
 หลักการ: ทุก commit ต้องระบุ “ก่อน/หลัง” แบบวัดได้ ไม่ใช่แค่ “เปลี่ยนแล้ว”

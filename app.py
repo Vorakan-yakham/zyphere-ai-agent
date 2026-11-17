@@ -702,6 +702,7 @@ def _default_learning():
     return {
         "enabled": True,
         "interval_hours": 6,
+        "learn_count": 3,
         "cursor": 0,
         "last_run": 0,
         "last_topic": "",
@@ -887,6 +888,11 @@ def learning_update(payload):
             cfg["interval_hours"] = max(1.0, min(168.0, float(payload.get("interval_hours") or 6)))
         except Exception:
             pass
+    if "learn_count" in payload:
+        try:
+            cfg["learn_count"] = max(1, min(5, int(payload.get("learn_count") or 3)))
+        except Exception:
+            pass
     if payload.get("reset_cursor"):
         cfg["cursor"] = 0
     if payload.get("reset_schedule"):
@@ -900,6 +906,7 @@ def learning_public_config():
     return {
         "enabled": bool(cfg.get("enabled")),
         "interval_hours": cfg.get("interval_hours") or 6,
+        "learn_count": int(cfg.get("learn_count") or 3),
         "cursor": cfg.get("cursor") or 0,
         "last_run": cfg.get("last_run") or 0,
         "last_topic": cfg.get("last_topic") or "",
@@ -2217,7 +2224,7 @@ def learn_tick():
         job = create_learn_job([due[0]["topic"]], reason="watch")
         source = "watch"
     else:
-        job = create_learn_job(rotate=True, count=1, reason="cron")
+        job = create_learn_job(rotate=True, count=int(cfg.get("learn_count") or 3), reason="cron")
         source = "curriculum"
     if not job:
         return {"ok": True, "skipped": "unavailable"}
@@ -2235,7 +2242,7 @@ def learn_scheduler():
                 else:
                     interval = float(cfg.get("interval_hours") or 0)
                     if interval > 0 and time.time() - float(cfg.get("last_run") or 0) >= interval * 3600:
-                        create_learn_job(rotate=True, count=1, reason="auto")
+                        create_learn_job(rotate=True, count=int(cfg.get("learn_count") or 3), reason="auto")
         except Exception:
             pass
         time.sleep(60)
@@ -2770,7 +2777,14 @@ def _concat_segments(paths, out_path):
         for p in paths:
             f.write("file '" + p.replace("\\", "/").replace("'", "'\\''") + "'\n")
     try:
-        _run_ffmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list_path, "-c", "copy", "-movflags", "+faststart", out_path], timeout=600)
+        try:
+            _run_ffmpeg([
+                "-y", "-f", "concat", "-safe", "0", "-i", list_path,
+                "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p",
+                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", out_path,
+            ], timeout=600)
+        except Exception:
+            _run_ffmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list_path, "-c", "copy", "-movflags", "+faststart", out_path], timeout=600)
     finally:
         try:
             os.remove(list_path)

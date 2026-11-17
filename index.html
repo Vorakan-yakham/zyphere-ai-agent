@@ -162,7 +162,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <div class="status" id="learnMsg"></div>
 </div>
 <details class="kitem"><summary>ตั้งค่าการเรียนรู้เอง</summary>
-<div class="vrow" style="margin-top:8px"><div><label>สถานะ</label><select id="learnEnabled"><option value="1">เปิด</option><option value="0">ปิด</option></select></div><div><label>ทุกกี่ชั่วโมง</label><input type="number" id="learnInterval" min="1" max="168" value="6"></div></div>
+<div class="vrow" style="margin-top:8px"><div><label>สถานะ</label><select id="learnEnabled"><option value="1">เปิด</option><option value="0">ปิด</option></select></div><div><label>ทุกกี่ชั่วโมง</label><input type="number" id="learnInterval" min="1" max="168" value="6"></div><div><label>เรียนต่อรอบ</label><input type="number" id="learnCount" min="1" max="5" value="3"></div></div>
 <button class="sb new" id="learnSaveCfg" style="justify-content:center;margin-top:8px">บันทึกการตั้งค่า</button>
 </details>
 <div class="kitem">
@@ -541,29 +541,45 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  return {ok:false,error:'unknown tool: '+name}}
 
 let spkTok=0,ac=null,curAud=null,speaking=false,ttsQ=[],ttsPlaying=false,drainTok=0,streamBuf='',lastStreamLen=0,streamSpoke=false,noStreamTTS=false;
+let voiceOwner=0;
+function claimVoice(){const me=++voiceOwner;ttsQ=[];try{curAud&&curAud.pause()}catch(e){}try{speechSynthesis.cancel()}catch(e){}try{curSR&&curSR.abort()}catch(e){}return me}
+function voiceAlive(me){return me===voiceOwner}
+
 function stopSpeak(){spkTok++;ttsQ=[];speaking=false;try{curSR&&curSR.abort()}catch(e){}try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];const out=[];let cur='';for(let p of s.split(/(?<=[.!?。！？])\s+/).filter(Boolean)){while(p.length>1200){let k=1150;const sp=p.lastIndexOf(' ',k),cm=p.lastIndexOf(',',k);if(Math.max(sp,cm)>800)k=Math.max(sp,cm);if(cur){out.push(cur);cur=''}out.push(p.slice(0,k).trim());p=p.slice(k).trim()}if(cur&&(cur+' '+p).length>1200){out.push(cur);cur=p}else cur=(cur?cur+' ':'')+p}if(cur)out.push(cur);return out}
-async function speak(text,btn){stopSpeak();try{curSR&&curSR.abort()}catch(e){}speaking=true;const tok=spkTok;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
-  try{if(getK('zy_ttse')!=='b'&&lb){
-   const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
-   const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));
-   const pt=encodeURIComponent(getK('zy_pitch')||'-5');
-   const parts=ttsParts(clean);const url=p=>lb+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p);
-   for(const p of parts){if(tok!==spkTok){speaking=false;return}const a=mkAud(url(p));curAud=a;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}
-   if(btn)btn.textContent='ฟัง';speaking=false;return}}catch(e){}
-  for(const p of ttsParts(clean)){if(tok!==spkTok){speaking=false;return}await sayOne(p)}
-  if(btn)btn.textContent='ฟัง';speaking=false}
-
+async function speak(text,btn){
+ const me=claimVoice();spkTok=me;speaking=true;const tok=me;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
+ if(getK('zy_ttse')!=='b'&&lb){
+  const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
+  const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));
+  const pt=encodeURIComponent(getK('zy_pitch')||'-5');
+  const parts=ttsParts(clean);const url=p=>lb+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p);
+  let okAll=true;
+  for(const p of parts){
+   if(!voiceAlive(me))return;
+   const a=mkAud(url(p));curAud=a;
+   const done=await new Promise(res=>{let settled=false;const fin=()=>{if(!settled){settled=true;res()}};a.onended=fin;a.onerror=()=>{okAll=false;fin()};a.play().catch(()=>{okAll=false;fin()})});
+   void done;
+  }
+  if(!voiceAlive(me))return;
+  if(okAll){if(btn)btn.textContent='ฟัง';speaking=false;return}
+ }
+ for(const p of ttsParts(clean)){
+  if(!voiceAlive(me))return;
+  await sayOne(p);
+ }
+ if(btn)btn.textContent='ฟัง';speaking=false
+}
 function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-5');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
-async function drainTTS(){if(ttsPlaying&&drainTok===spkTok)return;ttsPlaying=true;drainTok=spkTok;const tok=spkTok;while(ttsQ.length&&tok===spkTok){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}if(tok===spkTok){ttsPlaying=false;speaking=false}}
-function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS()}
+async function drainTTS(me){if(ttsPlaying&&drainTok===spkTok)return;ttsPlaying=true;drainTok=spkTok;while(ttsQ.length&&voiceAlive(me)){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;await new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;res()}};a.onended=fin;a.onerror=fin;a.play().catch(fin)})}if(voiceAlive(me)){ttsPlaying=false;speaking=false}}
+function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS(voiceOwner)}
 function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
-function resetStreamSpeak(){ttsQ=[];streamBuf='';lastStreamLen=0;streamSpoke=false}
+function resetStreamSpeak(){ttsQ=[];streamBuf='';lastStreamLen=0;streamSpoke=false;noStreamTTS=false}
 
 // voice in
 function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -632,8 +648,19 @@ async function tellStory(q){const th=lastLang!=='en';const sys=th?'คุณเ�
  try{return await ask([{role:'user',content:topic?('เล่านิทานเรื่อง '+topic):'เล่านิทานสนุก ๆ สักเรื่อง'}],null,ctrl?ctrl.signal:null,()=>{},sys)}catch(e){return localStory(topic)}}
 
 function localSong(topic){const t=String(topic||'วันนี้').replace(/^(?:เรื่อง|เกี่ยวกับ|about)\s*/i,'').trim().slice(0,80);return 'เพลง: แสงของ '+t+'\n\nVerse 1\nเช้าวันใหม่แสงอาทิตย์ลอยมา\nพัดผ่านหน้าต่างพาใจให้ตื่น\nเรื่องของ '+t+' ยังอยู่ในความคิด\nค่อย ๆ เดินไปตามทางที่สดใส\n\nChorus\nไปกันเถอะ ไปกันเถอะ\nมือจับมือแล้วไม่ต้องกลัว\nไปกันเถอะ ไปกันเถอะ\nเรื่องเล็ก ๆ ก็ทำให้ยิ้มได้\n\nVerse 2\nลมพัดเบา ๆ เสียงใบไม้ร้องเพลง\nเต่าค่อยเดิน นกบินตามแสง\nทุกวันที่ได้เรียนรู้สิ่งใหม่\nคือของขวัญที่อยู่ในใจเรา\n\nOutro\nพรุ่งนี้ค่อยเล่ากันอีกนะครับ'}
-function localStory(topic){const t=String(topic||'ต้นไม้ในสวน').replace(/^(?:เรื่อง|เกี่ยวกับ|about)\s*/i,'').trim().slice(0,80);return 'นิทานเรื่อง '+t+'\n\nเช้าวันหนึ่ง มีตัวละครตัวน้อยเดินผ่านสวนและพบ '+t+' ที่เงียบอยู่กลางแดด\nมันถามเบา ๆ ว่าทำไมถึงดูเศร้า\nต้นไม้ตอบว่าตัวเองไม่ได้เศร้า เพียงยังไม่มีใครฟัง\nตัวน้อยจึงนั่งลงฟังเสียงใบไม้ แล้วได้ยินเรื่องราวมากมาย\nเมื่อฟังจบ มันเข้าใจว่าทุกสิ่งรอบตัวมีเรื่องจะเล่า\nบทเรียน: การฟังคือประตูบานแรกของความเข้าใจ'}
-
+function localStory(topic){
+ const t=String(topic||'ผจญภัย').replace(/^(?:เรื่อง|เกี่ยวกับ|about)\s*/i,'').trim().slice(0,80);
+ let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;
+ const casts=[['น้องกระต่าย','นกเค้าแมว','เต่าผู้เฒ่า'],['หนูน้อยจิ๋ม','แมลงผึ้ง','กบน้อย'],['ช้างน้อย','ลิงแส่ม้า','นกกระจอก'],['เด็กหญิง','หมาเฝ้าบ้าน','แมวขี้เล่น']];
+ const cast=casts[h%casts.length];
+ const places=['สวนลับหลังน้ำตก','ป่าที่ลมพัดช้า ๆ','เกาะกลางทะเลหมอก','ห้องสมุดใต้รากไม้ใหญ่','ยอดเขาที่ดาวตกใกล้'];
+ const place=places[(h>>2)%places.length];
+ const problems=['ของชิ้นหนึ่งหายไปก่อนงานฉลอง','เสียงลมเปลี่ยนทิศจนทุกคนหลงทาง','เมล็ดพืชไม่ยอมงอกทั้งที่ฝนตกดี','แผนที่โบราณอ่านไม่ออก','ไฟในห้องสมุดดับลงกลางคืน'];
+ const problem=problems[(h>>4)%problems.length];
+ const ends=['เขาค้นพบว่าคำตอบอยู่ในสิ่งที่เคยมองข้าม','ทุกคนช่วยกันจนเรื่องคลี่คลายและสนิทกันขึ้น','ความจริงคือของที่หายไม่เคยหายไปไหน','เขาเรียนรู้ว่าการถามคือก้าวแรกของการรู้'];
+ const end=ends[(h>>6)%ends.length];
+ return 'นิทานเรื่อง '+t+'\n\nที่ '+place+' มี'+cast[0]+'กับ'+cast[1]+'กำลังช่วยกันตั้งโต๊ะฉลอง\nแล้ว'+problem+'\n\n'+cast[2]+'เดินเข้ามาพร้อมคำถามสั้น ๆ ว่า "เราลองมองจากอีกด้านไหม"\n'+cast[0]+'หยุดคิด แล้วเปลี่ยนวิธีดูสิ่งที่อยู่ตรงหน้า\nภายในไม่กี่อึดใจ เรื่องที่ดูเหมือนจะไปไม่ได้ก็เริ่มเข้าทาง\n\n'+end+'ครับ';
+}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
@@ -641,8 +668,8 @@ async function send(voice){
   const vm=t.match(/^\s*(?:สร้าง|ทำ)\s*(?:คลิป|วิดีโอ|video)\s*(?:เรื่อง|เกี่ยวกับ|:|about|on)?\s*([\s\S]+)$/i)||t.match(/^\s*make\s+(?:a\s+)?video\s*(?:about|on|:)?\s*([\s\S]+)$/i);
   if(vm){
    let topic=vm[1].trim().replace(/^\d+\s*(?:วินาที|seconds?)\s*/i,'').replace(/^(?:เรื่อง|เกี่ยวกับ|about|on)\s*/i,'').trim();
-   const sm=t.match(/(\d+)\s*(?:วินาที|seconds?)/i);if(sm)$('vLen').value=Math.max(10,Math.min(90,parseInt(sm[1],10)));
-   if(topic){$('vTopic').value=topic;$('q').value='';$('q').style.height='';openVideo();return}
+    const sm=t.match(/(\d+)\s*(?:วินาที|seconds?)/i);$('vLen').value=sm?Math.max(10,Math.min(90,parseInt(sm[1],10))):10;$('vStyle').value='clean';$('vLang').value='auto';
+   if(topic){$('vTopic').value=topic;$('q').value='';$('q').style.height='';openVideo();createVideo();return}
   }
   const lm=t.match(/^\s*(?:เรียนรู้เพิ่ม|สอนตัวเอง|ไปเรียนรู้|learn about)\s*(?:เรื่อง|เกี่ยวกับ|:)?\s*([\s\S]+)$/i);
   if(lm&&lm[1].trim().length>=3){const topic=lm[1].trim();$('q').value='';$('q').style.height='';$('learnTopic').value=topic;openKnow();learnStart(topic,false);return}
@@ -650,7 +677,7 @@ async function send(voice){
  if(!t&&!pend.items.length)return;
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
- view();lastLang=resolveLang(t);resetStreamSpeak();const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
+ view();lastLang=resolveLang(t);resetStreamSpeak();claimVoice();const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
  const hist=c.m.slice(-24),msgs=[];let left=60000;const seenA=new Set();
  for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'',ct=m.c||'';
    if(m.r==='assistant'){const key=ct.trim().slice(0,200);if(seenA.has(key))continue;seenA.add(key)}
@@ -920,7 +947,7 @@ function renderLearnStats(cfg){cfg=cfg||{};knowTotal=cfg.knowledge_count||knowTo
 }
 async function loadLearnInfo(){if(!localBase()){$('learnStatus').textContent='การเรียนรู้: ต้องเชื่อมเซิร์ฟเวอร์ Zyphere';return}
  try{const j=await api('/api/learn/config');const c=j.config||{};renderLearnStats(c);
-  $('learnEnabled').value=c.enabled?'1':'0';$('learnInterval').value=Math.round(c.interval_hours||6);
+  $('learnEnabled').value=c.enabled?'1':'0';$('learnInterval').value=Math.round(c.interval_hours||6);$('learnCount').value=c.learn_count||3;
  }catch(e){$('learnStatus').textContent='การเรียนรู้: เชื่อมเซิร์ฟเวอร์ไม่ได้'}
 }
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
@@ -1004,7 +1031,7 @@ $('snapNow').onclick=snapshotNow;
 $('remoteSync').onclick=()=>remoteAction('/api/storage/sync','สำรองขึ้นคลาวด์');
 $('remotePull').onclick=()=>remoteAction('/api/storage/pull','ดึงจากคลาวด์');
 $('kSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();loadKnowledge($('kSearch').value)}};
-$('learnSaveCfg').onclick=async()=>{try{const j=await api('/api/learn/config',{method:'POST',body:JSON.stringify({enabled:$('learnEnabled').value==='1',interval_hours:+$('learnInterval').value||6})});renderLearnStats(j.config||{});toast('บันทึกการตั้งค่าการเรียนรู้แล้ว')}catch(e){toast('บันทึกไม่ได้: '+redact(e.message))}};
+$('learnSaveCfg').onclick=async()=>{try{const j=await api('/api/learn/config',{method:'POST',body:JSON.stringify({enabled:$('learnEnabled').value==='1',interval_hours:+$('learnInterval').value||6,learn_count:+$('learnCount').value||3})});renderLearnStats(j.config||{});toast('บันทึกการตั้งค่าการเรียนรู้แล้ว')}catch(e){toast('บันทึกไม่ได้: '+redact(e.message))}};
 $('kClear').onclick=async()=>{if(!confirm('ล้างคลังความรู้ทั้งหมด?'))return;try{await api('/api/knowledge',{method:'POST',body:JSON.stringify({clear:true})});knowTotal=0;renderKnowList([]);loadLearnInfo();toast('ล้างคลังความรู้แล้ว')}catch(e){toast('ล้างไม่ได้: '+redact(e.message))}};
 $('know').onclick=e=>{if(e.target===$('know'))closeKnow()};
 
