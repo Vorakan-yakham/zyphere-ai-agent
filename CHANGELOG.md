@@ -53,4 +53,9 @@
 - หลัง: คำสั่งที่รู้จักตรวจ sync ก่อน; คำถามทั่วไปเริ่ม stream ทันที ไม่รอ work เสริม
 - ตรวจ: server ~300-500ms (เร็วอยู่), browser คำสั่ง “มีอะไรใหม่” ตอบใน ~700ms รวม render
 
+## CNAME lesson
+- ก่อน: เพิ่ม CNAME `zyphere.ai` โดยยังไม่ได้ซื้อโดเมน → GitHub Pages redirect ไป zyphere.ai ที่ไม่มีอยู่ → ทุก short link พัง
+- หลัง: ลบ CNAME ออก → Pages กลับมาที่ `vorakan-yakham.github.io/zyphere-ai-agent/`
+- ต้องรอ short link ให้ Pages deploy เสร็จก่อนชี้ TinyURL
+
 หลักการ: ทุก commit ต้องระบุ “ก่อน/หลัง” แบบวัดได้ ไม่ใช่แค่ “เปลี่ยนแล้ว”
