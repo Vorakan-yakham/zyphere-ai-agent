@@ -3131,6 +3131,14 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/brain/status":
+            try:
+                from brain_ensemble import load_keys
+                names = list(load_keys().keys())
+            except Exception:
+                names = []
+            self._send_json(200, {"ok": True, "providers": names, "enabled": bool(names)})
+            return
         if u.path == "/api/auth/google/config":
             self._send_json(200, {"ok": True, "enabled": GOOGLE_ENABLED})
             return
@@ -3656,32 +3664,23 @@ class Handler(SimpleHTTPRequestHandler):
                 return
             if sys_p:
                 clean.insert(0, {"role": "system", "content": sys_p[:6000]})
-            key = os.environ.get("GROQ_API_KEY", "").strip()
-            if not key:
-                try:
-                    key = open(os.path.join(BASE_DIR, "..", "API-Zyphere.txt"), encoding="utf-8").read().splitlines()[1].strip()
-                except Exception:
-                    key = ""
-            if not key:
-                self._send_json(503, {"ok": False, "error": "server AI key not configured"})
-                return
             try:
-                r = requests.post("https://api.groq.com/openai/v1/chat/completions",
-                    headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
-                    json={"model": "openai/gpt-oss-120b", "messages": clean,
-                          "temperature": 0.4, "max_tokens": 2048}, timeout=90)
-                if not r.ok:
-                    raise RuntimeError(_clip(r.text, 200))
-                txt = str(((r.json().get("choices") or [{}])[0].get("message") or {}).get("content") or "")
-                self._send_json(200, {"ok": True, "text": txt, "offline": False})
+                from brain_ensemble import ensemble
+                res = ensemble(clean)
             except Exception as e:
-                # log anomaly for learning
+                res = {"ok": False, "error": _clip(str(e), 200)}
+            if not res.get("ok"):
                 try:
                     if BRAIN:
-                        BRAIN.log_gap("server ask failed: " + str(e)[:120], "api_ask")
+                        BRAIN.log_gap("ensemble ask failed: " + str(res.get("error"))[:120], "api_ask")
                 except Exception:
                     pass
-                self._send_json(502, {"ok": False, "error": _clip(str(e), 200)})
+                self._send_json(502 if "no AI keys" not in str(res.get("error")) else 503,
+                                {"ok": False, "error": res.get("error") or "no AI keys configured"})
+                return
+            self._send_json(200, {"ok": True, "text": res.get("text", ""), "offline": False,
+                                  "sources": res.get("sources", []),
+                                  "synthesized": res.get("synthesized", False)})
             return
         if u.path == "/api/vision/learn":
             if RATE and not RATE.allow(self.client_address[0] + ":vision", 6, 60):

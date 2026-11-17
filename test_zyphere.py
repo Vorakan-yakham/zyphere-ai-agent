@@ -66,6 +66,10 @@ def main():
         assert pp.log("Fastwork").get("ok"), "platform log failed"
         assert not pp.log("เว็บพนันบาคาร่า").get("ok"), "gambling must be refused"
         assert pp.report().get("total", 0) >= 1, "platform report failed"
+        from brain_ensemble import load_keys
+        k = load_keys()
+        assert "groq" in k and k["groq"].startswith("gsk_"), "Groq key not loaded from file"
+        assert len([x for x in k if k[x]]) >= 3, "expected 3+ provider keys from file"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
