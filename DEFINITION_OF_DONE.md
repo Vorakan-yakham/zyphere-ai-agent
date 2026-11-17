@@ -12,3 +12,12 @@
 8. dev agent push ได้เฉพาะเมื่อข้อ 1-2 ผ่านเท่านั้น
 
 หลักการ: compile ได้ ≠ เสร็จ / health 200 ≠ เสร็จ — ต้องทดสอบพฤติกรรมจริงก่อนเสมอ
+
+## เพิ่มเติม — สมอง local + ความรู้ (เสถียร/ฉลาดขึ้น)
+- `local_brain.py`: เก็บ facts/rules, เรียนรู้จากข้อความ, อนุมาน forward chaining, ตอบแบบ offline
+- `/api/brain`, `/api/brain/ask`, `/api/brain/learn`, `/api/brain/auto`
+- ทุกคำตอบถูกเรียนรู้เข้าสมองอัตโนมัติ (ไม่พึ่ง API — อยู่บน Render)
+- `knowCtx` (คลังความรู้) ถูกส่งเข้าระบบอีกครั้ง → โมเดลตอบโดยใช้ความรู้ที่สะสม
+- ใช้ Promise.all โหลด brain + knowledge พร้อมกัน → ไม่เพิ่มความหน่วง
+- ข้อความไทยต้องส่งเป็น UTF-8 จริง (PowerShell encoding ผิดให้ระวัง — browser/requests ปกติ)
+

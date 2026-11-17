@@ -63,6 +63,11 @@ except ImportError:
 PORT = int(os.environ.get("PORT", "8000"))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+try:
+    from local_brain import LocalBrain
+    BRAIN = LocalBrain(os.path.join(DATA_DIR, "brain.json"))
+except Exception:
+    BRAIN = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -2774,18 +2779,20 @@ def _render_segment(img_path, audio_path, out_path, dur):
     _run_ffmpeg(args, timeout=600)
 
 
-def _concat_segments(paths, out_path):
+def _concat_segments(paths, out_path, vertical=False):
     list_path = out_path + ".txt"
     with open(list_path, "w", encoding="utf-8") as f:
         for p in paths:
             f.write("file '" + p.replace("\\", "/").replace("'", "'\\''") + "'\n")
     try:
         try:
-            _run_ffmpeg([
-                "-y", "-f", "concat", "-safe", "0", "-i", list_path,
-                "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p",
-                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", out_path,
-            ], timeout=600)
+            vf = "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2:color=0x0b1020" if vertical else None
+            args = ["-y", "-f", "concat", "-safe", "0", "-i", list_path,
+                    "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p"]
+            if vf:
+                args += ["-vf", vf]
+            args += ["-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", out_path]
+            _run_ffmpeg(args, timeout=600)
         except Exception:
             _run_ffmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list_path, "-c", "copy", "-movflags", "+faststart", out_path], timeout=600)
     finally:
@@ -3145,6 +3152,13 @@ class Handler(SimpleHTTPRequestHandler):
                 limit = 12
             self._send_json(200, build_briefing(since, limit))
             return
+        if u.path == "/api/brain":
+            self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
+            return
+        if u.path == "/api/brain/ask":
+            q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+            self._send_json(200, {"ok": True, "answer": BRAIN.ask(q) if BRAIN else None, "offline": True})
+            return
         if u.path == "/api/backup":
             q = urllib.parse.parse_qs(u.query)
             if not admin_token_ok(q.get("token", [""])[0]):
@@ -3281,6 +3295,21 @@ class Handler(SimpleHTTPRequestHandler):
                 self._send_json(200, {"ok": True, "text": text, "engine": "groq-whisper"})
             except Exception as e:
                 self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
+            return
+        if u.path == "/api/brain/auto":
+            # learn from user question + assistant answer automatically (offline)
+            try:
+                if BRAIN:
+                    BRAIN.learn_text(str(body.get("q") or ""), "question")
+                    BRAIN.learn_text(str(body.get("a") or ""), "assistant")
+                self._send_json(200, {"ok": True, "stats": BRAIN.stats() if BRAIN else {}})
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": str(e)[:200]})
+            return
+        if u.path == "/api/brain/learn":
+            text = str(body.get("text") or "")
+            got = BRAIN.learn_text(text, body.get("source") or "user") if BRAIN else []
+            self._send_json(200, {"ok": True, "learned": got, "stats": BRAIN.stats() if BRAIN else {}})
             return
         if u.path == "/api/text/polish":
             try:

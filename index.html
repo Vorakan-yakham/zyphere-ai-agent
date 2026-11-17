@@ -717,6 +717,12 @@ async function send(voice){
    const quick=!um.x?localAns(t):null;
    const looksCmd=!um.x&&/^\s*(มีอะไรใหม่|สรุปสิ่งที่เรียนรู้|ติดตาม|เฝ้าดู|watch|จำไว้|remember|เป้าหมาย|ตั้งเป้าหมาย|สถานะเป้าหมาย|วิเคราะห์|แก้ปัญหา|เขียนเพลง|แต่งเพลง|อ่านนิทาน|เล่านิทาน|แปล|เรียบเรียง|คำสั่ง|ช่วยเหลือ|help|commands|เวอร์ชัน)/i.test(t);
    const cmd=looksCmd?await localCommand(t):null;
+   const brainPromise=(!cmd&&!quick&&localBase())?api('/api/brain/ask?q='+encodeURIComponent(t)).catch(()=>null):Promise.resolve(null);
+   const knowPromise=localBase()?knowledgeContext(t).catch(()=>''):Promise.resolve('');
+   const [br,kctx]=await Promise.all([brainPromise,knowPromise]);
+   knowCtx=kctx||'';
+   const brainAns=br&&br.answer;
+   if(brainAns){local=true;reply=brainAns}
    if(cmd){local=true;reply=cmd}
    else if(quick){local=true;reply=quick}
    else{
