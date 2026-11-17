@@ -420,7 +420,16 @@ async function summarizeLong(opts){
    :'จากบันทึกสาระของเอกสารยาวด้านล่าง จงตอบคำถามของผู้ใช้ให้สมบูรณ์ที่สุด กระชับแต่ครบทุกประเด็นที่เกี่ยวข้อง รวบรวมข้อมูลที่กระจายอยู่หลายส่วนให้ครบ อ้างข้อเท็จจริง/ตัวเลขจากบันทึก ใช้เฉพาะข้อมูลในบันทึก ห้ามแต่งเติม ถ้าบันทึกไม่มีคำตอบให้บอกตรง ๆ และเขียนให้จบประโยค\n\nคำถามของผู้ใช้: '+q+'\n\n=== บันทึกสาระ ===\n'+packed)
   :(wantSum
    ?'Using the notes below from the whole long document, answer the user completely and self-contained:\n1) Overview (2-4 sentences)\n2) All key points (bullets, skip none)\n3) Conclusion and practical takeaways\nRules: finish at the final conclusion, never stop mid-sentence, never say "to be continued", use only these notes, invent nothing, flag contradictions.\n\nUser request: '+(q||'Summarize the entire content completely')+'\n\n=== NOTES ===\n'+packed
-    :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contain the answer, and fiif (opts.status) { const msg = th ? 'กำลังเรียบเรียงคำตอบสุดท้าย...' : 'Writing the final answer...'; opts.status(msg); } const answer = await call(finalPrompt, opts.onText); if (failed > 0) { const note = `\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ ${failed}/${chunks.length} ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ`; return answer + note; } return answer;
+    :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contain the answer, and finish every sentence.\n\nUser question: '+q+'\n\n=== NOTES ===\n'+packed)
+if (opts.status) {
+  opts.status(th ? 'กำลังเรียบเรียงคำตอบสุดท้าย...' : 'Writing the final answer...');
+}
+const answer = await call(finalPrompt, opts.onText);
+if (failed > 0) {
+  return `${answer}\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ ${failed}/${chunks.length} ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ`;
+}
+return answer;
+}
 
 // markdown & UI
 const md=t=>String(t||'').split('```').map((p,i)=>i%2?'<div class="cb"><button class="cpy" type="button">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
@@ -613,11 +622,15 @@ async function knowledgeContext(query) {
   }
 }
 
-async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
+async function giveFeedback(message,rating,button){if(!button)return;const q=String(message?.q||'').slice(0,180);const a=String(message?.c||'').slice(0,350);const note=`[feedback ${rating?'good':'bad'}] คำถาม: ${q} | คำตอบ: ${a}`;try{await updateMemory({remember:{kind:'note',text:note,source:'feedback'}});button.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว');}catch(err){toast('บันทึกความค...');}}ิดเห็นไม่ได้')}}
 async function critiqueAnswer(q,answer,ctx){if(!answer||answer.length<300||!localBase())return answer;const sys='You are a strict QA reviewer. Check the draft answer against the question and notes. Return JSON only: {"score":0-1,"issues":["..."],"improved":"..."}. If complete and accurate, score 1 and improved equals the draft. Never invent facts. Keep the same language.';const prompt='Question: '+String(q||'').slice(0,500)+'\n\nNotes:\n'+String(ctx||'').slice(0,1500)+'\n\nDraft answer:\n'+String(answer).slice(0,4000);try{const r=await ask([{role:'user',content:prompt}],null,ctrl?ctrl.signal:null,()=>{},sys);const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]);if(j&&j.score!=null&&Number(j.score)<0.75&&j.improved)return String(j.improved)}catch(e){}return answer}
 async function deepAnalyze(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักคิดวิเคราะห์ระดับโลก จงแยกแยะอย่างมีโครงสร้าง: 1) สิ่งที่คำถามต้องการจริง 2) ข้อเท็จจริงที่รู้ / ที่ยังไม่รู้ 3) ทางเลือกที่เป็นไปได้ 4) ข้อดี-ข้อเสียของแต่ละทาง 5) บทสรุปที่ตัดสินใจได้ 6) ความมั่นใจและข้อควรระวัง ห้ามแต่งข้อเท็จจริง ใช้คำว่า ครับ':'You are a world-class analyst. Structure your answer: 1) what is really asked 2) known vs unknown facts 3) possible options 4) pros and cons 5) a clear conclusion 6) confidence and caveats. Never invent facts.';return await ask([{role:'user',content:String(q||'').slice(0,3000)}],null,ctrl?ctrl.signal:null,()=>{},sys)}
 async function solveHard(q){let a=await deepAnalyze(q);for(let i=0;i<3;i++){const c=await critiqueAnswer(q,a,'');if(c&&c!==a)a=c;else break}return a}
 async function writeSong(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักแต่งเพลงมืออาชีพ จงแต่งเพลงภาษาไทยที่ไพเราะและมีโครงสร้างชัดเจน: ชื่อเพลง, Verse 1, Chorus (ท่อนฮุคที่ติดหู), Verse 2, Outro ใส่จังหวะ อารมณ์ และภาพพจน์สวยงาม ใช้ภาษาง่ายแต่กินใจ ห้ามแต่งคำที่ขัดความหมาย ใช้คำว่า ครับ':'You are a professional songwriter. Write a complete song with title, Verse 1, catchy Chorus, Verse 2 and Outro. Include mood and rhythm hints.';return await ask([{role:'user',content:String(q||'').slice(0,1500)}],null,ctrl?ctrl.signal:null,()=>{},sys)}
+async function tellStory(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักเล่านิทานมืออาชีพ เล่านิทานสั้น ๆ ให้ฟัง มีตัวละคร ฉาก ปัญหา ทางออก และบทเรียนท้ายเรื่อง ใช้ภาษาง่าย อ่านแล้วไหลลื่น เหมาะกับการอ่านออกเสียง ใช้คำว่า ครับ':'You are a professional storyteller. Tell a short complete story with characters, setting, a problem, a solution and a moral. Use simple spoken language suitable for text-to-speech.';
+ const topic=String(q||'').replace(/^\s*(?:อ่าน|เล่า|ฟัง|tell|read)\s*(?:นิทาน|เรื่อง|story|a story)?\s*(?:ให้ฟัง|ให้ผมฟัง|me)?\s*/i,'').trim();
+ return await ask([{role:'user',content:topic?('เล่านิทานเรื่อง '+topic):'เล่านิทานสนุก ๆ สักเรื่อง'}],null,ctrl?ctrl.signal:null,()=>{},sys)}
+
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
@@ -853,7 +866,9 @@ async function restoreBackup(file){if(!file)return;const token=($('bkToken').val
 async function localCommand(t){
  if(!localBase())return null;
   let s=t.match(/^\s*(?:เขียนเพลง|แต่งเพลง|write\s+(?:a\s+)?song(?:\s+about)?)\s*[:：]?\s*([\s\S]{2,})$/i);
-  if(s){noStreamTTS=true;try{return await writeSong(s[1].trim())}catch(e){return '??????????????: '+redact(e.message)}}
+  if(s){noStreamTTS=true;try{return await writeSong(s[1].trim())}catch(e){return 'แต่งเพลงไม่ได้: '+redact(e.message)}}
+  let st=t.match(/^\s*(?:อ่านนิทาน|เล่านิทาน|นิทาน|tell\s+(?:me\s+)?a\s+story|story)\s*[:：]?\s*([\s\S]{0,120})$/i);
+  if(st){noStreamTTS=true;try{return await tellStory(st[1]||'')}catch(e){return 'เล่านิทานไม่ได้: '+redact(e.message)}}
   if(/^\s*(?:คำสั่ง|ช่วยเหลือ|help|commands)\s*[?？]?\s*$/i.test(t))return 'คำสั่งที่ใช้ได้ครับ:\n• มีอะไรใหม่ — สรุปความเคลื่อนไหว\n• ติดตาม หัวข้อ — ให้ไซเฟอร์คอยอัปเดต\n• จำไว้ว่า ... — บันทึกความจำ\n• เป้าหมาย: ... — ตั้งเป้า / สถานะเป้าหมาย — ดูความคืบหน้า\n• วิเคราะห์ ... — แยกแยะแบบมีโครงสร้าง\n• แก้ปัญหา ... — คิดหลายรอบ\n• เขียนเพลง ... / แต่งเพลง ... — แต่งเพลง\n• แปล ... — แปลเป็นไทย\n• เรียบเรียง ... — จัดรูปแบบข้อความ\n• เวอร์ชัน — เช็กเวอร์ชัน';
  let m=t.match(/^\s*(?:ติดตาม|เฝ้าดู|watch)\s*(?:หัวข้อ|เรื่อง|:)?\s*([\s\S]{2,})$/i);
  if(m){const topic=m[1].trim().replace(/^["'“”]+|["'“”]+$/g,'');try{const j=await api('/api/watch',{method:'POST',body:JSON.stringify({topic,learn:true})});loadWatch();loadLearnInfo();if(j.job)watchJobPoll(j.job.id,topic);return 'ติดตามหัวข้อ “'+topic+'” แล้วครับ'+(j.job?' กำลังเรียนรู้และจะอัปเดตให้ทันที':' จะอัปเดตในรอบถัดไป')}catch(e){return 'ติดตามไม่สำเร็จ: '+redact(e.message)}}
@@ -989,6 +1004,7 @@ $('kClear').onclick=async()=>{if(!confirm('ล้างคลังความ�
 $('know').onclick=e=>{if(e.target===$('know'))closeKnow()};
 
 // local quick answers
+const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;
 const WEATHER_REGEX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;async function getWeather(city){if(!city)return null;try{const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);const gdata=await geo.json();const {latitude,longitude}=gdata.results?.[0]||{};if(latitude===undefined)throw new Error('Location not found');const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);const wdata=await w.json();return wdata.current_weather||null;}catch(e){console.error('Weather fetch error:',e);return null;}}
 const GREET={
  th:['สวัสดีครับ วันนี้ให้ผมช่วยเรื่องอะไรดีครับ','ยินดีที่ได้คุยครับ มีอะไรให้ลุยให้ไหมครับ','หวัดดีครับ พร้อมรับงานแล้วครับ','สวัสดีครับ อยากให้ผมช่วยค้นหรือสรุปอะไรไหมครับ'],
