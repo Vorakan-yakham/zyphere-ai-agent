@@ -223,6 +223,11 @@ try:
     INTENT = IntentRouter()
 except Exception:
     INTENT = None
+try:
+    from selfcorrect import SelfCorrect
+    SELFCORRECT = SelfCorrect()
+except Exception:
+    SELFCORRECT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -282,6 +287,7 @@ REMOTE_KEYS = {
     "safety": "zyphere:safety",
     "eval": "zyphere:eval",
     "intent": "zyphere:intent",
+    "selfcorrect": "zyphere:selfcorrect",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -393,7 +399,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect"):
         try:
             data = {
                 "memory": load_mem,
@@ -413,6 +419,7 @@ def remote_push_all():
                 "safety": (SAFETY.snapshot() if SAFETY else None),
                 "eval": (EVAL.snapshot() if EVAL else None),
                 "intent": (INTENT.snapshot() if INTENT else None),
+                "selfcorrect": (SELFCORRECT.snapshot() if SELFCORRECT else None),
             }[name]()
         except Exception:
             continue
@@ -444,6 +451,7 @@ def remote_pull_all():
         "safety": os.path.join(DATA_DIR, "safety.json"),
         "eval": os.path.join(DATA_DIR, "eval.json"),
         "intent": os.path.join(DATA_DIR, "intent.json"),
+        "selfcorrect": os.path.join(DATA_DIR, "selfcorrect.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -479,8 +487,8 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval", "intent"):
-            obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT}[name]
+        if name in ("safety", "eval", "intent", "selfcorrect"):
+            obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -4475,10 +4483,23 @@ class Handler(SimpleHTTPRequestHandler):
                 self._send_json(502 if "no AI keys" not in str(res.get("error")) else 503,
                                 {"ok": False, "error": res.get("error") or "no AI keys configured"})
                 return
-            self._send_json(200, {"ok": True, "text": res.get("text", ""), "offline": False,
+            answer_text = res.get("text", "")
+            corrections = None
+            if SELFCORRECT:
+                try:
+                    cr = SELFCORRECT.run(answer_text, last_text, lang=lastLang)
+                    if cr.get("changed"):
+                        answer_text = cr.get("text", answer_text)
+                    corrections = {"changed": cr.get("changed"), "fixes": cr.get("fixes", [])}
+                    if remote_enabled():
+                        remote_push("selfcorrect", SELFCORRECT.snapshot())
+                except Exception:
+                    pass
+            self._send_json(200, {"ok": True, "text": answer_text, "offline": False,
                                   "sources": res.get("sources", []),
                                   "synthesized": res.get("synthesized", False),
-                                  "intent": (intent or {}).get("intent") if intent else None})
+                                  "intent": (intent or {}).get("intent") if intent else None,
+                                  "self_corrected": corrections})
             return
         if u.path == "/api/vision/learn":
             if RATE and not RATE.allow(self.client_address[0] + ":vision", 6, 60):

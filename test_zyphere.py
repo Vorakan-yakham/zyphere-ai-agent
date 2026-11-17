@@ -221,6 +221,12 @@ def main():
         ir.remember("s1", "user", "ผมชื่อวรกันต์")
         ctx = ir.context("s1", "ชื่ออะไร")
         assert ctx["turns"] and ctx["turns"][0]["text"], "context memory failed"
+        from selfcorrect import SelfCorrect
+        sc = SelfCorrect()
+        bad = sc.run("รหัสคือ gsk_ABCDEF1234567890 นะครับ รับประกันผล 100%")
+        assert bad["changed"] and "[REDACTED]" in bad["text"], "selfcorrect failed"
+        good = sc.run("สวัสดีครับ ผมช่วยคุณได้")
+        assert not good["changed"], "selfcorrect false positive"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
