@@ -78,6 +78,11 @@ try:
     IDENTITY = Identity(os.path.join(DATA_DIR, "identity.json"))
 except Exception:
     IDENTITY = None
+try:
+    from billing import Billing, PLANS
+    BILLING = Billing(os.path.join(DATA_DIR, "billing.json"))
+except Exception:
+    BILLING = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3165,6 +3170,14 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
+        if u.path == "/api/plans":
+            self._send_json(200, {"ok": True, "plans": PLANS,
+                                  "revenue": BILLING.stats() if BILLING else {}})
+            return
+        if u.path == "/api/billing/status":
+            email = urllib.parse.parse_qs(u.query).get("email", [""])[0]
+            self._send_json(200, {"ok": True, "status": BILLING.status(email) if BILLING else {"plan": "free", "active": False}})
+            return
         if u.path == "/api/identity":
             self._send_json(200, {"ok": True, "identity": IDENTITY.public() if IDENTITY else {"error": "unavailable"}})
             return
@@ -3336,9 +3349,25 @@ class Handler(SimpleHTTPRequestHandler):
             r = USERS.add_feedback(email, body.get("kind"), body.get("text")) if USERS else {"ok": False}
             self._send_json(200, r)
             return
+        if u.path == "/api/billing/order":
+            o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
+            self._send_json(200, o)
+            return
+        if u.path == "/api/billing/confirm":
+            r = BILLING.confirm(body.get("id")) if BILLING else {"ok": False}
+            self._send_json(200 if r.get("ok") else 400, r)
+            return
         if u.path == "/api/brain/gap":
             gap = BRAIN.log_gap(body.get("need") or "", body.get("context") or "") if BRAIN else None
             self._send_json(200, {"ok": True, "gap": gap, "pending": BRAIN.pending_gaps() if BRAIN else []})
+            return
+        if u.path == "/api/plans":
+            self._send_json(200, {"ok": True, "plans": PLANS,
+                                  "revenue": BILLING.stats() if BILLING else {}})
+            return
+        if u.path == "/api/billing/status":
+            email = urllib.parse.parse_qs(u.query).get("email", [""])[0]
+            self._send_json(200, {"ok": True, "status": BILLING.status(email) if BILLING else {"plan": "free", "active": False}})
             return
         if u.path == "/api/identity":
             self._send_json(200, {"ok": True, "identity": IDENTITY.public() if IDENTITY else {"error": "unavailable"}})

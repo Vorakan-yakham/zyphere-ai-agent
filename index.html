@@ -95,7 +95,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
 <button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
 <div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน">💙</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
+<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="shopBtn" title="Pro / สนับสนุน">⭐</button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ">👁</button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน">💙</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
 <button class="ib" id="plusBtn" title="แนบไฟล์"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
@@ -148,6 +148,15 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <div class="status" id="vErr"></div>
 <div id="vOut" style="display:none;margin-top:12px"><video id="vPlayer" controls playsinline></video><div style="display:flex;gap:8px;margin-top:8px"><a id="vDl" class="sb new" download style="justify-content:center">ดาวน์โหลด MP4</a><button class="sb new" id="vAgain" style="justify-content:center">สร้างใหม่</button></div><details style="margin-top:8px"><summary>เครดิตภาพ</summary><div id="vCredits" class="status" style="white-space:pre-wrap"></div></details></div>
 <div style="display:flex;gap:8px;margin-top:10px"><button class="sb new" id="vClose" style="justify-content:center">ปิด</button></div>
+</div></div>
+<div class="bk" id="shop"><div class="card">
+<h3>💙 Zyphere Pro — สนับสนุน &amp; ปลดล็อก</h3>
+<div class="status" id="shopMsg" style="white-space:pre-wrap">เลือกแพ็กเกจที่ต้องการ แล้วชำระผ่าน PromptPay ครับ ระบบจะปลดล็อกสิทธิ์ให้ทันทีหลังยืนยัน</div>
+<div id="planList" style="margin-top:10px"></div>
+<label>อีเมลของคุณ</label><input id="shopEmail" value="vorayakham@gmail.com">
+<div class="status" style="margin-top:8px">PromptPay: 0941939686 · กสิกรไทย: 007 8 468 262</div>
+<div id="qrBox" style="margin-top:8px;text-align:center"></div>
+<div style="display:flex;gap:8px;margin-top:8px"><button class="sb go" id="shopConfirm" style="flex:1;justify-content:center">ยืนยันชำระแล้ว / รับสิทธิ์</button><button class="sb new" id="shopClose" style="justify-content:center">ปิด</button></div>
 </div></div>
 <div class="bk" id="know"><div class="card">
 <h3>คลังความรู้ของไซเฟอร์</h3>
@@ -1094,6 +1103,20 @@ $('learnSaveCfg').onclick=async()=>{try{const j=await api('/api/learn/config',{m
 $('kClear').onclick=async()=>{if(!confirm('ล้างคลังความรู้ทั้งหมด?'))return;try{await api('/api/knowledge',{method:'POST',body:JSON.stringify({clear:true})});knowTotal=0;renderKnowList([]);loadLearnInfo();toast('ล้างคลังความรู้แล้ว')}catch(e){toast('ล้างไม่ได้: '+redact(e.message))}};
 $('know').onclick=e=>{if(e.target===$('know'))closeKnow()};
 
+async function openShop(){
+ $('set').style.display='none';$('shop').style.display='flex';$('shopEmail').value=getK('zy_email')||'vorayakham@gmail.com';
+ try{const j=await api('/api/plans');const plans=j.plans||{};const L=$('planList');L.innerHTML='';
+  Object.entries(plans).forEach(([k,v])=>{const d=document.createElement('div');d.className='kitem';
+   d.innerHTML='<h4>'+esc(v.name)+'</h4><div class="meta">'+(v.price?('฿'+v.price):'ฟรี')+'</div><div class="status">'+(v.perks||[]).map(x=>'• '+esc(x)).join('<br>')+'</div>';
+   if(v.price){const b=document.createElement('button');b.className='sb go';b.textContent='เลือกแพ็กเกจนี้';b.style.cssText='margin-top:8px';
+    b.onclick=async()=>{const o=await api('/api/billing/order',{method:'POST',body:JSON.stringify({email:$('shopEmail').value,plan:k})});if(o.ok){$('shopMsg').textContent='สั่งแล้ว ID '+o.id+'\nชำระ PromptPay 0941939686 แล้วกดยืนยันด้านล่างครับ';$('shop').dataset.oid=o.id;showQR(o)}else toast('สั่งไม่ได้: '+redact(o.error||''))};d.appendChild(b)}
+   L.appendChild(d)});
+ }catch(e){$('shopMsg').textContent='โหลดแพ็กเกจไม่ได้: '+redact(e.message)}
+}
+function showQR(o){const box=$('qrBox');if(!o.amount)return;const amt=o.amount;const payload='00020101021229370016A000000677010111011311669419396865303764540'+String(amt.toFixed(2)).length.toString().padStart(2,'0')+amt.toFixed(2)+'5802TH6304';box.innerHTML='<div class="status">สแกน QR PromptPay จ่าย ฿'+amt+'</div><div style="margin-top:8px;font-size:13px;color:var(--mut)">PromptPay 0941939686 · กสิกร 007 8 468 262</div>'}
+$('shopConfirm').onclick=async()=>{const oid=$('shop').dataset.oid;if(!oid){toast('เลือกแพ็กเกจก่อนครับ');return}
+ try{const r=await api('/api/billing/confirm',{method:'POST',body:JSON.stringify({id:oid})});if(r.ok){setK('zy_email',$('shopEmail').value);$('shopMsg').textContent='✅ สิทธิ์ '+r.plan+' เปิดแล้วจนถึง '+stamp(r.until)+' ครับ ขอบคุณที่สนับสนุนครับ!';toast('ปลดล็อกสิทธิ์แล้วครับ')}else toast('ยืนยันไม่ได้: '+redact(r.error||''))}catch(e){toast('ยืนยันไม่ได้: '+redact(e.message))}};
+$('shopClose').onclick=()=>{$('shop').style.display='none'};
 // local quick answers
 const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;
 const WEATHER_REGEX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;async function getWeather(city){if(!city)return null;try{const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);const gdata=await geo.json();const {latitude,longitude}=gdata.results?.[0]||{};if(latitude===undefined)throw new Error('Location not found');const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);const wdata=await w.json();return wdata.current_weather||null;}catch(e){console.error('Weather fetch error:',e);return null;}}
@@ -1147,6 +1170,7 @@ function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&bu
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
 $('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;
+$('shopBtn').onclick=openShop;
 $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
