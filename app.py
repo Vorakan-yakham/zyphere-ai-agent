@@ -2793,11 +2793,14 @@ def _job_update(job_id, **kw):
 
 
 def _prune_jobs():
-    now = time.time()
+    """Remove jobs older than JOB_TTL seconds (default 2 hours)."""
+    JOB_TTL = 7200  # seconds
+    cutoff = time.time() - JOB_TTL
     with JOB_LOCK:
-        for k, v in list(JOBS.items()):
-            if now - float(v.get("created_at") or 0) > 7200:
-                JOBS.pop(k, None)
+        expired = [k for k, v in JOBS.items()
+                   if (ts := float(v.get("created_at") or 0)) < cutoff]
+        for k in expired:
+            JOBS.pop(k, None)
 
 
 def _video_worker(job_id, payload):
