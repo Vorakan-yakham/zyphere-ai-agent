@@ -575,7 +575,20 @@ async function speak(text,btn){
  if(btn)btn.textContent='ฟัง';speaking=false
 }
 function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-5');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
-async function drainTTS(me){if(ttsPlaying&&drainTok===spkTok)return;ttsPlaying=true;drainTok=spkTok;while(ttsQ.length&&voiceAlive(me)){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;await new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;res()}};a.onended=fin;a.onerror=fin;a.play().catch(fin)})}if(voiceAlive(me)){ttsPlaying=false;speaking=false}}
+async function drainTTS(me){
+ if(ttsPlaying&&drainTok===spkTok)return;
+ ttsPlaying=true;drainTok=spkTok;
+ let next=null;
+ const prep=()=>{if(!next&&ttsQ.length&&voiceAlive(me)){const p=ttsQ[0];next=mkAud(ttsUrl(p));next.preload='auto';try{next.load()}catch(e){}}};
+ while(ttsQ.length&&voiceAlive(me)){
+  prep();
+  const a=next||mkAud(ttsUrl(ttsQ[0]));next=null;
+  const p=ttsQ.shift();if(!p)continue;
+  curAud=a;a.src=ttsUrl(p);try{a.load()}catch(e){}speaking=true;
+  await new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;res()}};a.onended=fin;a.onerror=fin;a.play().catch(fin)});
+ }
+ if(voiceAlive(me)){ttsPlaying=false;speaking=false}
+}
 function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS(voiceOwner)}
 function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}

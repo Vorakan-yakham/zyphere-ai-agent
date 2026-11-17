@@ -11,5 +11,6 @@
 | B07 | เสียงแย่งกันพูด / ฟังมั่ว | stopSpeak ไม่ล้างคิว, drain flag race, ไมค์ฟังขณะพูด | Fixed | ล้างคิว+token guard+abort mic; ทดสอบ q=0 หลัง stopSpeak |
 | B08 | หมุนโลโก้นานก่อนตอบ | await knowledgeContext/localCommand ก่อน stream | Fixed | แยกคำสั่ง sync; ทั่วไป stream ทันที |
 | B09 | เสียง 2 คนแทรกกัน | `speak()` resolve ทันที → server+browser TTS เล่นพร้อมกัน; stream กับปกติคนละ token | Fixed | voiceOwner arbiter + รอ onended จริง; ทดสอบ utt=0 |
+| B10 | เสียงช้ากว่าข้อความหลายวินาที | edge-tts ใช้ 700-980ms/ก้อน | Mitigated | prefetch ก้อนถัดไปล่วงหน้า; ถ้าต้องการ 0ms ใช้เสียงในเครื่อง |
 
 กฎ: ห้ามปิด bug โดยไม่มีหลักฐานทดสอบ
