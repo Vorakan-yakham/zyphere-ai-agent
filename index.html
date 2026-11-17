@@ -195,8 +195,11 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 </div>
 <details class="kitem"><summary>สำรอง / กู้คืนข้อมูล (กันข้อมูลหายหลังรีสตาร์ท)</summary>
 <div class="status" style="margin-top:8px;white-space:pre-wrap">สำรองความจำ คลังความรู้ การตั้งค่า และ watchlist เป็นไฟล์ JSON แล้วกู้คืนได้ทุกเมื่อ</div>
-<div class="kr" style="margin-top:8px"><input id="bkToken" type="password" placeholder="รหัสสำรอง BACKUP_TOKEN (ถ้าเซิร์ฟเวอร์ตั้งไว้)" autocomplete="new-password" spellcheck="false"></div>
+<div id="adminOnly" style="display:none">
+<div class="kr" style="margin-top:8px"><input id="bkToken" type="password" placeholder="รหัสสำรอง BACKUP_TOKEN (Admin)" autocomplete="new-password" spellcheck="false"></div>
 <div style="display:flex;gap:8px;margin-top:8px"><button class="sb new" id="bkDown" style="flex:1;justify-content:center">ดาวน์โหลดไฟล์สำรอง</button><button class="sb new" id="bkUpBtn" style="flex:1;justify-content:center">กู้คืนจากไฟล์</button></div>
+</div>
+<div class="status" id="userNoAccess" style="display:none">เฉพาะ Admin ที่สามารถสำรอง/กู้คืนข้อมูลได้ครับ</div>
 <input type="file" id="bkFile" accept="application/json,.json" hidden>
 <div class="status" id="bkMsg" style="white-space:pre-wrap"></div>
 <div class="status" id="remoteStatus" style="white-space:pre-wrap"></div>
@@ -1134,6 +1137,8 @@ async function applyRoles(){
  // keep buttons visible so users can log in; access is enforced by API token
  const sb=document.getElementById('setBtn');if(sb)sb.title=isAdmin?'ตั้งค่า (Admin)':'ตั้งค่า';
   const ab=document.getElementById('adminBtn');if(ab)ab.title=isAdmin?'Admin ✓':'Admin — ล็อกอินก่อน';
+  const ao=document.getElementById('adminOnly');if(ao)ao.style.display=isAdmin?'':'none';
+  const na=document.getElementById('userNoAccess');if(na)na.style.display=isAdmin?'none':'';
  window.zyRole=role;
 }
 // local quick answers
