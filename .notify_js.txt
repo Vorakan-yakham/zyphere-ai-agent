@@ -1,0 +1,15 @@
+let lastNotif='';
+async function checkNotifs(){
+ if(!localBase())return;
+ try{
+  const j=await api('/api/notifications');const ev=(j.events||[]);
+  const sig=ev.map(x=>x.text).join('|');
+  if(sig&&sig!==lastNotif){lastNotif=sig;
+   if(Notification.permission==='granted'){
+    ev.forEach(x=>{try{new Notification('Zyphere',{body:x.text})}catch(e){}})
+   }
+   toast(ev[0].text);
+  }
+ }catch(e){}
+}
+setInterval(checkNotifs,30000);

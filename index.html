@@ -1229,5 +1229,20 @@ $('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสด�
 $('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
 $('logo').innerHTML=lg();
+let lastNotif='';
+async function checkNotifs(){
+ if(!localBase())return;
+ try{
+  const j=await api('/api/notifications');const ev=(j.events||[]);
+  const sig=ev.map(x=>x.text).join('|');
+  if(sig&&sig!==lastNotif){lastNotif=sig;
+   if(Notification.permission==='granted'){
+    ev.forEach(x=>{try{new Notification('Zyphere',{body:x.text})}catch(e){}})
+   }
+   toast(ev[0].text);
+  }
+ }catch(e){}
+}
+setInterval(checkNotifs,30000);
 detectBackend().then(()=>{applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
 </script></body></html>

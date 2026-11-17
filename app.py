@@ -83,6 +83,11 @@ try:
     BILLING = Billing(os.path.join(DATA_DIR, "billing.json"))
 except Exception:
     BILLING = None
+try:
+    from ratelimit import RateLimit
+    RATE = RateLimit()
+except Exception:
+    RATE = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3176,6 +3181,23 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
+        if u.path == "/api/notifications":
+            # pending events for admin (paid orders, new users, feedback, gaps)
+            events = []
+            if BILLING:
+                st = BILLING.stats()
+                if st.get("paid"):
+                    events.append({"type": "sale", "text": "💰 ยอดขาย " + str(st.get("revenue")) + " บาท · " + str(st.get("paid")) + " order"})
+            if USERS:
+                us = USERS.stats()
+                if us.get("feedback"):
+                    events.append({"type": "feedback", "text": "📝 feedback ใหม่ " + str(us.get("feedback")) + " รายการ"})
+            if BRAIN:
+                gp = BRAIN.pending_gaps()
+                if gp:
+                    events.append({"type": "gap", "text": "🎯 ความต้องการที่ยังทำไม่ได้ " + str(len(gp)) + " อย่าง"})
+            self._send_json(200, {"ok": True, "events": events})
+            return
         if u.path == "/api/plans":
             # public: show plans only — revenue is admin-only
             self._send_json(200, {"ok": True, "plans": PLANS})
@@ -3378,6 +3400,23 @@ class Handler(SimpleHTTPRequestHandler):
             r = USERS.login(body.get("email"), body.get("password")) if USERS else {"ok": False, "error": "unavailable"}
             self._send_json(200 if r.get("ok") else 401, r)
             return
+        if u.path == "/api/users/delete":
+            tok = str(body.get("token") or "")
+            sess = USERS.session(tok) if USERS else None
+            if not sess:
+                self._send_json(401, {"ok": False, "error": "unauthorized"})
+                return
+            email = sess["email"]
+            if email == "vorayakham@gmail.com":
+                self._send_json(400, {"ok": False, "error": "ไม่สามารถลบบัญชีเจ้าของระบบ"})
+                return
+            with USERS.lock:
+                USERS.users.pop(email, None)
+                for k in [k for k, v in USERS.sessions.items() if v.get("email") == email]:
+                    USERS.sessions.pop(k, None)
+                USERS.save()
+            self._send_json(200, {"ok": True, "deleted": email})
+            return
         if u.path == "/api/users/feedback":
             email = str(body.get("email") or "guest")
             r = USERS.add_feedback(email, body.get("kind"), body.get("text")) if USERS else {"ok": False}
@@ -3470,6 +3509,9 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "learned": got, "stats": BRAIN.stats() if BRAIN else {}})
             return
         if u.path == "/api/ask":
+            if RATE and not RATE.allow(self.client_address[0] + ":ask", 20, 60):
+                self._send_json(429, {"ok": False, "error": "คำขอเร็วเกินไป กรุณารอสักครู่ครับ"})
+                return
             # Server-side LLM proxy: any user can chat without personal API key.
             msgs = body.get("messages") or []
             sys_p = str(body.get("system") or "")
@@ -3517,6 +3559,9 @@ class Handler(SimpleHTTPRequestHandler):
                 self._send_json(502, {"ok": False, "error": _clip(str(e), 200)})
             return
         if u.path == "/api/vision/learn":
+            if RATE and not RATE.allow(self.client_address[0] + ":vision", 6, 60):
+                self._send_json(429, {"ok": False, "error": "ดูภาพเร็วเกินไป กรุณารอสักครู่ครับ"})
+                return
             # Give Zyphere "eyes": receive a screen image, describe it, learn from it.
             import base64 as _b64
             try:
