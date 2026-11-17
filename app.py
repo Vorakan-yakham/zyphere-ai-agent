@@ -218,6 +218,11 @@ try:
     TOOLS = ToolOrchestrator(SAFETY)
 except Exception:
     TOOLS = None
+try:
+    from intent import IntentRouter
+    INTENT = IntentRouter()
+except Exception:
+    INTENT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -276,6 +281,7 @@ REMOTE_KEYS = {
     "feedback_loop": "zyphere:feedback_loop",
     "safety": "zyphere:safety",
     "eval": "zyphere:eval",
+    "intent": "zyphere:intent",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -387,7 +393,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent"):
         try:
             data = {
                 "memory": load_mem,
@@ -406,6 +412,7 @@ def remote_push_all():
                 "feedback_loop": (FEEDBACK.snapshot() if FEEDBACK else None),
                 "safety": (SAFETY.snapshot() if SAFETY else None),
                 "eval": (EVAL.snapshot() if EVAL else None),
+                "intent": (INTENT.snapshot() if INTENT else None),
             }[name]()
         except Exception:
             continue
@@ -436,6 +443,7 @@ def remote_pull_all():
         "feedback_loop": os.path.join(DATA_DIR, "feedback_loop.json"),
         "safety": os.path.join(DATA_DIR, "safety.json"),
         "eval": os.path.join(DATA_DIR, "eval.json"),
+        "intent": os.path.join(DATA_DIR, "intent.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -471,8 +479,8 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval"):
-            obj = SAFETY if name == "safety" else EVAL
+        if name in ("safety", "eval", "intent"):
+            obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -4429,6 +4437,20 @@ class Handler(SimpleHTTPRequestHandler):
                         return
                 except Exception:
                     pass
+            # Intent routing + dynamic contextual memory (Zyphere's round-2 gap)
+            intent = None
+            sid = str(body.get("session") or self.client_address[0])
+            last_text = str(msgs[-1].get("content", ""))
+            if INTENT:
+                try:
+                    intent = INTENT.route(last_text)
+                    sys_p = INTENT.build_system(sys_p, sid, last_text)
+                    for m in msgs:
+                        if m.get("role") in ("user", "assistant") and m.get("content"):
+                            INTENT.remember(sid, m["role"], m["content"])
+                    INTENT.route_log.append({"intent": intent.get("intent"), "t": time.time()})
+                except Exception:
+                    pass
             # Apply learned feedback guidance (HCAI feedback loop) to the system prompt
             if FEEDBACK:
                 try:
@@ -4455,7 +4477,8 @@ class Handler(SimpleHTTPRequestHandler):
                 return
             self._send_json(200, {"ok": True, "text": res.get("text", ""), "offline": False,
                                   "sources": res.get("sources", []),
-                                  "synthesized": res.get("synthesized", False)})
+                                  "synthesized": res.get("synthesized", False),
+                                  "intent": (intent or {}).get("intent") if intent else None})
             return
         if u.path == "/api/vision/learn":
             if RATE and not RATE.allow(self.client_address[0] + ":vision", 6, 60):

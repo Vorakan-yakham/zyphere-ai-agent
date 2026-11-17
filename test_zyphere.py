@@ -215,6 +215,12 @@ def main():
         el = EvalLoop(epath)
         ev = el.evaluate("อธิบายควอนตัม", "ควอนตัมคือ... ยังไม่มีหลักฐานชัดเจน ควรตรวจเพิ่ม", ["A"])
         assert ev.get("ok") and 0 <= ev["score"] <= 1, "eval loop failed"
+        from intent import IntentRouter
+        ir = IntentRouter()
+        assert ir.route("ค้นข่าวล่าสุด")["tool"] == "search_web", "intent route failed"
+        ir.remember("s1", "user", "ผมชื่อวรกันต์")
+        ctx = ir.context("s1", "ชื่ออะไร")
+        assert ctx["turns"] and ctx["turns"][0]["text"], "context memory failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
