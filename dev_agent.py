@@ -32,7 +32,10 @@ def apply_patch(p):
     f = str(p.get("file") or "")
     old = str(p.get("old") or "")
     new = str(p.get("new") or "")
+    bad = ("</html>", "</body>", "<body", "<!DOCTYPE", "</head>")
     if f not in ALLOWED or len(old) < 80 or len(new) > 1200 or old.strip() == new.strip():
+        return False
+    if any(x in new.upper() for x in bad):
         return False
     path = os.path.join(ROOT, f)
     s = open(path, encoding="utf-8").read()
@@ -52,8 +55,13 @@ def verify():
         for _ in range(30):
             time.sleep(0.4)
             try:
-                with urllib.request.urlopen("http://127.0.0.1:" + port + "/api/health", timeout=2) as r:
-                    return r.status == 200
+                base = "http://127.0.0.1:" + port
+                with urllib.request.urlopen(base + "/api/health", timeout=2) as r:
+                    if r.status != 200:
+                        continue
+                with urllib.request.urlopen(base + "/", timeout=2) as r:
+                    html = r.read().decode("utf-8", "replace")
+                return html.count("<body") <= 1 and html.count("</body>") <= 1 and 'id="sendBtn"' in html and 'id="know"' in html
             except Exception:
                 pass
         return False
