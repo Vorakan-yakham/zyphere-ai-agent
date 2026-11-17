@@ -116,6 +116,10 @@ try:
     NOTEBOOK = Notebook(os.path.join(DATA_DIR, "notebook.json"))
 except Exception:
     NOTEBOOK = None
+try:
+    import media as MEDIA
+except Exception:
+    MEDIA = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3148,6 +3152,10 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/media/capabilities":
+            self._send_json(200, {"ok": True,
+                                  "capabilities": MEDIA.capabilities(FFMPEG, MP3 is not None) if MEDIA else {}})
+            return
         if u.path == "/api/notebook":
             self._send_json(200, {"ok": True,
                                   "docs": NOTEBOOK.list_docs() if NOTEBOOK else [],
@@ -3575,6 +3583,43 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
+            return
+        if u.path == "/api/media/srt":
+            text = str(body.get("text") or "")
+            out = os.path.join(DATA_DIR, "sub_" + uuid.uuid4().hex[:8] + ".srt")
+            res = MEDIA.write_srt(out, text) if MEDIA else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/media/melody":
+            # Create an original, royalty-free MP3 melody (MIDI-like synth).
+            if not FFMPEG or not MEDIA:
+                self._send_json(400, {"ok": False, "error": "ffmpeg/media unavailable"})
+                return
+            base = os.path.join(DATA_DIR, "mel_" + uuid.uuid4().hex[:8])
+            wav, mp3 = base + ".wav", base + ".mp3"
+            r1 = MEDIA.melody_to_wav(wav)
+            if not r1.get("ok"):
+                self._send_json(400, r1); return
+            r2 = MEDIA.wav_to_mp3(wav, mp3, FFMPEG)
+            if r2.get("ok"):
+                try:
+                    MEDIA.tag_mp3(mp3, body.get("title") or "Zyphere Melody",
+                                  body.get("artist") or "Zyphere")
+                except Exception:
+                    pass
+            try:
+                os.remove(wav)
+            except Exception:
+                pass
+            self._send_json(200 if r2.get("ok") else 400, r2)
+            return
+        if u.path == "/api/media/tag":
+            mp3p = os.path.join(DATA_DIR, str(body.get("file") or ""))
+            if not os.path.exists(mp3p):
+                self._send_json(404, {"ok": False, "error": "file not found"})
+                return
+            res = MEDIA.tag_mp3(mp3p, body.get("title") or "", body.get("artist") or "") if MEDIA else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/notebook/add":
             name = str(body.get("name") or "")

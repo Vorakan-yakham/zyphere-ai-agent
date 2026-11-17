@@ -86,6 +86,12 @@ def main():
         r = nb.analyze("รายได้ของไซเฟอร์เท่าไหร่")
         assert r.get("ok") and r.get("citations"), "notebook grounded analysis failed"
         assert "500" in r.get("answer", ""), "notebook answer not grounded in source"
+        import media
+        s = media.srt_from_text("สวัสดีครับ นี่คือคำบรรยายภาษาไทย")
+        assert "-->" in s, "SRT generation failed"
+        wavp = os.path.join(tempfile.gettempdir(), "zy_mel_test.wav")
+        mr = media.melody_to_wav(wavp)
+        assert mr.get("ok") and os.path.getsize(wavp) > 1000, "melody synth failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
