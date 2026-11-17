@@ -783,8 +783,14 @@ def knowledge_count():
     return len(load_knowledge().get("items") or [])
 
 
-def _knowledge_tokens(text):
-    return [t for t in re.findall(r"[A-Za-z0-9\u0E00-\u0E7F]{2,}", (text or "").lower()) if len(t) >= 2]
+def _knowledge_tokens(text: str | None) -> list[str]:
+    """Return lowercase alphanumeric/Thai tokens of length ≥ 2 from *text*.
+    Empty or None input yields an empty list.
+    """
+    if not text:
+        return []
+    _re = re.compile(r"[A-Za-z0-9\\u0E00-\\u0E7F]{2,}")
+    return [_t.lower() for _t in _re.findall(text)]
 
 
 def search_knowledge(query="", limit=20):
