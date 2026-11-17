@@ -170,6 +170,11 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <div style="display:flex;gap:8px;margin-top:6px"><input id="watchTopic" placeholder="เช่น AI ล่าสุด, เศรษฐกิจไทย" style="flex:1;min-width:0"><button class="sb go" id="watchAdd" style="justify-content:center">ติดตาม</button></div>
 <div id="wList"></div>
 <div class="status" id="watchMsg"></div>
+<details class="kitem"><summary>เป้าหมาย / งานที่ต้องทำ</summary>
+<div style="display:flex;gap:8px;margin-top:8px"><input id="goalTitle" placeholder="เช่น เรียนรู้ AI ให้เชี่ยวชาญ" style="flex:1;min-width:0"><button class="sb go" id="goalAdd" style="justify-content:center">เพิ่ม</button></div>
+<div id="goalList"></div>
+<div class="status" id="goalMsg"></div>
+</details>
 </div>
 <details class="kitem"><summary>สำรอง / กู้คืนข้อมูล (กันข้อมูลหายหลังรีสตาร์ท)</summary>
 <div class="status" style="margin-top:8px;white-space:pre-wrap">สำรองความจำ คลังความรู้ การตั้งค่า และ watchlist เป็นไฟล์ JSON แล้วกู้คืนได้ทุกเมื่อ</div>
@@ -750,6 +755,9 @@ function renderWatch(items){wTopics=items||[];const L=$('wList');if(!L)return;L.
  });
 }
 async function loadWatch(){if(!localBase()){renderWatch([]);return}try{const j=await api('/api/watch');renderWatch(j.topics||[])}catch(e){}}
+function renderGoals(items){const L=$('goalList');if(!L)return;L.innerHTML='';if(!items.length){L.innerHTML='<div class="status" style="padding:4px 0">ยังไม่มีเป้าหมาย</div>';return}items.forEach(g=>{const d=document.createElement('div');d.className='witem';d.innerHTML='<div class="wt"><b>'+esc(g.title)+'</b><span>ความคืบหน้า '+(g.progress||0)+'%'+(g.done?' · สำเร็จ':'')+'</span></div>';const b=document.createElement('button');b.className='kx';b.textContent=g.done?'เปิดใหม่':'ทำเสร็จ';b.onclick=async()=>{await api('/api/goals',{method:'POST',body:JSON.stringify({id:g.id,action:g.done?'undone':'done'})});loadGoals()};const x=document.createElement('button');x.className='kx';x.textContent='ลบ';x.onclick=async()=>{await api('/api/goals',{method:'POST',body:JSON.stringify({id:g.id,action:'delete'})});loadGoals()};d.appendChild(b);d.appendChild(x);L.appendChild(d)})}
+async function loadGoals(){if(!localBase()){renderGoals([]);return}try{const j=await api('/api/goals');renderGoals(j.goals||[])}catch(e){}}
+async function addGoal(){const el=$('goalTitle'),title=(el.value||'').trim();if(!title){toast('ใส่เป้าหมายก่อน');return}try{await api('/api/goals',{method:'POST',body:JSON.stringify({title,steps:title.split(/[,،]/).map(x=>x.trim()).filter(Boolean).slice(1)})});el.value='';$('goalMsg').textContent='เพิ่มเป้าหมายแล้ว';loadGoals()}catch(e){$('goalMsg').textContent='เพิ่มไม่ได้: '+redact(e.message)}}
 async function watchJobPoll(id,topic){let fails=0;const started=Date.now();const timer=setInterval(async()=>{
  try{const s=await api('/api/learn/status?id='+encodeURIComponent(id));
   if(s.status==='done'){clearInterval(timer);$('watchMsg').textContent='อัปเดต '+topic+' แล้ว';toast('ไซเฟอร์อัปเดต '+topic+' แล้ว');loadKnowledge($('kSearch').value.trim());loadLearnInfo();loadWatch();showBriefing(true)}
@@ -769,6 +777,7 @@ function renderBrief(j,force){const card=$('brief');if(!card)return;
  const items=(j.items||[]).slice(0,force?10:6);const updated=(j.watched_updated||[]).slice(0,5);
  if(!items.length&&!updated.length){card.style.display='none';return}
  let h='<h4>'+(force?'ความเคลื่อนไหวล่าสุด':'สรุปตอนคุณไม่อยู่')+'</h4><div class="bmeta">เรียนรู้ใหม่ '+(j.new_count||0)+' เรื่อง'+(updated.length?' · หัวข้อที่ติดตามอัปเดต '+updated.length+' หัวข้อ':'')+(j.learning&&j.learning.last_topic?' · ล่าสุด: '+esc(j.learning.last_topic):'')+'</div>';
+  if((j.goals||[]).length)h+='<div class="bmeta" style="margin-top:8px">'+'\u0e40\u0e1b\u0e49\u0e2b\u0e2b\u0e33\u0e04\u0e49\u0e32\u0e07: '+j.goals.map(x=>esc(x.title)+' ('+(x.progress||0)+'%)').join(' ? ')+'</div>';
  items.forEach(it=>{h+='<div class="bitem"><b>'+esc(it.title||it.topic)+'</b><p>'+esc((it.summary||'').slice(0,260))+(it.summary&&it.summary.length>260?'…':'')+'</p></div>'});
  if(updated.length)h+='<div class="bmeta" style="margin-top:8px">หัวข้อที่ติดตาม: '+updated.map(x=>esc(x.topic)).join(' · ')+'</div>';
  h+='<div class="brow"><button class="bx" id="bOpen">เปิดคลังความรู้</button><button class="bx" id="bClose">ปิด</button></div>';
@@ -899,7 +908,7 @@ function renderKnowList(items){const L=$('kList');L.innerHTML='';
 async function loadKnowledge(q){const L=$('kList');if(!localBase()){L.innerHTML='<div class="status">ต้องเชื่อมเซิร์ฟเวอร์ก่อน</div>';return}
  try{const j=await api('/api/knowledge?q='+encodeURIComponent(q||'')+'&limit=30');knowTotal=j.total||0;renderKnowList(j.items||[])}catch(e){L.innerHTML='<div class="status">โหลดคลังความรู้ไม่ได้: '+esc(redact(e.message))+'</div>'}
 }
-function openKnow(){$('set').style.display='none';$('know').style.display='flex';$('learnMsg').textContent='';$('bkToken').value=getK('zy_bk_token');loadKnowledge($('kSearch').value.trim());loadLearnInfo();loadWatch();loadStorage();loadHistory();loadSnaps()}
+function openKnow(){$('set').style.display='none';$('know').style.display='flex';$('learnMsg').textContent='';$('bkToken').value=getK('zy_bk_token');loadKnowledge($('kSearch').value.trim());loadLearnInfo();loadWatch();loadGoals();loadStorage();loadHistory();loadSnaps()}
 function closeKnow(){$('know').style.display='none'}
 async function learnStart(topic,rotate){
  if(learnPoll){toast('กำลังเรียนรู้อยู่ รอสักครู่');return}
@@ -948,7 +957,7 @@ $('learnGo').onclick=()=>learnStart($('learnTopic').value,false);
 $('learnNext').onclick=()=>learnStart('',true);
 $('kSearchBtn').onclick=()=>loadKnowledge($('kSearch').value);
 $('briefNow').onclick=()=>showBriefing(true);
-$('watchAdd').onclick=addWatch;
+$('watchAdd').onclick=addWatch;$('goalAdd').onclick=addGoal;
 $('watchTopic').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addWatch()}};
 $('bkDown').onclick=downloadBackup;
 $('bkUpBtn').onclick=()=>$('bkFile').click();

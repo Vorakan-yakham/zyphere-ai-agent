@@ -105,6 +105,7 @@ REMOTE_KEYS = {
     "knowledge": "zyphere:knowledge",
     "learning": "zyphere:learning",
     "watch": "zyphere:watch",
+    "goals": "zyphere:goals",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -216,13 +217,14 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals"):
         try:
             data = {
                 "memory": load_mem,
                 "knowledge": load_knowledge,
                 "learning": load_learning,
                 "watch": load_watch,
+                "goals": load_goals,
             }[name]()
         except Exception:
             continue
@@ -241,6 +243,7 @@ def remote_pull_all():
         "knowledge": os.path.join(DATA_DIR, "knowledge.json"),
         "learning": os.path.join(DATA_DIR, "learning.json"),
         "watch": os.path.join(DATA_DIR, "watch.json"),
+        "goals": GOALS_PATH,
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -1062,6 +1065,90 @@ def watch_public():
     return out
 
 
+GOALS_PATH = os.path.join(DATA_DIR, "goals.json")
+GOALS_LOCK = threading.RLock()
+
+
+def _default_goals():
+    return {"items": [], "updated_at": 0}
+
+
+def load_goals():
+    with GOALS_LOCK:
+        if not os.path.exists(GOALS_PATH):
+            return _default_goals()
+        try:
+            with open(GOALS_PATH, "r", encoding="utf-8") as f:
+                d = json.load(f)
+            if not isinstance(d, dict):
+                return _default_goals()
+            if not isinstance(d.get("items"), list):
+                d["items"] = []
+            return d
+        except Exception:
+            return _default_goals()
+
+
+def save_goals(d):
+    with GOALS_LOCK:
+        d = d if isinstance(d, dict) else _default_goals()
+        d["updated_at"] = int(time.time())
+        try:
+            with open(GOALS_PATH, "w", encoding="utf-8") as f:
+                json.dump(d, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+    _remote_schedule("goals", d)
+    return d
+
+
+def goals_add(title, steps=None, due=0):
+    title = _clip(str(title or ""), 160)
+    if not title:
+        raise RuntimeError("missing goal title")
+    d = load_goals()
+    item = {
+        "id": uuid.uuid4().hex[:10],
+        "title": title,
+        "steps": [{"text": _clip(str(s or ""), 160), "done": False} for s in (steps or []) if str(s or "").strip()][:12],
+        "due": int(due or 0),
+        "created_at": int(time.time()),
+        "done": False,
+    }
+    d["items"] = [item] + (d.get("items") or [])[:49]
+    save_goals(d)
+    return item
+
+
+def goals_update(gid, action, step=None):
+    d = load_goals()
+    for g in (d.get("items") or []):
+        if str(g.get("id")) != str(gid):
+            continue
+        if action == "done":
+            g["done"] = True
+        elif action == "delete":
+            d["items"] = [x for x in d["items"] if str(x.get("id")) != str(gid)]
+        elif action == "step":
+            for s in (g.get("steps") or []):
+                if str(s.get("text")) == str(step):
+                    s["done"] = not bool(s.get("done"))
+        elif action == "undone":
+            g["done"] = False
+        break
+    save_goals(d)
+    return d
+
+
+def goals_public():
+    out = []
+    for g in (load_goals().get("items") or []):
+        steps = g.get("steps") or []
+        done = sum(1 for s in steps if s.get("done"))
+        out.append({**g, "progress": int(done * 100 / len(steps)) if steps else (100 if g.get("done") else 0)})
+    return out
+
+
 def build_briefing(since=0, limit=12):
     now = int(time.time())
     try:
@@ -1099,6 +1186,10 @@ def build_briefing(since=0, limit=12):
     failed = [x for x in watched if str(x.get("last_error") or "").strip()][:2]
     if failed:
         suggestions.append("บางหัวข้อเรียนรู้ไม่สำเร็จ ลองกดอัปเดตอีกครั้ง: " + " · ".join(str(x.get("topic")) for x in failed))
+    active_goals = [g for g in goals_public() if not g.get("done")]
+    if active_goals:
+        g = active_goals[0]
+        suggestions.append("ยังมีเป้าหมายค้างอยู่: " + str(g.get("title")) + " (" + str(g.get("progress") or 0) + "%)")
     if not watched:
         suggestions.append("ลองติดตามหัวข้อที่สนใจ (เช่น AI ล่าสุด, เศรษฐกิจไทย) ไซเฟอร์จะอัปเดตให้ก่อนหัวข้ออื่น")
     if not lite:
@@ -1113,6 +1204,7 @@ def build_briefing(since=0, limit=12):
         "watch_count": len(watched),
         "watched_updated": [x for x in watched if x.get("updated")],
         "history": history,
+        "goals": [g for g in goals_public() if not g.get("done")][:5],
         "suggestions": suggestions[:4],
         "learning": {
             "enabled": cfg.get("enabled"),
@@ -1131,19 +1223,22 @@ def backup_bundle():
     knowledge = load_knowledge()
     learning = load_learning()
     watch = load_watch()
+    goals = load_goals()
     return {
         "app": "zyphere",
-        "version": 21,
+        "version": 22,
         "created_at": int(time.time()),
         "counts": {
             "memory": len((mem.get("facts") or [])) + len((mem.get("preferences") or [])) + len((mem.get("notes") or [])),
             "knowledge": len(knowledge.get("items") or []),
             "watch": len(watch.get("topics") or []),
+            "goals": len(goals.get("items") or []),
         },
         "memory": mem,
         "knowledge": knowledge,
         "learning": learning,
         "watch": watch,
+        "goals": goals,
     }
 
 
@@ -1170,6 +1265,9 @@ def restore_bundle(body):
         data["topics"] = data["topics"][:100]
         save_watch(data)
         counts["watch"] = len(data["topics"])
+    if isinstance(body.get("goals"), dict):
+        save_goals(body["goals"])
+        counts["goals"] = len((body["goals"].get("items") or []))
     return {"ok": True, "restored": counts, "counts": backup_bundle()["counts"]}
 
 
@@ -2965,6 +3063,10 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/learn/config":
             self._send_json(200, {"ok": True, "config": learning_public_config()})
             return
+        if u.path == "/api/goals":
+            items = goals_public()
+            self._send_json(200, {"ok": True, "count": len(items), "goals": items})
+            return
         if u.path == "/api/learn/history":
             q = urllib.parse.parse_qs(u.query)
             try:
@@ -3109,6 +3211,20 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception:
                 f_chars = 15000
             self._send_json(200, fetch_page(body.get("url", ""), max(1000, min(f_chars, 60000))))
+            return
+        if u.path == "/api/goals":
+            try:
+                if body.get("id") and body.get("action"):
+                    goals_update(body.get("id"), body.get("action"), body.get("step"))
+                elif body.get("title"):
+                    goals_add(body.get("title"), body.get("steps"), body.get("due") or 0)
+                elif body.get("clear"):
+                    save_goals(_default_goals())
+                else:
+                    raise RuntimeError("missing title or action")
+                self._send_json(200, {"ok": True, "goals": goals_public()})
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
             return
         if u.path == "/api/knowledge":
             if body.get("clear"):
