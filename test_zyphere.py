@@ -125,6 +125,11 @@ def main():
         r0 = academic.evaluate(facts=0)
         rg = academic.evaluate(facts=800, rules=140, links=130, documents=70, works=40)
         assert r0["rank"] == "แรกเกิด" and rg["is_genius"], "academic rank failed"
+        import director
+        pl = director.plan("จักรวาล", 4)
+        assert pl.get("ok") and len(pl["shots"]) == 4 and pl["shots"][0]["image_query"], "director plan failed"
+        qq = director.quality("4k")
+        assert qq["w"] == 3840 and qq["h"] == 2160, "4k preset failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

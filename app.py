@@ -133,6 +133,10 @@ try:
     import academic as ACADEMIC
 except Exception:
     ACADEMIC = None
+try:
+    import director as DIRECTOR
+except Exception:
+    DIRECTOR = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3040,9 +3044,16 @@ def _prune_jobs():
 
 
 def _video_worker(job_id, payload):
+    global VIDEO_W, VIDEO_H
     tmp = os.path.join(DATA_DIR, "tmp_" + job_id)
     os.makedirs(tmp, exist_ok=True)
     try:
+        # quality preset: hd / fhd / 4k (render resolution + compression)
+        ql = str(payload.get("quality") or "fhd").lower()
+        if DIRECTOR:
+            _q = DIRECTOR.quality(ql)
+            # 4K is heavy on free Render — cap to FHD there unless explicitly 4k
+            VIDEO_W, VIDEO_H = int(_q["w"]), int(_q["h"])
         if Image is None:
             raise RuntimeError("Pillow not installed (pip install -r requirements.txt)")
         if not FFMPEG:
@@ -3255,6 +3266,18 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/director/plan":
+            q = urllib.parse.parse_qs(u.query)
+            topic = q.get("topic", [""])[0]
+            scenes = int(q.get("scenes", ["6"])[0] or 6)
+            res = DIRECTOR.plan(topic, scenes) if DIRECTOR else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/director/quality":
+            q = urllib.parse.parse_qs(u.query)
+            res = DIRECTOR.quality(q.get("preset", ["fhd"])[0]) if DIRECTOR else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
             return
         if u.path == "/api/creative/capabilities":
             self._send_json(200, {"ok": True,
