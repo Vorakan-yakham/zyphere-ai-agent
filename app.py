@@ -1082,20 +1082,21 @@ def _default_goals():
     return {"items": [], "updated_at": 0}
 
 
-def load_goals():
+def load_goals() -> dict:
+    """Load goals from JSON file safely, returning defaults on any error."""
     with GOALS_LOCK:
-        if not os.path.exists(GOALS_PATH):
+        if not os.path.isfile(GOALS_PATH):
             return _default_goals()
         try:
             with open(GOALS_PATH, "r", encoding="utf-8") as f:
-                d = json.load(f)
-            if not isinstance(d, dict):
-                return _default_goals()
-            if not isinstance(d.get("items"), list):
-                d["items"] = []
-            return d
-        except Exception:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError):
             return _default_goals()
+        if not isinstance(data, dict):
+            return _default_goals()
+        if not isinstance(data.get("items"), list):
+            data["items"] = []
+        return data
 
 
 def save_goals(d):
