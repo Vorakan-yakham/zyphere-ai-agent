@@ -557,11 +557,11 @@ async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const 
    if(btn)btn.textContent='ฟัง';speaking=false;return}}catch(e){}
   for(const p of ttsParts(clean)){if(tok!==spkTok){speaking=false;return}await sayOne(p)}
   if(btn)btn.textContent='ฟัง';speaking=false}
-let ttsQ=[],ttsPlaying=false,streamBuf='',lastStreamLen=0,streamSpoke=false;
+let ttsQ=[],ttsPlaying=false,streamBuf='',lastStreamLen=0,streamSpoke=false,noStreamTTS=false;
 function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-5');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
 async function drainTTS(){if(ttsPlaying)return;ttsPlaying=true;const tok=spkTok;while(ttsQ.length&&tok===spkTok){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}ttsPlaying=false;speaking=false}
 function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS()}
-function feedStreamSpeak(full,voice){if(!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
+function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function resetStreamSpeak(){ttsQ=[];streamBuf='';lastStreamLen=0;streamSpoke=false}
 
@@ -856,7 +856,7 @@ async function restoreBackup(file){if(!file)return;const token=($('bkToken').val
 async function localCommand(t){
  if(!localBase())return null;
   let s=t.match(/^\s*(?:เขียนเพลง|แต่งเพลง|write\s+(?:a\s+)?song(?:\s+about)?)\s*[:：]?\s*([\s\S]{2,})$/i);
-  if(s){try{return await writeSong(s[1].trim())}catch(e){return '??????????????: '+redact(e.message)}}
+  if(s){noStreamTTS=true;try{return await writeSong(s[1].trim())}catch(e){return '??????????????: '+redact(e.message)}}
  let m=t.match(/^\s*(?:ติดตาม|เฝ้าดู|watch)\s*(?:หัวข้อ|เรื่อง|:)?\s*([\s\S]{2,})$/i);
  if(m){const topic=m[1].trim().replace(/^["'“”]+|["'“”]+$/g,'');try{const j=await api('/api/watch',{method:'POST',body:JSON.stringify({topic,learn:true})});loadWatch();loadLearnInfo();if(j.job)watchJobPoll(j.job.id,topic);return 'ติดตามหัวข้อ “'+topic+'” แล้วครับ'+(j.job?' กำลังเรียนรู้และจะอัปเดตให้ทันที':' จะอัปเดตในรอบถัดไป')}catch(e){return 'ติดตามไม่สำเร็จ: '+redact(e.message)}}
  if(/^\s*(?:มีอะไรใหม่|มีอะไรอัปเดต|อัปเดตอะไรบ้าง|สรุปสิ่งที่เรียนรู้|สรุปความเคลื่อนไหว|what'?s new|briefing)\s*[?？]?\s*$/i.test(t)){
