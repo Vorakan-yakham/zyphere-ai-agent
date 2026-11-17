@@ -231,6 +231,14 @@ def main():
         rg = RAG()
         rr = rg.retrieve("ควอนตัม", {"knowledge": [{"topic": "ควอนตัม", "summary": "กลศาสตร์ควอนตัมคือฟิสิกส์ระดับอนุภาค"}]})
         assert rr.get("ok") and rr["grounded"] and rr["chunks"][0]["source"] == "knowledge", "rag failed"
+        from behavior import Behavior
+        bpath = os.path.join(tempfile.gettempdir(), "zy_behavior_test.json")
+        if os.path.exists(bpath): os.remove(bpath)
+        bh = Behavior(bpath)
+        bh.track("view", "ควอนตัมฟิสิกส์")
+        bh.link_modal("m1", text="ควอนตัม", image="q.png", audio="q.mp3")
+        rc = bh.recall_modal("ควอนตัม")
+        assert rc["hits"] and rc["hits"][0]["image"] == "q.png", "cross-modal memory failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
