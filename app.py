@@ -1695,13 +1695,23 @@ def _keywords(text, n=8):
     return [t for t, _ in sorted(freq.items(), key=lambda x: (-x[1], -len(x[0])))[:n]]
 
 
-def _clean_text(text):
-    text = re.sub(r"https?://\S+", " ", text or "")
-    text = re.sub(r"\[\d+\]", "", text)
-    text = re.sub(r"\{\d+\}", "", text)
+# compiled regex patterns
+_URL_RE = re.compile(r"https?://\S+")
+_REF_RE = re.compile(r"\[\d+\]|\{\d+\}")
+
+def _clean_text(text: str | None) -> str:
+    """Normalize raw text by removing URLs, reference markers and excess whitespace.
+    Returns a clean string or an empty string if input is falsy.
+    """
+    if not text:
+        return ""
+    # Remove URLs and reference markers
+    text = _URL_RE.sub(" ", text)
+    text = _REF_RE.sub("", text)
+    # Normalize line breaks and collapse whitespace
     text = text.replace("\r", "\n")
     text = re.sub(r"[ \t]+", " ", text)
-    return text
+    return text.strip()
 
 
 def _clip_at(text, n):
