@@ -185,6 +185,7 @@ REMOTE_KEYS = {
     "notebook": "zyphere:notebook",
     "research": "zyphere:research",
     "identity": "zyphere:identity",
+    "creative": "zyphere:creative",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -296,7 +297,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative"):
         try:
             data = {
                 "memory": load_mem,
@@ -309,6 +310,7 @@ def remote_push_all():
                 "notebook": (NOTEBOOK.snapshot() if NOTEBOOK else None),
                 "research": (RESEARCH.snapshot() if RESEARCH else None),
                 "identity": (IDENTITY.data if IDENTITY else None),
+                "creative": (CREATIVE.snapshot() if CREATIVE else None),
             }[name]()
         except Exception:
             continue
@@ -333,6 +335,7 @@ def remote_pull_all():
         "notebook": os.path.join(DATA_DIR, "notebook.json"),
         "research": os.path.join(DATA_DIR, "research.json"),
         "identity": os.path.join(DATA_DIR, "identity.json"),
+        "creative": os.path.join(DATA_DIR, "creative.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -343,6 +346,12 @@ def remote_pull_all():
             IDENTITY.data = data
             IDENTITY.save()
             restored.append(name)
+            continue
+        if name == "creative" and CREATIVE:
+            if CREATIVE.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
             continue
         if name in ("platforms", "dev_brain", "notebook", "research"):
             obj = {"platforms": PLATFORMS, "dev_brain": DEV_BRAIN, "notebook": NOTEBOOK,
@@ -2928,19 +2937,28 @@ def _run_ffmpeg(args, timeout=900):
         raise RuntimeError("ffmpeg failed: " + msg)
 
 
-def _render_segment(img_path, audio_path, out_path, dur):
+def _render_segment(img_path, audio_path, out_path, dur, motion=True):
+    """Render a scene. With motion=True add a slow Ken Burns zoom/pan so a
+    still image feels alive (cinematic), instead of a frozen frame."""
     dur = max(1.0, float(dur))
+    vf = ("scale=1600:900:force_original_aspect_ratio=increase,crop=1600:900,"
+          "zoompan=z='min(zoom+0.00045,1.10)':x='iw/2-(iw/zoom/2)':"
+          "y='ih/2-(ih/zoom/2)':d=1:s=1280x720:fps=24,format=yuv420p") if motion else "format=yuv420p"
     args = [
         "-y",
         "-loop", "1", "-i", img_path,
         "-i", audio_path,
         "-c:v", "libx264", "-preset", "ultrafast", "-tune", "stillimage",
-        "-r", "24", "-crf", "26", "-pix_fmt", "yuv420p", "-vf", "format=yuv420p", "-color_range", "tv",
-        "-c:a", "aac", "-b:a", "128k", "-af", f"apad=whole_dur={dur:.2f}",
+        "-r", "24", "-crf", "23", "-pix_fmt", "yuv420p", "-vf", vf, "-color_range", "tv",
+        "-c:a", "aac", "-b:a", "160k", "-af", f"apad=whole_dur={dur:.2f}",
         "-t", f"{dur:.2f}", "-shortest",
         out_path,
     ]
-    _run_ffmpeg(args, timeout=600)
+    try:
+        _run_ffmpeg(args, timeout=600)
+    except Exception:
+        # fallback: plain still frame if zoompan filter is unsupported
+        _render_segment(img_path, audio_path, out_path, dur, motion=False)
 
 
 def _concat_segments(paths, out_path, vertical=False):
@@ -2999,7 +3017,7 @@ def _norm_scenes(script, topic, lang, seconds):
                 {"title": "Practical use", "text": f"Understanding {topic} helps us use it better in daily life.", "query": topic},
                 {"title": "Summary", "text": f"In short, {topic} is useful and worth learning about.", "query": topic},
             ]
-    max_scenes = max(2, min(10, round(max(10, seconds) / 7)))
+    max_scenes = max(2, min(24, round(max(10, seconds) / 7)))
     return scenes[:max_scenes]
 
 
@@ -3032,7 +3050,7 @@ def _video_worker(job_id, payload):
         topic = _clip(payload.get("topic") or "Zyphere", 160)
         lang = payload.get("lang") if payload.get("lang") in ("th", "en") else _detect_lang(topic)
         style = payload.get("style") if payload.get("style") in ("clean", "dark", "warm") else "clean"
-        seconds = max(10, min(90, int(payload.get("seconds") or 30)))
+        seconds = max(10, min(300, int(payload.get("seconds") or 30)))
         rate = max(0.8, min(1.5, float(payload.get("rate") or 1.0)))
         scenes = _norm_scenes(payload.get("script"), topic, lang, seconds)
         title = _clip((payload.get("script") or {}).get("title") if isinstance(payload.get("script"), dict) else topic, 160) or topic
@@ -3237,6 +3255,14 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/creative/capabilities":
+            self._send_json(200, {"ok": True,
+                                  "skills": CREATIVE.capabilities(bool(FFMPEG), True, Image is not None) if CREATIVE else {},
+                                  "platforms": PLATFORMS if CREATIVE else []})
+            return
+        if u.path == "/api/creative/packages":
+            self._send_json(200, {"ok": True, "packages": CREATIVE.packages() if CREATIVE else []})
             return
         if u.path == "/api/academic/rank":
             try:
@@ -3850,6 +3876,15 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/creative/package":
+            res = CREATIVE.make_package(
+                str(body.get("platform") or "Facebook"), str(body.get("topic") or ""),
+                str(body.get("audience") or "general"), str(body.get("language") or "th"),
+                str(body.get("caption") or "")) if CREATIVE else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("creative", CREATIVE.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/platforms/log":
             name = str(body.get("name") or "")
