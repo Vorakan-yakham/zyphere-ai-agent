@@ -60,6 +60,12 @@ def main():
         assert hasattr(Preferences, "observe") and hasattr(Preferences, "profile"), "Preferences methods missing"
         from ratelimit import RateLimit
         assert hasattr(RateLimit, "allow"), "RateLimit.allow missing"
+        from platforms import Platforms
+        import tempfile
+        pp = Platforms(os.path.join(tempfile.gettempdir(), "zy_platform_test.json"))
+        assert pp.log("Fastwork").get("ok"), "platform log failed"
+        assert not pp.log("เว็บพนันบาคาร่า").get("ok"), "gambling must be refused"
+        assert pp.report().get("total", 0) >= 1, "platform report failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

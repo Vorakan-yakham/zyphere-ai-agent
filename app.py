@@ -101,6 +101,11 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "").strip()
 GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI", "").strip() or (
     "https://zyphere-ai-agent.onrender.com/api/auth/google/callback")
 GOOGLE_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+try:
+    from platforms import Platforms
+    PLATFORMS = Platforms(os.path.join(DATA_DIR, "platforms.json"))
+except Exception:
+    PLATFORMS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -148,6 +153,7 @@ REMOTE_KEYS = {
     "learning": "zyphere:learning",
     "watch": "zyphere:watch",
     "goals": "zyphere:goals",
+    "platforms": "zyphere:platforms",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -259,7 +265,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms"):
         try:
             data = {
                 "memory": load_mem,
@@ -267,6 +273,7 @@ def remote_push_all():
                 "learning": load_learning,
                 "watch": load_watch,
                 "goals": load_goals,
+                "platforms": (PLATFORMS.snapshot() if PLATFORMS else None),
             }[name]()
         except Exception:
             continue
@@ -286,11 +293,18 @@ def remote_pull_all():
         "learning": os.path.join(DATA_DIR, "learning.json"),
         "watch": os.path.join(DATA_DIR, "watch.json"),
         "goals": GOALS_PATH,
+        "platforms": os.path.join(DATA_DIR, "platforms.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
         if not isinstance(data, dict):
             skipped.append(name)
+            continue
+        if name == "platforms" and PLATFORMS:
+            if PLATFORMS.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
             continue
         try:
             tmp = path + ".tmp"
@@ -3354,6 +3368,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/learn/config":
             self._send_json(200, {"ok": True, "config": learning_public_config()})
             return
+        if u.path == "/api/platforms":
+            self._send_json(200, PLATFORMS.report() if PLATFORMS else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/goals":
             items = goals_public()
             self._send_json(200, {"ok": True, "count": len(items), "goals": items})
@@ -3525,6 +3542,15 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
+            return
+        if u.path == "/api/platforms/log":
+            name = str(body.get("name") or "")
+            note = str(body.get("note") or "")
+            status = str(body.get("status") or "prepared")
+            res = PLATFORMS.log(name, note, status) if PLATFORMS else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("platforms", PLATFORMS.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/email/send":
             tok = str(body.get("token") or "")
