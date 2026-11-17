@@ -243,6 +243,11 @@ try:
     AUTHZ = Authz(USERS)
 except Exception:
     AUTHZ = None
+try:
+    from audit import Audit
+    AUDIT = Audit(os.path.join(DATA_DIR, "audit.json"))
+except Exception:
+    AUDIT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -304,6 +309,7 @@ REMOTE_KEYS = {
     "intent": "zyphere:intent",
     "selfcorrect": "zyphere:selfcorrect",
     "behavior": "zyphere:behavior",
+    "audit": "zyphere:audit",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -415,7 +421,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit"):
         try:
             data = {
                 "memory": load_mem,
@@ -437,6 +443,7 @@ def remote_push_all():
                 "intent": (INTENT.snapshot() if INTENT else None),
                 "selfcorrect": (SELFCORRECT.snapshot() if SELFCORRECT else None),
                 "behavior": (BEHAVIOR.snapshot() if BEHAVIOR else None),
+                "audit": (AUDIT.snapshot() if AUDIT else None),
             }[name]()
         except Exception:
             continue
@@ -470,6 +477,7 @@ def remote_pull_all():
         "intent": os.path.join(DATA_DIR, "intent.json"),
         "selfcorrect": os.path.join(DATA_DIR, "selfcorrect.json"),
         "behavior": os.path.join(DATA_DIR, "behavior.json"),
+        "audit": os.path.join(DATA_DIR, "audit.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -505,8 +513,9 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval", "intent", "selfcorrect", "behavior"):
-            obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT, "behavior": BEHAVIOR}[name]
+        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit"):
+            obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT,
+                   "behavior": BEHAVIOR, "audit": AUDIT}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3422,6 +3431,15 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/audit/stats":
+            self._send_json(200, {"ok": True, "stats": AUDIT.stats() if AUDIT else {},
+                                  "integrity": AUDIT.verify() if AUDIT else {}})
+            return
+        if u.path == "/api/audit/query":
+            q = urllib.parse.parse_qs(u.query)
+            res = AUDIT.query(q.get("actor", [""])[0] or None, q.get("action", [""])[0] or None) if AUDIT else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/authz/policy":
             self._send_json(200, AUTHZ.policy() if AUTHZ else {"ok": False, "error": "unavailable"})
             return
@@ -4558,6 +4576,15 @@ class Handler(SimpleHTTPRequestHandler):
                     corrections = {"changed": cr.get("changed"), "fixes": cr.get("fixes", [])}
                     if remote_enabled():
                         remote_push("selfcorrect", SELFCORRECT.snapshot())
+                except Exception:
+                    pass
+            if AUDIT:
+                try:
+                    AUDIT.record(actor=AUTHZ.role_of(str(body.get("token") or "")) if AUTHZ else "guest",
+                                 action="ask", detail=last_text[:120],
+                                 result="ok·intent=" + str((intent or {}).get("intent") or "-"))
+                    if remote_enabled():
+                        remote_push("audit", AUDIT.snapshot())
                 except Exception:
                     pass
             self._send_json(200, {"ok": True, "text": answer_text, "offline": False,

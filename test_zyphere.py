@@ -242,6 +242,12 @@ def main():
         from authz import Authz
         az = Authz(None)
         assert az.check("", "chat")["allowed"] and not az.check("", "backup")["allowed"], "authz failed"
+        from audit import Audit
+        apath = os.path.join(tempfile.gettempdir(), "zy_audit_test.json")
+        if os.path.exists(apath): os.remove(apath)
+        au = Audit(apath)
+        au.record(actor="guest", action="ask", detail="test", result="ok")
+        assert au.verify()["integrity"] and au.query()["count"] == 1, "audit failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
