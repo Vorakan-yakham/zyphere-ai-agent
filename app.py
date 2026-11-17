@@ -2964,6 +2964,11 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
         self.end_headers()
 
+    def end_headers(self):
+        if self.path == "/" or ".html" in self.path or "/libs/" in self.path:
+            self.send_header("Cache-Control", "no-store, max-age=0")
+        super().end_headers()
+
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
