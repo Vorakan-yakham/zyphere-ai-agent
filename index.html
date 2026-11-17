@@ -675,14 +675,29 @@ function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){
  const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];
+ const sents=s.match(/[^.!?。！？\n]+[.!?。！？]?/g)||[s];
  const out=[];let cur='';
- for(const w of s.split(' ')){
-  if((cur+' '+w).trim().length>380){out.push(cur.trim());cur=w}
+ for(const sn of sents){
+  const w=sn.trim();if(!w)continue;
+  if((cur+' '+w).trim().length>340&&cur){out.push(cur.trim());cur=w}
   else cur=(cur?cur+' ':'')+w;
  }
  if(cur.trim())out.push(cur.trim());
  return out;
 }
+
+function waitReady(a){return new Promise(res=>{
+  try{if(a.readyState>=3){res();return}}catch(e){}
+  let done=false;const fin=()=>{if(done)return;done=true;try{a.removeEventListener('canplaythrough',fin)}catch(e){}try{a.removeEventListener('error',fin)}catch(e){}res()};
+  try{a.addEventListener('canplaythrough',fin);a.addEventListener('error',fin)}catch(e){}
+  setTimeout(fin,3000);
+})}
+function playAud(a){return new Promise(res=>{
+  let done=false;const fin=()=>{if(done)return;done=true;try{a.removeEventListener('ended',fin)}catch(e){}try{a.removeEventListener('error',fin)}catch(e){}res()};
+  try{a.addEventListener('ended',fin);a.addEventListener('error',fin)}catch(e){}
+  try{a.currentTime=0}catch(e){}
+  a.play().catch(()=>fin());
+})}
 async function speak(text,btn){
  const me=claimVoice();spkTok=me;speaking=true;const tok=me;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
  if(getK('zy_ttse')!=='b'&&lb){
@@ -698,9 +713,11 @@ async function speak(text,btn){
    if(!voiceAlive(me))return;
    prep();
    const a=next||mkAud(url(parts2[i]));next=null;
-   const p=parts2[i++];a.src=url(p);try{a.load()}catch(e){}curAud=a;speaking=true;
-   const done=await new Promise(res=>{let settled=false;const fin=()=>{if(!settled){settled=true;res()}};a.onended=fin;a.onerror=()=>{okAll=false;fin()};a.play().catch(()=>{okAll=false;fin()})});
-   void done;
+    i++;curAud=a;speaking=true;
+    await waitReady(a);
+    if(!voiceAlive(me))return;
+    await playAud(a);
+    if(a.error)okAll=false;
    prep();
   }
   if(!voiceAlive(me))return;
@@ -722,8 +739,11 @@ async function drainTTS(me){
   prep();
   const a=next||mkAud(ttsUrl(ttsQ[0]));next=null;
   const p=ttsQ.shift();if(!p)continue;
-  curAud=a;a.src=ttsUrl(p);try{a.load()}catch(e){}speaking=true;
-  await new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;res()}};a.onended=fin;a.onerror=fin;a.play().catch(fin)});
+   if(!voiceAlive(me))return;
+   curAud=a;speaking=true;
+   await waitReady(a);
+   if(!voiceAlive(me))return;
+   await playAud(a);
  }
  if(voiceAlive(me)){ttsPlaying=false;speaking=false}
 }
