@@ -3829,6 +3829,13 @@ if __name__ == "__main__":
             print("Remote storage:", boot.get("restored") or "nothing to restore")
         except Exception as e:
             print("Remote storage unavailable:", str(e)[:120])
+    # Bootstrap: if knowledge was lost (Render restart / fresh install), learn immediately
+    try:
+        if knowledge_count() == 0:
+            boot_job = create_learn_job(rotate=True, count=int(load_learning().get("learn_count") or 3), reason="bootstrap")
+            print("Bootstrap learning:", boot_job.get("id") if boot_job else "queued/skipped")
+    except Exception as e:
+        print("Bootstrap learning failed:", str(e)[:120])
     threading.Thread(target=learn_scheduler, daemon=True).start()
     with Server(("", PORT), Handler) as s:
         print(f"Zyphere COMPLETE21: http://localhost:{PORT}")
