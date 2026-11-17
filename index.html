@@ -260,11 +260,7 @@ function sysPrompt(l,voice,code){const th=l==='th',jv=(getK('zy_persona')||'zyph
  s+=th?'\n\nการเขียนภาษาไทย: ใช้สำนวนธรรมชาติ เรียงความคิดต่อเนื่อง เว้นวรรคหลังเครื่องหมาย แบ่งย่อหน้าเมื่อเปลี่ยนประเด็น หลีกเลี่ยงประโยคยาวและคำซ้ำ ถ้าข้อความอ่านยากให้เรียบเรียงใหม่ก่อนตอบ':'Write clearly with natural phrasing, short sentences, correct spacing and paragraph breaks; rewrite confusing text first.';const male=/Niwat|Guy|Ryan/i.test((($('thvoice')||{}).value||'')+' '+(($('envoice')||{}).value||'')+' '+getK('zy_thvoice')+' '+getK('zy_envoice'));s+=th?(male?'\n\nคุณเป็นผู้ชาย ใช้คำลงท้าย ครับ เสมอ ห้ามใช้ ค่ะ หรือ คะ':'\n\nใช้คำลงท้าย ค่ะ เสมอ ห้ามใช้ ครับ'):'';s+=th&&voice?'\n\nเมื่อเล่าเรื่องหรือบรรยาย: เริ่มด้วยฉากสั้นๆ แล้วค่อยคลี่เหตุการณ์ ใช้ประโยคสั้นไม่เกิน 25 คำ เชื่อมด้วย แล้ว / จากนั้น / จึง / ในขณะที่ หลีกเลี่ยงคำซ้ำและโครงสร้างที่ดูเหมือนแปลจากภาษาอื่น ทำให้อ่านแล้วไหลลื่นเหมือนนักเล่ามืออาชีพ และใช้คำลงท้าย ครับเสมอ':'';s+=th?'\n\nสไตล์การสนทนา: ตอบสั้น อุ่น เป็นธรรมชาติ เหมือนกำลังคุยกับคนที่รู้จักกันดี ห้ามทวนคำทักทายหรือประโยคที่เคยตอบไปแล้วซ้ำ ถ้าผู้ใช้ทักทาย ให้ตอบสั้นๆ แล้วเสนอสิ่งที่ทำได้จริงหรือถามคำถามเฉพาะเจาะจง เปลี่ยนสำนวนทุกครั้ง ห้ามเริ่มประโยคด้วย ยินดีต้อนรับ / มีเรื่องอะไรให้ช่วย / สวัสดีครับ ซ้ำจากรอบก่อน ใช้คำว่า ครับเสมอ อย่าเขียนเป็นหัวข้อหรือบทความในแชททั่วไป เว้นแต่ผู้ใช้ขอสรุปหรืออธิบายยาว':'Keep replies short, warm and natural, like a real conversation.';if(code) s+=CODEP[th?'th':'en'];
  return s}
 
-// provider calls
-async function readSSE(r,pick,on,finishOf,touch){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='',finish='';for(;;){const{done,value}=await rd.read();touch&&touch();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;let j;try{j=JSON.parse(d)}catch(e){continue}
-  if(j&&j.error)throw new Error((j.error&&j.error.message)||'สตรีมผิดพลาด');
-  const t=pick(j);if(t){full+=t;on&&on(full)}
-  const f=finishOf&&finishOf(j);if(f)finish=f;touch&&touch()}}
+async function readSSE(r,pick,on,finish,touch){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';try{while(true){const{done,value}=await rd.read();if(touch)touch();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;let j;try{j=JSON.parse(d)}catch{continue}if(j?.error)throw new Error(j.error.message||'Stream error');const t=pick(j);if(t){full+=t;if(on)on(full)}}}}finally{rd.releaseLock();if(finish)finish(full)}}st f=finishOf&&finishOf(j);if(f)finish=f;touch&&touch()}}
   if(!full&&!finish)throw new Error('ไม่ได้รับคำตอบ');return {text:full,finish}}
 async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
 const finishOpenAI=j=>j?.choices?.[0]?.finish_reason||'';
@@ -539,14 +535,14 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  }
  return {ok:false,error:'unknown tool: '+name}}
 
-let spkTok=0,ac=null,curAud=null;
+let spkTok=0,ac=null,curAud=null,speaking=false;
 function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];const out=[];let cur='';for(let p of s.split(/(?<=[.!?。！？])\s+/).filter(Boolean)){while(p.length>1200){let k=1150;const sp=p.lastIndexOf(' ',k),cm=p.lastIndexOf(',',k);if(Math.max(sp,cm)>800)k=Math.max(sp,cm);if(cur){out.push(cur);cur=''}out.push(p.slice(0,k).trim());p=p.slice(k).trim()}if(cur&&(cur+' '+p).length>1200){out.push(cur);cur=p}else cur=(cur?cur+' ':'')+p}if(cur)out.push(cur);return out}
-async function speak(text,btn){stopSpeak();const tok=spkTok;const clean=plain(text);if(btn)btn.textContent='หยุด';const lb=localBase();
+async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const clean=plain(text);if(btn)btn.textContent='หยุด';const lb=localBase();
   try{if(getK('zy_ttse')!=='b'&&lb){
    const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
    const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));
