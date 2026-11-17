@@ -2716,8 +2716,6 @@ def _tts_save(text: str, lang: str, path: str, rate: float = 1.0) -> bool:
     except (TypeError, ValueError):
         rate_adj = 0.0
     pct = int(max(-40, min(60, rate_adj)))
-    # TODO: implement actual TTS generation and file saving.
-    return True
 
     async def _run():
         com = edge_tts.Communicate(text, voice, rate=f"{pct:+d}%", pitch="+0Hz")
@@ -2753,6 +2751,11 @@ def _run_ffmpeg(args, timeout=900):
     p = subprocess.run([FFMPEG] + args, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=timeout)
     if p.returncode != 0:
         msg = (p.stderr or b"").decode("utf-8", "ignore")[-800:]
+        try:
+            with open(os.path.join(DATA_DIR, "ffmpeg_error.log"), "a", encoding="utf-8") as f:
+                f.write("\n=== " + time.strftime("%H:%M:%S") + " ===\n" + " ".join(str(x) for x in args)[:500] + "\n" + msg + "\n")
+        except Exception:
+            pass
         raise RuntimeError("ffmpeg failed: " + msg)
 
 

@@ -13,5 +13,6 @@
 | B09 | เสียง 2 คนแทรกกัน | `speak()` resolve ทันที → server+browser TTS เล่นพร้อมกัน; stream กับปกติคนละ token | Fixed | voiceOwner arbiter + รอ onended จริง; ทดสอบ utt=0 |
 | B10 | เสียงช้ากว่าข้อความหลายวินาที | edge-tts ใช้ 700-980ms/ก้อน | Mitigated | prefetch ก้อนถัดไปล่วงหน้า; ถ้าต้องการ 0ms ใช้เสียงในเครื่อง |
 | B11 | อ่านบทความมีช่วงเงียบ 5 วิ | speak() ไม่มี prefetch + ttsParts ตัดไม่ทำงาน → ก้อนยาว | Fixed | speak() ใช้ prefetch + ตัดตามคำ 380 ตัว/ก้อน; ทดสอบ parts=4 max=367 |
+| B12 | วิดีโอสร้างไม่ได้ (ffmpeg failed) | dev agent ใส่ `return True` ทิ้งไว้ใน `_tts_save()` ก่อนโค้ดจริง → รายงานสำเร็จแต่ไม่สร้างไฟล์ mp3 → ffmpeg หาไฟล์ไม่เจอ | Fixed | ลบ `return True`; ทดสอบสร้าง MP4 สำเร็จ 11.84s 1280x720 H264+AAC |
 
 กฎ: ห้ามปิด bug โดยไม่มีหลักฐานทดสอบ
