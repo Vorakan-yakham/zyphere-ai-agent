@@ -262,6 +262,10 @@ def main():
         assert cp["ok"] and cp["ratio"] <= 1.0, "compressor failed"
         cx = surpass.make_counterexamples("machine learning")
         assert cx["ok"] and len(cx["questions"]) == 3, "counterexamples failed"
+        from empathy import Empathy
+        em = Empathy()
+        er = em.respond_style("วันนี้เหนื่อยมาก", {"likes_short": True, "family": [{"name":"x"}]})
+        assert er["ok"] and er["distress"] and em.status()["can_feel"] is False, "empathy failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

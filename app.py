@@ -277,6 +277,11 @@ try:
     GUARD = Guard(os.path.join(DATA_DIR, "guard.json"))
 except Exception:
     GUARD = None
+try:
+    from empathy import Empathy
+    EMPATHY = Empathy()
+except Exception:
+    EMPATHY = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -4018,6 +4023,9 @@ class Handler(SimpleHTTPRequestHandler):
             code = detect_lang(txt)
             self._send_json(200, {"ok": True, "code": code, "name": LANG_NAMES.get(code, code)})
             return
+        if u.path == "/api/empathy/status":
+            self._send_json(200, EMPATHY.status() if EMPATHY else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/guard/consent/status":
             self._send_json(200, GUARD.consent_status() if GUARD else {"ok": False, "error": "unavailable"})
             return
@@ -4036,6 +4044,18 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/dialogue/ack":
             q = urllib.parse.parse_qs(u.query).get("text", [""])[0]
             self._send_json(200, DIALOGUE.ack(q) if DIALOGUE else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/empathy/respond":
+            text = str(body.get("text") or "")
+            st = {}
+            if PREF:
+                p = PREF.profile() or {}
+                st.update({"likes_short": p.get("likes_short"), "likes_voice": p.get("likes_voice"),
+                           "no_emoji": p.get("no_emoji")})
+            if IDENTITY:
+                st["family"] = IDENTITY.family()
+            res = EMPATHY.respond_style(text, st) if EMPATHY else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
             return
         if u.path == "/api/guard/consent/grant":
             res = GUARD.grant(str(body.get("device") or "กล้องตรวจจับ"),
