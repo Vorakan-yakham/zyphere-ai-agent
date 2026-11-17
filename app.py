@@ -120,6 +120,11 @@ try:
     import media as MEDIA
 except Exception:
     MEDIA = None
+try:
+    from research import ResearchLibrary, SOURCES
+    RESEARCH = ResearchLibrary(os.path.join(DATA_DIR, "research.json"))
+except Exception:
+    RESEARCH = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -170,6 +175,7 @@ REMOTE_KEYS = {
     "platforms": "zyphere:platforms",
     "dev_brain": "zyphere:dev_brain",
     "notebook": "zyphere:notebook",
+    "research": "zyphere:research",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -281,7 +287,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research"):
         try:
             data = {
                 "memory": load_mem,
@@ -292,6 +298,7 @@ def remote_push_all():
                 "platforms": (PLATFORMS.snapshot() if PLATFORMS else None),
                 "dev_brain": (DEV_BRAIN.snapshot() if DEV_BRAIN else None),
                 "notebook": (NOTEBOOK.snapshot() if NOTEBOOK else None),
+                "research": (RESEARCH.snapshot() if RESEARCH else None),
             }[name]()
         except Exception:
             continue
@@ -314,14 +321,16 @@ def remote_pull_all():
         "platforms": os.path.join(DATA_DIR, "platforms.json"),
         "dev_brain": os.path.join(DATA_DIR, "dev_brain.json"),
         "notebook": os.path.join(DATA_DIR, "notebook.json"),
+        "research": os.path.join(DATA_DIR, "research.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
         if not isinstance(data, dict):
             skipped.append(name)
             continue
-        if name in ("platforms", "dev_brain", "notebook"):
-            obj = {"platforms": PLATFORMS, "dev_brain": DEV_BRAIN, "notebook": NOTEBOOK}[name]
+        if name in ("platforms", "dev_brain", "notebook", "research"):
+            obj = {"platforms": PLATFORMS, "dev_brain": DEV_BRAIN, "notebook": NOTEBOOK,
+                   "research": RESEARCH}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3213,6 +3222,18 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/research/sources":
+            self._send_json(200, {"ok": True, "sources": [
+                {"name": s[0], "url": s[1], "field": s[2], "level": s[3], "reliability": s[4]}
+                for s in SOURCES]})
+            return
+        if u.path == "/api/research/library":
+            self._send_json(200, {"ok": True, "records": RESEARCH.library() if RESEARCH else [],
+                                  "stats": RESEARCH.stats() if RESEARCH else {}})
+            return
+        if u.path == "/api/research/stats":
+            self._send_json(200, {"ok": True, "stats": RESEARCH.stats() if RESEARCH else {}})
+            return
         if u.path == "/api/media/capabilities":
             self._send_json(200, {"ok": True,
                                   "capabilities": MEDIA.capabilities(FFMPEG, MP3 is not None) if MEDIA else {}})
@@ -3654,6 +3675,23 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
+            return
+        if u.path == "/api/research/search":
+            topic = str(body.get("q") or body.get("topic") or "")
+            results, err = RESEARCH.search(topic) if RESEARCH else ([], "unavailable")
+            if body.get("record") and results:
+                RESEARCH.record(topic, results, body.get("field") or "")
+                if remote_enabled():
+                    remote_push("research", RESEARCH.snapshot())
+            self._send_json(200, {"ok": True, "query": topic, "results": results, "error": err,
+                                  "count": len(results)})
+            return
+        if u.path == "/api/research/record":
+            topic = str(body.get("topic") or "")
+            res = RESEARCH.record(topic, body.get("results") or [], body.get("field") or "") if RESEARCH else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("research", RESEARCH.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/media/srt":
             text = str(body.get("text") or "")

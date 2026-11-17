@@ -100,6 +100,15 @@ def main():
         assert len(curriculum.LEARN_STEPS) == 15, "15-step method missing"
         cur, pairs = curriculum.pick(2, 0)
         assert len(pairs) == 2 and pairs[0][0], "curriculum pick failed"
+        import research
+        rp = os.path.join(tempfile.gettempdir(), "zy_research_test.json")
+        if os.path.exists(rp): os.remove(rp)
+        rl = research.ResearchLibrary(rp)
+        fake = [{"title":"T","author":"A","institution":"I","url":"u","published":"2020",
+                 "type":"paper","reliability":"A","field":"science","summary":"s"}]
+        rec = rl.record("quantum computing", fake, "physics")
+        assert rec.get("ok") and rl.stats()["documents"] >= 1, "research record failed"
+        assert not rl.record("เว็บพนัน บาคาร่า", fake).get("ok"), "gambling must be refused"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
