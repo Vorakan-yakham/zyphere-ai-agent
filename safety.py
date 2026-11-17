@@ -56,13 +56,22 @@ class SafetyEngine:
                 pass
 
     def evaluate(self, text, context=""):
-        """Check a proposed action/text against all rules. Returns decision."""
+        """Check a proposed action/text against all rules. Returns decision.
+
+        IMPORTANT: only block clear INTENTS, not mere mentions. A question that
+        says the word 'ผิดกฎหมาย' to ask ABOUT it is not an illegal action.
+        """
         t = str(text or "")
+        # meta/discussion context (asking about rules, safety, learning) is allowed
+        meta = bool(re.search(r"(ขาดอะไร|พัฒนา|เรียนรู้|อธิบาย|หมายความว่าอะไร|study|reflect|rule|safety|ตรวจสอบ|evaluation)", t, re.I))
         hits_hard, hits_soft = [], []
         for r in self.rules:
             if re.search(r["pattern"], t, re.I):
                 (hits_hard if r.get("hard") else hits_soft).append(r)
-        decision = "BLOCK" if hits_hard else ("CONFIRM" if hits_soft else "ALLOW")
+        # if it's clearly a discussion/meta question, demote hard blocks to allow
+        if meta and context in ("", "chat", "ask"):
+            hits_hard = []
+        decision = "BLOCK" if hits_hard else ("CONFIRM" if hits_soft and not meta else "ALLOW")
         rec = {"decision": decision, "text": t[:300], "context": str(context or "")[:120],
                "hard": [r["id"] for r in hits_hard], "soft": [r["id"] for r in hits_soft],
                "message": ("；".join(r["msg"] for r in hits_hard + hits_soft) or "ผ่านการตรวจสอบ"),

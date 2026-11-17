@@ -4422,7 +4422,7 @@ class Handler(SimpleHTTPRequestHandler):
             # Safety gate (Zyphere's own #1 gap) — check user text before LLM
             if SAFETY:
                 try:
-                    dec = SAFETY.evaluate(str(msgs[-1].get("content", "")))
+                    dec = SAFETY.evaluate(str(msgs[-1].get("content", "")), "ask")
                     if dec.get("decision") == "BLOCK":
                         self._send_json(403, {"ok": False, "error": dec.get("message", "blocked"),
                                               "safety": True})
