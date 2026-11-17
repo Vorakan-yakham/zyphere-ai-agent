@@ -248,6 +248,12 @@ def main():
         au = Audit(apath)
         au.record(actor="guest", action="ask", detail="test", result="ok")
         assert au.verify()["integrity"] and au.query()["count"] == 1, "audit failed"
+        from jarvis_mode import JarvisMode
+        jpath = os.path.join(tempfile.gettempdir(), "zy_jarvis_test.json")
+        if os.path.exists(jpath): os.remove(jpath)
+        jm = JarvisMode(jpath)
+        br = jm.make_briefing({"facts": 10, "documents": 3, "works": 1, "rank": "หัดคิด"})
+        assert br["ok"] and "Zyphere" in br["head"], "jarvis briefing failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

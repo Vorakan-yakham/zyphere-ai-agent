@@ -248,6 +248,11 @@ try:
     AUDIT = Audit(os.path.join(DATA_DIR, "audit.json"))
 except Exception:
     AUDIT = None
+try:
+    from jarvis_mode import JarvisMode
+    JARVIS = JarvisMode(os.path.join(DATA_DIR, "jarvis.json"))
+except Exception:
+    JARVIS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -310,6 +315,7 @@ REMOTE_KEYS = {
     "selfcorrect": "zyphere:selfcorrect",
     "behavior": "zyphere:behavior",
     "audit": "zyphere:audit",
+    "jarvis": "zyphere:jarvis",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -421,7 +427,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis"):
         try:
             data = {
                 "memory": load_mem,
@@ -444,6 +450,7 @@ def remote_push_all():
                 "selfcorrect": (SELFCORRECT.snapshot() if SELFCORRECT else None),
                 "behavior": (BEHAVIOR.snapshot() if BEHAVIOR else None),
                 "audit": (AUDIT.snapshot() if AUDIT else None),
+                "jarvis": (JARVIS.snapshot() if JARVIS else None),
             }[name]()
         except Exception:
             continue
@@ -478,6 +485,7 @@ def remote_pull_all():
         "selfcorrect": os.path.join(DATA_DIR, "selfcorrect.json"),
         "behavior": os.path.join(DATA_DIR, "behavior.json"),
         "audit": os.path.join(DATA_DIR, "audit.json"),
+        "jarvis": os.path.join(DATA_DIR, "jarvis.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -513,9 +521,9 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit"):
+        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis"):
             obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT,
-                   "behavior": BEHAVIOR, "audit": AUDIT}[name]
+                   "behavior": BEHAVIOR, "audit": AUDIT, "jarvis": JARVIS}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3967,6 +3975,27 @@ class Handler(SimpleHTTPRequestHandler):
             txt = q.get("text", [""])[0]
             code = detect_lang(txt)
             self._send_json(200, {"ok": True, "code": code, "name": LANG_NAMES.get(code, code)})
+            return
+        if u.path == "/api/jarvis/briefing":
+            bst = DEV_BRAIN.stats() if DEV_BRAIN else {}
+            rst = RESEARCH.stats() if RESEARCH else {}
+            wst = WORKS.count() if WORKS else 0
+            gl = JARVIS and DEV_BRAIN and DEV_BRAIN.link_graph()
+            rk = (ACADEMIC.evaluate(facts=bst.get("facts", 0), rules=bst.get("rules", 0),
+                                    links=(gl or {}).get("links", 0),
+                                    documents=rst.get("documents", 0), works=wst).get("rank")
+                  if ACADEMIC else "หัดคิด")
+            res = JARVIS.make_briefing({"facts": bst.get("facts", 0), "documents": rst.get("documents", 0),
+                                        "works": wst, "rank": rk}) if JARVIS else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("jarvis", JARVIS.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/jarvis/latest":
+            self._send_json(200, JARVIS.latest() if JARVIS else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/jarvis/presence":
+            self._send_json(200, JARVIS.presence_note() if JARVIS else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/health":
             self._send_json(200, {
