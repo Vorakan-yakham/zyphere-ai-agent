@@ -1131,8 +1131,9 @@ async function applyRoles(){
  if(tok&&localBase()){try{const j=await api('/api/me?token='+encodeURIComponent(tok));role=j.role||'guest'}catch(e){}}
  const isAdmin=role==='admin';
  const isUser=role==='user'||isAdmin;
- ['adminBtn','shopBtn'].forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=isAdmin?'':'none'});
+ // keep buttons visible so users can log in; access is enforced by API token
  const sb=document.getElementById('setBtn');if(sb)sb.title=isAdmin?'ตั้งค่า (Admin)':'ตั้งค่า';
+  const ab=document.getElementById('adminBtn');if(ab)ab.title=isAdmin?'Admin ✓':'Admin — ล็อกอินก่อน';
  window.zyRole=role;
 }
 // local quick answers
