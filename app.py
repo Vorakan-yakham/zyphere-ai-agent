@@ -88,6 +88,11 @@ try:
     RATE = RateLimit()
 except Exception:
     RATE = None
+try:
+    from preferences import Preferences
+    PREF = Preferences(os.path.join(DATA_DIR, "preferences.json"))
+except Exception:
+    PREF = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3178,6 +3183,9 @@ class Handler(SimpleHTTPRequestHandler):
                 limit = 12
             self._send_json(200, build_briefing(since, limit))
             return
+        if u.path == "/api/preferences":
+            self._send_json(200, {"ok": True, "preferences": PREF.profile() if PREF else {}})
+            return
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
@@ -3509,9 +3517,13 @@ class Handler(SimpleHTTPRequestHandler):
                 if IDENTITY:
                     IDENTITY.learn(q, "user")
                     IDENTITY.learn(a, "assistant")
+                pref = None
+                if PREF:
+                    pref = PREF.observe(q, a, bool(body.get("voice")), body.get("lang") or "th")
                 self._send_json(200, {"ok": True,
                                       "stats": BRAIN.stats() if BRAIN else {},
-                                      "identity": IDENTITY.public() if IDENTITY else {}})
+                                      "identity": IDENTITY.public() if IDENTITY else {},
+                                      "preferences": pref})
             except Exception as e:
                 self._send_json(400, {"ok": False, "error": str(e)[:200]})
             return

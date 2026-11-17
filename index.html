@@ -794,6 +794,7 @@ async function send(voice){
  if(ok&&!local&&knowCtx&&reply.length<8000&&getK('zy_critique')==='1')reply=await critiqueAnswer(t,reply,knowCtx);
   setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');if(streamSpoke)flushStreamSpeak();else speak(reply,b)}
+  if(ok){try{await api('/api/brain/auto',{method:'POST',body:JSON.stringify({q:t,a:reply,voice:!!voice,lang:lastLang})})}catch(e){}}
  if(ok) await maybeAutoRemember(t,reply);
  else if(voice&&!ok){call=false;endCall()}}
 
