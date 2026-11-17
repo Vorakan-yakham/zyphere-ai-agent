@@ -107,7 +107,7 @@ button,input,textarea,select{font-family:inherit}
 /* sidebar */
 .side{width:264px;background:var(--sf);border-right:1px solid var(--bd2);padding:16px 12px;gap:4px;transition:margin .2s}
 .side.hide{margin-left:-264px}
-.logo{font-size:22px;font-weight:500;padding:4px 10px 20px;letter-spacing:-.01em}
+.logo{font-size:22px;font-weight:500;padding:4px 10px 20px;letter-spacing:-.01em;gap:8px}
 .logo .orb{width:28px;height:28px}
 .sb{border-radius:8px;padding:10px 12px;font-size:14px;color:var(--fg);transition:background .12s}
 .sb:hover{background:var(--hover)}
@@ -1324,7 +1324,7 @@ $('rate').oninput=function(){$('rv').textContent=this.value+'x'};$('rv').textCon
 $('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสดีครับ')||'สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ';toast(g);await speak(g)};
 $('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
-$('logo').innerHTML=lg();
+$('logo').innerHTML=lg()+'<span>Zyphere</span>';
 let lastNotif='';
 async function checkNotifs(){
  if(!localBase())return;
