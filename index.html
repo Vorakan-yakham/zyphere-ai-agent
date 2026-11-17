@@ -1023,7 +1023,7 @@ $('set').onclick=e=>{if(e.target===$('set'))$('doneBtn').click()};
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
 $('wipeMemBtn').onclick=async()=>{if(!confirm('ล้างความจำที่สะสมไว้ทั้งหมด?'))return;try{await updateMemory({clear:'all'});toast('ล้างความจำแล้ว')}catch(e){toast('ล้างความจำไม่ได้ (ต้องรันผ่าน python app.py)')}};
 $('rate').oninput=function(){$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';
-$('testBtn').onclick=async()=>{lastLang='th';await speak('สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ')};
+$('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสดีครับ')||'สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ';toast(g);await speak(g)};
 $('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
 $('logo').innerHTML=lg()+'<span>Zyphere</span>';
