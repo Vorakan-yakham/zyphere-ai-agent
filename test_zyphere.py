@@ -227,6 +227,10 @@ def main():
         assert bad["changed"] and "[REDACTED]" in bad["text"], "selfcorrect failed"
         good = sc.run("สวัสดีครับ ผมช่วยคุณได้")
         assert not good["changed"], "selfcorrect false positive"
+        from rag import RAG
+        rg = RAG()
+        rr = rg.retrieve("ควอนตัม", {"knowledge": [{"topic": "ควอนตัม", "summary": "กลศาสตร์ควอนตัมคือฟิสิกส์ระดับอนุภาค"}]})
+        assert rr.get("ok") and rr["grounded"] and rr["chunks"][0]["source"] == "knowledge", "rag failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

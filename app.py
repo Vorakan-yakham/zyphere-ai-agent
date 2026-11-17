@@ -228,6 +228,11 @@ try:
     SELFCORRECT = SelfCorrect()
 except Exception:
     SELFCORRECT = None
+try:
+    from rag import RAG
+    RAG_ENGINE = RAG()
+except Exception:
+    RAG_ENGINE = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3404,6 +3409,15 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/rag/query":
+            q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+            state = {"knowledge": (load_knowledge().get("items") or []),
+                     "notebook_docs": (NOTEBOOK.docs if NOTEBOOK else []),
+                     "research": (RESEARCH.library() if RESEARCH else []),
+                     "lessons": (DEV_BRAIN.lessons if DEV_BRAIN else [])}
+            res = RAG_ENGINE.retrieve(q, state) if RAG_ENGINE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/tools/list":
             self._send_json(200, TOOLS.list() if TOOLS else {"ok": False, "error": "unavailable"})
             return
@@ -4459,6 +4473,17 @@ class Handler(SimpleHTTPRequestHandler):
                     INTENT.route_log.append({"intent": intent.get("intent"), "t": time.time()})
                 except Exception:
                     pass
+            # RAG: inject internal knowledge (knowledge/notebook/research/own brain)
+            rag_info = None
+            if RAG_ENGINE:
+                try:
+                    state = {"knowledge": (load_knowledge().get("items") or []),
+                             "notebook_docs": (NOTEBOOK.docs if NOTEBOOK else []),
+                             "research": (RESEARCH.library() if RESEARCH else []),
+                             "lessons": (DEV_BRAIN.lessons if DEV_BRAIN else [])}
+                    sys_p, rag_info = RAG_ENGINE.inject(sys_p, last_text, state)
+                except Exception:
+                    pass
             # Apply learned feedback guidance (HCAI feedback loop) to the system prompt
             if FEEDBACK:
                 try:
@@ -4499,6 +4524,7 @@ class Handler(SimpleHTTPRequestHandler):
                                   "sources": res.get("sources", []),
                                   "synthesized": res.get("synthesized", False),
                                   "intent": (intent or {}).get("intent") if intent else None,
+                                  "rag_hits": (rag_info or {}).get("hits") if rag_info else 0,
                                   "self_corrected": corrections})
             return
         if u.path == "/api/vision/learn":
