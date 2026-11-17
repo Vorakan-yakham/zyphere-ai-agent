@@ -66,8 +66,8 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
-VOICES = {"th": "th-TH-PremwadeeNeural", "en": "en-GB-RyanNeural"}
-VOICE_OPTIONS = {"th": ["th-TH-PremwadeeNeural", "th-TH-AcharaNeural", "th-TH-NiwatNeural"], "en": ["en-GB-RyanNeural", "en-US-AriaNeural", "en-US-GuyNeural", "en-GB-SoniaNeural"]}
+VOICES = {"th": "th-TH-NiwatNeural", "en": "en-GB-RyanNeural"}
+VOICE_OPTIONS = {"th": ["th-TH-NiwatNeural", "th-TH-AcharaNeural", "th-TH-PremwadeeNeural"], "en": ["en-GB-RyanNeural", "en-US-AriaNeural", "en-US-GuyNeural", "en-GB-SoniaNeural"]}
 MEM_LOCK = threading.Lock()
 JOB_LOCK = threading.Lock()
 JOBS = {}
@@ -2542,7 +2542,7 @@ def _tts_save(text, lang, path, rate=1.0):
     pct = int(max(-40, min(60, (float(rate) - 1.0) * 100)))
 
     async def _run():
-        com = edge_tts.Communicate(text, voice, rate=f"{pct:+d}%", pitch="-2Hz")
+        com = edge_tts.Communicate(text, voice, rate=f"{pct:+d}%", pitch="+0Hz")
         await com.save(path)
 
     try:
@@ -2881,7 +2881,11 @@ class Handler(SimpleHTTPRequestHandler):
                 want = q.get("voice", [""])[0]
                 voice = want if want in VOICE_OPTIONS.get(lang, []) else VOICES.get(lang, VOICES["th"])
                 pct = max(-20, min(20, int(q.get("rate", ["0"])[0] or 0)))
-                data = asyncio.run(synth_tts(text, voice, f"{pct:+d}%", "+0Hz"))
+                try:
+                    hz = max(-10, min(10, int(q.get("pitch", ["0"])[0] or 0)))
+                except Exception:
+                    hz = 0
+                data = asyncio.run(synth_tts(text, voice, f"{pct:+d}%", ("%+dHz" % hz)))
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/mpeg")
                 self.send_header("Content-Length", str(len(data)))
