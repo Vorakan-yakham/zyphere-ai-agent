@@ -152,6 +152,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <div class="bk" id="admin"><div class="card">
 <h3>🔐 Admin — ยอดขาย Zyphere</h3>
 <div style="display:flex;gap:8px;margin-top:10px"><input id="adUser" placeholder="user" style="flex:1;min-width:0"><input id="adPass" type="password" placeholder="password" style="flex:1;min-width:0"></div>
+<div style="display:flex;gap:8px;margin-top:6px"><input id="adOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="OTP (ถ้ามี — เด้งจาก SMS อัตโนมัติ)" style="flex:1;min-width:0"><button class="sb new" id="adOtpFill" style="justify-content:center">วาง OTP</button></div>
 <button class="sb go" id="adLogin" style="justify-content:center;margin-top:8px">เข้าสู่ระบบ Admin</button>
 <div class="status" id="adMsg" style="white-space:pre-wrap;margin-top:8px"></div>
 <div id="adData" style="margin-top:10px"></div>
@@ -1128,6 +1129,16 @@ function showQR(o){const box=$('qrBox');if(!o.amount)return;const amt=o.amount;c
 $('shopConfirm').onclick=async()=>{const oid=$('shop').dataset.oid;if(!oid){toast('เลือกแพ็กเกจก่อนครับ');return}
  try{const r=await api('/api/billing/confirm',{method:'POST',body:JSON.stringify({id:oid})});if(r.ok){setK('zy_email',$('shopEmail').value);$('shopMsg').textContent='✅ สิทธิ์ '+r.plan+' เปิดแล้วจนถึง '+stamp(r.until)+' ครับ ขอบคุณที่สนับสนุนครับ!';toast('ปลดล็อกสิทธิ์แล้วครับ')}else toast('ยืนยันไม่ได้: '+redact(r.error||''))}catch(e){toast('ยืนยันไม่ได้: '+redact(e.message))}};
 $('shopClose').onclick=()=>{$('shop').style.display='none'};
+async function autoOtp(){
+ const inp=$('adOtp');if(!inp)return;
+ try{
+  if(window.credentials&&navigator.credentials.get){
+   const c=await navigator.credentials.get({otp:{transport:['sms']}});
+   if(c&&c.code){inp.value=c.code;toast('รับ OTP จาก SMS แล้วครับ');return c.code}
+  }
+ }catch(e){}
+ return null;
+}
 async function applyRoles(){
  let role='guest';
  const tok=getK('zy_token')||'';
@@ -1194,8 +1205,10 @@ function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&bu
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
 $('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;
-$('adminBtn').onclick=()=>{$('set').style.display='none';$('admin').style.display='flex'};
+$('adminBtn').onclick=()=>{$('set').style.display='none';$('admin').style.display='flex';autoOtp()};
+$('adOtp').addEventListener('input',e=>{if(/^\d{6}$/.test(e.target.value)){toast('OTP ครบ — กดเข้าสู่ระบบอัตโนมัติ');$('adLogin').click()}});
 $('adClose').onclick=()=>{$('admin').style.display='none'};
+$('adOtpFill').onclick=async()=>{try{const t=await navigator.clipboard.readText();const c=(t.match(/\d{4,8}/)||[''])[0];if(c){$('adOtp').value=c;toast('ใส่ OTP แล้วครับ')}else toast('ไม่พบรหัสในคลิปบอร์ด')}catch(e){toast('กดช่อง OTP แล้วรอ SMS เด้งเองครับ')}};
 $('adLogin').onclick=async()=>{
  try{
   const r=await fetch(RENDER_URL+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('adUser').value,password:$('adPass').value})});
