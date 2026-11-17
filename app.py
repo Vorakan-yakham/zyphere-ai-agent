@@ -141,6 +141,10 @@ try:
     import human_art as HUMAN_ART
 except Exception:
     HUMAN_ART = None
+try:
+    import applied as APPLIED
+except Exception:
+    APPLIED = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3270,6 +3274,12 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/apply/blueprint":
+            q = urllib.parse.parse_qs(u.query)
+            res = APPLIED.blueprint(q.get("kind", ["house"])[0], q.get("style", ["บ้านอัจฉริยะ"])[0],
+                                    q.get("topic", [""])[0]) if APPLIED else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/human/knowledge":
             self._send_json(200, {"ok": True,

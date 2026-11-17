@@ -135,6 +135,11 @@ def main():
         assert cs["proportions"]["head_to_body"] in (7.5, 8.0) and cs["skin"], "character spec failed"
         ms = human_art.melody_spec("lofi", 4)
         assert ms.get("ok") and len(ms["notes"]) >= 8 and ms["bpm"] > 0, "melody spec failed"
+        import applied
+        bp = applied.blueprint("robot")
+        assert bp.get("ok") and len(bp["parts"]) >= 4, "robot blueprint failed"
+        bs = applied.blueprint("suit")
+        assert bs.get("ok") and bs["kind"] == "exosuit", "exosuit blueprint failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
