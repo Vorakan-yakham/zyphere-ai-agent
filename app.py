@@ -213,6 +213,11 @@ try:
     EVAL = EvalLoop(os.path.join(DATA_DIR, "eval.json"))
 except Exception:
     EVAL = None
+try:
+    from tools import ToolOrchestrator
+    TOOLS = ToolOrchestrator(SAFETY)
+except Exception:
+    TOOLS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3383,6 +3388,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/tools/list":
+            self._send_json(200, TOOLS.list() if TOOLS else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/safety/stats":
             self._send_json(200, {"ok": True, "stats": SAFETY.stats() if SAFETY else {}})
             return
@@ -4116,6 +4124,12 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/tools/run":
+            state = {"search_web": search_web, "fetch_page": fetch_page, "reason": REASON,
+                     "concept": CONCEPT, "eval": EVAL, "research": RESEARCH}
+            res = TOOLS.run(str(body.get("tool") or ""), body.get("params") or {}, state) if TOOLS else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/safety/check":
             res = SAFETY.evaluate(str(body.get("text") or ""), str(body.get("context") or "")) if SAFETY else {"ok": False, "error": "unavailable"}
