@@ -126,10 +126,14 @@ if not FFMPEG:
 # and set:
 #   REMOTE_KV_URL=https://xxxx.upstash.io
 #   REMOTE_KV_TOKEN=...
+# Upstash's own variable names (UPSTASH_REDIS_REST_URL / _TOKEN) are also
+# accepted, so they can be pasted directly from the Upstash console.
 # Every save is pushed to the remote store in the background and, at startup,
 # the newest remote copy is restored when it exists.
-REMOTE_KV_URL = os.environ.get("REMOTE_KV_URL", "").strip().rstrip("/")
-REMOTE_KV_TOKEN = os.environ.get("REMOTE_KV_TOKEN", "").strip()
+REMOTE_KV_URL = (os.environ.get("REMOTE_KV_URL", "")
+                 or os.environ.get("UPSTASH_REDIS_REST_URL", "")).strip().rstrip("/")
+REMOTE_KV_TOKEN = (os.environ.get("REMOTE_KV_TOKEN", "")
+                   or os.environ.get("UPSTASH_REDIS_REST_TOKEN", "")).strip()
 REMOTE_KEYS = {
     "memory": "zyphere:memory",
     "knowledge": "zyphere:knowledge",
