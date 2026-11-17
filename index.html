@@ -420,16 +420,7 @@ async function summarizeLong(opts){
    :'จากบันทึกสาระของเอกสารยาวด้านล่าง จงตอบคำถามของผู้ใช้ให้สมบูรณ์ที่สุด กระชับแต่ครบทุกประเด็นที่เกี่ยวข้อง รวบรวมข้อมูลที่กระจายอยู่หลายส่วนให้ครบ อ้างข้อเท็จจริง/ตัวเลขจากบันทึก ใช้เฉพาะข้อมูลในบันทึก ห้ามแต่งเติม ถ้าบันทึกไม่มีคำตอบให้บอกตรง ๆ และเขียนให้จบประโยค\n\nคำถามของผู้ใช้: '+q+'\n\n=== บันทึกสาระ ===\n'+packed)
   :(wantSum
    ?'Using the notes below from the whole long document, answer the user completely and self-contained:\n1) Overview (2-4 sentences)\n2) All key points (bullets, skip none)\n3) Conclusion and practical takeaways\nRules: finish at the final conclusion, never stop mid-sentence, never say "to be continued", use only these notes, invent nothing, flag contradictions.\n\nUser request: '+(q||'Summarize the entire content completely')+'\n\n=== NOTES ===\n'+packed
-    :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contain the answer, and finish every sentence.\n\nUser question: '+q+'\n\n=== NOTES ===\n'+packed)
-if (opts.status) {
-  opts.status(th ? 'กำลังเรียบเรียงคำตอบสุดท้าย...' : 'Writing the final answer...');
-}
-const answer = await call(finalPrompt, opts.onText);
-if (failed > 0) {
-  return `${answer}\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ ${failed}/${chunks.length} ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ`;
-}
-return answer;
-}
+    :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contain the answer, and fiif (opts.status) { const msg = th ? 'กำลังเรียบเรียงคำตอบสุดท้าย...' : 'Writing the final answer...'; opts.status(msg); } const answer = await call(finalPrompt, opts.onText); if (failed > 0) { const note = `\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ ${failed}/${chunks.length} ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ`; return answer + note; } return answer;
 
 // markdown & UI
 const md=t=>String(t||'').split('```').map((p,i)=>i%2?'<div class="cb"><button class="cpy" type="button">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
