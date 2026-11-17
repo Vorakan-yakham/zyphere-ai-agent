@@ -1182,10 +1182,10 @@ $('adminBtn').onclick=()=>{$('set').style.display='none';$('admin').style.displa
 $('adClose').onclick=()=>{$('admin').style.display='none'};
 $('adLogin').onclick=async()=>{
  try{
-  const r=await fetch(localBase()+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('adUser').value,password:$('adPass').value})});
+  const r=await fetch(RENDER_URL+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('adUser').value,password:$('adPass').value})});
   const j=await r.json();
   if(!j.ok){$('adMsg').textContent='❌ '+redact(j.error||'เข้าสู่ระบบไม่ได้');return}
-  const a=await fetch(localBase()+'/api/admin?token='+encodeURIComponent(j.token));
+  const a=await fetch(RENDER_URL+'/api/admin?token='+encodeURIComponent(j.token));
   const d=await a.json();
   const rev=d.revenue||{},us=d.users||{},br=d.brain||{};
   $('adMsg').textContent='✅ เข้าสู่ระบบสำเร็จ';
