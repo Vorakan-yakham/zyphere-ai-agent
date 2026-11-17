@@ -129,6 +129,10 @@ try:
     import expansion as EXPANSION
 except Exception:
     EXPANSION = None
+try:
+    import academic as ACADEMIC
+except Exception:
+    ACADEMIC = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3226,6 +3230,21 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/academic/rank":
+            try:
+                dstats = DEV_BRAIN.stats() if DEV_BRAIN else {}
+                gl = DEV_BRAIN.link_graph() if DEV_BRAIN else {}
+                rstats = RESEARCH.stats() if RESEARCH else {}
+                rank = ACADEMIC.evaluate(
+                    facts=int(dstats.get("facts", 0)), rules=int(dstats.get("rules", 0)),
+                    links=int(gl.get("links", 0)) if isinstance(gl, dict) else 0,
+                    documents=int(rstats.get("documents", 0)),
+                    works=int(len(PLATFORMS.items)) if PLATFORMS else 0)
+                self._send_json(200, {"ok": True, "rank": rank,
+                                      "plan": ACADEMIC.doctor_plan() if ACADEMIC else []})
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:150]})
+            return
         if u.path == "/api/expansion/coverage":
             try:
                 import curriculum as _CUR
@@ -4222,6 +4241,21 @@ if __name__ == "__main__":
             print("Bootstrap learning:", boot_job.get("id") if boot_job else "queued/skipped")
     except Exception as e:
         print("Bootstrap learning failed:", str(e)[:120])
+    # Bootstrap child learning: if the child has no knowledge, elders teach at once
+    try:
+        if DEV_BRAIN and DEV_BRAIN.stats().get("facts", 0) < 5:
+            import curriculum as _CUR
+            _c, _pairs = _CUR.pick(3, 0)
+            for _d, _t in _pairs:
+                lesson = elder_teach("%s: %s" % (_d, _t))
+                if lesson:
+                    DEV_BRAIN.experience(lesson, "elder_teacher")
+            DEV_BRAIN.grow()
+            if remote_enabled():
+                remote_push("dev_brain", DEV_BRAIN.snapshot())
+            print("Child bootstrap learning: facts", DEV_BRAIN.stats().get("facts"))
+    except Exception as e:
+        print("Child bootstrap failed:", str(e)[:120])
     threading.Thread(target=learn_scheduler, daemon=True).start()
     with Server(("", PORT), Handler) as s:
         print(f"Zyphere COMPLETE21: http://localhost:{PORT}")

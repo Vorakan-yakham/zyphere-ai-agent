@@ -121,6 +121,10 @@ def main():
         assert cr.get("ok") and "checked" in cr, "self-critique failed"
         gr = db.link_graph()
         assert gr.get("ok") and "links" in gr, "knowledge graph failed"
+        import academic
+        r0 = academic.evaluate(facts=0)
+        rg = academic.evaluate(facts=800, rules=140, links=130, documents=70, works=40)
+        assert r0["rank"] == "แรกเกิด" and rg["is_genius"], "academic rank failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
