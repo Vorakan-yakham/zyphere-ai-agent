@@ -1734,6 +1734,19 @@ def _pick_curriculum(count):
     picked = dev_pick(count)
     if picked:
         return picked
+    # Master curriculum (owner's 19-domain directive) becomes the main source
+    try:
+        import curriculum as _CUR
+        cfg = load_learning()
+        cur = int(cfg.get("master_cursor") or 0)
+        cur, pairs = _CUR.pick(count, cur)
+        cfg["master_cursor"] = cur
+        save_learning(cfg)
+        topics = ["%s: %s" % (d, t) for d, t in pairs]
+        if topics:
+            return topics
+    except Exception:
+        pass
     cfg = load_learning()
     n = len(CURRICULUM)
     cur = int(cfg.get("cursor") or 0) % n
@@ -3208,6 +3221,16 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True,
                                   "docs": NOTEBOOK.list_docs() if NOTEBOOK else [],
                                   "stats": NOTEBOOK.stats() if NOTEBOOK else {}})
+            return
+        if u.path == "/api/master/curriculum":
+            try:
+                import curriculum as _CUR
+                info = {"ok": True, "domains": list(_CUR.DOMAINS.keys()),
+                        "total_topics": _CUR.total(), "steps": _CUR.LEARN_STEPS,
+                        "master_cursor": int(load_learning().get("master_cursor") or 0)}
+            except Exception as e:
+                info = {"ok": False, "error": str(e)[:150]}
+            self._send_json(200, info)
             return
         if u.path == "/api/self":
             self._send_json(200, {"ok": True, "self": DEV_BRAIN.self_narrative() if DEV_BRAIN else {"error": "unavailable"}})

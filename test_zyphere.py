@@ -95,6 +95,11 @@ def main():
         import elibrary
         q = elibrary.to_en("ปัญญาประดิษฐ์ทางการแพทย์")
         assert "artificial intelligence" in q and "medicine" in q, "Thai->EN translation failed"
+        import curriculum
+        assert curriculum.total() >= 100, "master curriculum too small"
+        assert len(curriculum.LEARN_STEPS) == 15, "15-step method missing"
+        cur, pairs = curriculum.pick(2, 0)
+        assert len(pairs) == 2 and pairs[0][0], "curriculum pick failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
