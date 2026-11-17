@@ -164,6 +164,11 @@ try:
     LANG = LanguageMastery()
 except Exception:
     LANG = None
+try:
+    from reasoning import ReasoningEngine
+    REASON = ReasoningEngine()
+except Exception:
+    REASON = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3312,6 +3317,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/reason/methods":
+            self._send_json(200, {"ok": True, "methods": REASON.methods if REASON else []})
+            return
         if u.path == "/api/language/knowledge":
             self._send_json(200, {"ok": True, "knowledge": LANG.knowledge() if LANG else {}})
             return
@@ -3994,6 +4002,27 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/reason/solve":
+            problem = str(body.get("problem") or body.get("q") or "")
+            offline = bool(body.get("offline"))
+            res = REASON.solve(problem) if REASON else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and not offline:
+                try:
+                    from brain_ensemble import ensemble
+                    er = ensemble([{"role": "user", "content": REASON.think_prompt(problem)}])
+                    if er.get("ok"):
+                        res["deep_analysis"] = er.get("text")
+                        res["analysis_sources"] = er.get("sources", [])
+                except Exception:
+                    pass
+            if res.get("ok") and DEV_BRAIN:
+                try:
+                    DEV_BRAIN.experience("วิธีคิด: " + REASON.solve(problem).get("reminder", ""), "elder_teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/language/correct":
             res = LANG.correct(str(body.get("text") or "")) if LANG else {"ok": False, "error": "unavailable"}

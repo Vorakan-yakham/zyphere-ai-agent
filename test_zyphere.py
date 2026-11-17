@@ -166,6 +166,11 @@ def main():
         assert lr["learned"] >= 8, "language learn failed"
         cr = lm.correct("ฉันเเล้วว ควาาม")
         assert cr["changes"] and "แล้ว" in cr["text"], "language correct failed"
+        from reasoning import ReasoningEngine
+        re_ = ReasoningEngine()
+        rs = re_.solve("ทำไมน้ำท่วมกรุงเทพทุกปี แก้ยังไง")
+        assert rs.get("ok") and len(rs["thinking_map"]) >= 6, "reasoning solve failed"
+        assert not re_.solve("เว็บพนัน บาคาร่า").get("ok"), "gambling reasoning refused"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
