@@ -149,6 +149,11 @@ try:
     import aerospace as AEROSPACE
 except Exception:
     AEROSPACE = None
+try:
+    from work import WorkEngine
+    WORKS = WorkEngine(os.path.join(DATA_DIR, "works.json"))
+except Exception:
+    WORKS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -202,6 +207,7 @@ REMOTE_KEYS = {
     "research": "zyphere:research",
     "identity": "zyphere:identity",
     "creative": "zyphere:creative",
+    "works": "zyphere:works",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -313,7 +319,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works"):
         try:
             data = {
                 "memory": load_mem,
@@ -327,6 +333,7 @@ def remote_push_all():
                 "research": (RESEARCH.snapshot() if RESEARCH else None),
                 "identity": (IDENTITY.data if IDENTITY else None),
                 "creative": (CREATIVE.snapshot() if CREATIVE else None),
+                "works": (WORKS.snapshot() if WORKS else None),
             }[name]()
         except Exception:
             continue
@@ -352,6 +359,7 @@ def remote_pull_all():
         "research": os.path.join(DATA_DIR, "research.json"),
         "identity": os.path.join(DATA_DIR, "identity.json"),
         "creative": os.path.join(DATA_DIR, "creative.json"),
+        "works": os.path.join(DATA_DIR, "works.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -365,6 +373,12 @@ def remote_pull_all():
             continue
         if name == "creative" and CREATIVE:
             if CREATIVE.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
+            continue
+        if name == "works" and WORKS:
+            if WORKS.restore(data):
                 restored.append(name)
             else:
                 skipped.append(name)
@@ -3279,6 +3293,10 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/work/list":
+            self._send_json(200, {"ok": True, "count": WORKS.count() if WORKS else 0,
+                                  "works": WORKS.list_works() if WORKS else []})
+            return
         if u.path == "/api/aerospace/design":
             q = urllib.parse.parse_qs(u.query)
             res = AEROSPACE.design(q.get("kind", ["rocket"])[0],
@@ -3348,7 +3366,7 @@ class Handler(SimpleHTTPRequestHandler):
                     facts=int(dstats.get("facts", 0)), rules=int(dstats.get("rules", 0)),
                     links=int(gl.get("links", 0)) if isinstance(gl, dict) else 0,
                     documents=int(rstats.get("documents", 0)),
-                    works=int(len(PLATFORMS.items)) if PLATFORMS else 0)
+                    works=int(WORKS.count()) if WORKS else 0)
                 self._send_json(200, {"ok": True, "rank": rank,
                                       "plan": ACADEMIC.doctor_plan() if ACADEMIC else []})
             except Exception as e:
@@ -3951,6 +3969,13 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/work/produce":
+            res = WORKS.produce(str(body.get("topic") or ""), str(body.get("field") or ""),
+                                str(body.get("notes") or "")) if WORKS else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("works", WORKS.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/creative/package":
             res = CREATIVE.make_package(

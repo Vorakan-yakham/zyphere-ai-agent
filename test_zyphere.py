@@ -145,6 +145,13 @@ def main():
         assert rn.get("ok") and rn["orbital_speed_kms"] > 7, "rocket design failed"
         sa = aerospace.design("saucer")
         assert sa.get("ok") and sa["kind"] == "saucer", "saucer design failed"
+        from work import WorkEngine
+        wp = os.path.join(tempfile.gettempdir(), "zy_work_test.json")
+        if os.path.exists(wp): os.remove(wp)
+        we = WorkEngine(wp)
+        w = we.produce("เขียนบทความเรื่องฟิสิกส์ควอนตัม", "physics")
+        assert w.get("ok") and w["type"] == "article" and we.count() == 1, "work produce failed"
+        assert not we.produce("เว็บพนัน บาคาร่า").get("ok"), "gambling work must be refused"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
