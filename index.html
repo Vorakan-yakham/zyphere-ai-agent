@@ -542,18 +542,16 @@ const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี�
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];const out=[];let cur='';for(let p of s.split(/(?<=[.!?。！？])\s+/).filter(Boolean)){while(p.length>1200){let k=1150;const sp=p.lastIndexOf(' ',k),cm=p.lastIndexOf(',',k);if(Math.max(sp,cm)>800)k=Math.max(sp,cm);if(cur){out.push(cur);cur=''}out.push(p.slice(0,k).trim());p=p.slice(k).trim()}if(cur&&(cur+' '+p).length>1200){out.push(cur);cur=p}else cur=(cur?cur+' ':'')+p}if(cur)out.push(cur);return out}
-async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const clean=plain(text);if(btn)btn.textContent='หยุด';const lb=localBase();
+async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
   try{if(getK('zy_ttse')!=='b'&&lb){
    const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
    const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));
    const pt=encodeURIComponent(getK('zy_pitch')||'-5');
    const parts=ttsParts(clean);const url=p=>lb+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p);
-   let i=0,nxt=null;const prep=()=>{if(i<parts.length){nxt=mkAud(url(parts[i]));nxt.load();i++}};
-   prep();
-   while(nxt){if(tok!==spkTok)return;const a=nxt;curAud=a;prep();await new Promise((res,rej)=>{a.onended=()=>res();a.onerror=()=>rej();a.play().catch(rej)})}
-   if(btn)btn.textContent='???';return}}catch(e){}
-  for(const p of ttsParts(clean)){if(tok!==spkTok)return;await sayOne(p)}if(btn)btn.textContent='???'}
-
+   for(const p of parts){if(tok!==spkTok){speaking=false;return}const a=mkAud(url(p));curAud=a;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}
+   if(btn)btn.textContent='ฟัง';speaking=false;return}}catch(e){}
+  for(const p of ttsParts(clean)){if(tok!==spkTok){speaking=false;return}await sayOne(p)}
+  if(btn)btn.textContent='ฟัง';speaking=false}
 // voice in
 function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=()=>{};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});

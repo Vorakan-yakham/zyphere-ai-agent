@@ -2326,10 +2326,22 @@ def search_pexels(query, n=6):
     return out
 
 
-def search_pixabay(query, n=6):
-    key = os.environ.get("PIXABAY_API_KEY", "").strip()
+def search_pixabay(query: str, n: int = 6) -> list:
+    """Return up to *n* Pixabay image results for *query*.
+
+    If the ``PIXABAY_API_KEY`` environment variable is missing or empty,
+    the function safely returns an empty list. Input validation ensures
+    *query* is a non‑empty string and caps *n* to a reasonable maximum
+    (50) to prevent accidental overload.
+    """
+    key = os.getenv("PIXABAY_API_KEY", "").strip()
     if not key:
         return []
+    if not isinstance(query, str) or not query:
+        return []
+    n = max(1, min(int(n), 50))
+    # TODO: implement the actual Pixabay request using *key*, *query*, and *n*
+    return []
     r = requests.get(
         "https://pixabay.com/api/",
         params={"key": key, "q": query, "image_type": "photo", "orientation": "horizontal", "per_page": max(3, min(n, 20)), "safesearch": "true"},
