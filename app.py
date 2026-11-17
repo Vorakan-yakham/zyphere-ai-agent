@@ -73,6 +73,11 @@ try:
     USERS = Users(os.path.join(DATA_DIR, "users.json"))
 except Exception:
     USERS = None
+try:
+    from identity import Identity
+    IDENTITY = Identity(os.path.join(DATA_DIR, "identity.json"))
+except Exception:
+    IDENTITY = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3160,6 +3165,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
+        if u.path == "/api/identity":
+            self._send_json(200, {"ok": True, "identity": IDENTITY.public() if IDENTITY else {"error": "unavailable"}})
+            return
         if u.path == "/api/brain/gaps":
             self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
@@ -3332,6 +3340,9 @@ class Handler(SimpleHTTPRequestHandler):
             gap = BRAIN.log_gap(body.get("need") or "", body.get("context") or "") if BRAIN else None
             self._send_json(200, {"ok": True, "gap": gap, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
+        if u.path == "/api/identity":
+            self._send_json(200, {"ok": True, "identity": IDENTITY.public() if IDENTITY else {"error": "unavailable"}})
+            return
         if u.path == "/api/brain/gaps":
             self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
             return
@@ -3349,10 +3360,16 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain/auto":
             # learn from user question + assistant answer automatically (offline)
             try:
+                q = str(body.get("q") or ""); a = str(body.get("a") or "")
                 if BRAIN:
-                    BRAIN.learn_text(str(body.get("q") or ""), "question")
-                    BRAIN.learn_text(str(body.get("a") or ""), "assistant")
-                self._send_json(200, {"ok": True, "stats": BRAIN.stats() if BRAIN else {}})
+                    BRAIN.learn_text(q, "question")
+                    BRAIN.learn_text(a, "assistant")
+                if IDENTITY:
+                    IDENTITY.learn(q, "user")
+                    IDENTITY.learn(a, "assistant")
+                self._send_json(200, {"ok": True,
+                                      "stats": BRAIN.stats() if BRAIN else {},
+                                      "identity": IDENTITY.public() if IDENTITY else {}})
             except Exception as e:
                 self._send_json(400, {"ok": False, "error": str(e)[:200]})
             return
@@ -3406,6 +3423,57 @@ class Handler(SimpleHTTPRequestHandler):
                         BRAIN.log_gap("server ask failed: " + str(e)[:120], "api_ask")
                 except Exception:
                     pass
+                self._send_json(502, {"ok": False, "error": _clip(str(e), 200)})
+            return
+        if u.path == "/api/vision/learn":
+            # Give Zyphere "eyes": receive a screen image, describe it, learn from it.
+            import base64 as _b64
+            try:
+                raw = _b64.b64decode(str(body.get("image") or ""), validate=True)
+            except Exception:
+                self._send_json(400, {"ok": False, "error": "invalid image data"})
+                return
+            if len(raw) > 8_000_000:
+                self._send_json(413, {"ok": False, "error": "image too large"})
+                return
+            gkey = ""
+            try:
+                for line in open(os.path.join(BASE_DIR, "..", "API-Zyphere.txt"), encoding="utf-8"):
+                    if line.strip().lower().startswith("gemini"):
+                        gkey = line.split("=", 1)[-1].strip() if "=" in line else line.split()[-1].strip()
+                        break
+            except Exception:
+                pass
+            if not gkey:
+                self._send_json(503, {"ok": False, "error": "vision key not configured"})
+                return
+            try:
+                b64 = _b64.b64encode(raw).decode()
+                r = None
+                for model in ("gemini-flash-lite-latest", "gemini-3.8-flash"):
+                    try:
+                        rr = requests.post(
+                            "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + gkey,
+                            headers={"Content-Type": "application/json"},
+                            json={"contents": [{"parts": [
+                                {"text": "Identify the platform/app in this screenshot (Facebook, YouTube, TikTok, Line, Shopee, ChatGPT...). Reply in Thai in 3 short lines: 1) platform 2) what is on screen 3) one lesson for Zyphere."},
+                                {"inline_data": {"mime_type": "image/png", "data": b64}}
+                            ]}], "generationConfig": {"maxOutputTokens": 300}}, timeout=45)
+                        if rr.ok:
+                            r = rr
+                            break
+                        last_err = _clip(rr.text, 160)
+                    except Exception as ee:
+                        last_err = _clip(str(ee), 160)
+                if r is None:
+                    raise RuntimeError(last_err)
+                txt = str((((r.json().get("candidates") or [{}])[0].get("content") or {}).get("parts") or [{}])[0].get("text") or "")
+                if IDENTITY:
+                    IDENTITY.learn(txt, "vision")
+                if BRAIN:
+                    BRAIN.learn_text(txt, "vision")
+                self._send_json(200, {"ok": True, "seen": txt, "learned": True})
+            except Exception as e:
                 self._send_json(502, {"ok": False, "error": _clip(str(e), 200)})
             return
         if u.path == "/api/text/polish":
