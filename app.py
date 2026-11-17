@@ -3180,6 +3180,11 @@ class Handler(SimpleHTTPRequestHandler):
             # public: show plans only — revenue is admin-only
             self._send_json(200, {"ok": True, "plans": PLANS})
             return
+        if u.path == "/api/me":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            role = USERS.role(tok) if USERS else "guest"
+            self._send_json(200, {"ok": True, "role": role})
+            return
         if u.path == "/api/admin/login":
             import hashlib as _hl
             uh = _hl.sha256(str(body.get("user") or "").encode()).hexdigest()[:16]
@@ -3393,6 +3398,11 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/plans":
             # public: show plans only — revenue is admin-only
             self._send_json(200, {"ok": True, "plans": PLANS})
+            return
+        if u.path == "/api/me":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            role = USERS.role(tok) if USERS else "guest"
+            self._send_json(200, {"ok": True, "role": role})
             return
         if u.path == "/api/admin/login":
             import hashlib as _hl

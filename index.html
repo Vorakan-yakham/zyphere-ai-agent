@@ -1125,6 +1125,16 @@ function showQR(o){const box=$('qrBox');if(!o.amount)return;const amt=o.amount;c
 $('shopConfirm').onclick=async()=>{const oid=$('shop').dataset.oid;if(!oid){toast('เลือกแพ็กเกจก่อนครับ');return}
  try{const r=await api('/api/billing/confirm',{method:'POST',body:JSON.stringify({id:oid})});if(r.ok){setK('zy_email',$('shopEmail').value);$('shopMsg').textContent='✅ สิทธิ์ '+r.plan+' เปิดแล้วจนถึง '+stamp(r.until)+' ครับ ขอบคุณที่สนับสนุนครับ!';toast('ปลดล็อกสิทธิ์แล้วครับ')}else toast('ยืนยันไม่ได้: '+redact(r.error||''))}catch(e){toast('ยืนยันไม่ได้: '+redact(e.message))}};
 $('shopClose').onclick=()=>{$('shop').style.display='none'};
+async function applyRoles(){
+ let role='guest';
+ const tok=getK('zy_token')||'';
+ if(tok&&localBase()){try{const j=await api('/api/me?token='+encodeURIComponent(tok));role=j.role||'guest'}catch(e){}}
+ const isAdmin=role==='admin';
+ const isUser=role==='user'||isAdmin;
+ ['adminBtn','shopBtn'].forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=isAdmin?'':'none'});
+ const sb=document.getElementById('setBtn');if(sb)sb.title=isAdmin?'ตั้งค่า (Admin)':'ตั้งค่า';
+ window.zyRole=role;
+}
 // local quick answers
 const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;
 const WEATHER_REGEX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;async function getWeather(city){if(!city)return null;try{const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);const gdata=await geo.json();const {latitude,longitude}=gdata.results?.[0]||{};if(latitude===undefined)throw new Error('Location not found');const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);const wdata=await w.json();return wdata.current_weather||null;}catch(e){console.error('Weather fetch error:',e);return null;}}
@@ -1185,6 +1195,7 @@ $('adLogin').onclick=async()=>{
   const r=await fetch(RENDER_URL+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('adUser').value,password:$('adPass').value})});
   const j=await r.json();
   if(!j.ok){$('adMsg').textContent='❌ '+redact(j.error||'เข้าสู่ระบบไม่ได้');return}
+  setK('zy_token',j.token);
   const a=await fetch(RENDER_URL+'/api/admin?token='+encodeURIComponent(j.token));
   const d=await a.json();
   const rev=d.revenue||{},us=d.users||{},br=d.brain||{};
@@ -1212,5 +1223,5 @@ $('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสด�
 $('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
 $('logo').innerHTML=lg();
-detectBackend().then(()=>{loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
+detectBackend().then(()=>{applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
 </script></body></html>

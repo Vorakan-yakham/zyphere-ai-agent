@@ -32,6 +32,8 @@ class Users:
             self.users = d.get("users", {})
             self.feedback = d.get("feedback", [])
             self.sessions = d.get("sessions", {})
+            if "vorayakham@gmail.com" in self.users:
+                self.users["vorayakham@gmail.com"]["role"] = "admin"
         except Exception:
             pass
 
@@ -57,7 +59,7 @@ class Users:
                 code = _s.token_urlsafe(6)
             self.users[email] = {"email": email, "name": str(name or "")[:80],
                                   "pw": _hash(password), "created": int(time.time()),
-                                  "plan": "free", "code": code, "ref": str(ref or "")[:32],
+                                  "plan": "free", "role": "user", "code": code, "ref": str(ref or "")[:32],
                                   "invites": 0}
             # credit inviter
             if ref:
@@ -110,8 +112,15 @@ class Users:
             return None
         u = self.users.get(s["email"], {})
         return {"email": s["email"], "name": u.get("name", ""),
-                "code": u.get("code", ""), "invites": int(u.get("invites") or 0),
+                "code": u.get("code", ""), "role": u.get("role", "user"),
+                "invites": int(u.get("invites") or 0),
                 "ref": u.get("ref", "")}
+
+    def role(self, token):
+        sess = self.session(token)
+        if not sess:
+            return "guest"
+        return self.users.get(sess["email"], {}).get("role", "user")
 
     def stats(self):
         with self.lock:
