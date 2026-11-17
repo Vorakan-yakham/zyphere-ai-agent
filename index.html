@@ -441,7 +441,7 @@ function bubble(m,live){const col=$('col');let d;
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
-   mk('ฟัง',b=>{lastLang=resolveLang(m.c);speak(m.c,b)});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
+   mk('ฟัง',b=>{if(b.dataset.on==='1'){stopSpeak();b.dataset.on='0';b.textContent='ฟัง';return}b.dataset.on='1';b.textContent='หยุด';lastLang=resolveLang(m.c);speak(m.c,b).then(()=>{b.dataset.on='0';b.textContent='ฟัง'}).catch(()=>{b.dataset.on='0';b.textContent='ฟัง'})});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
 const SUG=['ช่วยค้นข้อมูลล่าสุดเกี่ยวกับ AI ที่น่าสนใจให้หน่อย','จำไว้ว่าเรียกฉันว่าเพื่อน และชอบคำอธิบายสั้น ๆ','ช่วยสรุปสิ่งที่ควรทำต่อจากไฟล์/งานที่ฉันให้','อากาศที่กรุงเทพตอนนี้เป็นยังไง'];
 function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
