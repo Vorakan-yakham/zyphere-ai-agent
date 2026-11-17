@@ -3137,7 +3137,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "ok": True,
                 "name": "zyphere",
                 "version": 22,
-                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv", "stt", "critique", "feedback", "languages", "craft"],
+                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv", "stt", "critique", "feedback", "languages", "craft", "goals"],
                 "image_sources": ["openverse", "wikimedia", "pexels", "pixabay", "unsplash"],
                 "video": bool(Image and FFMPEG),
                 "knowledge_count": knowledge_count(),

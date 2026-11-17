@@ -1,0 +1,14 @@
+# Definition of Done — Zyphere
+
+ทุกครั้งที่พัฒนาหรือปล่อย commit ต้องผ่านทั้งหมดนี้:
+
+1. `python -m py_compile app.py` ผ่าน
+2. `python test_zyphere.py` ผ่าน (health v22+, features ครบ, UI tokens ครบ, endpoints ทำงาน)
+3. หน้าเว็บโหลดได้จริง: body เดียว, มี sendBtn/know, console ไม่มี error
+4. ทดสอบพฤติกรรมหลัก: ทักทายไม่ซ้ำ, เป้าหมาย, บันทึกความจำ, ค้นความรู้
+5. ทดสอบเสียง: /tts 200, อ่านต่อเนื่องไม่สะดุด
+6. ถ้าแก้ destructive action ต้องมี snapshot/backup รองรับ
+7. commit message อธิบายสิ่งที่เปลี่ยน + เหตุผล
+8. dev agent push ได้เฉพาะเมื่อข้อ 1-2 ผ่านเท่านั้น
+
+หลักการ: compile ได้ ≠ เสร็จ / health 200 ≠ เสร็จ — ต้องทดสอบพฤติกรรมจริงก่อนเสมอ

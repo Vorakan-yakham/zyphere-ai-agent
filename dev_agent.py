@@ -56,25 +56,9 @@ def verify():
     for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send("):
         if x not in idx_src:
             return False
-    port = str(random.randint(8200, 8900))
-    env = dict(os.environ, PORT=port)
-    srv = subprocess.Popen([sys.executable, "app.py"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    try:
-        for _ in range(30):
-            time.sleep(0.4)
-            try:
-                base = "http://127.0.0.1:" + port
-                with urllib.request.urlopen(base + "/api/health", timeout=2) as r:
-                    if r.status != 200:
-                        continue
-                with urllib.request.urlopen(base + "/", timeout=2) as r:
-                    html = r.read().decode("utf-8", "replace")
-                return html.count("<body") <= 1 and html.count("</body>") <= 1 and 'id="sendBtn"' in html and 'id="know"' in html
-            except Exception:
-                pass
-        return False
-    finally:
-        srv.terminate()
+    r = subprocess.run([sys.executable, "test_zyphere.py"], cwd=ROOT, capture_output=True, text=True)
+    return r.returncode == 0
+
 
 def commit(msg):
     for a in (["git", "add", "-A"], ["git", "commit", "-m", msg], ["git", "pull", "--rebase", "origin", "main"], ["git", "push", "origin", "main"]):
