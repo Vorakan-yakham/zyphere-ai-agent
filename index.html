@@ -420,12 +420,15 @@ async function summarizeLong(opts){
    :'จากบันทึกสาระของเอกสารยาวด้านล่าง จงตอบคำถามของผู้ใช้ให้สมบูรณ์ที่สุด กระชับแต่ครบทุกประเด็นที่เกี่ยวข้อง รวบรวมข้อมูลที่กระจายอยู่หลายส่วนให้ครบ อ้างข้อเท็จจริง/ตัวเลขจากบันทึก ใช้เฉพาะข้อมูลในบันทึก ห้ามแต่งเติม ถ้าบันทึกไม่มีคำตอบให้บอกตรง ๆ และเขียนให้จบประโยค\n\nคำถามของผู้ใช้: '+q+'\n\n=== บันทึกสาระ ===\n'+packed)
   :(wantSum
    ?'Using the notes below from the whole long document, answer the user completely and self-contained:\n1) Overview (2-4 sentences)\n2) All key points (bullets, skip none)\n3) Conclusion and practical takeaways\nRules: finish at the final conclusion, never stop mid-sentence, never say "to be continued", use only these notes, invent nothing, flag contradictions.\n\nUser request: '+(q||'Summarize the entire content completely')+'\n\n=== NOTES ===\n'+packed
-   :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contain the answer, and finish every sentence.\n\nUser question: '+q+'\n\n=== NOTES ===\n'+packed);
- opts.status&&opts.status(th?'กำลังเรียบเรียงคำตอบสุดท้าย...':'Writing the final answer...');
- const answer=await call(finalPrompt,opts.onText);
- if(failed>0)return answer+'\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ '+failed+'/'+chunks.length+' ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ\n';
- return answer;
+   :'Using the notes below from the whole long document, answer the user as completely as possible: concise but cover every relevant point, pull together details spread across parts, cite facts/numbers from the notes, use only these notes, invent nothing, say so if the notes do not contconst finalPrompt = `Summarize the answer, ensuring each sentence is complete.\n\nUser question: ${q}\n\n=== NOTES ===\n${packed}`;
+if (opts.status) {
+  opts.status(th ? 'กำลังเรียบเรียงคำตอบสุดท้าย...' : 'Writing the final answer...');
 }
+const answer = await call(finalPrompt, opts.onText);
+if (failed > 0) {
+  return `${answer}\n\n> หมายเหตุ: อ่านบางส่วนไม่สำเร็จ ${failed}/${chunks.length} ส่วน สรุปนี้อาจไม่ครบ 100% — ลองกดส่งอีกครั้งเพื่อให้อ่านส่วนที่เหลือ`;
+}
+return answer;
 
 // markdown & UI
 const md=t=>String(t||'').split('```').map((p,i)=>i%2?'<div class="cb"><button class="cpy" type="button">คัดลอกโค้ด</button><pre><code>'+esc(p.replace(/^[\w+#.-]*\n/,''))+'</code></pre></div>':esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>')).join('');
@@ -616,6 +619,7 @@ async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind
 async function critiqueAnswer(q,answer,ctx){if(!answer||answer.length<300||!localBase())return answer;const sys='You are a strict QA reviewer. Check the draft answer against the question and notes. Return JSON only: {"score":0-1,"issues":["..."],"improved":"..."}. If complete and accurate, score 1 and improved equals the draft. Never invent facts. Keep the same language.';const prompt='Question: '+String(q||'').slice(0,500)+'\n\nNotes:\n'+String(ctx||'').slice(0,1500)+'\n\nDraft answer:\n'+String(answer).slice(0,4000);try{const r=await ask([{role:'user',content:prompt}],null,ctrl?ctrl.signal:null,()=>{},sys);const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]);if(j&&j.score!=null&&Number(j.score)<0.75&&j.improved)return String(j.improved)}catch(e){}return answer}
 async function deepAnalyze(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักคิดวิเคราะห์ระดับโลก จงแยกแยะอย่างมีโครงสร้าง: 1) สิ่งที่คำถามต้องการจริง 2) ข้อเท็จจริงที่รู้ / ที่ยังไม่รู้ 3) ทางเลือกที่เป็นไปได้ 4) ข้อดี-ข้อเสียของแต่ละทาง 5) บทสรุปที่ตัดสินใจได้ 6) ความมั่นใจและข้อควรระวัง ห้ามแต่งข้อเท็จจริง ใช้คำว่า ครับ':'You are a world-class analyst. Structure your answer: 1) what is really asked 2) known vs unknown facts 3) possible options 4) pros and cons 5) a clear conclusion 6) confidence and caveats. Never invent facts.';return await ask([{role:'user',content:String(q||'').slice(0,3000)}],null,ctrl?ctrl.signal:null,()=>{},sys)}
 async function solveHard(q){let a=await deepAnalyze(q);for(let i=0;i<3;i++){const c=await critiqueAnswer(q,a,'');if(c&&c!==a)a=c;else break}return a}
+async function writeSong(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักแต่งเพลงมืออาชีพ จงแต่งเพลงภาษาไทยที่ไพเราะและมีโครงสร้างชัดเจน: ชื่อเพลง, Verse 1, Chorus (ท่อนฮุคที่ติดหู), Verse 2, Outro ใส่จังหวะ อารมณ์ และภาพพจน์สวยงาม ใช้ภาษาง่ายแต่กินใจ ห้ามแต่งคำที่ขัดความหมาย ใช้คำว่า ครับ':'You are a professional songwriter. Write a complete song with title, Verse 1, catchy Chorus, Verse 2 and Outro. Include mood and rhythm hints.';return await ask([{role:'user',content:String(q||'').slice(0,1500)}],null,ctrl?ctrl.signal:null,()=>{},sys)}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
@@ -1002,9 +1006,10 @@ const GREET={
  ms:['Assalamualaikum! Apa boleh saya bantu hari ini?','Hi, saya sedia. Beritahu saya.','Selamat berjumpa. Apa kita buat?']
 };
 function greetLang(t){if(/[\u0E00-\u0E7F]/.test(t))return 'th';if(/[\u3040-\u30FF]/.test(t))return 'ja';if(/[\uAC00-\uD7AF]/.test(t))return 'ko';if(/[\u4E00-\u9FFF]/.test(t))return 'zh';if(/[\u0600-\u06FF]/.test(t))return 'ar';if(/[\u0900-\u097F]/.test(t))return 'hi';if(/\b(hello|hi|hey|good morning|good evening)\b/i.test(t))return 'en';if(/\b(hola|buenas|buenos)\b/i.test(t))return 'es';if(/\b(bonjour|salut|bonsoir)\b/i.test(t))return 'fr';if(/\b(hallo|guten tag)\b/i.test(t))return 'de';if(/привет|здравствуй/i.test(t))return 'ru';if(/xin chào|chào bạn/i.test(t))return 'vi';if(/halo|selamat pagi/i.test(t))return 'id';if(/assalamualaikum|selamat/i.test(t))return 'ms';return null}
+function isPureGreeting(t){const s=String(t||'').trim();if(s.length>45)return false;const rest=s.replace(/^\s*(สวัสดีครับ|สวัสดีค่ะ|สวัสดี|ไฮ|hi|hello|เฮลโหล)/i,'').replace(/[\sครับค่ะคะ!?.,~]/gi,'');return rest===''}
 function localAns(t){const n=new Date();
  if(/^\s*(เวอร์ชัน|version|v)\s*[?？]?\s*$/i.test(t))return 'Zyphere v22 · build 10:20 · ระบบตอบทักทายแบบหมุนเวียนเปิดอยู่ครับ ('+(getK('zy_greet_i')||'0')+')';
- const gl=t.length<=45?greetLang(t):null;
+ const gl=isPureGreeting(t)?greetLang(t):null;
  if(gl&&GREET[gl]){const a=GREET[gl];greetI++;const k=greetI%a.length;setK('zy_greet_i',String(greetI));return a[k]} if(/กี่โมง|เวลาเท่าไร|what time/i.test(t))return 'ขณะนี้เวลา '+n.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}); if(/วันนี้วัน|วันที่เท่าไร|what.*date/i.test(t))return 'วันนี้ '+n.toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); const m=t.match(/(?:ตั้งเวลา|จับเวลา|เตือน).*?(\d+)\s*(วินาที|นาที|ชั่วโมง)/); if(m){const s=+m[1]*({วินาที:1,นาที:60,ชั่วโมง:3600})[m[2]];setTimeout(()=>{lastLang='th';speak('ครบเวลา '+m[1]+' '+m[2]+' แล้ว')},s*1000);return 'ตั้งเวลา '+m[1]+' '+m[2]+' เรียบร้อยแล้ว'} const wm=t.match(WX); if(wm){/* async handled in agent/manual: keep simple */} return null}
 
 // call mode
