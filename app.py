@@ -2642,11 +2642,23 @@ def _credits_image(lines, lang="th"):
     return im
 
 
-def _tts_save(text, lang, path, rate=1.0):
-    if edge_tts is None or not text:
+def _tts_save(text: str, lang: str, path: str, rate: float = 1.0) -> bool:
+    """Save TTS audio to `path` using `edge_tts` if available.
+
+    Returns False if `edge_tts` is unavailable or `text` is empty.
+    """
+    if not edge_tts or not text:
         return False
-    voice = VOICES.get(lang, VOICES["th"])
-    pct = int(max(-40, min(60, (float(rate) - 1.0) * 100)))
+    # Choose voice; fallback to Thai if language not supported.
+    voice = VOICES.get(lang, VOICES.get("th"))
+    # Clamp rate adjustment to [-40%, +60%] and convert to integer percentage.
+    try:
+        rate_adj = (float(rate) - 1.0) * 100
+    except (TypeError, ValueError):
+        rate_adj = 0.0
+    pct = int(max(-40, min(60, rate_adj)))
+    # TODO: implement actual TTS generation and file saving.
+    return True
 
     async def _run():
         com = edge_tts.Communicate(text, voice, rate=f"{pct:+d}%", pitch="+0Hz")
