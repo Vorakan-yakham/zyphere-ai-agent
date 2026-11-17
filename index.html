@@ -115,6 +115,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <label>ภาษา</label><select id="lang"><option value="auto">อัตโนมัติ</option><option value="th">ไทย</option><option value="en">English</option></select>
 <label>โหมด Agent (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)</label><select id="agentMode"><option value="on">เปิด (แนะนำเมื่อรันผ่าน python app.py)</option><option value="off">ปิด</option></select>
 <label style="display:flex;align-items:center;gap:8px;margin-top:10px"><input type="checkbox" id="briefOn" style="width:auto;margin:0"> แสดงสรุปสิ่งที่เรียนรู้เมื่อเปิดแอป</label>
+<label style="display:flex;align-items:center;gap:8px;margin-top:6px"><input type="checkbox" id="critiqueOn" style="width:auto;margin:0"> ตรวจคำตอบตัวเองก่อนส่ง (ช้ากว่า)</label>
 <label>บุคลิก</label><select id="persona"><option value="zyphere">Zyphere (ไซเฟอร์)</option><option value="friend">เพื่อนคุย</option></select>
 <label>โหมดเขียนโค้ด</label><select id="codeMode"><option value="auto">อัตโนมัติ</option><option value="on">เปิดเสมอ</option><option value="off">ปิด</option></select>
 <label>ความเร็วเสียงพูด <span id="rv"></span></label><input type="range" id="rate" min="0.8" max="1.5" step="0.05">
@@ -210,7 +211,7 @@ const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({im
 $('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
 $('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'0.9';
 $('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('codeMode').value=getK('zy_code')||'auto';
-$('ttse').value=getK('zy_ttse')||'g';$('thvoice').value=getK('zy_thvoice')||'th-TH-PremwadeeNeural';$('envoice').value=getK('zy_envoice')||'en-GB-RyanNeural';$('ttsurl').value=getK('zy_ttsurl');$('agentMode').value=agentOn?'on':'off';$('briefOn').checked=getK('zy_brief')!=='0';
+$('ttse').value=getK('zy_ttse')||'g';$('thvoice').value=getK('zy_thvoice')||'th-TH-PremwadeeNeural';$('envoice').value=getK('zy_envoice')||'en-GB-RyanNeural';$('ttsurl').value=getK('zy_ttsurl');$('agentMode').value=agentOn?'on':'off';$('briefOn').checked=getK('zy_brief')!=='0';$('critiqueOn').checked=getK('zy_critique')==='1';
 const P={
  groq:{n:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',models:['openai/gpt-oss-120b','openai/gpt-oss-20b','qwen/qwen3.8-27b'],vision:[]},
  gemini:{n:'Gemini',models:['gemini-flash-lite-latest','gemini-3.5-flash','gemini-3.8-flash']},
@@ -497,8 +498,9 @@ async function extractFile(f){
  try{const t=await f.text();if(t&&!/\uFFFD{3,}/.test(t.slice(0,3000)))return t}catch(e){}
  throw new Error('ไม่รองรับไฟล์ประเภทนี้');
 }
+async function transcribeFile(f){const b=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));const j=await api('/api/transcribe',{method:'POST',body:JSON.stringify({name:f.name||'audio.mp3',data:btoa(s),key:getK('zyphere_groq_key')||''})});return j.text}
 async function addFiles(list){const fs=[...(list||[])];for(const f of fs){if(pend.items.length>=8){toast('แนบได้ไม่เกิน 8 ไฟล์ต่อข้อความ');break}
- const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
+ const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('audio/')||/\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(f.name)){it.text='\n\n[ไฟล์เสียง '+f.name+']:\n'+(await transcribeFile(f))}else if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
   const raw=String(await extractFile(f)||'').replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
   if(!raw){toast('ไม่พบข้อความใน '+(f.name||'ไฟล์'));continue}
   it.text='\n\n[ไฟล์ '+f.name+' | '+raw.length.toLocaleString()+' ตัวอักษร]:\n'+raw.slice(0,FILE_MAX);
@@ -614,11 +616,11 @@ async function send(voice){
   if(x){if(x.length<=left)left-=x.length;else{x=x.slice(0,Math.max(0,left))+'\n...(ตัดเนื้อหาไฟล์)';left=0}}
   if(ct.length>left){ct=ct.slice(0,Math.max(0,left))+'\n...(ตัดข้อความยาว)';left=0}else left-=ct.length;
   msgs[i]={role:m.r==='user'?'user':'assistant',content:ct+x}}
- ctrl=new AbortController();setBusy(true);let reply='',ok=true;if(voice)orb('think');
+ ctrl=new AbortController();setBusy(true);let reply='',ok=true,local=false;if(voice)orb('think');
  try{
   knowCtx=await knowledgeContext(t);
   const cmd=!um.x?await localCommand(t):null;
-  const local=!um.x&&(cmd||localAns(t)); if(local){reply=local}
+  local=!um.x&&(cmd||localAns(t)); if(local){reply=local}
   else{
    const attach=String(um.x||'');
    let doc=attach,question=t;
@@ -639,7 +641,7 @@ async function send(voice){
   }
  }
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
- if(ok&&!local&&knowCtx&&reply.length<8000)reply=await critiqueAnswer(t,reply,knowCtx);
+ if(ok&&!local&&knowCtx&&reply.length<8000&&getK('zy_critique')==='1')reply=await critiqueAnswer(t,reply,knowCtx);
   setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
  if(ok) await maybeAutoRemember(t,reply);
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');await speak(reply,b)}
@@ -970,8 +972,8 @@ $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('
 $('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
-$('setBtn').onclick=()=>{KIDS.forEach(id=>{paintK(id);$('k-'+id).onchange=()=>commitK(id)&&toast('บันทึกคีย์ '+P[id].n+' แล้ว');$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});$('custom').value=getK('zy_custom');$('briefOn').checked=getK('zy_brief')!=='0';renderMemStatus(!localBase());$('set').style.display='flex'};
-$('doneBtn').onclick=()=>{KIDS.forEach(commitK);setK('zy_custom',$('custom').value);setK('zy_brain',$('brain').value);setK('zy_lang',$('lang').value);setK('zy_rate',$('rate').value);$('rv').textContent=$('rate').value+'x';setK('zy_persona',$('persona').value);setK('zy_code',$('codeMode').value);setK('zy_ttse',$('ttse').value);setK('zy_thvoice',$('thvoice').value);setK('zy_envoice',$('envoice').value);setK('zy_ttsurl',$('ttsurl').value.trim());agentOn=$('agentMode').value==='on';setK('zy_agent',agentOn?'1':'0');setK('zy_brief',$('briefOn').checked?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('set').style.display='none'};
+$('setBtn').onclick=()=>{KIDS.forEach(id=>{paintK(id);$('k-'+id).onchange=()=>commitK(id)&&toast('บันทึกคีย์ '+P[id].n+' แล้ว');$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});$('custom').value=getK('zy_custom');$('briefOn').checked=getK('zy_brief')!=='0';$('critiqueOn').checked=getK('zy_critique')==='1';renderMemStatus(!localBase());$('set').style.display='flex'};
+$('doneBtn').onclick=()=>{KIDS.forEach(commitK);setK('zy_custom',$('custom').value);setK('zy_brain',$('brain').value);setK('zy_lang',$('lang').value);setK('zy_rate',$('rate').value);$('rv').textContent=$('rate').value+'x';setK('zy_persona',$('persona').value);setK('zy_code',$('codeMode').value);setK('zy_ttse',$('ttse').value);setK('zy_thvoice',$('thvoice').value);setK('zy_envoice',$('envoice').value);setK('zy_ttsurl',$('ttsurl').value.trim());agentOn=$('agentMode').value==='on';setK('zy_agent',agentOn?'1':'0');setK('zy_brief',$('briefOn').checked?'1':'0');setK('zy_critique',$('critiqueOn').checked?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('set').style.display='none'};
 $('set').onclick=e=>{if(e.target===$('set'))$('doneBtn').click()};
 $('wipeBtn').onclick=()=>{if(confirm('ลบแชททั้งหมด?')){chats=[];cur=null;save();view()}};
 $('wipeMemBtn').onclick=async()=>{if(!confirm('ล้างความจำที่สะสมไว้ทั้งหมด?'))return;try{await updateMemory({clear:'all'});toast('ล้างความจำแล้ว')}catch(e){toast('ล้างความจำไม่ได้ (ต้องรันผ่าน python app.py)')}};
