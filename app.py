@@ -385,14 +385,27 @@ def memory_update(payload):
 # ----------------------------------------------------------------------------
 LANG_NAMES = {"th":"ไทย","en":"อังกฤษ","zh":"จีน","ja":"ญี่ปุ่น","ko":"เกาหลี","ar":"อาหรับ","ru":"รัสเซีย","hi":"ฮินดี","vi":"เวียดนาม"}
 
-def detect_lang(text):
-    t = str(text or "")
-    ranges = [("th", 0x0E00, 0x0E7F), ("zh", 0x4E00, 0x9FFF), ("ja", 0x3040, 0x30FF), ("ko", 0xAC00, 0xD7AF), ("ar", 0x0600, 0x06FF), ("ru", 0x0400, 0x04FF), ("hi", 0x0900, 0x097F), ("el", 0x0370, 0x03FF)]
-    scored = [(sum(1 for c in t if a <= ord(c) <= b), code) for code, a, b in ranges]
-    n, code = max(scored)
-    if n == 0:
+def detect_lang(text: str) -> str:
+    """Detect language of *text* using simple Unicode‑range heuristics.
+    Returns an ISO‑639‑1 code, "en" if Latin letters are found, or "unknown".
+    """
+    import re
+    t = text or ""
+    ranges = {
+        "th": (0x0E00, 0x0E7F),
+        "zh": (0x4E00, 0x9FFF),
+        "ja": (0x3040, 0x30FF),
+        "ko": (0xAC00, 0xD7AF),
+        "ar": (0x0600, 0x06FF),
+        "ru": (0x0400, 0x04FF),
+        "hi": (0x0900, 0x097F),
+        "el": (0x0370, 0x03FF),
+    }
+    scores = {code: sum(1 for c in t if start <= ord(c) <= end) for code, (start, end) in ranges.items()}
+    best = max(scores, key=scores.get)
+    if scores[best] == 0:
         return "en" if re.search(r"[A-Za-z]", t) else "unknown"
-    return code
+    return best
 
 
 def translate_text(text, target="th", source=""):
