@@ -48,7 +48,7 @@ def verify():
     r = subprocess.run([sys.executable, "-m", "py_compile", "app.py"], cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
         return False
-    port = "8149"
+    port = str(random.randint(8200, 8900))
     env = dict(os.environ, PORT=port)
     srv = subprocess.Popen([sys.executable, "app.py"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
@@ -69,7 +69,7 @@ def verify():
         srv.terminate()
 
 def commit(msg):
-    for a in (["git", "add", "-A"], ["git", "commit", "-m", msg], ["git", "push", "origin", "main"]):
+    for a in (["git", "add", "-A"], ["git", "commit", "-m", msg], ["git", "pull", "--rebase", "origin", "main"], ["git", "push", "origin", "main"]):
         r = subprocess.run(a, cwd=ROOT, capture_output=True, text=True)
         if r.returncode != 0:
             log("git fail: " + (r.stderr or "")[:160])
