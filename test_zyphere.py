@@ -152,6 +152,14 @@ def main():
         w = we.produce("เขียนบทความเรื่องฟิสิกส์ควอนตัม", "physics")
         assert w.get("ok") and w["type"] == "article" and we.count() == 1, "work produce failed"
         assert not we.produce("เว็บพนัน บาคาร่า").get("ok"), "gambling work must be refused"
+        from voice import VoiceIdentity
+        vpath = os.path.join(tempfile.gettempdir(), "zy_voice_test.json")
+        if os.path.exists(vpath): os.remove(vpath)
+        vi = VoiceIdentity(vpath)
+        lr = vi.learn()
+        assert lr.get("ok") and lr["learned"] >= 6, "voice learn failed"
+        tc = vi.tune(rate=0.94, pitch_ratio=-7)
+        assert tc["rate"] == 0.94 and tc["pitch_ratio"] == -7, "voice tune failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

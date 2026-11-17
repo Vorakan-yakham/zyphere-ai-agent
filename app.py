@@ -154,6 +154,11 @@ try:
     WORKS = WorkEngine(os.path.join(DATA_DIR, "works.json"))
 except Exception:
     WORKS = None
+try:
+    from voice import VoiceIdentity
+    VOICE = VoiceIdentity(os.path.join(DATA_DIR, "voice.json"))
+except Exception:
+    VOICE = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -208,6 +213,7 @@ REMOTE_KEYS = {
     "identity": "zyphere:identity",
     "creative": "zyphere:creative",
     "works": "zyphere:works",
+    "voice": "zyphere:voice",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -319,7 +325,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice"):
         try:
             data = {
                 "memory": load_mem,
@@ -334,6 +340,7 @@ def remote_push_all():
                 "identity": (IDENTITY.data if IDENTITY else None),
                 "creative": (CREATIVE.snapshot() if CREATIVE else None),
                 "works": (WORKS.snapshot() if WORKS else None),
+                "voice": (VOICE.snapshot() if VOICE else None),
             }[name]()
         except Exception:
             continue
@@ -360,6 +367,7 @@ def remote_pull_all():
         "identity": os.path.join(DATA_DIR, "identity.json"),
         "creative": os.path.join(DATA_DIR, "creative.json"),
         "works": os.path.join(DATA_DIR, "works.json"),
+        "voice": os.path.join(DATA_DIR, "voice.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -379,6 +387,12 @@ def remote_pull_all():
             continue
         if name == "works" and WORKS:
             if WORKS.restore(data):
+                restored.append(name)
+            else:
+                skipped.append(name)
+            continue
+        if name == "voice" and VOICE:
+            if VOICE.restore(data):
                 restored.append(name)
             else:
                 skipped.append(name)
@@ -3293,6 +3307,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/voice/profile":
+            self._send_json(200, {"ok": True, "voice": VOICE.profile() if VOICE else {"error": "unavailable"}})
+            return
         if u.path == "/api/work/list":
             self._send_json(200, {"ok": True, "count": WORKS.count() if WORKS else 0,
                                   "works": WORKS.list_works() if WORKS else []})
@@ -3969,6 +3986,25 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/voice/learn":
+            res = VOICE.learn() if VOICE else {"ok": False, "error": "unavailable"}
+            if DEV_BRAIN and res.get("ok"):
+                try:
+                    for fact in VOICE.learned if VOICE else []:
+                        DEV_BRAIN.experience("เสียง: " + fact, "elder_teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
+            if res.get("ok") and remote_enabled():
+                remote_push("voice", VOICE.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/voice/tune":
+            res = VOICE.tune(**{k: v for k, v in body.items() if k in ("rate", "pitch_ratio", "voice_th", "style")}) if VOICE else {"error": "unavailable"}
+            if res.get("rate") and remote_enabled():
+                remote_push("voice", VOICE.snapshot())
+            self._send_json(200, {"ok": True, "cfg": res})
             return
         if u.path == "/api/work/produce":
             res = WORKS.produce(str(body.get("topic") or ""), str(body.get("field") or ""),
