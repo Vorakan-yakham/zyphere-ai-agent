@@ -109,6 +109,11 @@ def main():
         rec = rl.record("quantum computing", fake, "physics")
         assert rec.get("ok") and rl.stats()["documents"] >= 1, "research record failed"
         assert not rl.record("เว็บพนัน บาคาร่า", fake).get("ok"), "gambling must be refused"
+        import expansion
+        assert expansion.total_topics() >= 100, "expansion curriculum too small"
+        cov = expansion.coverage_matrix(core_topics=150)
+        assert cov["not_complete"] and len(cov["axes"]) == 5, "coverage matrix/self-check missing"
+        assert len(expansion.NEW_SOURCES) == 8, "new sources missing"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

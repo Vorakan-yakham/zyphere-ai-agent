@@ -125,6 +125,10 @@ try:
     RESEARCH = ResearchLibrary(os.path.join(DATA_DIR, "research.json"))
 except Exception:
     RESEARCH = None
+try:
+    import expansion as EXPANSION
+except Exception:
+    EXPANSION = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3221,6 +3225,26 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/expansion/coverage":
+            try:
+                import curriculum as _CUR
+                rstats = RESEARCH.stats() if RESEARCH else {}
+                dstats = DEV_BRAIN.stats() if DEV_BRAIN else {}
+                cov = EXPANSION.coverage_matrix(
+                    core_topics=_CUR.total(),
+                    researched=rstats.get("documents", 0),
+                    deep=dstats.get("facts", 0),
+                    by_reliability=rstats.get("by_reliability", {}))
+                self._send_json(200, {"ok": True, "coverage": cov})
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:150]})
+            return
+        if u.path == "/api/expansion/domains":
+            self._send_json(200, {"ok": True,
+                                  "domains": list(EXPANSION.EXPANSION_DOMAINS.keys()) if EXPANSION else [],
+                                  "topics": EXPANSION.total_topics() if EXPANSION else 0,
+                                  "new_sources": EXPANSION.NEW_SOURCES if EXPANSION else []})
             return
         if u.path == "/api/research/sources":
             self._send_json(200, {"ok": True, "sources": [
