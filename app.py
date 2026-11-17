@@ -258,6 +258,10 @@ try:
     PRIVACY = Privacy(os.path.join(DATA_DIR, "privacy.json"))
 except Exception:
     PRIVACY = None
+try:
+    import surpass as SURPASS
+except Exception:
+    SURPASS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3993,6 +3997,21 @@ class Handler(SimpleHTTPRequestHandler):
             txt = q.get("text", [""])[0]
             code = detect_lang(txt)
             self._send_json(200, {"ok": True, "code": code, "name": LANG_NAMES.get(code, code)})
+            return
+        if u.path == "/api/surpass/select":
+            q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+            res = SURPASS.select_model(q) if SURPASS else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/surpass/compress":
+            q = urllib.parse.parse_qs(u.query).get("text", [""])[0]
+            res = SURPASS.compress(q) if SURPASS else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/surpass/counter":
+            q = urllib.parse.parse_qs(u.query).get("topic", [""])[0]
+            res = SURPASS.make_counterexamples(q) if SURPASS else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
             return
         if u.path == "/api/jarvis/briefing":
             bst = DEV_BRAIN.stats() if DEV_BRAIN else {}

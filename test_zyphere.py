@@ -254,6 +254,14 @@ def main():
         jm = JarvisMode(jpath)
         br = jm.make_briefing({"facts": 10, "documents": 3, "works": 1, "rank": "หัดคิด"})
         assert br["ok"] and "Zyphere" in br["head"], "jarvis briefing failed"
+        import surpass
+        sm = surpass.select_model("วิเคราะห์เปรียบเทียบเชิงลึก")
+        assert sm["tier"] in ("balanced", "deep"), "model selector failed"
+        cp = surpass.compress("ก " * 800 + "ตัวเลข 42 สำคัญ")
+
+        assert cp["ok"] and cp["ratio"] <= 1.0, "compressor failed"
+        cx = surpass.make_counterexamples("machine learning")
+        assert cx["ok"] and len(cx["questions"]) == 3, "counterexamples failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
