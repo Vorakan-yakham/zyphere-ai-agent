@@ -169,6 +169,11 @@ try:
     REASON = ReasoningEngine()
 except Exception:
     REASON = None
+try:
+    from concept import ConceptExpander
+    CONCEPT = ConceptExpander()
+except Exception:
+    CONCEPT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3317,6 +3322,11 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/concept/explore":
+            q = urllib.parse.parse_qs(u.query)
+            res = CONCEPT.explore(q.get("term", [""])[0], q.get("domain", ["ทั่วไป"])[0]) if CONCEPT else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/reason/methods":
             self._send_json(200, {"ok": True, "methods": REASON.methods if REASON else []})
             return
@@ -4002,6 +4012,29 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/concept/study":
+            term = str(body.get("term") or "")
+            domain = str(body.get("domain") or "ทั่วไป")
+            offline = bool(body.get("offline"))
+            res = CONCEPT.explore(term, domain) if CONCEPT else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and not offline:
+                try:
+                    from brain_ensemble import ensemble
+                    er = ensemble([{"role": "user", "content": CONCEPT.study_prompt(term, domain)}])
+                    if er.get("ok"):
+                        res["deep_study"] = er.get("text")
+                        res["sources"] = er.get("sources", [])
+                except Exception:
+                    pass
+            if res.get("ok") and DEV_BRAIN:
+                try:
+                    for step in res.get("analysis", []):
+                        DEV_BRAIN.experience("แนวคิด " + term + ": " + step.get("step", "") + " — " + step.get("result", ""), "elder_teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/reason/solve":
             problem = str(body.get("problem") or body.get("q") or "")

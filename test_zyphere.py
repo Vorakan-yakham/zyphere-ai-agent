@@ -171,6 +171,10 @@ def main():
         rs = re_.solve("ทำไมน้ำท่วมกรุงเทพทุกปี แก้ยังไง")
         assert rs.get("ok") and len(rs["thinking_map"]) >= 6, "reasoning solve failed"
         assert not re_.solve("เว็บพนัน บาคาร่า").get("ok"), "gambling reasoning refused"
+        from concept import ConceptExpander
+        ce = ConceptExpander()
+        cx = ce.explore("entropy", "ฟิสิกส์")
+        assert cx.get("ok") and len(cx["analysis"]) == 4 and cx["new_branches"], "concept explore failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
