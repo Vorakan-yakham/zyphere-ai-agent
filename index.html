@@ -156,6 +156,10 @@ button,input,textarea,select{font-family:inherit}
 .go{background:var(--blue);color:#fff;border-radius:50%}
 .live{background:var(--fg);color:var(--bg)}
 
+/* ambient presence: instant human-like reaction on hover */
+#ackBar{max-width:820px;margin:0 auto 6px;min-height:0;opacity:0;transform:translateY(3px);transition:.2s;font-size:12.5px;color:var(--blue);padding:0 4px}
+#ackBar.show{opacity:1;transform:none}
+
 /* status panel (meta.ai style) */
 .stGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 18px}
 .stItem{display:flex;align-items:center;gap:8px;border:1px solid var(--bd2);border-radius:12px;padding:9px 11px;background:var(--sf)}
@@ -1409,9 +1413,19 @@ function localAns(t){const n=new Date();
 const WAKE=/(เฮ้|เฮ|ฮัลโหล|หวัดดี|hey|hi)?[\s,]*(ไซเฟอร์|zyphere|cypher|cipher)/i,BYE=/พอแล้ว|ไปก่อน|หยุดฟัง|standby|bye|goodbye/i,sleep=ms=>new Promise(r=>setTimeout(r,ms));
 let mode=0,home=0; function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home?' on':'');b.textContent=mode&&home?'● รอฟัง "ไซเฟอร์"':'ZYPHERE'}
 function showOv(){$('ov').style.display='flex';orb('listen','')}function hideOv(){$('ov').style.display='none'}
+async function instantAck(t){
+  // human-like instant reaction BEFORE the LLM answers (no typing needed)
+  try{
+    const r=await fetch(RENDER_URL+'/api/dialogue/ack?text='+encodeURIComponent(t||''),{cache:'no-store'});
+    const j=await r.json();const txt=j.text||'ครับ กำลังดูให้';
+    $('ovT').textContent=txt;
+    if(getK('zy_voice')!=='0'){try{await say(txt)}catch(e){}}
+    return txt;
+  }catch(e){return null}
+}
 async function handle(t){$('ovT').textContent=t;$('q').value=t;await send(true)}
 async function say(t){lastLang='th';orb('speak',t);await speak(t)}
-async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');if(speaking){await sleep(400);continue}const t=await listenOnce();if(speaking){await sleep(300);continue}if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
+async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');if(speaking){await sleep(400);continue}const t=await listenOnce();if(speaking){await sleep(300);continue}if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2){await instantAck(rest);await handle(rest)}else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else {await instantAck(t);await handle(t)}} endCall()}
 function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&busy)ctrl.abort();hideOv();ui()}
 
 // events & settings

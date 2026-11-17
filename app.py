@@ -262,6 +262,21 @@ try:
     import surpass as SURPASS
 except Exception:
     SURPASS = None
+try:
+    from superiority import Superiority
+    SUPERIORITY = Superiority()
+except Exception:
+    SUPERIORITY = None
+try:
+    from dialogue import Dialogue
+    DIALOGUE = Dialogue()
+except Exception:
+    DIALOGUE = None
+try:
+    from guard import Guard
+    GUARD = Guard(os.path.join(DATA_DIR, "guard.json"))
+except Exception:
+    GUARD = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -326,6 +341,7 @@ REMOTE_KEYS = {
     "audit": "zyphere:audit",
     "jarvis": "zyphere:jarvis",
     "privacy": "zyphere:privacy",
+    "guard": "zyphere:guard",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -437,7 +453,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard"):
         try:
             data = {
                 "memory": load_mem,
@@ -461,6 +477,8 @@ def remote_push_all():
                 "behavior": (BEHAVIOR.snapshot() if BEHAVIOR else None),
                 "audit": (AUDIT.snapshot() if AUDIT else None),
                 "jarvis": (JARVIS.snapshot() if JARVIS else None),
+                "privacy": (PRIVACY.snapshot() if PRIVACY else None),
+                "guard": (GUARD.snapshot() if GUARD else None),
             }[name]()
         except Exception:
             continue
@@ -496,6 +514,8 @@ def remote_pull_all():
         "behavior": os.path.join(DATA_DIR, "behavior.json"),
         "audit": os.path.join(DATA_DIR, "audit.json"),
         "jarvis": os.path.join(DATA_DIR, "jarvis.json"),
+        "privacy": os.path.join(DATA_DIR, "privacy.json"),
+        "guard": os.path.join(DATA_DIR, "guard.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -3997,6 +4017,93 @@ class Handler(SimpleHTTPRequestHandler):
             txt = q.get("text", [""])[0]
             code = detect_lang(txt)
             self._send_json(200, {"ok": True, "code": code, "name": LANG_NAMES.get(code, code)})
+            return
+        if u.path == "/api/guard/consent/status":
+            self._send_json(200, GUARD.consent_status() if GUARD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/guard/consent/propose":
+            q = urllib.parse.parse_qs(u.query)
+            res = GUARD.propose_connect(q.get("device", ["กล้องตรวจจับ"])[0],
+                                        q.get("scope", ["motion_only"])[0]) if GUARD else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/guard/status":
+            self._send_json(200, GUARD.status() if GUARD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/guard/latest":
+            self._send_json(200, GUARD.latest() if GUARD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/dialogue/ack":
+            q = urllib.parse.parse_qs(u.query).get("text", [""])[0]
+            self._send_json(200, DIALOGUE.ack(q) if DIALOGUE else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/guard/consent/grant":
+            res = GUARD.grant(str(body.get("device") or "กล้องตรวจจับ"),
+                              str(body.get("scope") or "motion_only"),
+                              int(body.get("hours") or 24)) if GUARD else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("guard", GUARD.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/guard/consent/revoke":
+            res = GUARD.revoke(str(body.get("device") or "กล้องตรวจจับ")) if GUARD else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("guard", GUARD.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/guard/alert":
+            res = GUARD.alert_owner(str(body.get("kind") or "suspicious"),
+                                    str(body.get("detail") or ""),
+                                    float(body.get("confidence") or 0),
+                                    body.get("evidence") or []) if GUARD else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/guard/sensor":
+            dev = str(body.get("device") or "กล้องตรวจจับ")
+            allowed = GUARD.is_allowed(dev) if GUARD else False
+            res = GUARD.sensor_event(str(body.get("kind") or "motion"),
+                                     str(body.get("detail") or ""),
+                                     allowed) if GUARD else {"ok": False, "error": "unavailable"}
+            if not allowed and res.get("ok"):
+                res = {"ok": False, "error": "ยังไม่ได้รับอนุญาตจากเจ้าของ — ต้องแนะนำให้กดอนุญาตก่อนครับ", "need_consent": True}
+            self._send_json(200 if res.get("ok") else 403, res)
+            return
+        if u.path == "/api/guard/patrol":
+            st = {"remote": remote_enabled(),
+                  "safety_blocks": (SAFETY.stats().get("blocked", 0) if SAFETY else 0),
+                  "integrity": (AUDIT.verify().get("integrity", False) if AUDIT else True),
+                  "pending_decay": 0, "failures": 0,
+                  "facts": (DEV_BRAIN.stats().get("facts", 0) if DEV_BRAIN else 0),
+                  "documents": (RESEARCH.stats().get("documents", 0) if RESEARCH else 0),
+                  "works": (WORKS.count() if WORKS else 0),
+                  "providers": []}
+            res = GUARD.patrol(st) if GUARD else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/superiority":
+            try:
+                bst = DEV_BRAIN.stats() if DEV_BRAIN else {}
+                rst = RESEARCH.stats() if RESEARCH else {}
+                rem = remote_enabled()
+                prov = []
+                try:
+                    from brain_ensemble import load_keys as _lk
+                    prov = list(_lk().keys())
+                except Exception:
+                    pass
+                state = {"facts": bst.get("facts", 0), "documents": rst.get("documents", 0),
+                         "works": WORKS.count() if WORKS else 0, "providers": prov, "remote": rem,
+                         "audit_events": AUDIT.stats().get("events", 0) if AUDIT else 0,
+                         "integrity": AUDIT.verify().get("integrity", False) if AUDIT else False,
+                         "private_memories": PRIVACY.stats().get("encrypted_memories", 0) if PRIVACY else 0,
+                         "forget_events": PRIVACY.stats().get("forget_events", 0) if PRIVACY else 0,
+                         "eval_scores": EVAL.stats().get("evaluations", 0) if EVAL else 0,
+                         "corrections": SELFCORRECT.stats().get("corrections", 0) if SELFCORRECT else 0,
+                         "briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0}
+                res = SUPERIORITY.compute(state) if SUPERIORITY else {"ok": False, "error": "unavailable"}
+                self._send_json(200, res)
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:150]})
             return
         if u.path == "/api/surpass/select":
             q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
