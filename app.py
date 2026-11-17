@@ -1821,6 +1821,28 @@ def _server_llm_json(system, user):
     return ""
 
 
+def elder_teach(topic, summary=""):
+    """Elders (ensemble LLMs) teach a topic to the child (DevBrain).
+    Returns a short lesson string that the child records as experience."""
+    sys = ("You are a wise grandparent AI teaching a newborn AI named Zyphere. "
+           "Explain the topic in 3-5 short simple facts the child can memorize. "
+           "Output ONLY plain Thai lines, each starting with a short subject, "
+           "e.g. 'หัวข้อ: คำอธิบายสั้น'. No preamble.")
+    user = "หัวข้อ: " + str(topic or "")[:160]
+    if summary:
+        user += "\nข้อมูลอ้างอิง: " + str(summary)[:900]
+    try:
+        from brain_ensemble import ensemble
+        res = ensemble([{"role": "system", "content": sys}, {"role": "user", "content": user}],
+                       want_synthesis=True)
+        if res.get("ok") and res.get("text"):
+            return res["text"].strip()[:1500]
+    except Exception:
+        pass
+    # fallback: teacher = system summary when no elder available
+    return (str(topic) + ": " + str(summary)[:400]).strip()[:600]
+
+
 def _wiki_summary(topic, lang):
     api = "https://%s.wikipedia.org/w/api.php" % ("th" if lang == "th" else "en")
     # Try the topic itself plus its meaningful parts. This keeps compound Thai
@@ -2226,6 +2248,19 @@ def _learn_worker(job_id, topics, reason):
                     _learn_job_update(job_id, stage="ขยายความรู้: " + ", ".join(added[:2]))
             except Exception:
                 pass
+            # Self-learning: the child learns from what the system learned,
+            # even when the owner never types a message.
+            if DEV_BRAIN:
+                try:
+                    title = str(entry.get("title") or topic)[:120]
+                    summary = str(entry.get("summary") or "")[:600]
+                    lesson = elder_teach(title, summary)
+                    if lesson:
+                        DEV_BRAIN.experience(lesson, "elder_teacher")
+                    DEV_BRAIN.experience(title, "teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
             learned.append({
                 "id": entry.get("id"),
                 "topic": entry.get("topic"),
