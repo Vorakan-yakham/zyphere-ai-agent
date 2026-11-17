@@ -659,10 +659,12 @@ async function send(voice){
   msgs[i]={role:m.r==='user'?'user':'assistant',content:ct+x}}
  ctrl=new AbortController();setBusy(true);let reply='',ok=true,local=false;if(voice)orb('think');
  try{
-  knowCtx=await knowledgeContext(t);
-  const cmd=!um.x?await localCommand(t):null;
-  local=!um.x&&(cmd||localAns(t)); if(local){reply=local}
-  else{
+   const quick=!um.x?localAns(t):null;
+   const looksCmd=!um.x&&/^\s*(มีอะไรใหม่|สรุปสิ่งที่เรียนรู้|ติดตาม|เฝ้าดู|watch|จำไว้|remember|เป้าหมาย|ตั้งเป้าหมาย|สถานะเป้าหมาย|วิเคราะห์|แก้ปัญหา|เขียนเพลง|แต่งเพลง|อ่านนิทาน|เล่านิทาน|แปล|เรียบเรียง|คำสั่ง|ช่วยเหลือ|help|commands|เวอร์ชัน)/i.test(t);
+   const cmd=looksCmd?await localCommand(t):null;
+   if(cmd){local=true;reply=cmd}
+   else if(quick){local=true;reply=quick}
+   else{
    const attach=String(um.x||'');
    let doc=attach,question=t;
    if(!doc&&t.length>9000){doc=t;question=''}
