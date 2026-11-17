@@ -860,6 +860,9 @@ async function localCommand(t){
  if(m){const text=m[1].trim().slice(0,500);try{await updateMemory({remember:{kind:'fact',text,source:'chat'}});return 'จำไว้แล้วครับ: '+text}catch(e){return 'บันทึกความจำไม่ได้: '+redact(e.message)}}
   m=t.match(/^\s*(?:แปลเป็นไทย|แปล|translate(?:\s+to\s+thai)?)\s*[:：]?\s*([\s\S]{2,})$/i);
   if(m){try{const j=await api('/api/translate',{method:'POST',body:JSON.stringify({text:m[1].trim(),target:'th'})});const d=await api('/api/lang/detect?text='+encodeURIComponent(m[1].trim()));return 'แปลจาก'+(d.name||d.code)+':\n'+j.text}catch(e){return 'แปลไม่ได้: '+redact(e.message)}}
+  m=t.match(/^\s*(?:ตั้งเป้าหมาย|เป้าหมาย|goal)\s*[:：]?\s*([\s\S]{3,})$/i);
+  if(m){const title=m[1].trim().replace(/^ขอ|ให้ผม/g,'').trim();try{const j=await api('/api/goals',{method:'POST',body:JSON.stringify({title,steps:title.split(/[,،]/).map(x=>x.trim()).filter(Boolean).slice(1)})});loadGoals();return 'ตั้งเป้าหมายแล้วครับ: '+title+' ('+(j.goals||[]).length+' เป้าหมายทั้งหมด)'}catch(e){return 'ตั้งเป้าหมายไม่ได้: '+redact(e.message)}}
+  if(/^\s*(?:เป้าหมายของฉัน|สถานะเป้าหมาย|ดูเป้าหมาย|my goals)\s*[?？]?\s*$/i.test(t)){try{const j=await api('/api/goals');const g=j.goals||[];if(!g.length)return 'ยังไม่มีเป้าหมายครับ';return 'เป้าหมายของคุณครับ:\n'+g.map(x=>'• '+x.title+' ('+(x.progress||0)+'%)').join('\n')}catch(e){return 'ดูเป้าหมายไม่ได้: '+redact(e.message)}}
   m=t.match(/^\s*(?:เรียบเรียง|จัดรูปแบบข้อความ|จัดวางข้อความ|polish)\s*[:：]?\s*([\s\S]{4,})$/i);
   if(m){try{const j=await api('/api/text/polish',{method:'POST',body:JSON.stringify({text:m[1].trim(),lang:lastLang})});return j.text}catch(e){return 'เรียบเรียงไม่ได้: '+redact(e.message)}}
  return null;
