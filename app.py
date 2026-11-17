@@ -179,6 +179,11 @@ try:
     META = Metacognition()
 except Exception:
     META = None
+try:
+    from selftest import SelfTest
+    SELFTEST = SelfTest()
+except Exception:
+    SELFTEST = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3327,6 +3332,12 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/selftest/feynman":
+            q = urllib.parse.parse_qs(u.query)
+            facts = DEV_BRAIN.lessons if DEV_BRAIN else []
+            res = SELFTEST.feynman(q.get("concept", [""])[0], facts) if SELFTEST else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/meta/unknown":
             q = urllib.parse.parse_qs(u.query)
             dstats = DEV_BRAIN.stats() if DEV_BRAIN else {}
@@ -4030,6 +4041,24 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/selftest/quiz":
+            concept = str(body.get("concept") or "")
+            res = SELFTEST.quiz(concept, int(body.get("difficulty") or 3),
+                                DEV_BRAIN.lessons if DEV_BRAIN else []) if SELFTEST else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/selftest/evaluate":
+            concept = str(body.get("concept") or "")
+            answers = body.get("answers") or []
+            res = SELFTEST.evaluate(concept, answers, DEV_BRAIN.lessons if DEV_BRAIN else []) if SELFTEST else {"ok": False, "error": "unavailable"}
+            if res.get("need_relearn") and DEV_BRAIN:
+                try:
+                    DEV_BRAIN.curiosities.append({"q": "เรียนซ้ำ: " + concept[:150], "t": int(time.time()), "status": "open"})
+                    DEV_BRAIN.save()
+                except Exception:
+                    pass
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/meta/ask-self":
             topic = str(body.get("topic") or "Zyphere")

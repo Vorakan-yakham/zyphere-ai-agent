@@ -181,6 +181,14 @@ def main():
         assert au.get("ok") and au["total"] == 2 and au["uncertain"] >= 1, "meta audit failed"
         qs = mc.ask_self("ควอนตัม")
         assert qs.get("ok") and len(qs["questions"]) >= 5, "meta ask-self failed"
+        from selftest import SelfTest
+        st = SelfTest()
+        fz = st.feynman("entropy", [{"s":"entropy","r":"is","o":"degree of disorder"}])
+        assert fz.get("ok") and fz["explanation"], "feynman failed"
+        qz = st.quiz("entropy", 3)
+        assert qz.get("ok") and len(qz["questions"]) == 3, "quiz failed"
+        ev = st.evaluate("entropy", ["entropy is disorder"], [])
+        assert ev.get("ok") and "score" in ev, "evaluate failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
