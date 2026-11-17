@@ -264,12 +264,21 @@ def remote_pull_all():
     return {"ok": bool(restored), "restored": restored, "skipped": skipped, "remote": remote_public()}
 
 
-def remote_public():
+def remote_public() -> dict:
+    """Return a snapshot of the remote KV store configuration.
+
+    The function safely extracts the host from ``REMOTE_KV_URL`` (if set),
+    copies the current ``REMOTE_STATE`` under the protection of ``REMOTE_LOCK``
+    and merges it with static status information.
+    """
     with REMOTE_LOCK:
         state = dict(REMOTE_STATE)
-    host = ""
+    host = None
     if REMOTE_KV_URL:
-        host = urllib.parse.urlparse(REMOTE_KV_URL).netloc
+        try:
+            host = urllib.parse.urlparse(REMOTE_KV_URL).netloc or None
+        except Exception:
+            host = None
     return {
         "enabled": remote_enabled(),
         "host": host,
