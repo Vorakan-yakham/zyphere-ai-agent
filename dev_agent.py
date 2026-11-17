@@ -1,6 +1,7 @@
-﻿import json, os, re, subprocess, sys, time, urllib.request
+﻿import json, os, random, re, subprocess, sys, time, urllib.request, urllib.error
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ALLOWED = {"app.py", "index.html"}
+CANDIDATES = []
 INTERVAL = int(os.environ.get("DEV_INTERVAL", "900"))
 MAX = int(os.environ.get("DEV_MAX", "6"))
 DRY = os.environ.get("DEV_DRY") == "1"
@@ -19,15 +20,19 @@ def log(m):
     print(m, flush=True)
 
 def ask(prompt):
-    body = json.dumps({"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 1500, "response_format": {"type": "json_object"}}).encode()
+    body = json.dumps({"model": "openai/gpt-oss-120b", "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 3000, "response_format": {"type": "json_object"}}).encode()
     req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions", data=body, headers={"Authorization": "Bearer " + KEY, "Content-Type": "application/json", "User-Agent": "Zyphere-Dev-Agent/1.0"})
-    return json.load(urllib.request.urlopen(req, timeout=60))["choices"][0]["message"]["content"]
+    try:
+        return json.load(urllib.request.urlopen(req, timeout=60))["choices"][0]["message"]["content"]
+    except urllib.error.HTTPError as e:
+        log("HTTP " + str(e.code) + " " + e.read().decode("utf-8", "replace")[:300])
+        raise
 
 def apply_patch(p):
     f = str(p.get("file") or "")
     old = str(p.get("old") or "")
     new = str(p.get("new") or "")
-    if f not in ALLOWED or len(old) < 30 or len(new) > 1200 or old.strip() == new.strip():
+    if f not in ALLOWED or len(old) < 80 or len(new) > 1200 or old.strip() == new.strip():
         return False
     path = os.path.join(ROOT, f)
     s = open(path, encoding="utf-8").read()
@@ -64,17 +69,19 @@ def commit(msg):
     return True
 
 def make_prompt():
-    app = open(os.path.join(ROOT, "app.py"), encoding="utf-8").read()
-    idx = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
-    m = re.search(r'"version": \d+,.*?],[^\n]*', app)
-    a = m.group(0)[:400] if m else app[:400]
-    m2 = re.search(r"function renderLearnStats.*?\n", idx)
-    b = m2.group(0)[:400] if m2 else ""
-    return ("You are the autonomous developer of Zyphere, a Thai/English AI assistant. "
-            "Propose ONE tiny, safe improvement. Return JSON only: "
-            "{\"file\":\"app.py|index.html\",\"old\":\"<exact text that exists>\",\"new\":\"<replacement>\",\"reason\":\"...\"}. "
-            "Rules: old must match exactly and be at least 40 chars; new under 800 chars and must add real value, not duplicate existing text; no secrets, no deletion, no new files, no network calls, no changes to requirements; keep code valid. "
-            "Focus on clarity, memory, learning, language or voice. Context app: " + a + " Context ui: " + b)
+    global CANDIDATES
+    f = random.choice(["app.py", "index.html"])
+    s = open(os.path.join(ROOT, f), encoding="utf-8").read()
+    start = random.randint(0, max(0, len(s) - 2500))
+    blocks = [b.strip() for b in re.split(r"\n\s*\n", s[start:start + 2400]) if 80 <= len(b.strip()) <= 600]
+    CANDIDATES = [{"file": f, "text": b} for b in blocks[:3]]
+    if not CANDIDATES:
+        CANDIDATES = [{"file": f, "text": s[:600]}]
+    listing = "\n\n".join("[" + str(i) + "] file=" + c["file"] + "\n" + c["text"] for i, c in enumerate(CANDIDATES))
+    return ("You are the autonomous developer of Zyphere. Choose ONE block below and improve it. "
+            "Return JSON only: {\"candidate\":0,\"new\":\"<replacement block>\",\"reason\":\"...\"}. "
+            "Rules: new under 500 chars, must keep the same purpose but be clearer or safer, must not already exist, no secrets, no deletion, no new files, no network calls, no requirements changes, keep code valid. "
+            "Focus on clarity, memory, learning, language or voice.\nBLOCKS:\n" + listing)
 
 def main():
     log("dev agent start MAX=" + str(MAX) + " DRY=" + str(DRY))
@@ -87,6 +94,17 @@ def main():
             if DRY:
                 log("DRY " + json.dumps(p, ensure_ascii=False)[:400])
                 break
+            try:
+                ci = int(p.get("candidate", -1))
+            except Exception:
+                ci = -1
+            if ci < 0 or ci >= len(CANDIDATES):
+                log("skip bad candidate")
+                time.sleep(INTERVAL)
+                continue
+            p["file"] = CANDIDATES[ci]["file"]
+            p["old"] = CANDIDATES[ci]["text"]
+            log("patch candidate " + str(ci) + " " + str(p.get("reason") or "")[:100])
             f = str(p.get("file") or "")
             if not apply_patch(p):
                 log("skip invalid patch")
