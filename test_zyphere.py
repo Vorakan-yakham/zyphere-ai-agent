@@ -140,6 +140,11 @@ def main():
         assert bp.get("ok") and len(bp["parts"]) >= 4, "robot blueprint failed"
         bs = applied.blueprint("suit")
         assert bs.get("ok") and bs["kind"] == "exosuit", "exosuit blueprint failed"
+        import aerospace
+        rn = aerospace.design("rocket", 1000, 400)
+        assert rn.get("ok") and rn["orbital_speed_kms"] > 7, "rocket design failed"
+        sa = aerospace.design("saucer")
+        assert sa.get("ok") and sa["kind"] == "saucer", "saucer design failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

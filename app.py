@@ -145,6 +145,10 @@ try:
     import applied as APPLIED
 except Exception:
     APPLIED = None
+try:
+    import aerospace as AEROSPACE
+except Exception:
+    AEROSPACE = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3274,6 +3278,13 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/aerospace/design":
+            q = urllib.parse.parse_qs(u.query)
+            res = AEROSPACE.design(q.get("kind", ["rocket"])[0],
+                                   int(q.get("payload", ["1000"])[0] or 1000),
+                                   int(q.get("altitude", ["400"])[0] or 400)) if AEROSPACE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/apply/blueprint":
             q = urllib.parse.parse_qs(u.query)
