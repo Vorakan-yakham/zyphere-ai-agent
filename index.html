@@ -94,7 +94,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
 <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
 <button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
-<div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><b>Zyphere</b>
+<div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
@@ -1130,6 +1130,6 @@ $('rate').oninput=function(){$('rv').textContent=this.value+'x'};$('rv').textCon
 $('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสดีครับ')||'สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ';toast(g);await speak(g)};
 $('agentBtn').classList.toggle('on',agentOn);
 if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
-$('logo').innerHTML=lg()+'<span>Zyphere</span>';
+$('logo').innerHTML=lg();
 detectBackend().then(()=>{loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
 </script></body></html>
