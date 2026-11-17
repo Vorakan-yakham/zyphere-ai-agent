@@ -184,6 +184,7 @@ REMOTE_KEYS = {
     "dev_brain": "zyphere:dev_brain",
     "notebook": "zyphere:notebook",
     "research": "zyphere:research",
+    "identity": "zyphere:identity",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -295,7 +296,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity"):
         try:
             data = {
                 "memory": load_mem,
@@ -307,6 +308,7 @@ def remote_push_all():
                 "dev_brain": (DEV_BRAIN.snapshot() if DEV_BRAIN else None),
                 "notebook": (NOTEBOOK.snapshot() if NOTEBOOK else None),
                 "research": (RESEARCH.snapshot() if RESEARCH else None),
+                "identity": (IDENTITY.data if IDENTITY else None),
             }[name]()
         except Exception:
             continue
@@ -330,11 +332,17 @@ def remote_pull_all():
         "dev_brain": os.path.join(DATA_DIR, "dev_brain.json"),
         "notebook": os.path.join(DATA_DIR, "notebook.json"),
         "research": os.path.join(DATA_DIR, "research.json"),
+        "identity": os.path.join(DATA_DIR, "identity.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
         if not isinstance(data, dict):
             skipped.append(name)
+            continue
+        if name == "identity" and IDENTITY:
+            IDENTITY.data = data
+            IDENTITY.save()
+            restored.append(name)
             continue
         if name in ("platforms", "dev_brain", "notebook", "research"):
             obj = {"platforms": PLATFORMS, "dev_brain": DEV_BRAIN, "notebook": NOTEBOOK,
