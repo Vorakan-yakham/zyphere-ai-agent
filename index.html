@@ -362,12 +362,10 @@ async function ask(msgs,img,sig,on,sys){
   try{const out=await callProv(id,msgs,img,sig,on,sys);prefProv=id;return cleanAns(out)}catch(e){if(e.name==='AbortError')throw e;errs.push(P[id].n+': '+e.message)}}
  throw new Error(errs.join('\n')||'ยังไม่ได้ใส่คีย์ กดตั้งค่าที่เมนูซ้าย')}
 
-// smoother streaming UI (throttled repaint so long replies stay responsive)
 function mkStream(body,voice){
- let txt='',timer=null,last=0;
- const paint=()=>{timer=null;last=Date.now();body.innerHTML=md(txt);$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=plain(txt)};
- return {push(x){txt=x;if(timer)return;const gap=Date.now()-last;if(gap>=90)paint();else timer=setTimeout(paint,90-gap)},done(){if(timer){clearTimeout(timer);timer=null}paint();return txt},text:()=>txt};
-}
+ let txt='',timerId=null,lastPaint=0;
+ const paint=()=>{timerId=null;lastPaint=Date.now();body.innerHTML=md(txt);const chat=$('chat');if(chat)chat.scrollTop=1e9;if(voice){const ov=$('ovT');if(ov)ov.textContent=plain(txt);}};
+ return{push(chunk){txt=chunk;if(timerId)return;const now=Date.now();const elapsed=now-lastPaint;if(elapsed>=90)paint();else timerId=setTimeout(paint,90-elapsed);},done(){if(timerId){clearTimeout(timerId);timerId=null;}paint();return txt;},text:()=>txt};}
 
 // long documents: split at natural boundaries, summarise each part, then synthesise
 function splitChunks(text,max){
