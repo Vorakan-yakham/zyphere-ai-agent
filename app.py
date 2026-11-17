@@ -253,6 +253,11 @@ try:
     JARVIS = JarvisMode(os.path.join(DATA_DIR, "jarvis.json"))
 except Exception:
     JARVIS = None
+try:
+    from privacy import Privacy
+    PRIVACY = Privacy(os.path.join(DATA_DIR, "privacy.json"))
+except Exception:
+    PRIVACY = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -316,6 +321,7 @@ REMOTE_KEYS = {
     "behavior": "zyphere:behavior",
     "audit": "zyphere:audit",
     "jarvis": "zyphere:jarvis",
+    "privacy": "zyphere:privacy",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -427,7 +433,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy"):
         try:
             data = {
                 "memory": load_mem,

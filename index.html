@@ -334,7 +334,7 @@ let mem={profile:{},facts:[],preferences:[],notes:[],history_summary:""},agentOn
 let backendBase='',knowCtx='',learnPoll=null,knowTotal=0,greetI=0;
 const save=()=>setK('zy_chats',JSON.stringify(chats.map(c=>({...c,m:c.m.map(({img,imgs,...r})=>(r.pic&&r.pic.startsWith('data:')&&(r.pic=''),r.x&&r.x.length>6000&&(r.x=r.x.slice(0,6000)+'\n...(ตัดตอนบันทึก)'),r.c&&r.c.length>24000&&(r.c=r.c.slice(0,24000)+'\n...(ตัดตอนบันทึก)'),r))}))));
 $('sendBtn').innerHTML=IC.send;$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;
-$('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'0.96';$('pitch').value=getK('zy_pitch')||'-6';
+$('brain').value=getK('zy_brain')||'auto';$('lang').value=getK('zy_lang')||'auto';$('rate').value=getK('zy_rate')||'0.85';$('pitch').value=getK('zy_pitch')||'-6';
 $('persona').value=getK('zy_persona')==='friend'?'friend':'zyphere';$('codeMode').value=getK('zy_code')||'auto';
 $('ttse').value=getK('zy_ttse')||'g';$('thvoice').value=getK('zy_thvoice')||'th-TH-NiwatNeural';$('envoice').value=getK('zy_envoice')||'en-GB-RyanNeural';$('ttsurl').value=getK('zy_ttsurl');$('agentMode').value=agentOn?'on':'off';$('briefOn').checked=getK('zy_brief')!=='0';$('critiqueOn').checked=getK('zy_critique')==='1';
 const P={
@@ -741,7 +741,7 @@ async function speak(text,btn){
  const me=claimVoice();spkTok=me;speaking=true;const tok=me;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
  if(getK('zy_ttse')!=='b'&&lb){
   const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
-  const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.96)-1)*100)));
+  const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.85)-1)*100)));
   const pt=encodeURIComponent(getK('zy_pitch')||'-6');
   const parts=ttsParts(clean);const url=p=>lb+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p);
   let okAll=true;
@@ -768,7 +768,7 @@ async function speak(text,btn){
  }
  if(btn)btn.textContent='ฟัง';speaking=false
 }
-function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.96)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-6');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
+function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.85)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-6');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
 async function drainTTS(me){
  if(ttsPlaying&&drainTok===spkTok)return;
  ttsPlaying=true;drainTok=spkTok;
@@ -786,8 +786,8 @@ async function drainTTS(me){
  }
  if(voiceAlive(me)){ttsPlaying=false;speaking=false}
 }
-function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS(voiceOwner)}
-function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
+function enqueueTTS(t){t=ttsNorm(t).trim();if(!t)return;ttsQ.push(t);drainTTS(voiceOwner)}
+function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？…]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=200){const cut=streamBuf.lastIndexOf(' ');if(cut>80){enqueueTTS(streamBuf.slice(0,cut));streamBuf=streamBuf.slice(cut)}else{enqueueTTS(streamBuf);streamBuf=''}streamSpoke=true}}
 function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function resetStreamSpeak(){ttsQ=[];streamBuf='';lastStreamLen=0;streamSpoke=false;noStreamTTS=false}
 

@@ -34,7 +34,7 @@ KNOWLEDGE = {
 DEFAULT = {
     "voice_th": "th-TH-NiwatNeural",
     "voice_en": "en-GB-RyanNeural",
-    "rate": 0.96,        # natural calm pace
+    "rate": 0.85,        # natural calm pace (slower for story narration)
     "pitch_ratio": -6,   # lower, warm male
     "style": "นักข่าวชาย นุ่ม นิ่ง เชื่อมั่น",
     "engine": "edge-tts",
