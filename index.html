@@ -555,6 +555,14 @@ async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const 
    if(btn)btn.textContent='ฟัง';speaking=false;return}}catch(e){}
   for(const p of ttsParts(clean)){if(tok!==spkTok){speaking=false;return}await sayOne(p)}
   if(btn)btn.textContent='ฟัง';speaking=false}
+let ttsQ=[],ttsPlaying=false,streamBuf='',lastStreamLen=0,streamSpoke=false;
+function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-5');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
+async function drainTTS(){if(ttsPlaying)return;ttsPlaying=true;const tok=spkTok;while(ttsQ.length&&tok===spkTok){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}ttsPlaying=false;speaking=false}
+function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS()}
+function feedStreamSpeak(full,voice){if(!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
+function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
+function resetStreamSpeak(){ttsQ=[];streamBuf='';lastStreamLen=0;streamSpoke=false}
+
 // voice in
 function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=()=>{};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});
@@ -626,7 +634,7 @@ async function send(voice){
  if(!t&&!pend.items.length)return;
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
- view();lastLang=resolveLang(t);const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
+ view();lastLang=resolveLang(t);resetStreamSpeak();const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
  const hist=c.m.slice(-24),msgs=[];let left=60000;const seenA=new Set();
  for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'',ct=m.c||'';
    if(m.r==='assistant'){const key=ct.trim().slice(0,200);if(seenA.has(key))continue;seenA.add(key)}
@@ -649,18 +657,18 @@ async function send(voice){
     const th=lastLang!=='en';
     const qq=(prev?(th?'บริบทก่อนหน้า (ถ้าเกี่ยวข้อง):\n':'Earlier context (if relevant):\n')+prev+'\n\n'+(th?'คำขอปัจจุบัน: ':'Current request: '):'')+(question||(th?'สรุปเนื้อหาทั้งหมดให้ครบถ้วนทุกประเด็น':'Summarize the entire content completely'));
     reply=await summarizeLong({text:doc,question:qq,sig:ctrl.signal,sys:sysPrompt(lastLang,voice,isCode(t)),lang:lastLang,
-      onText:x=>st.push(x),
+      onText:x=>{st.push(x);feedStreamSpeak(x,voice||voiceOn)},
       status:s=>{body.innerHTML='<div style="opacity:.8;font-size:13px;line-height:1.7">'+esc(s)+'</div>';$('chat').scrollTop=1e9;if(voice)$('ovT').textContent=s}});
     st.done();
    }
    else if(agentOn){reply=await runAgent(msgs,um.imgs.length?um.imgs:null,voice,body)}
-   else{const st=mkStream(body,voice);reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>st.push(x),sysPrompt(lastLang,voice,isCode(t)));st.done()}
+   else{const st=mkStream(body,voice);reply=await ask(msgs,um.imgs.length?um.imgs:null,ctrl.signal,x=>{st.push(x);feedStreamSpeak(x,voice||voiceOn)},sysPrompt(lastLang,voice,isCode(t)));st.done()}
   }
  }
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
  if(ok&&!local&&knowCtx&&reply.length<8000&&getK('zy_critique')==='1')reply=await critiqueAnswer(t,reply,knowCtx);
   setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
- if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');speak(reply,b)}
+ if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');if(streamSpoke)flushStreamSpeak();else speak(reply,b)}
  if(ok) await maybeAutoRemember(t,reply);
  else if(voice&&!ok){call=false;endCall()}}
 
