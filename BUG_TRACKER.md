@@ -8,5 +8,6 @@
 | B04 | ทักทายแทนคำขอ | regex กว้างเกินไป | Fixed | isPureGreeting + selfTest |
 | B05 | dev agent ทำลายโค้ด + หลาย process รันพร้อมกัน | ไม่มี syntax gate / single-instance lock | Fixed | ปิด default ด้วย `DEV_ENABLE=1`; ตรวจไม่มี process ค้าง |
 | B06 | live knowledge=1 | ไม่มี remote KV/cron | Open | Milestone 2 |
+| B07 | เสียงแย่งกันพูด / ฟังมั่ว | stopSpeak ไม่ล้างคิว, drain flag race, ไมค์ฟังขณะพูด | Fixed | ล้างคิว+token guard+abort mic; ทดสอบ q=0 หลัง stopSpeak |
 
 กฎ: ห้ามปิด bug โดยไม่มีหลักฐานทดสอบ

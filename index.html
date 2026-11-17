@@ -540,14 +540,14 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  }
  return {ok:false,error:'unknown tool: '+name}}
 
-let spkTok=0,ac=null,curAud=null,speaking=false;
-function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
+let spkTok=0,ac=null,curAud=null,speaking=false,ttsQ=[],ttsPlaying=false,drainTok=0,streamBuf='',lastStreamLen=0,streamSpoke=false,noStreamTTS=false;
+function stopSpeak(){spkTok++;ttsQ=[];speaking=false;try{curSR&&curSR.abort()}catch(e){}try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
 function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
 function ttsParts(t){const s=String(t||'').replace(/\s+/g,' ').trim();if(!s)return[];const out=[];let cur='';for(let p of s.split(/(?<=[.!?。！？])\s+/).filter(Boolean)){while(p.length>1200){let k=1150;const sp=p.lastIndexOf(' ',k),cm=p.lastIndexOf(',',k);if(Math.max(sp,cm)>800)k=Math.max(sp,cm);if(cur){out.push(cur);cur=''}out.push(p.slice(0,k).trim());p=p.slice(k).trim()}if(cur&&(cur+' '+p).length>1200){out.push(cur);cur=p}else cur=(cur?cur+' ':'')+p}if(cur)out.push(cur);return out}
-async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
+async function speak(text,btn){stopSpeak();try{curSR&&curSR.abort()}catch(e){}speaking=true;const tok=spkTok;const clean=ttsNorm(plain(text));if(btn)btn.textContent='หยุด';const lb=localBase();
   try{if(getK('zy_ttse')!=='b'&&lb){
    const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';
    const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));
@@ -557,9 +557,9 @@ async function speak(text,btn){stopSpeak();speaking=true;const tok=spkTok;const 
    if(btn)btn.textContent='ฟัง';speaking=false;return}}catch(e){}
   for(const p of ttsParts(clean)){if(tok!==spkTok){speaking=false;return}await sayOne(p)}
   if(btn)btn.textContent='ฟัง';speaking=false}
-let ttsQ=[],ttsPlaying=false,streamBuf='',lastStreamLen=0,streamSpoke=false,noStreamTTS=false;
+
 function ttsUrl(p){const v=getK('zy_'+(lastLang==='en'?'envoice':'thvoice'))||'';const rt=Math.max(-10,Math.min(15,Math.round(((+getK('zy_rate')||0.88)-1)*100)));const pt=encodeURIComponent(getK('zy_pitch')||'-5');return localBase()+'/tts?lang='+lastLang+'&rate='+rt+'&voice='+encodeURIComponent(v)+'&pitch='+pt+'&text='+encodeURIComponent(p)}
-async function drainTTS(){if(ttsPlaying)return;ttsPlaying=true;const tok=spkTok;while(ttsQ.length&&tok===spkTok){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}ttsPlaying=false;speaking=false}
+async function drainTTS(){if(ttsPlaying&&drainTok===spkTok)return;ttsPlaying=true;drainTok=spkTok;const tok=spkTok;while(ttsQ.length&&tok===spkTok){const p=ttsQ.shift();if(!p)continue;const a=mkAud(ttsUrl(p));curAud=a;speaking=true;try{await new Promise(res=>{a.onended=res;a.onerror=res;a.play().then(res).catch(res)})}catch(e){}}if(tok===spkTok){ttsPlaying=false;speaking=false}}
 function enqueueTTS(t){t=String(t||'').trim();if(!t)return;ttsQ.push(t);drainTTS()}
 function feedStreamSpeak(full,voice){if(noStreamTTS||!voice||!localBase())return;const s=String(full||'');const d=s.slice(lastStreamLen);lastStreamLen=s.length;if(!d)return;streamBuf+=d;const m=streamBuf.match(/[\s\S]*[.!?。！？\n]\s*/);if(m&&m[0].trim().length>=8){enqueueTTS(m[0]);streamBuf=streamBuf.slice(m[0].length);streamSpoke=true}else if(streamBuf.length>=140){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
 function flushStreamSpeak(){if(streamBuf.trim()){enqueueTTS(streamBuf);streamBuf='';streamSpoke=true}}
@@ -1052,7 +1052,7 @@ let mode=0,home=0; function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home
 function showOv(){$('ov').style.display='flex';orb('listen','')}function hideOv(){$('ov').style.display='none'}
 async function handle(t){$('ovT').textContent=t;$('q').value=t;await send(true)}
 async function say(t){lastLang='th';orb('speak',t);await speak(t)}
-async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');if(speaking){await sleep(400);continue}const t=await listenOnce();if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
+async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');if(speaking){await sleep(400);continue}const t=await listenOnce();if(speaking){await sleep(300);continue}if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
 function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&busy)ctrl.abort();hideOv();ui()}
 
 // events & settings

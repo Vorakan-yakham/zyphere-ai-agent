@@ -41,4 +41,10 @@
 - หลัง: `dev_agent.py` ปิด default (`DEV_ENABLE=1`), ตรวจไม่มี process ค้าง, test ผ่าน
 - บทเรียน: กลยุทธ์ auto-patch ล้มเหลว → เปลี่ยนเป็น human-reviewed commit
 
+## ซ่อม B07 — เสียงแย่งกันพูด
+ก่อน → หลัง
+- ก่อน: `stopSpeak()` ไม่ล้างคิว → ก้อนเก่าเล่นทับก้อนใหม่
+- หลัง: ล้าง `ttsQ` + เพิ่ม token guard ใน `drainTTS` + abort ไมค์ตอนพูด
+- ตรวจ: หลัง `stopSpeak()` → `ttsQ.length=0`, `ttsPlaying=false`, ไม่มี console error
+
 หลักการ: ทุก commit ต้องระบุ “ก่อน/หลัง” แบบวัดได้ ไม่ใช่แค่ “เปลี่ยนแล้ว”

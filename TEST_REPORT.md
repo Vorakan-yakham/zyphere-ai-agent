@@ -20,4 +20,9 @@
 - browser: `เขียนเพลงเรื่องแสงอาทิตย์` / `อ่านนิทานเรื่องเต่ากับดวงจันทร์` → ไม่มี console error ✅
 - selfTest().ok = true ✅
 
+## B07 voice arbitration
+- `stopSpeak()` → ttsQ.length=0, ttsPlaying=false ✅
+- ส่ง speak สองครั้งติด → ไม่มี console error, state สะอาด ✅
+- `python test_zyphere.py` → PASSED ✅
+
 สรุปสถานะ: Implemented ✅ / Tested ✅ / Passed ✅ (สำหรับสิ่งที่ทดสอบข้างต้น)
