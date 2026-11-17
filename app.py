@@ -3181,6 +3181,18 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
+        if u.path == "/api/email/send":
+            tok = str(body.get("token") or "")
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            try:
+                from mailer import send_mail
+                result = send_mail(body.get("to"), body.get("subject"), body.get("body"))
+            except Exception as e:
+                result = {"ok": False, "error": str(e)[:200]}
+            self._send_json(200 if result.get("ok") else 400, result)
+            return
         if u.path == "/api/notifications":
             # pending events for admin (paid orders, new users, feedback, gaps)
             events = []
