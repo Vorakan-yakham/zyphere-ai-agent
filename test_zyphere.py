@@ -266,6 +266,12 @@ def main():
         em = Empathy()
         er = em.respond_style("วันนี้เหนื่อยมาก", {"likes_short": True, "family": [{"name":"x"}]})
         assert er["ok"] and er["distress"] and em.status()["can_feel"] is False, "empathy failed"
+        from delivery import Delivery
+        dpath = os.path.join(tempfile.gettempdir(), "zy_delivery_test.json")
+        if os.path.exists(dpath): os.remove(dpath)
+        dl = Delivery(dpath)
+        dr = dl.deliver("o_1", "pro", "vorayakham")
+        assert dr["ok"] and dl.stats()["deliveries"] == 1, "delivery failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

@@ -282,6 +282,11 @@ try:
     EMPATHY = Empathy()
 except Exception:
     EMPATHY = None
+try:
+    from delivery import Delivery
+    DELIVERY = Delivery(os.path.join(DATA_DIR, "delivery.json"))
+except Exception:
+    DELIVERY = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -347,6 +352,7 @@ REMOTE_KEYS = {
     "jarvis": "zyphere:jarvis",
     "privacy": "zyphere:privacy",
     "guard": "zyphere:guard",
+    "delivery": "zyphere:delivery",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -458,7 +464,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery"):
         try:
             data = {
                 "memory": load_mem,
@@ -484,6 +490,7 @@ def remote_push_all():
                 "jarvis": (JARVIS.snapshot() if JARVIS else None),
                 "privacy": (PRIVACY.snapshot() if PRIVACY else None),
                 "guard": (GUARD.snapshot() if GUARD else None),
+                "delivery": (DELIVERY.snapshot() if DELIVERY else None),
             }[name]()
         except Exception:
             continue
@@ -521,6 +528,7 @@ def remote_pull_all():
         "jarvis": os.path.join(DATA_DIR, "jarvis.json"),
         "privacy": os.path.join(DATA_DIR, "privacy.json"),
         "guard": os.path.join(DATA_DIR, "guard.json"),
+        "delivery": os.path.join(DATA_DIR, "delivery.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -556,9 +564,10 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis"):
+        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery"):
             obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT,
-                   "behavior": BEHAVIOR, "audit": AUDIT, "jarvis": JARVIS}[name]
+                   "behavior": BEHAVIOR, "audit": AUDIT, "jarvis": JARVIS, "privacy": PRIVACY,
+                   "guard": GUARD, "delivery": DELIVERY}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -4263,7 +4272,20 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/billing/confirm":
             r = BILLING.confirm(body.get("id")) if BILLING else {"ok": False}
+            if r.get("ok") and DELIVERY:
+                try:
+                    asset = str(body.get("asset") or "pro")
+                    DELIVERY.deliver(str(body.get("id") or ""), asset,
+                                     str(body.get("customer") or ""), str(body.get("note") or ""))
+                    if remote_enabled():
+                        remote_push("delivery", DELIVERY.snapshot())
+                except Exception:
+                    pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/delivery/stats":
+            self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
+                                  "pending": DELIVERY.pending() if DELIVERY else []})
             return
         if u.path == "/api/brain/gap":
             gap = BRAIN.log_gap(body.get("need") or "", body.get("context") or "") if BRAIN else None
