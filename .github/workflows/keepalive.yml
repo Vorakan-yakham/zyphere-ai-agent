@@ -1,0 +1,15 @@
+name: Zyphere Keepalive + Auto-Learn
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health (wake Render)
+        run: curl -sSf --max-time 45 https://zyphere-ai-agent.onrender.com/api/health || true
+      - name: Trigger one learning round
+        run: curl -sSf --max-time 90 "https://zyphere-ai-agent.onrender.com/api/learn/tick" || true
