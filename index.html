@@ -609,6 +609,7 @@ async function knowledgeContext(q){
 
 async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
 async function critiqueAnswer(q,answer,ctx){if(!answer||answer.length<300||!localBase())return answer;const sys='You are a strict QA reviewer. Check the draft answer against the question and notes. Return JSON only: {"score":0-1,"issues":["..."],"improved":"..."}. If complete and accurate, score 1 and improved equals the draft. Never invent facts. Keep the same language.';const prompt='Question: '+String(q||'').slice(0,500)+'\n\nNotes:\n'+String(ctx||'').slice(0,1500)+'\n\nDraft answer:\n'+String(answer).slice(0,4000);try{const r=await ask([{role:'user',content:prompt}],null,ctrl?ctrl.signal:null,()=>{},sys);const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]);if(j&&j.score!=null&&Number(j.score)<0.75&&j.improved)return String(j.improved)}catch(e){}return answer}
+async function deepAnalyze(q){const th=lastLang!=='en';const sys=th?'คุณเป็นนักคิดวิเคราะห์ระดับโลก จงแยกแยะอย่างมีโครงสร้าง: 1) สิ่งที่คำถามต้องการจริง 2) ข้อเท็จจริงที่รู้ / ที่ยังไม่รู้ 3) ทางเลือกที่เป็นไปได้ 4) ข้อดี-ข้อเสียของแต่ละทาง 5) บทสรุปที่ตัดสินใจได้ 6) ความมั่นใจและข้อควรระวัง ห้ามแต่งข้อเท็จจริง ใช้คำว่า ครับ':'You are a world-class analyst. Structure your answer: 1) what is really asked 2) known vs unknown facts 3) possible options 4) pros and cons 5) a clear conclusion 6) confidence and caveats. Never invent facts.';return await ask([{role:'user',content:String(q||'').slice(0,3000)}],null,ctrl?ctrl.signal:null,()=>{},sys)}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
@@ -862,6 +863,8 @@ async function localCommand(t){
   m=t.match(/^\s*(?:ตั้งเป้าหมาย|เป้าหมาย|goal)\s*[:：]?\s*([\s\S]{3,})$/i);
   if(m){const title=m[1].trim().replace(/^ขอ|ให้ผม/g,'').trim();try{const j=await api('/api/goals',{method:'POST',body:JSON.stringify({title,steps:title.split(/[,،]/).map(x=>x.trim()).filter(Boolean).slice(1)})});loadGoals();return 'ตั้งเป้าหมายแล้วครับ: '+title+' ('+(j.goals||[]).length+' เป้าหมายทั้งหมด)'}catch(e){return 'ตั้งเป้าหมายไม่ได้: '+redact(e.message)}}
   if(/^\s*(?:เป้าหมายของฉัน|สถานะเป้าหมาย|ดูเป้าหมาย|my goals)\s*[?？]?\s*$/i.test(t)){try{const j=await api('/api/goals');const g=j.goals||[];if(!g.length)return 'ยังไม่มีเป้าหมายครับ';return 'เป้าหมายของคุณครับ:\n'+g.map(x=>'• '+x.title+' ('+(x.progress||0)+'%)').join('\n')}catch(e){return 'ดูเป้าหมายไม่ได้: '+redact(e.message)}}
+  m=t.match(/^\s*(?:วิเคราะห์|คิดวิเคราะห์|แยกแยะ|analyze|analyse)\s*[:：]?\s*([\s\S]{4,})$/i);
+  if(m){try{return await deepAnalyze(m[1].trim())}catch(e){return 'วิเคราะห์ไม่ได้: '+redact(e.message)}}
   m=t.match(/^\s*(?:เรียบเรียง|จัดรูปแบบข้อความ|จัดวางข้อความ|polish)\s*[:：]?\s*([\s\S]{4,})$/i);
   if(m){try{const j=await api('/api/text/polish',{method:'POST',body:JSON.stringify({text:m[1].trim(),lang:lastLang})});return j.text}catch(e){return 'เรียบเรียงไม่ได้: '+redact(e.message)}}
  return null;
