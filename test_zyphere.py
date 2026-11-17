@@ -70,6 +70,13 @@ def main():
         k = load_keys()
         assert "groq" in k and k["groq"].startswith("gsk_"), "Groq key not loaded from file"
         assert len([x for x in k if k[x]]) >= 3, "expected 3+ provider keys from file"
+        from dev_brain import DevBrain
+        db = DevBrain(os.path.join(tempfile.gettempdir(), "zy_devbrain_test.json"))
+        db.experience("ผมชื่อไซเฟอร์", "user")
+        db.experience("คุณคือ Zyphere ผู้ช่วย AI ครับ", "teacher")
+        db.grow()
+        sn = db.self_narrative()
+        assert sn.get("stage") and sn.get("experiences", 0) >= 2, "dev brain growth failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

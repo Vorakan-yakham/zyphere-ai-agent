@@ -106,6 +106,11 @@ try:
     PLATFORMS = Platforms(os.path.join(DATA_DIR, "platforms.json"))
 except Exception:
     PLATFORMS = None
+try:
+    from dev_brain import DevBrain
+    DEV_BRAIN = DevBrain(os.path.join(DATA_DIR, "dev_brain.json"))
+except Exception:
+    DEV_BRAIN = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -154,6 +159,7 @@ REMOTE_KEYS = {
     "watch": "zyphere:watch",
     "goals": "zyphere:goals",
     "platforms": "zyphere:platforms",
+    "dev_brain": "zyphere:dev_brain",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -265,7 +271,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain"):
         try:
             data = {
                 "memory": load_mem,
@@ -274,6 +280,7 @@ def remote_push_all():
                 "watch": load_watch,
                 "goals": load_goals,
                 "platforms": (PLATFORMS.snapshot() if PLATFORMS else None),
+                "dev_brain": (DEV_BRAIN.snapshot() if DEV_BRAIN else None),
             }[name]()
         except Exception:
             continue
@@ -294,14 +301,16 @@ def remote_pull_all():
         "watch": os.path.join(DATA_DIR, "watch.json"),
         "goals": GOALS_PATH,
         "platforms": os.path.join(DATA_DIR, "platforms.json"),
+        "dev_brain": os.path.join(DATA_DIR, "dev_brain.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
         if not isinstance(data, dict):
             skipped.append(name)
             continue
-        if name == "platforms" and PLATFORMS:
-            if PLATFORMS.restore(data):
+        if name in ("platforms", "dev_brain"):
+            obj = PLATFORMS if name == "platforms" else DEV_BRAIN
+            if obj and obj.restore(data):
                 restored.append(name)
             else:
                 skipped.append(name)
@@ -3131,6 +3140,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/self":
+            self._send_json(200, {"ok": True, "self": DEV_BRAIN.self_narrative() if DEV_BRAIN else {"error": "unavailable"}})
+            return
         if u.path == "/api/brain/status":
             try:
                 from brain_ensemble import load_keys
@@ -3551,6 +3563,18 @@ class Handler(SimpleHTTPRequestHandler):
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
             return
+        if u.path == "/api/self/grow":
+            res = DEV_BRAIN.grow() if DEV_BRAIN else {"error": "unavailable"}
+            if res.get("new_rules") is not None and remote_enabled():
+                remote_push("dev_brain", DEV_BRAIN.snapshot())
+            self._send_json(200, {"ok": True, "result": res})
+            return
+        if u.path == "/api/self/ask":
+            q = str(body.get("q") or "")
+            ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
+            self._send_json(200, {"ok": True, "answer": ans,
+                                  "from_own_brain": ans is not None})
+            return
         if u.path == "/api/platforms/log":
             name = str(body.get("name") or "")
             note = str(body.get("note") or "")
@@ -3629,10 +3653,19 @@ class Handler(SimpleHTTPRequestHandler):
                 pref = None
                 if PREF:
                     pref = PREF.observe(q, a, bool(body.get("voice")), body.get("lang") or "th")
+                # The child learns from both the user's question and the
+                # teacher's (ensemble) answer — this is learning from elders.
+                dev = None
+                if DEV_BRAIN:
+                    DEV_BRAIN.experience(q, "user")
+                    DEV_BRAIN.experience(a, "teacher")
+                    dev = DEV_BRAIN.grow()
                 self._send_json(200, {"ok": True,
                                       "stats": BRAIN.stats() if BRAIN else {},
                                       "identity": IDENTITY.public() if IDENTITY else {},
-                                      "preferences": pref})
+                                      "preferences": pref,
+                                      "dev_brain": (DEV_BRAIN.self_narrative() if DEV_BRAIN else None),
+                                      "grown": dev})
             except Exception as e:
                 self._send_json(400, {"ok": False, "error": str(e)[:200]})
             return
