@@ -497,9 +497,8 @@ async function extractFile(f){
  try{const t=await f.text();if(t&&!/\uFFFD{3,}/.test(t.slice(0,3000)))return t}catch(e){}
  throw new Error('ไม่รองรับไฟล์ประเภทนี้');
 }
-async function transcribeFile(f){const b=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));const j=await api('/api/transcribe',{method:'POST',body:JSON.stringify({name:f.name||'audio.mp3',data:btoa(s),key:getK('zyphere_groq_key')||''})});return j.text}
 async function addFiles(list){const fs=[...(list||[])];for(const f of fs){if(pend.items.length>=8){toast('แนบได้ไม่เกิน 8 ไฟล์ต่อข้อความ');break}
- const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('audio/')||/\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(f.name)){it.text='\n\n[ไฟล์เสียง '+f.name+']:\n'+(await transcribeFile(f))}else if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
+ const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
   const raw=String(await extractFile(f)||'').replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
   if(!raw){toast('ไม่พบข้อความใน '+(f.name||'ไฟล์'));continue}
   it.text='\n\n[ไฟล์ '+f.name+' | '+raw.length.toLocaleString()+' ตัวอักษร]:\n'+raw.slice(0,FILE_MAX);
@@ -591,9 +590,7 @@ async function knowledgeContext(q){
  }catch(e){return ''}
 }
 
-async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});
- if(!rating){try{const r=await ask([{role:'user',content:'จากคำติชมนี้ จงสกัดกฎสั้น ๆ 1 ข้อเพื่อไม่ให้ผิดซ้ำ ตอบเป็นข้อความเดียว:\nคำถาม: '+String(m.q||'').slice(0,200)+'\nคำตอบที่ไม่ถูกใจ: '+String(m.c||'').slice(0,300)}],null,null,()=>{},'You extract one short learning rule. Reply with the rule only, no preamble.');const rule=String(r||'').trim().slice(0,200);if(rule&&!/^no|^none/i.test(rule))await updateMemory({remember:{kind:'preference',text:'กฎจากคำติชม: '+rule,source:'feedback-rule'}})}catch(e){}}
- btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
+async function giveFeedback(m,rating,btn){try{await updateMemory({remember:{kind:'note',text:'[feedback '+(rating?'good':'bad')+'] คำถาม: '+String(m.q||'').slice(0,180)+' | คำตอบ: '+String(m.c||'').slice(0,350),source:'feedback'}});btn.textContent=rating?'บันทึกแล้ว':'จะปรับปรุง';toast('ขอบคุณครับ ผมจำไว้แล้ว')}catch(e){toast('บันทึกความคิดเห็นไม่ได้')}}
 async function critiqueAnswer(q,answer,ctx){if(!answer||answer.length<300||!localBase())return answer;const sys='You are a strict QA reviewer. Check the draft answer against the question and notes. Return JSON only: {"score":0-1,"issues":["..."],"improved":"..."}. If complete and accurate, score 1 and improved equals the draft. Never invent facts. Keep the same language.';const prompt='Question: '+String(q||'').slice(0,500)+'\n\nNotes:\n'+String(ctx||'').slice(0,1500)+'\n\nDraft answer:\n'+String(answer).slice(0,4000);try{const r=await ask([{role:'user',content:prompt}],null,ctrl?ctrl.signal:null,()=>{},sys);const j=JSON.parse((r.match(/\{[\s\S]*\}/)||['{}'])[0]);if(j&&j.score!=null&&Number(j.score)<0.75&&j.improved)return String(j.improved)}catch(e){}return answer}
 async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
@@ -855,16 +852,7 @@ async function remoteAction(path,label){const token=($('bkToken').value||'').tri
 // knowledge & autonomous learning
 function stamp(ts){
  try{return ts?new Date(ts*1000).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}):'—'}catch(e){return '—'}}
-function renderLearnStats(cfg){
-    cfg = cfg || {};
-    // Ensure knowledge_count is a valid non‑negative number before using it
-    if (typeof cfg.knowledge_count === 'number' && cfg.knowledge_count >= 0) {
-        knowTotal = cfg.knowledge_count;
-    } else if (typeof knowTotal === 'undefined') {
-        knowTotal = 0;
-    }
-    // If knowTotal already has a value, keep it unchanged; subsequent code will use it
-
+function renderLearnStats(cfg){cfg=cfg||{};knowTotal=cfg.knowledge_count||knowTotal||0;
  const last=cfg.last_run?stamp(cfg.last_run):'ยังไม่มี';
  $('learnStatus').textContent='การเรียนรู้: '+(cfg.enabled?'เปิด':'ปิด')+' · ทุก '+(cfg.interval_hours||6)+' ชม. · ความรู้ '+knowTotal+' เรื่อง'+(cfg.last_topic?' · ล่าสุด: '+cfg.last_topic:'');
  $('kStats').textContent='ความรู้ '+knowTotal+' เรื่อง · กำลังขยายเอง '+(cfg.frontier_count||0)+' หัวข้อ (แตกแล้ว '+(cfg.expanded||0)+') · ขั้น '+(cfg.stage||'เริ่มต้น')+(cfg.kind?' ('+cfg.kind+')':'')+(cfg.track?' · สาย '+cfg.track:'')+' · หลักสูตร '+(cfg.curriculum_count||'—')+' หัวข้อ'+(cfg.server_llm?' · สรุปด้วย AI (เซิร์ฟเวอร์)':' · สรุปแบบสกัดข้อความ')+'\nรอบล่าสุด: '+last+(cfg.last_topic?' · '+cfg.last_topic:'');

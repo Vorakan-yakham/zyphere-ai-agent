@@ -28,7 +28,6 @@ import threading
 import time
 import urllib.parse
 import uuid
-import base64
 import wave
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
@@ -3004,8 +3003,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {
                 "ok": True,
                 "name": "zyphere",
-                "version": 22,
-                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv", "stt", "critique", "feedback", "languages", "craft"],
+                "version": 21,
+                "features": ["search", "fetch", "memory", "tts", "images", "video", "learn", "knowledge", "watch", "briefing", "backup", "restore", "remote_kv"],
                 "image_sources": ["openverse", "wikimedia", "pexels", "pixabay", "unsplash"],
                 "video": bool(Image and FFMPEG),
                 "knowledge_count": knowledge_count(),
@@ -3042,30 +3041,6 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
-        if u.path == "/api/transcribe":
-            key = os.environ.get("GROQ_API_KEY", "").strip() or str(body.get("key") or "").strip()
-            if not key:
-                self._send_json(400, {"ok": False, "error": "ต้องใส่คีย์ Groq ในหน้าตั้งค่าเว็บ หรือตั้ง GROQ_API_KEY บนเซิร์ฟเวอร์เพื่อแปลงเสียงเป็นข้อความ"})
-                return
-            try:
-                raw = base64.b64decode(str(body.get("data") or ""), validate=True)
-            except Exception:
-                self._send_json(400, {"ok": False, "error": "ข้อมูลเสียงไม่ถูกต้อง"})
-                return
-            if len(raw) > 12_000_000:
-                self._send_json(413, {"ok": False, "error": "ไฟล์เสียงใหญ่เกิน 12MB"})
-                return
-            try:
-                r = requests.post("https://api.groq.com/openai/v1/audio/transcriptions", headers={"Authorization": "Bearer " + key}, data={"model": "whisper-large-v3-turbo"}, files={"file": (_clip(str(body.get("name") or "audio.mp3"), 80), raw, "application/octet-stream")}, timeout=90)
-                if not r.ok:
-                    raise RuntimeError(_clip(r.text, 300))
-                text = str((r.json() or {}).get("text") or "").strip()
-                if not text:
-                    raise RuntimeError("ไม่พบข้อความในเสียง")
-                self._send_json(200, {"ok": True, "text": text, "engine": "groq-whisper"})
-            except Exception as e:
-                self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
-            return
         if u.path == "/api/text/polish":
             try:
                 result = polish_text(body.get("text") or "", body.get("lang") or "th")
