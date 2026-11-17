@@ -92,6 +92,9 @@ def main():
         wavp = os.path.join(tempfile.gettempdir(), "zy_mel_test.wav")
         mr = media.melody_to_wav(wavp)
         assert mr.get("ok") and os.path.getsize(wavp) > 1000, "melody synth failed"
+        import elibrary
+        q = elibrary.to_en("ปัญญาประดิษฐ์ทางการแพทย์")
+        assert "artificial intelligence" in q and "medicine" in q, "Thai->EN translation failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

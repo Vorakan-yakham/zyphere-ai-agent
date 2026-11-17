@@ -2203,6 +2203,19 @@ def learn_one(topic):
         except Exception:
             pass
 
+    # Electronic libraries: books, papers, medical abstracts, public-domain texts
+    try:
+        import elibrary
+        lib = elibrary.search(topic, per=2)
+        for r in lib:
+            txt = r.get("text") or ""
+            if txt:
+                texts.append(txt)
+                web_texts.append(txt)
+                add_source(r.get("title") or txt[:80], "", r.get("source") or "ห้องสมุด", "")
+    except Exception:
+        pass
+
     if not texts:
         raise RuntimeError("ไม่พบข้อมูลเพียงพอสำหรับหัวข้อนี้ ลองใช้คำค้นที่เฉพาะเจาะจงขึ้น")
 
