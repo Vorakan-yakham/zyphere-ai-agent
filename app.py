@@ -1128,14 +1128,22 @@ def load_goals() -> dict:
 
 
 def save_goals(d):
+    """Persist goals safely and schedule remote sync."""
     with GOALS_LOCK:
-        d = d if isinstance(d, dict) else _default_goals()
+        if not isinstance(d, dict):
+            d = _default_goals()
         d["updated_at"] = int(time.time())
+        tmp_path = f"{GOALS_PATH}.tmp"
         try:
-            with open(GOALS_PATH, "w", encoding="utf-8") as f:
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(d, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
+            os.replace(tmp_path, GOALS_PATH)  # atomic replace
+        except OSError as e:
+            try:
+                logger.error("Failed to save goals: %s", e)
+            except Exception:
+                pass
+            return d
     _remote_schedule("goals", d)
     return d
 

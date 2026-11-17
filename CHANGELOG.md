@@ -14,12 +14,25 @@
 - `node --check` → JS SYNTAX OK
 - ตรวจใน browser: `selfTest().ok === true`
 
-## ซ่อม回归 (ตรวจก่อนแก้)
+## ซ่อม regression (ตรวจก่อนแก้)
 **ก่อน → หลัง**
 - กด Enter → ขึ้นบรรทัดใหม่แต่ไม่ตอบ → **หลัง: Enter ส่งข้อความแล้ว** (สาเหตุ: JS SyntaxError ทำให้ event listener ไม่ติดตั้ง)
 - พิมพ์ “อ่านนิทานให้ฟังสักเรื่องสิ” → `WX is not defined` → **หลัง: มี WX แล้ว + คำสั่ง tellStory ทำงาน (รอคีย์ AI เท่านั้น)**
 - ข้อความ error เพลงเป็น `??????` → **หลัง: “แต่งเพลงไม่ได้: …” อ่านรู้เรื่อง**
 
 **การตรวจก่อนแก้:** ตรวจ `git diff 6cae4d6` พบ b45f39c ลบ `)`/`}` ของ finalPrompt → คืนจาก known-good ไม่แตะจุดอื่น
+
+## Milestone 1 — Stabilize & Document
+- สำรวจของจริงก่อนแตะไฟล์: git status, test, live health, 37 endpoints
+- จัดทำเอกสาร 9 ไฟล์ตาม directive (แผน/สถาปัตยกรรม/roadmap/registry/progress/bug/decisions/test/changelog)
+- คืน baseline ที่ผ่าน test แล้วใส่ WX + นิทานกลับ
+- ตรวจแล้ว: test PASS, node --check OK, browser 3 คำสั่ง ไม่มี console error
+- dev agent ยัง PAUSED (กันทำลายของทำงานอยู่)
+
+## Milestone 2 — Offline story/song generation
+ก่อน → หลัง
+- พิมพ์ “เขียนเพลง…” โดยไม่มีคีย์ AI → error → **หลัง: ได้เพลงจริงจาก localSong()**
+- พิมพ์ “อ่านนิทาน…” โดยไม่มีคีย์ AI → error → **หลัง: ได้นิทานจริงจาก localStory()**
+- ทั้งสองยังพยายามใช้ AI ก่อน ถ้าไม่มีคีย์ค่อย fallback (backward compatible)
 
 หลักการ: ทุก commit ต้องระบุ “ก่อน/หลัง” แบบวัดได้ ไม่ใช่แค่ “เปลี่ยนแล้ว”
