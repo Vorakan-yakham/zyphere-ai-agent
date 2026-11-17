@@ -538,10 +538,7 @@ async function execTool(call){const name=call.tool,args=call.args||{};
  }
  return {ok:false,error:'unknown tool: '+name}}
 
-// tts (simple)
-let spkTok=0,ac=null,curAud=null;
-function stopSpeak(){spkTok++;try{speechSynthesis.cancel()}catch(e){}try{curAud&&curAud.pause()}catch(e){}}
-function sayOne(t){return new Promise(res=>{try{if(!window.speechSynthesis)return res(false);const u=new SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
+// Simple TTS utilities\nlet speakToken=0;let audioCtx=null;let currentAudio=null;\nfunction stopSpeak(){speakToken++;speechSynthesis.cancel();if(currentAudio){currentAudio.pause();currentAudio.currentTime=0;}}\nfunction sayOne(text){return new Promise(resolve=>{if(!window.speechSynthesis)return resolve(false);const utter=new SpeechSynthesisUtterance(text);utter.onend=()=>resolve(true);utter.onerror=()=>resolve(false);speechSynthesis.speak(utter);});}w SpeechSynthesisUtterance(t);u.lang=lastLang==='en'?'en-GB':'th-TH';u.rate=+getK('zy_rate')||1.1;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
 const THD=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
 function ttsNorm(t){return String(t||'').replace(/https?:\/\/\S+/g,' ').replace(/[*_`#>~|\[\]{}]/g,' ').replace(/\s+/g,' ').replace(/(\d)/g,(m,d)=>THD[+d]||d).trim()}
 function mkAud(u){const a=new Audio(u);a.preload='auto';return a}
