@@ -160,6 +160,12 @@ def main():
         assert lr.get("ok") and lr["learned"] >= 6, "voice learn failed"
         tc = vi.tune(rate=0.94, pitch_ratio=-7)
         assert tc["rate"] == 0.94 and tc["pitch_ratio"] == -7, "voice tune failed"
+        from language import LanguageMastery
+        lm = LanguageMastery()
+        lr = lm.learn()
+        assert lr["learned"] >= 8, "language learn failed"
+        cr = lm.correct("ฉันเเล้วว ควาาม")
+        assert cr["changes"] and "แล้ว" in cr["text"], "language correct failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
