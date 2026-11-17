@@ -174,6 +174,11 @@ try:
     CONCEPT = ConceptExpander()
 except Exception:
     CONCEPT = None
+try:
+    from metacognition import Metacognition
+    META = Metacognition()
+except Exception:
+    META = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3322,6 +3327,19 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/meta/unknown":
+            q = urllib.parse.parse_qs(u.query)
+            dstats = DEV_BRAIN.stats() if DEV_BRAIN else {}
+            rstats = RESEARCH.stats() if RESEARCH else {}
+            res = META.what_i_dont_know(q.get("topic", ["Zyphere"])[0],
+                                        dstats.get("facts", 0), rstats.get("documents", 0)) if META else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/meta/audit":
+            lessons = DEV_BRAIN.lessons if DEV_BRAIN else []
+            res = META.audit(lessons) if META else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/concept/explore":
             q = urllib.parse.parse_qs(u.query)
             res = CONCEPT.explore(q.get("term", [""])[0], q.get("domain", ["ทั่วไป"])[0]) if CONCEPT else {"ok": False, "error": "unavailable"}
@@ -4012,6 +4030,14 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/meta/ask-self":
+            topic = str(body.get("topic") or "Zyphere")
+            gaps = (DEV_BRAIN.pending_curiosities() if hasattr(DEV_BRAIN, "pending_curiosities") else []) if DEV_BRAIN else []
+            if not gaps and DEV_BRAIN:
+                gaps = [{"need": g.get("q")} for g in (DEV_BRAIN.curiosities or []) if g.get("status") == "open"][:5]
+            res = META.ask_self(topic, gaps) if META else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
             return
         if u.path == "/api/concept/study":
             term = str(body.get("term") or "")

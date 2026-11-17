@@ -175,6 +175,12 @@ def main():
         ce = ConceptExpander()
         cx = ce.explore("entropy", "ฟิสิกส์")
         assert cx.get("ok") and len(cx["analysis"]) == 4 and cx["new_branches"], "concept explore failed"
+        from metacognition import Metacognition
+        mc = Metacognition()
+        au = mc.audit([{"s":"a","r":"is","o":"b","reliability":"A"}, {"s":"x","r":"is","o":"y","reliability":"D"}])
+        assert au.get("ok") and au["total"] == 2 and au["uncertain"] >= 1, "meta audit failed"
+        qs = mc.ask_self("ควอนตัม")
+        assert qs.get("ok") and len(qs["questions"]) >= 5, "meta ask-self failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
