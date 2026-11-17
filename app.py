@@ -1429,9 +1429,11 @@ def _learn_job_prune():
                 LEARN_JOBS.pop(k, None)
 
 
-def learn_busy():
+def learn_busy() -> bool:
+    """Return True if any learning job is currently queued or running."""
+    active_statuses = {"queued", "running"}
     with LEARN_JOB_LOCK:
-        return any(v.get("status") in ("queued", "running") for v in LEARN_JOBS.values())
+        return any(job.get("status") in active_statuses for job in LEARN_JOBS.values())
 
 
 def learn_job_get(job_id):
