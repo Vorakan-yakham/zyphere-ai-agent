@@ -1466,22 +1466,25 @@ def frontier_add(candidates, parent="", depth=0):
     return added
 
 
-def frontier_pick(count=1):
-    cfg = load_learning()
-    fr = cfg.get("frontier") if isinstance(cfg.get("frontier"), list) else []
-    picked = []
-    for x in list(fr):
+def frontier_pick(count: int = 1) -> list[str]:
+    """Select up to `count` pending frontier topics, marking them as taken."""
+    cfg = load_learning() or {}
+    frontier = cfg.get("frontier")
+    if not isinstance(frontier, list):
+        frontier = []
+    picked: list[str] = []
+    for item in frontier:
         if len(picked) >= count:
             break
-        if not isinstance(x, dict) or x.get("status") == "done":
+        if not isinstance(item, dict) or item.get("status") == "done":
             continue
-        t = str(x.get("topic") or "").strip()
-        if not t:
+        topic = str(item.get("topic") or "").strip()
+        if not topic:
             continue
-        x["status"] = "taken"
-        x["taken_at"] = int(time.time())
-        picked.append(t)
-    cfg["frontier"] = fr
+        item["status"] = "taken"
+        item["taken_at"] = int(time.time())
+        picked.append(topic)
+    cfg["frontier"] = frontier
     save_learning(cfg)
     return picked
 
