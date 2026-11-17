@@ -87,6 +87,36 @@ class Users:
             self.save()
             return {"ok": True, "token": tok, "email": email, "name": u.get("name", "")}
 
+    def oauth_login(self, email, name="", provider="google"):
+        """Login/register a user authenticated by a trusted OAuth provider.
+        No password is stored; the provider verified the email for us.
+        """
+        email = str(email or "").strip().lower()
+        if not email or "@" not in email:
+            return {"ok": False, "error": "invalid email"}
+        with self.lock:
+            u = self.users.get(email)
+            if not u:
+                import secrets as _s
+                code = _s.token_urlsafe(6)
+                while any(x.get("code") == code for x in self.users.values()):
+                    code = _s.token_urlsafe(6)
+                u = {"email": email, "name": str(name or "")[:80],
+                     "pw": "", "created": int(time.time()), "plan": "free",
+                     "role": "admin" if email == "vorayakham@gmail.com" else "user",
+                     "code": code, "ref": "", "invites": 0,
+                     "oauth": provider}
+                self.users[email] = u
+            else:
+                if name and not u.get("name"):
+                    u["name"] = str(name)[:80]
+                u["oauth"] = provider
+            tok = secrets.token_urlsafe(24)
+            self.sessions[tok] = {"email": email, "t": int(time.time())}
+            self.save()
+            return {"ok": True, "token": tok, "email": email,
+                    "name": u.get("name", ""), "code": u.get("code", "")}
+
     def session(self, tok):
         with self.lock:
             s = self.sessions.get(str(tok or ""))

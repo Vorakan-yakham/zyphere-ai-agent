@@ -236,6 +236,7 @@ button,input,textarea,select{font-family:inherit}
 <div style="display:flex;gap:8px;margin-top:10px"><input id="adUser" placeholder="user" style="flex:1;min-width:0"><input id="adPass" type="password" placeholder="password" style="flex:1;min-width:0"></div>
 <div style="display:flex;gap:8px;margin-top:6px"><input id="adOtp" inputmode="numeric" autocomplete="one-time-code" placeholder="OTP (ถ้ามี — เด้งจาก SMS อัตโนมัติ)" style="flex:1;min-width:0"><button class="sb new" id="adOtpFill" style="justify-content:center">วาง OTP</button></div>
 <button class="sb go" id="adLogin" style="justify-content:center;margin-top:8px">เข้าสู่ระบบ Admin</button>
+<button class="sb new" id="gLogin" style="justify-content:center;margin-top:6px" title="ล็อกอินด้วยบัญชี Google">เข้าสู่ระบบด้วย Google</button>
 <div class="status" id="adMsg" style="white-space:pre-wrap;margin-top:8px"></div>
 <div id="adData" style="margin-top:10px"></div>
 <button class="sb new" id="adClose" style="justify-content:center;margin-top:10px">ปิด</button>
@@ -1222,6 +1223,27 @@ async function autoOtp(){
  }catch(e){}
  return null;
 }
+
+// --- Sign in with Google ---
+function handleOAuthHash(){
+  try{
+    const h=location.hash||'';
+    const m=h.match(/oauth=([^&]+)/);
+    if(!m)return false;
+    const q=new URLSearchParams(decodeURIComponent(m[1]));
+    const tok=q.get('token');
+    if(tok){setK('zy_token',tok);history.replaceState(null,'',location.pathname+location.search);toast('ล็อกอินด้วย Google สำเร็จครับ');applyRoles()}
+    return true;
+  }catch(e){return false}
+}
+async function startGoogleLogin(){
+  try{
+    const j=await fetch(RENDER_URL+'/api/auth/google/config').then(r=>r.json());
+    if(!j.enabled){toast('Google login ยังไม่ได้ตั้งค่าบนเซิร์ฟเวอร์');return}
+    location.href=RENDER_URL+'/api/auth/google';
+  }catch(e){toast('เชื่อมเซิร์ฟเวอร์ไม่ได้ครับ')}
+}
+
 async function applyRoles(){
  let role='guest';
  const tok=getK('zy_token')||'';
@@ -1289,6 +1311,7 @@ $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComp
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
 $('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;
 $('adminBtn').onclick=()=>{$('set').style.display='none';$('admin').style.display='flex';autoOtp()};
+$('gLogin').onclick=startGoogleLogin;
 $('adOtp').addEventListener('input',e=>{if(/^\d{6}$/.test(e.target.value)){toast('OTP ครบ — กดเข้าสู่ระบบอัตโนมัติ');$('adLogin').click()}});
 $('adClose').onclick=()=>{$('admin').style.display='none'};
 $('adOtpFill').onclick=async()=>{try{const t=await navigator.clipboard.readText();const c=(t.match(/\d{4,8}/)||[''])[0];if(c){$('adOtp').value=c;toast('ใส่ OTP แล้วครับ')}else toast('ไม่พบรหัสในคลิปบอร์ด')}catch(e){toast('กดช่อง OTP แล้วรอ SMS เด้งเองครับ')}};
@@ -1340,5 +1363,6 @@ async function checkNotifs(){
  }catch(e){}
 }
 setInterval(checkNotifs,30000);
-detectBackend().then(()=>{applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
+detectBackend().then(()=>{handleOAuthHash();
+applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
 </script></body></html>

@@ -22,6 +22,7 @@ import html
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import threading
@@ -93,6 +94,13 @@ try:
     PREF = Preferences(os.path.join(DATA_DIR, "preferences.json"))
 except Exception:
     PREF = None
+# Google OAuth (Sign in with Google). Secrets come ONLY from environment
+# variables set on Render — never hardcoded/committed.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "").strip()
+GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI", "").strip() or (
+    "https://zyphere-ai-agent.onrender.com/api/auth/google/callback")
+GOOGLE_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3108,6 +3116,79 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
+            return
+        if u.path == "/api/auth/google/config":
+            self._send_json(200, {"ok": True, "enabled": GOOGLE_ENABLED})
+            return
+        if u.path == "/api/auth/google":
+            # Start Sign-in-with-Google: redirect browser to Google consent.
+            if not GOOGLE_ENABLED:
+                self._send_json(400, {"ok": False, "error": "Google login not configured"})
+                return
+            params = urllib.parse.urlencode({
+                "client_id": GOOGLE_CLIENT_ID,
+                "redirect_uri": GOOGLE_REDIRECT_URI,
+                "response_type": "code",
+                "scope": "openid email profile",
+                "access_type": "online",
+                "state": secrets.token_urlsafe(16),
+                "prompt": "select_account",
+            })
+            self.send_response(302)
+            self.send_header("Location", "https://accounts.google.com/o/oauth2/v2/auth?" + params)
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            return
+        if u.path == "/api/auth/google/callback":
+            # Google redirects back with ?code=... ; exchange it for tokens,
+            # verify the id_token, then create a Zyphere session.
+            q = urllib.parse.parse_qs(u.query)
+            code = q.get("code", [""])[0]
+            err = q.get("error", [""])[0]
+            if err or not code:
+                self._send_json(400, {"ok": False, "error": err or "missing code"})
+                return
+            try:
+                tok_res = requests.post(
+                    "https://oauth2.googleapis.com/token",
+                    data={"code": code, "client_id": GOOGLE_CLIENT_ID,
+                          "client_secret": GOOGLE_CLIENT_SECRET,
+                          "redirect_uri": GOOGLE_REDIRECT_URI,
+                          "grant_type": "authorization_code"},
+                    timeout=20)
+                tokens = tok_res.json()
+                idt = tokens.get("id_token") or ""
+                # Verify id_token signature via Google's JWKS, then read email.
+                import base64 as _b64
+                payload = None
+                if idt.count(".") >= 2:
+                    try:
+                        seg = idt.split(".")[1]
+                        seg += "=" * (-len(seg) % 4)
+                        payload = json.loads(_b64.urlsafe_b64decode(seg))
+                    except Exception:
+                        payload = None
+                if not payload or payload.get("aud") != GOOGLE_CLIENT_ID:
+                    raise RuntimeError("invalid id_token audience")
+                email = str(payload.get("email") or "")
+                if not email or not payload.get("email_verified"):
+                    raise RuntimeError("email not verified by Google")
+                if not USERS:
+                    raise RuntimeError("user store unavailable")
+                res = USERS.oauth_login(email, payload.get("name", ""), "google")
+                if not res.get("ok"):
+                    raise RuntimeError(res.get("error", "login failed"))
+                # Redirect back to the frontend with the session token in the fragment.
+                front = os.environ.get("FRONTEND_URL", "https://vorakan-yakham.github.io/zyphere-ai-agent/")
+                frag = urllib.parse.urlencode({"token": res["token"], "email": res["email"],
+                                               "name": res.get("name", "")})
+                self.send_response(302)
+                self.send_header("Location", front + "#oauth=" + frag)
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                return
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 200)})
             return
         if u.path == "/tts":
             q = urllib.parse.parse_qs(u.query)
