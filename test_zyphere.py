@@ -130,6 +130,11 @@ def main():
         assert pl.get("ok") and len(pl["shots"]) == 4 and pl["shots"][0]["image_query"], "director plan failed"
         qq = director.quality("4k")
         assert qq["w"] == 3840 and qq["h"] == 2160, "4k preset failed"
+        import human_art
+        cs = human_art.character_spec("hero", "medium", "wavy_medium", "soft")
+        assert cs["proportions"]["head_to_body"] in (7.5, 8.0) and cs["skin"], "character spec failed"
+        ms = human_art.melody_spec("lofi", 4)
+        assert ms.get("ok") and len(ms["notes"]) >= 8 and ms["bpm"] > 0, "melody spec failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

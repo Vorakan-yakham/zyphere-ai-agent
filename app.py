@@ -137,6 +137,10 @@ try:
     import director as DIRECTOR
 except Exception:
     DIRECTOR = None
+try:
+    import human_art as HUMAN_ART
+except Exception:
+    HUMAN_ART = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3267,6 +3271,33 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/human/knowledge":
+            self._send_json(200, {"ok": True,
+                                  "proportions": HUMAN_ART.PROPORTIONS if HUMAN_ART else {},
+                                  "skin_tones": HUMAN_ART.SKIN_TONES if HUMAN_ART else {},
+                                  "hair_styles": HUMAN_ART.HAIR_STYLES if HUMAN_ART else [],
+                                  "lighting": HUMAN_ART.LIGHTING if HUMAN_ART else {},
+                                  "genres": HUMAN_ART.GENRES if HUMAN_ART else {}})
+            return
+        if u.path == "/api/human/character":
+            res = HUMAN_ART.character_spec(
+                str(body.get("role") or "hero"), str(body.get("skin") or "medium"),
+                str(body.get("hair") or "wavy_medium"), str(body.get("lighting") or "soft")) if HUMAN_ART else {"error": "unavailable"}
+            self._send_json(200, {"ok": True, "spec": res})
+            return
+        if u.path == "/api/human/melody":
+            res = HUMAN_ART.melody_spec(
+                str(body.get("genre") or "lofi"), int(body.get("bars") or 8)) if HUMAN_ART else {"error": "unavailable"}
+            # let the child learn this genre's music theory
+            if DEV_BRAIN and res.get("ok"):
+                try:
+                    DEV_BRAIN.experience("แนวเพลง " + res["genre"] + " จังหวะ " + str(res["bpm"]) +
+                                         " บันไดเสียง " + res["scale"] + " อารมณ์ " + res["mood"], "elder_teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
+            self._send_json(200, res)
+            return
         if u.path == "/api/director/plan":
             q = urllib.parse.parse_qs(u.query)
             topic = q.get("topic", [""])[0]
@@ -4341,6 +4372,15 @@ if __name__ == "__main__":
                 lesson = elder_teach("%s: %s" % (_d, _t))
                 if lesson:
                     DEV_BRAIN.experience(lesson, "elder_teacher")
+            # human anatomy + music genres knowledge
+            if HUMAN_ART:
+                DEV_BRAIN.experience("สรีระมนุษย์: สัดส่วนหัวต่อตัว 1:7.5 ตาอยู่กึ่งกลางใบหน้า", "elder_teacher")
+                DEV_BRAIN.experience("สีผิวมนุษย์มีหลายโทน ตั้งแต่ very_light ถึง deep", "elder_teacher")
+                DEV_BRAIN.experience("ทรงผมมีหลายแบบ: straight, wavy, curly, braids", "elder_teacher")
+                DEV_BRAIN.experience("แสงถ่ายภาพ: Rembrandt เงาสามเหลี่ยม, soft นุ่ม, backlight ขอบแสง", "elder_teacher")
+                for _g, _info in HUMAN_ART.GENRES.items():
+                    DEV_BRAIN.experience("แนวเพลง " + _g + " จังหวะ " + str(_info["bpm"]) +
+                                         " บันไดเสียง " + _info["scale"] + " อารมณ์ " + _info["mood"], "elder_teacher")
             DEV_BRAIN.grow()
             if remote_enabled():
                 remote_push("dev_brain", DEV_BRAIN.snapshot())
