@@ -712,11 +712,20 @@ def load_knowledge():
 
 
 def _save_knowledge(data):
+    """Persist knowledge safely and schedule remote sync."""
     with KNOW_LOCK:
+        # Ensure we have a dict to work with
         data = data if isinstance(data, dict) else _default_knowledge()
         data["updated_at"] = int(time.time())
-        with open(KNOW_PATH, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        tmp_path = f"{KNOW_PATH}.tmp"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            os.replace(tmp_path, KNOW_PATH)  # atomic replace
+        except Exception:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            raise
         _remote_schedule("knowledge", data)
         return data
 
