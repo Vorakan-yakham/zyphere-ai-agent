@@ -628,8 +628,9 @@ async function send(voice){
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
  view();lastLang=resolveLang(t);const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
- const hist=c.m.slice(-24),msgs=[];let left=60000;
+ const hist=c.m.slice(-24),msgs=[];let left=60000;const seenA=new Set();
  for(let i=hist.length-1;i>=0;i--){const m=hist[i];let x=m.x||'',ct=m.c||'';
+   if(m.r==='assistant'){const key=ct.trim().slice(0,200);if(seenA.has(key))continue;seenA.add(key)}
   if(x){if(x.length<=left)left-=x.length;else{x=x.slice(0,Math.max(0,left))+'\n...(ตัดเนื้อหาไฟล์)';left=0}}
   if(ct.length>left){ct=ct.slice(0,Math.max(0,left))+'\n...(ตัดข้อความยาว)';left=0}else left-=ct.length;
   msgs[i]={role:m.r==='user'?'user':'assistant',content:ct+x}}
@@ -645,7 +646,7 @@ async function send(voice){
    if(doc.length>9000){
     // full-document path: chunked map-reduce so nothing is skipped or cut off
     const st=mkStream(body,voice);
-    const prev=c.m.slice(-6,-1).map(m=>(m.r==='user'?'ผู้ใช้: ':'Zyphere: ')+String(m.c||'').slice(0,300)).join('\n').slice(0,1200);
+    const prev=c.m.slice(-6,-1).map(m=>(m.r==='user'?'ผู้ใช้: ':'Zyphere: ')+String(m.c||'').slice(0,300)).filter((v,i,a)=>a.indexOf(v)===i).join('\n').slice(0,1200);
     const th=lastLang!=='en';
     const qq=(prev?(th?'บริบทก่อนหน้า (ถ้าเกี่ยวข้อง):\n':'Earlier context (if relevant):\n')+prev+'\n\n'+(th?'คำขอปัจจุบัน: ':'Current request: '):'')+(question||(th?'สรุปเนื้อหาทั้งหมดให้ครบถ้วนทุกประเด็น':'Summarize the entire content completely'));
     reply=await summarizeLong({text:doc,question:qq,sig:ctrl.signal,sys:sysPrompt(lastLang,voice,isCode(t)),lang:lastLang,
