@@ -154,6 +154,16 @@ button,input,textarea,select{font-family:inherit}
 .go{background:var(--blue);color:#fff;border-radius:50%}
 .live{background:var(--fg);color:var(--bg)}
 
+/* status panel (meta.ai style) */
+.stGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 18px}
+.stItem{display:flex;align-items:center;gap:8px;border:1px solid var(--bd2);border-radius:12px;padding:9px 11px;background:var(--sf)}
+.stDot{width:8px;height:8px;border-radius:50%;background:var(--mut);flex-shrink:0}
+.stItem.on .stDot{background:#1e8e3e;box-shadow:0 0 0 3px rgba(30,142,62,.15)}
+.stItem.warn .stDot{background:#f9ab00}
+.stTxt{min-width:0}.stTxt b{display:block;font-size:12.5px;font-weight:500;color:var(--fg)}
+.stTxt span{display:block;font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stHead{font-size:11px;letter-spacing:.06em;color:var(--mut);text-transform:uppercase;margin:4px 0 8px}
+
 /* cards & panels */
 .bk{background:rgba(32,33,36,.55)}
 .card{border-radius:16px;padding:28px;background:var(--bg);box-shadow:0 8px 32px rgba(60,64,67,.24);border:1px solid var(--bd2)}
@@ -189,6 +199,9 @@ button,input,textarea,select{font-family:inherit}
 <button class="ib go" id="sendBtn" title="ส่ง"></button></div></div></div>
 <div class="ov" id="ov"><h3>ZYPHERE</h3><div class="orb big"></div><h2 id="ovS">กำลังฟัง...</h2><p id="ovT"></p><button class="end" id="endBtn">จบการสนทนา</button></div>
 <div class="bk" id="set"><div class="card"><h3>ตั้งค่า</h3>
+<div class="stHead">สถานะระบบ · Zyphere</div>
+<div class="stGrid" id="statusGrid"></div>
+<details style="margin:0 0 16px"><summary>รายละเอียดเทคนิค</summary><div class="status" id="statusTech" style="white-space:pre-wrap"></div></details>
 <label>คีย์ AI (ใส่อย่างน้อย 1 ช่อง)</label>
 <div class="kr"><input id="k-groq" type="password" placeholder="Groq" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-groq">ลบ</button></div>
 <div class="kr"><input id="k-gemini" type="password" placeholder="Gemini" autocomplete="new-password" spellcheck="false"><button type="button" class="kx" id="kx-gemini">ลบ</button></div>
@@ -1244,6 +1257,40 @@ async function startGoogleLogin(){
   }catch(e){toast('เชื่อมเซิร์ฟเวอร์ไม่ได้ครับ')}
 }
 
+
+// --- System status panel (meta.ai style): show only what users need ---
+async function renderStatusPanel(){
+  const G=document.getElementById('statusGrid'); if(!G)return;
+  const items=[];
+  const add=(label,sub,on,warn)=>items.push({label,sub,on:!!on,warn:!!warn});
+  let tech=[];
+  try{
+    if(localBase()){
+      const h=await api('/api/health').catch(()=>null);
+      const st=await api('/api/storage').catch(()=>null);
+      const g=await fetch(RENDER_URL+'/api/auth/google/config').then(r=>r.json()).catch(()=>({enabled:false}));
+      const lc=await api('/api/learn/config').catch(()=>null);
+      if(h){
+        add('Zyphere พร้อมใช้งาน','ตอบคำถามได้','',true);
+        add('สมอง AI','Groq · ไม่ต้องใส่คีย์เอง',true);
+        tech.push('version '+(h.version||'?')+' · features '+(h.features||[]).length);
+      } else add('เซิร์ฟเวอร์','ยังเชื่อมไม่ได้',false,true);
+      if(st){
+        const rem=st.remote&&st.remote.enabled;
+        add('ความจำถาวร',rem?'จำได้แม้รีสตาร์ท':'จำได้เฉพาะในเครื่อง',rem,!rem);
+        tech.push('remote '+(rem?'on':'off')+' · knowledge '+(st.counts&&st.counts.knowledge||0));
+      }
+      add('เข้าสู่ระบบ Google',g.enabled?'พร้อมใช้งาน':'ยังไม่ได้ตั้งค่า',g.enabled,!g.enabled);
+      const cfg=lc&&lc.config;
+      if(cfg) add('การเรียนรู้',cfg.enabled?('เปิด · ความรู้ '+(cfg.knowledge_count||0)+' เรื่อง'):'ปิด',cfg.enabled,!cfg.enabled);
+    } else {
+      add('โหมดหน้าเว็บ','เปิดการตั้งค่าเซิร์ฟเวอร์เพื่อดูสถานะ',false,true);
+    }
+  }catch(e){add('สถานะระบบ','ตรวจสอบไม่ได้',false,true)}
+  G.innerHTML=items.map(x=>'<div class="stItem'+(x.on?' on':(x.warn?' warn':''))+'"><div class="stDot"></div><div class="stTxt"><b>'+x.label+'</b><span>'+x.sub+'</span></div></div>').join('');
+  const T=document.getElementById('statusTech'); if(T)T.textContent=tech.join('\n')||'ไม่มีข้อมูล';
+}
+
 async function applyRoles(){
  let role='guest';
  const tok=getK('zy_token')||'';
@@ -1339,6 +1386,7 @@ $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('
 $('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
+renderStatusPanel();
 $('setBtn').onclick=()=>{KIDS.forEach(id=>{paintK(id);$('k-'+id).onchange=()=>commitK(id)&&toast('บันทึกคีย์ '+P[id].n+' แล้ว');$('kx-'+id).onclick=()=>{if(confirm('ลบคีย์ '+P[id].n+' ?')){setK('zyphere_'+id+'_key','');paintK(id)}}});$('custom').value=getK('zy_custom');$('briefOn').checked=getK('zy_brief')!=='0';$('critiqueOn').checked=getK('zy_critique')==='1';renderMemStatus(!localBase());$('set').style.display='flex'};
 $('doneBtn').onclick=()=>{KIDS.forEach(commitK);setK('zy_custom',$('custom').value);setK('zy_brain',$('brain').value);setK('zy_lang',$('lang').value);setK('zy_rate',$('rate').value);setK('zy_pitch',$('pitch').value);$('rv').textContent=$('rate').value+'x';setK('zy_persona',$('persona').value);setK('zy_code',$('codeMode').value);setK('zy_ttse',$('ttse').value);setK('zy_thvoice',$('thvoice').value);setK('zy_envoice',$('envoice').value);setK('zy_ttsurl',$('ttsurl').value.trim());agentOn=$('agentMode').value==='on';setK('zy_agent',agentOn?'1':'0');setK('zy_brief',$('briefOn').checked?'1':'0');setK('zy_critique',$('critiqueOn').checked?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('set').style.display='none'};
 $('set').onclick=e=>{if(e.target===$('set'))$('doneBtn').click()};
