@@ -189,6 +189,11 @@ def main():
         assert qz.get("ok") and len(qz["questions"]) == 3, "quiz failed"
         ev = st.evaluate("entropy", ["entropy is disorder"], [])
         assert ev.get("ok") and "score" in ev, "evaluate failed"
+        from meta_learning import MetaLearning
+        ml = MetaLearning()
+        rf = ml.reflect()
+        assert rf.get("ok") and len(rf["principles"]) == 10, "meta reflect failed"
+        assert ml.retrospective()["self_lessons"] and ml.peers()["peer_patterns"], "retro/peers failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

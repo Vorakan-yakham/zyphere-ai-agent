@@ -184,6 +184,11 @@ try:
     SELFTEST = SelfTest()
 except Exception:
     SELFTEST = None
+try:
+    from meta_learning import MetaLearning
+    META_LEARN = MetaLearning()
+except Exception:
+    META_LEARN = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3332,6 +3337,12 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/meta/retrospective":
+            self._send_json(200, META_LEARN.retrospective() if META_LEARN else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/meta/peers":
+            self._send_json(200, META_LEARN.peers() if META_LEARN else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/selftest/feynman":
             q = urllib.parse.parse_qs(u.query)
             facts = DEV_BRAIN.lessons if DEV_BRAIN else []
@@ -4041,6 +4052,17 @@ class Handler(SimpleHTTPRequestHandler):
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
             self._send_json(200, {"ok": True, "answer": ans,
                                   "from_own_brain": ans is not None})
+            return
+        if u.path == "/api/meta/reflect":
+            res = META_LEARN.reflect() if META_LEARN else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and DEV_BRAIN:
+                try:
+                    for p in res.get("principles", []):
+                        DEV_BRAIN.experience("หลักการพัฒนา Zyphere: " + p, "elder_teacher")
+                    DEV_BRAIN.grow()
+                except Exception:
+                    pass
+            self._send_json(200, res)
             return
         if u.path == "/api/selftest/quiz":
             concept = str(body.get("concept") or "")
