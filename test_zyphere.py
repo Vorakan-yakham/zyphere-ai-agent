@@ -114,6 +114,13 @@ def main():
         cov = expansion.coverage_matrix(core_topics=150)
         assert cov["not_complete"] and len(cov["axes"]) == 5, "coverage matrix/self-check missing"
         assert len(expansion.NEW_SOURCES) == 8, "new sources missing"
+        db.experience("ออกกำลังกายช่วยลดความเสี่ยงโรคหัวใจ", "elder_teacher")
+        tb = db.teach_back("ออกกำลังกาย")
+        assert tb.get("ok") and "ผมเข้าใจว่า" in tb.get("explanation", ""), "teach-back failed"
+        cr = db.self_critique()
+        assert cr.get("ok") and "checked" in cr, "self-critique failed"
+        gr = db.link_graph()
+        assert gr.get("ok") and "links" in gr, "knowledge graph failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

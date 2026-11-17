@@ -170,6 +170,73 @@ class DevBrain:
                 "• " + f["s"] + " " + f["r"] + " " + f["o"] for f in hits[:5])
         return None
 
+    # ---------- higher-order learning: teach-back, self-critique, graph ----------
+    def teach_back(self, topic=""):
+        """The child explains what it knows in its own words (Feynman-style).
+        Reveals whether it truly understands or just memorized."""
+        q = str(topic or "").strip()
+        with self.lock:
+            if q:
+                toks = [w for w in re.findall(r"[\u0E00-\u0E7FA-Za-z0-9]{2,}", q.lower())]
+                relevant = [f for f in self.lessons
+                            if any(t in (f["s"] + " " + f["o"]).lower() for t in toks)]
+            else:
+                relevant = self.lessons[-8:]
+        if not relevant:
+            return {"ok": False, "error": "ยังไม่มีความรู้พอจะสอนกลับในหัวข้อนี้ — ต้องเรียนเพิ่มครับ"}
+        lines = []
+        for f in relevant[:8]:
+            obj = f["o"]
+            lines.append("ผมเข้าใจว่า " + f["s"] + " " + ("คือ/เกี่ยวข้องกับ " if f["r"] == "is" else f["r"] + " ") + obj)
+        return {"ok": True, "topic": q or "สิ่งที่เรียนล่าสุด",
+                "explanation": "\n".join("• " + x + " ครับ" for x in lines),
+                "facts_used": len(relevant[:8])}
+
+    def self_critique(self, topic=""):
+        """The child checks its own knowledge for weak/contradictory/one-source facts."""
+        with self.lock:
+            lessons = list(self.lessons)
+        # find subjects with conflicting 'is' objects
+        by_s = {}
+        for f in lessons:
+            by_s.setdefault(f["s"], {}).setdefault(f["r"], []).append(f["o"])
+        conflicts = []
+        for s, rels in by_s.items():
+            objs = list(dict.fromkeys(rels.get("is", [])))
+            if len(objs) > 1:
+                conflicts.append({"subject": s, "conflicting": objs[:5]})
+        weak = [f for f in lessons if len(str(f.get("o", ""))) < 6]
+        return {"ok": True, "checked": len(lessons),
+                "conflicts": conflicts[:10], "weak_facts": len(weak),
+                "cautions": ["ข้อเท็จจริงที่ขัดกันควรตรวจสอบกับแหล่งระดับ A ใหม่",
+                             "ข้อเท็จจริงสั้นเกินไปอาจยังไม่ชัดเจน"]}
+
+    def link_graph(self):
+        """Build a simple knowledge graph: (facts) --shares token--> (facts).
+        Returns cross-domain links the child discovered by itself."""
+        with self.lock:
+            lessons = list(self.lessons[-200:])
+        token_map = {}
+        for f in lessons:
+            for w in re.findall(r"[\u0E00-\u0E7FA-Za-z0-9]{3,}", (f["s"] + " " + f["o"]).lower()):
+                token_map.setdefault(w, []).append(f)
+        links = []
+        for w, fs in token_map.items():
+            if len(fs) >= 2:
+                # link facts sharing a meaningful token (cross-domain bridge)
+                pairs = [(fs[0]["s"], fs[i]["s"]) for i in range(1, min(len(fs), 4))
+                         if fs[i]["s"] != fs[0]["s"]]
+                for a, b in pairs:
+                    links.append({"via": w, "from": a, "to": b})
+        # dedupe
+        seen, uniq = set(), []
+        for l in links:
+            k = (l["from"], l["to"], l["via"])
+            if k not in seen:
+                seen.add(k); uniq.append(l)
+        return {"ok": True, "nodes": len(lessons), "links": len(uniq[:40]),
+                "bridges": uniq[:40]}
+
     def snapshot(self):
         with self.lock:
             return {"experiences": self.experiences[-1000:], "lessons": self.lessons[-800:],

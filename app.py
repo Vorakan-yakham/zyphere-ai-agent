@@ -3798,6 +3798,18 @@ class Handler(SimpleHTTPRequestHandler):
                 remote_push("dev_brain", DEV_BRAIN.snapshot())
             self._send_json(200, {"ok": True, "result": res})
             return
+        if u.path == "/api/self/teachback":
+            res = DEV_BRAIN.teach_back(str(body.get("topic") or "")) if DEV_BRAIN else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/self/critique":
+            res = DEV_BRAIN.self_critique(str(body.get("topic") or "")) if DEV_BRAIN else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/self/graph":
+            res = DEV_BRAIN.link_graph() if DEV_BRAIN else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/self/ask":
             q = str(body.get("q") or "")
             ans = DEV_BRAIN.answer(q) if DEV_BRAIN else None
