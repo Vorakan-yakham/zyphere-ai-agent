@@ -260,8 +260,11 @@ function sysPrompt(l,voice,code){const th=l==='th',jv=(getK('zy_persona')||'zyph
  s+=th?'\n\nการเขียนภาษาไทย: ใช้สำนวนธรรมชาติ เรียงความคิดต่อเนื่อง เว้นวรรคหลังเครื่องหมาย แบ่งย่อหน้าเมื่อเปลี่ยนประเด็น หลีกเลี่ยงประโยคยาวและคำซ้ำ ถ้าข้อความอ่านยากให้เรียบเรียงใหม่ก่อนตอบ':'Write clearly with natural phrasing, short sentences, correct spacing and paragraph breaks; rewrite confusing text first.';const male=/Niwat|Guy|Ryan/i.test((($('thvoice')||{}).value||'')+' '+(($('envoice')||{}).value||'')+' '+getK('zy_thvoice')+' '+getK('zy_envoice'));s+=th?(male?'\n\nคุณเป็นผู้ชาย ใช้คำลงท้าย ครับ เสมอ ห้ามใช้ ค่ะ หรือ คะ':'\n\nใช้คำลงท้าย ค่ะ เสมอ ห้ามใช้ ครับ'):'';s+=th&&voice?'\n\nเมื่อเล่าเรื่องหรือบรรยาย: เริ่มด้วยฉากสั้นๆ แล้วค่อยคลี่เหตุการณ์ ใช้ประโยคสั้นไม่เกิน 25 คำ เชื่อมด้วย แล้ว / จากนั้น / จึง / ในขณะที่ หลีกเลี่ยงคำซ้ำและโครงสร้างที่ดูเหมือนแปลจากภาษาอื่น ทำให้อ่านแล้วไหลลื่นเหมือนนักเล่ามืออาชีพ และใช้คำลงท้าย ครับเสมอ':'';s+=th?'\n\nสไตล์การสนทนา: ตอบสั้น อุ่น เป็นธรรมชาติ เหมือนกำลังคุยกับคนที่รู้จักกันดี ห้ามทวนคำทักทายหรือประโยคที่เคยตอบไปแล้วซ้ำ ถ้าผู้ใช้ทักทาย ให้ตอบสั้นๆ แล้วเสนอสิ่งที่ทำได้จริงหรือถามคำถามเฉพาะเจาะจง เปลี่ยนสำนวนทุกครั้ง ห้ามเริ่มประโยคด้วย ยินดีต้อนรับ / มีเรื่องอะไรให้ช่วย / สวัสดีครับ ซ้ำจากรอบก่อน ใช้คำว่า ครับเสมอ อย่าเขียนเป็นหัวข้อหรือบทความในแชททั่วไป เว้นแต่ผู้ใช้ขอสรุปหรืออธิบายยาว':'Keep replies short, warm and natural, like a real conversation.';if(code) s+=CODEP[th?'th':'en'];
  return s}
 
-async function readSSE(r,pick,on,finish,touch){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='';try{while(true){const{done,value}=await rd.read();if(touch)touch();if(done)break;buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;let j;try{j=JSON.parse(d)}catch{continue}if(j?.error)throw new Error(j.error.message||'Stream error');const t=pick(j);if(t){full+=t;if(on)on(full)}}}}finally{rd.releaseLock();if(finish)finish(full)}}st f=finishOf&&finishOf(j);if(f)finish=f;touch&&touch()}}
-  if(!full&&!finish)throw new Error('ไม่ได้รับคำตอบ');return {text:full,finish}}
+async function readSSE(r,pick,on,finishOf,touch){const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='',finish='';for(;;){const{done,value}=await rd.read();touch&&touch();if(done)break;buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;let j;try{j=JSON.parse(d)}catch(e){continue}
+ if(j&&j.error)throw new Error((j.error&&j.error.message)||'สตรีมผิดพลาด');
+ const t=pick(j);if(t){full+=t;on&&on(full)}
+ const f=finishOf&&finishOf(j);if(f)finish=f;touch&&touch()}}
+ if(!full&&!finish)throw new Error('ไม่ได้รับคำตอบ');return {text:full,finish}}
 async function fail(r,n){let j={};try{j=await r.json()}catch(e){}throw new Error((Array.isArray(j)?j[0]:j).error?.message||n+' '+r.status)}
 const finishOpenAI=j=>j?.choices?.[0]?.finish_reason||'';
 const finishGemini=j=>j?.candidates?.[0]?.finishReason||j?.promptFeedback?.blockReason||'';
@@ -557,7 +560,7 @@ function listenOnce(){stopRec=false;const SR=window.SpeechRecognition||window.we
  if(SR)return new Promise(res=>{const r=new SR(),l=$('lang').value;curSR=r;r.lang=l==='en'?'en-US':'th-TH';let got='';r.onresult=e=>{got=e.results[0][0].transcript};r.onerror=()=>{};r.onend=()=>res(got);try{r.start()}catch(e){res('')}});
  return Promise.resolve('')}
 function stopListen(){stopRec=true;try{curSR&&curSR.abort()}catch(e){}}
-async function mic(){if(busy||call)return;const b=$('micBtn');b.style.color='#ef4444';const t=await listenOnce();b.style.color='';if(t){$('q').value=t;send()}}
+async function mic(){if(busy||call||speaking)return;const b=$('micBtn');b.style.color='#ef4444';const t=await listenOnce();b.style.color='';if(t){$('q').value=t;send()}}
 
 // agent loop & send
 const CODE_RE=/โค้ด|โปรแกรม|สคริปต์|บั๊ก|แก้\s*error|ฟังก์ชัน|\b(code|script|function|class|bug|debug|python|javascript|typescript|react|api|sql|html|css)\b/i;
@@ -1005,7 +1008,7 @@ let mode=0,home=0; function ui(){const b=$('jvBtn');b.className='jv'+(mode&&home
 function showOv(){$('ov').style.display='flex';orb('listen','')}function hideOv(){$('ov').style.display='none'}
 async function handle(t){$('ovT').textContent=t;$('q').value=t;await send(true)}
 async function say(t){lastLang='th';orb('speak',t);await speak(t)}
-async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');const t=await listenOnce();if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
+async function run(m){if(mode)return;mode=m;home=m===1?1:0;call=true;ui();if(m===2)showOv();let idle=0; while(mode&&call){if(mode===2)orb('listen');if(speaking){await sleep(400);continue}const t=await listenOnce();if(!mode||!call)break; if(!t){if(mode===2&&++idle>=3){if(!home)break;mode=1;hideOv();ui()}await sleep(250);continue}idle=0; if(mode===1){if(!WAKE.test(t))continue;mode=2;showOv();ui();const rest=t.replace(WAKE,'').replace(/^[\s,.]+/,'');if(rest.length>2)await handle(rest);else await say('ครับ มีอะไรให้ช่วย')} else if(BYE.test(t)){await say('รับทราบครับ ผมจะรออยู่ตรงนี้');if(!home)break;mode=1;hideOv();ui()} else await handle(t)} endCall()}
 function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&busy)ctrl.abort();hideOv();ui()}
 
 // events & settings
