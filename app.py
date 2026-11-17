@@ -3503,6 +3503,14 @@ class Handler(SimpleHTTPRequestHandler):
             email = urllib.parse.parse_qs(u.query).get("email", [""])[0]
             self._send_json(200, {"ok": True, "status": BILLING.status(email) if BILLING else {"plan": "free", "active": False}})
             return
+        if u.path == "/api/family":
+            d = IDENTITY.data if IDENTITY else {}
+            self._send_json(200, {"ok": True,
+                                  "owner": d.get("owner_name", ""),
+                                  "owner_email": d.get("owner", ""),
+                                  "family": d.get("family", []),
+                                  "owner_since": d.get("owner_since", 0)})
+            return
         if u.path == "/api/identity":
             self._send_json(200, {"ok": True, "identity": IDENTITY.public() if IDENTITY else {"error": "unavailable"}})
             return
@@ -3899,6 +3907,23 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/users/stats":
             self._send_json(200, {"ok": True, "users": USERS.stats() if USERS else {"error": "unavailable"}})
+            return
+        if u.path == "/api/family/set":
+            tok = str(body.get("token") or "")
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            if not IDENTITY:
+                self._send_json(400, {"ok": False, "error": "unavailable"})
+                return
+            if body.get("owner_name"):
+                IDENTITY.set_owner(str(body.get("owner_name")), body.get("owner_email") or "vorayakham@gmail.com")
+            members = body.get("family") or []
+            fam = IDENTITY.set_family(members) if members else IDENTITY.family()
+            if remote_enabled():
+                remote_push("identity", IDENTITY.data)
+            self._send_json(200, {"ok": True, "owner": IDENTITY.data.get("owner_name"),
+                                  "family": fam})
             return
         if u.path == "/api/brain/auto":
             # learn from user question + assistant answer automatically (offline)

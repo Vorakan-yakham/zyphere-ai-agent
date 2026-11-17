@@ -22,6 +22,9 @@ class Identity:
                 "role": "AI ส่วนตัวที่เรียนรู้เอง จำได้ และช่วยสร้างสรรค์",
                 "created": int(time.time()),
                 "owner": "vorayakham@gmail.com",
+                "owner_name": "",
+                "owner_name_en": "",
+                "family": [],
                 "capabilities": ["สนทนา", "ความจำถาวร", "เรียนรู้เอง", "ค้นเว็บ",
                                  "อ่านไฟล์", "สร้างวิดีโอ", "เสียงพูด", "13 ภาษา",
                                  "เขียนโค้ด", "วิเคราะห์"],
@@ -75,6 +78,32 @@ class Identity:
             self.data["last_active"] = int(time.time())
             self.save()
             return grew
+
+    def set_owner(self, name, email="vorayakham@gmail.com"):
+        """Remember the owner's real name permanently."""
+        with self.lock:
+            self.data["owner_name"] = str(name or "")[:120]
+            self.data["owner"] = str(email or self.data.get("owner") or "")[:120]
+            self.data["owner_since"] = int(time.time())
+            self.save()
+            return {"owner_name": self.data["owner_name"], "owner": self.data["owner"]}
+
+    def set_family(self, members):
+        """Remember owner's family permanently: [{name, relation}]."""
+        with self.lock:
+            current = {x.get("relation"): x for x in self.data.get("family", [])}
+            for m in members or []:
+                rel = str(m.get("relation") or "").strip()[:40]
+                nm = str(m.get("name") or "").strip()[:120]
+                if rel and nm:
+                    current[rel] = {"name": nm, "relation": rel, "t": int(time.time())}
+            self.data["family"] = list(current.values())
+            self.save()
+            return self.data["family"]
+
+    def family(self):
+        with self.lock:
+            return list(self.data.get("family", []))
 
     def touch(self, kind="interaction"):
         with self.lock:
