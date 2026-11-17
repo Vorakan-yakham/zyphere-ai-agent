@@ -77,6 +77,15 @@ def main():
         db.grow()
         sn = db.self_narrative()
         assert sn.get("stage") and sn.get("experiences", 0) >= 2, "dev brain growth failed"
+        from notebook import Notebook
+        nbpath = os.path.join(tempfile.gettempdir(), "zy_notebook_test.json")
+        if os.path.exists(nbpath):
+            os.remove(nbpath)
+        nb = Notebook(nbpath)
+        nb.add("รายงาน", "ไซเฟอร์มีรายได้ 500 บาท จากการขายงานเขียนคอนเทนต์ในเดือนมกราคม")
+        r = nb.analyze("รายได้ของไซเฟอร์เท่าไหร่")
+        assert r.get("ok") and r.get("citations"), "notebook grounded analysis failed"
+        assert "500" in r.get("answer", ""), "notebook answer not grounded in source"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

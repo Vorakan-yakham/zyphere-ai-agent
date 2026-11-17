@@ -111,6 +111,11 @@ try:
     DEV_BRAIN = DevBrain(os.path.join(DATA_DIR, "dev_brain.json"))
 except Exception:
     DEV_BRAIN = None
+try:
+    from notebook import Notebook
+    NOTEBOOK = Notebook(os.path.join(DATA_DIR, "notebook.json"))
+except Exception:
+    NOTEBOOK = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -160,6 +165,7 @@ REMOTE_KEYS = {
     "goals": "zyphere:goals",
     "platforms": "zyphere:platforms",
     "dev_brain": "zyphere:dev_brain",
+    "notebook": "zyphere:notebook",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -271,7 +277,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook"):
         try:
             data = {
                 "memory": load_mem,
@@ -281,6 +287,7 @@ def remote_push_all():
                 "goals": load_goals,
                 "platforms": (PLATFORMS.snapshot() if PLATFORMS else None),
                 "dev_brain": (DEV_BRAIN.snapshot() if DEV_BRAIN else None),
+                "notebook": (NOTEBOOK.snapshot() if NOTEBOOK else None),
             }[name]()
         except Exception:
             continue
@@ -302,14 +309,15 @@ def remote_pull_all():
         "goals": GOALS_PATH,
         "platforms": os.path.join(DATA_DIR, "platforms.json"),
         "dev_brain": os.path.join(DATA_DIR, "dev_brain.json"),
+        "notebook": os.path.join(DATA_DIR, "notebook.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
         if not isinstance(data, dict):
             skipped.append(name)
             continue
-        if name in ("platforms", "dev_brain"):
-            obj = PLATFORMS if name == "platforms" else DEV_BRAIN
+        if name in ("platforms", "dev_brain", "notebook"):
+            obj = {"platforms": PLATFORMS, "dev_brain": DEV_BRAIN, "notebook": NOTEBOOK}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3140,6 +3148,11 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
+        if u.path == "/api/notebook":
+            self._send_json(200, {"ok": True,
+                                  "docs": NOTEBOOK.list_docs() if NOTEBOOK else [],
+                                  "stats": NOTEBOOK.stats() if NOTEBOOK else {}})
+            return
         if u.path == "/api/self":
             self._send_json(200, {"ok": True, "self": DEV_BRAIN.self_narrative() if DEV_BRAIN else {"error": "unavailable"}})
             return
@@ -3562,6 +3575,44 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             role = USERS.role(tok) if USERS else "guest"
             self._send_json(200, {"ok": True, "role": role})
+            return
+        if u.path == "/api/notebook/add":
+            name = str(body.get("name") or "")
+            text = str(body.get("text") or "")
+            res = NOTEBOOK.add(name, text) if NOTEBOOK else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("notebook", NOTEBOOK.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/notebook/remove":
+            res = NOTEBOOK.remove(str(body.get("id") or "")) if NOTEBOOK else {"ok": False, "error": "unavailable"}
+            if remote_enabled():
+                remote_push("notebook", NOTEBOOK.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/notebook/analyze":
+            q = str(body.get("q") or "")
+            # grounded analysis; if ensemble key available, synthesize with citation
+            synth = None
+            if body.get("use_ai") and NOTEBOOK:
+                try:
+                    from brain_ensemble import load_keys, _call_groq
+                    keys = load_keys()
+                    if keys.get("groq"):
+                        def _synth(question, ctx):
+                            sysm = ("You are Zyphere's analyst. Answer ONLY from the provided "
+                                    "source excerpts. Cite [doc | part] where each claim comes from. "
+                                    "If the sources don't cover something, say so. Never invent facts.")
+                            return _call_groq(keys["groq"],
+                                [{"role": "system", "content": sysm},
+                                 {"role": "user", "content": ctx + "\n\nQuestion: " + question}])
+                        synth = _synth
+                except Exception:
+                    synth = None
+            res = NOTEBOOK.analyze(q, synth) if NOTEBOOK else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("notebook", NOTEBOOK.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/self/grow":
             res = DEV_BRAIN.grow() if DEV_BRAIN else {"error": "unavailable"}
