@@ -1,8 +1,8 @@
-﻿import json, os, random, re, subprocess, sys, time, urllib.request, urllib.error
+﻿import json, os, random, re, shutil, subprocess, sys, tempfile, time, urllib.request, urllib.error
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ALLOWED = {"app.py", "index.html"}
 CANDIDATES = []
-PROTECTED = ("function speak(", "function sayOne(", "spkTok", "curAud", "function localAns(", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS")
+PROTECTED = ("function speak(", "function sayOne(", "spkTok", "curAud", "function localAns(", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather(")
 INTERVAL = int(os.environ.get("DEV_INTERVAL", "900"))
 MAX = int(os.environ.get("DEV_MAX", "6"))
 DRY = os.environ.get("DEV_DRY") == "1"
@@ -47,16 +47,32 @@ def apply_patch(p):
     open(path, "w", encoding="utf-8").write(s.replace(old, new, 1))
     return True
 
+def js_ok():
+    src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+    blocks = re.findall(r"<script(?![^>]*src)[^>]*>([\s\S]*?)</script>", src)
+    node = shutil.which("node") or r"C:\Program Files\nodejs\node.exe"
+    if not node or not os.path.exists(node):
+        return True
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as f:
+        f.write("\n".join(blocks))
+        path = f.name
+    try:
+        return subprocess.run([node, "--check", path], capture_output=True, text=True).returncode == 0
+    finally:
+        os.unlink(path)
+
 def verify():
     r = subprocess.run([sys.executable, "-m", "py_compile", "app.py"], cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
+        return False
+    if not js_ok():
         return False
     app_src = open(os.path.join(ROOT, "app.py"), encoding="utf-8").read()
     idx_src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
     for x in ("/api/transcribe", "def build_briefing", "DEV_STAGES", "frontier_pick"):
         if x not in app_src:
             return False
-    for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send(", "spkTok", "curAud", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS"):
+    for x in ("localCommand", "transcribeFile", "giveFeedback", "critiqueAnswer", "function send(", "spkTok", "curAud", "const GREET", "function greetLang(", "function deepAnalyze(", "function solveHard(", "async function readSSE(", "feedStreamSpeak", "drainTTS", "async function getWeather("):
         if x not in idx_src:
             return False
     r = subprocess.run([sys.executable, "test_zyphere.py"], cwd=ROOT, capture_output=True, text=True)
