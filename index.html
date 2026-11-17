@@ -95,7 +95,7 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
 <button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
 <div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="shopBtn" title="Pro / สนับสนุน">⭐</button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ">👁</button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน">💙</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
+<button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="ib" id="adminBtn" title="Admin">🔐</button><button class="ib" id="shopBtn" title="Pro / สนับสนุน">⭐</button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ">👁</button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน">💙</button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
 <button class="ib" id="plusBtn" title="แนบไฟล์"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
@@ -148,6 +148,14 @@ body{background-image:radial-gradient(70% 45% at 50% -8%,rgba(139,92,246,.14),tr
 <div class="status" id="vErr"></div>
 <div id="vOut" style="display:none;margin-top:12px"><video id="vPlayer" controls playsinline></video><div style="display:flex;gap:8px;margin-top:8px"><a id="vDl" class="sb new" download style="justify-content:center">ดาวน์โหลด MP4</a><button class="sb new" id="vAgain" style="justify-content:center">สร้างใหม่</button></div><details style="margin-top:8px"><summary>เครดิตภาพ</summary><div id="vCredits" class="status" style="white-space:pre-wrap"></div></details></div>
 <div style="display:flex;gap:8px;margin-top:10px"><button class="sb new" id="vClose" style="justify-content:center">ปิด</button></div>
+</div></div>
+<div class="bk" id="admin"><div class="card">
+<h3>🔐 Admin — ยอดขาย Zyphere</h3>
+<div style="display:flex;gap:8px;margin-top:10px"><input id="adUser" placeholder="user" style="flex:1;min-width:0"><input id="adPass" type="password" placeholder="password" style="flex:1;min-width:0"></div>
+<button class="sb go" id="adLogin" style="justify-content:center;margin-top:8px">เข้าสู่ระบบ Admin</button>
+<div class="status" id="adMsg" style="white-space:pre-wrap;margin-top:8px"></div>
+<div id="adData" style="margin-top:10px"></div>
+<button class="sb new" id="adClose" style="justify-content:center;margin-top:10px">ปิด</button>
 </div></div>
 <div class="bk" id="shop"><div class="card">
 <h3>💙 Zyphere Pro — สนับสนุน &amp; ปลดล็อก</h3>
@@ -1170,6 +1178,22 @@ function endCall(){mode=0;home=0;call=false;stopListen();stopSpeak();if(ctrl&&bu
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
 $('q').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'});
 $('sendBtn').onclick=()=>send();$('micBtn').onclick=mic;$('callBtn').onclick=()=>run(2);$('jvBtn').onclick=()=>mode?endCall():run(1);$('endBtn').onclick=endCall;
+$('adminBtn').onclick=()=>{$('set').style.display='none';$('admin').style.display='flex'};
+$('adClose').onclick=()=>{$('admin').style.display='none'};
+$('adLogin').onclick=async()=>{
+ try{
+  const r=await fetch(localBase()+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:$('adUser').value,password:$('adPass').value})});
+  const j=await r.json();
+  if(!j.ok){$('adMsg').textContent='❌ '+redact(j.error||'เข้าสู่ระบบไม่ได้');return}
+  const a=await fetch(localBase()+'/api/admin?token='+encodeURIComponent(j.token));
+  const d=await a.json();
+  const rev=d.revenue||{},us=d.users||{},br=d.brain||{};
+  $('adMsg').textContent='✅ เข้าสู่ระบบสำเร็จ';
+  $('adData').innerHTML='<div class="kitem"><h4>💰 ยอดขาย</h4><div class="meta">ยอดรวม ฿'+(rev.revenue||0)+' · order '+(rev.orders||0)+' · จ่ายแล้ว '+(rev.paid||0)+' · สมาชิก '+(rev.subscribers||0)+'</div></div>'+
+   '<div class="kitem"><h4>👥 ผู้ใช้</h4><div class="meta">'+(us.users||0)+' คน · feedback '+(us.feedback||0)+'</div></div>'+
+   '<div class="kitem"><h4>🧠 สมอง</h4><div class="meta">facts '+(br.facts||0)+' · rules '+(br.rules||0)+'</div></div>';
+ }catch(e){$('adMsg').textContent='❌ '+redact(e.message)}
+};
 $('shopBtn').onclick=openShop;
 $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
