@@ -16,6 +16,7 @@ class LocalBrain:
         self.facts = []          # {s, r, o, t, src, conf}
         self.rules = []          # {body:[[s,r,o]], head:[s,r,o], support}
         self.episodes = []       # raw remembered statements
+        self.gaps = []           # capability gaps -> self-improvement
         self.vocab = defaultdict(int)
         self._load()
 
@@ -27,6 +28,7 @@ class LocalBrain:
             self.facts = d.get("facts", [])
             self.rules = d.get("rules", [])
             self.episodes = d.get("episodes", [])
+            self.gaps = d.get("gaps", [])
             self.vocab = defaultdict(int, d.get("vocab", {}))
         except Exception:
             pass
@@ -36,7 +38,7 @@ class LocalBrain:
             try:
                 with open(self.path, "w", encoding="utf-8") as f:
                     json.dump({"facts": self.facts, "rules": self.rules,
-                               "episodes": self.episodes[-500:], "vocab": dict(self.vocab)},
+                               "episodes": self.episodes[-500:], "gaps": self.gaps, "vocab": dict(self.vocab)},
                               f, ensure_ascii=False, indent=2)
             except Exception:
                 pass
@@ -177,7 +179,48 @@ class LocalBrain:
             return "จากสิ่งที่ผมเรียนรู้มา:\n" + "\n".join("• " + x for x in lines)
         return None  # signal: no local answer
 
+
+    # ---------- capability gaps -> self-improvement ----------
+    def log_gap(self, need, context=""):
+        """Log an unmet user need and propose a concrete next capability to build."""
+        need = str(need or "").strip()[:300]
+        if not need:
+            return None
+        proposals = []
+        n = need.lower()
+        if any(w in n for w in ("(device", "yuan", "restart pc", "ปิดเครื่อง", "เปิดเครื่อง", "สั่งงานเครื่อง", "ไฟ", "แอร์", "tv", "ประตู")):
+            proposals.append("iot_control")
+        if any(w in n for w in ("calendar", "calendar", "ปฏิทิน", "นัดหมาย", "remind", "แจ้งเตือน")):
+            proposals.append("calendar_sync")
+        if any(w in n for w in ("email", "อีเมล", "ส่งจดหมาย", "inbox")):
+            proposals.append("email_tool")
+        if any(w in n for w in ("github", "commit", "repo")):
+            proposals.append("github_tool")
+        if any(w in n for w in ("payment", "จ่ายเงิน", "ซื้อ", "shopping", "สั่งซื้อ")):
+            proposals.append("payment_guard")
+        if not proposals:
+            proposals.append("research")
+        gap = {"need": need, "context": str(context or "")[:300],
+               "proposals": proposals, "t": int(time.time()), "status": "open"}
+        with self.lock:
+            self.gaps.append(gap)
+        self.add_fact("ผู้ใช้", "needs", need, "capability_gap")
+        self.save()
+        return gap
+
+    def pending_gaps(self):
+        with self.lock:
+            return [g for g in self.gaps if g.get("status") == "open"][:20]
+
+    def close_gap(self, need, built):
+        with self.lock:
+            for g in self.gaps:
+                if g["need"] == need:
+                    g["status"] = "built" if built else "blocked"
+                    g["built_at"] = int(time.time())
+        self.save()
+
     def stats(self):
         with self.lock:
             return {"facts": len(self.facts), "rules": len(self.rules),
-                    "episodes": len(self.episodes), "vocab": len(self.vocab)}
+                    "episodes": len(self.episodes), "gaps": len(self.pending_gaps()), "vocab": len(self.vocab)}

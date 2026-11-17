@@ -68,6 +68,11 @@ try:
     BRAIN = LocalBrain(os.path.join(DATA_DIR, "brain.json"))
 except Exception:
     BRAIN = None
+try:
+    from users import Users
+    USERS = Users(os.path.join(DATA_DIR, "users.json"))
+except Exception:
+    USERS = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3155,6 +3160,20 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/brain":
             self._send_json(200, {"ok": True, "brain": BRAIN.stats() if BRAIN else {"error": "unavailable"}})
             return
+        if u.path == "/api/brain/gaps":
+            self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
+            return
+        if u.path == "/api/support":
+            try:
+                with open(os.path.join(DATA_DIR, "support.json"), "r", encoding="utf-8") as f:
+                    info = json.load(f)
+            except Exception:
+                info = {}
+            self._send_json(200, {"ok": True, "support": info})
+            return
+        if u.path == "/api/users/stats":
+            self._send_json(200, {"ok": True, "users": USERS.stats() if USERS else {"error": "unavailable"}})
+            return
         if u.path == "/api/brain/ask":
             q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
             self._send_json(200, {"ok": True, "answer": BRAIN.ask(q) if BRAIN else None, "offline": True})
@@ -3296,6 +3315,37 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception as e:
                 self._send_json(400, {"ok": False, "error": _clip(str(e), 300)})
             return
+        if u.path == "/api/users/register":
+            r = USERS.register(body.get("email"), body.get("password"), body.get("name")) if USERS else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/users/login":
+            r = USERS.login(body.get("email"), body.get("password")) if USERS else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if r.get("ok") else 401, r)
+            return
+        if u.path == "/api/users/feedback":
+            email = str(body.get("email") or "guest")
+            r = USERS.add_feedback(email, body.get("kind"), body.get("text")) if USERS else {"ok": False}
+            self._send_json(200, r)
+            return
+        if u.path == "/api/brain/gap":
+            gap = BRAIN.log_gap(body.get("need") or "", body.get("context") or "") if BRAIN else None
+            self._send_json(200, {"ok": True, "gap": gap, "pending": BRAIN.pending_gaps() if BRAIN else []})
+            return
+        if u.path == "/api/brain/gaps":
+            self._send_json(200, {"ok": True, "pending": BRAIN.pending_gaps() if BRAIN else []})
+            return
+        if u.path == "/api/support":
+            try:
+                with open(os.path.join(DATA_DIR, "support.json"), "r", encoding="utf-8") as f:
+                    info = json.load(f)
+            except Exception:
+                info = {}
+            self._send_json(200, {"ok": True, "support": info})
+            return
+        if u.path == "/api/users/stats":
+            self._send_json(200, {"ok": True, "users": USERS.stats() if USERS else {"error": "unavailable"}})
+            return
         if u.path == "/api/brain/auto":
             # learn from user question + assistant answer automatically (offline)
             try:
@@ -3310,6 +3360,53 @@ class Handler(SimpleHTTPRequestHandler):
             text = str(body.get("text") or "")
             got = BRAIN.learn_text(text, body.get("source") or "user") if BRAIN else []
             self._send_json(200, {"ok": True, "learned": got, "stats": BRAIN.stats() if BRAIN else {}})
+            return
+        if u.path == "/api/ask":
+            # Server-side LLM proxy: any user can chat without personal API key.
+            msgs = body.get("messages") or []
+            sys_p = str(body.get("system") or "")
+            if not isinstance(msgs, list) or len(msgs) > 40:
+                self._send_json(400, {"ok": False, "error": "invalid messages"})
+                return
+            clean = []
+            for m in msgs[-20:]:
+                if not isinstance(m, dict):
+                    continue
+                role = m.get("role") if m.get("role") in ("user", "assistant", "system") else "user"
+                content = str(m.get("content") or "")[:8000]
+                if content.strip():
+                    clean.append({"role": role, "content": content})
+            if not clean:
+                self._send_json(400, {"ok": False, "error": "empty message"})
+                return
+            if sys_p:
+                clean.insert(0, {"role": "system", "content": sys_p[:6000]})
+            key = os.environ.get("GROQ_API_KEY", "").strip()
+            if not key:
+                try:
+                    key = open(os.path.join(BASE_DIR, "..", "API-Zyphere.txt"), encoding="utf-8").read().splitlines()[1].strip()
+                except Exception:
+                    key = ""
+            if not key:
+                self._send_json(503, {"ok": False, "error": "server AI key not configured"})
+                return
+            try:
+                r = requests.post("https://api.groq.com/openai/v1/chat/completions",
+                    headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+                    json={"model": "openai/gpt-oss-120b", "messages": clean,
+                          "temperature": 0.4, "max_tokens": 2048}, timeout=90)
+                if not r.ok:
+                    raise RuntimeError(_clip(r.text, 200))
+                txt = str(((r.json().get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+                self._send_json(200, {"ok": True, "text": txt, "offline": False})
+            except Exception as e:
+                # log anomaly for learning
+                try:
+                    if BRAIN:
+                        BRAIN.log_gap("server ask failed: " + str(e)[:120], "api_ask")
+                except Exception:
+                    pass
+                self._send_json(502, {"ok": False, "error": _clip(str(e), 200)})
             return
         if u.path == "/api/text/polish":
             try:
