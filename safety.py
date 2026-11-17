@@ -63,7 +63,10 @@ class SafetyEngine:
         """
         t = str(text or "")
         # meta/discussion context (asking about rules, safety, learning) is allowed
-        meta = bool(re.search(r"(ขาดอะไร|พัฒนา|เรียนรู้|อธิบาย|หมายความว่าอะไร|study|reflect|rule|safety|ตรวจสอบ|evaluation)", t, re.I))
+        # Any question/discussion form is meta (mentions keywords but does not request action)
+        meta = bool(re.search(
+            r"(ขาดอะไร|พัฒนา|เพิ่ม|เขียนโค้ด|เรียนรู้|อธิบาย|หมายความว่าอะไร|study|reflect|rule|safety|"
+            r"ตรวจสอบ|evaluation|สิ่งส าคัญ|ตอบสนอง|โมดูล|วัดว่า|ระบุ|จงบอก|บอกตรง|ช่วยอธิบาย|[?？])", t, re.I))
         hits_hard, hits_soft = [], []
         for r in self.rules:
             if re.search(r["pattern"], t, re.I):
