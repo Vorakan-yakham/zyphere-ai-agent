@@ -297,6 +297,21 @@ try:
     MONEYFIELD = MoneyField(os.path.join(DATA_DIR, "moneyfield.json"))
 except Exception:
     MONEYFIELD = None
+try:
+    from codeforge import CodeForge
+    CODEFORGE = CodeForge(MEDIA_DIR)
+except Exception:
+    CODEFORGE = None
+try:
+    from autofill import Autofill
+    AUTOFILL = Autofill(os.path.join(DATA_DIR, "autofill.json"))
+except Exception:
+    AUTOFILL = None
+try:
+    from help import Help
+    HELP = Help(os.path.join(DATA_DIR, "help.json"))
+except Exception:
+    HELP = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -4282,6 +4297,25 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/help/ask":
+            res = HELP.ask(str(body.get("action") or ""), str(body.get("blocker") or ""),
+                           str(body.get("need") or ""), str(body.get("context") or "")) if HELP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("help", HELP.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/help/resolve":
+            res = HELP.resolve(str(body.get("id") or ""), str(body.get("solution") or ""),
+                               str(body.get("blocker") or "")) if HELP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("help", HELP.snapshot())
+            self._send_json(200, res)
+            return
+        if u.path == "/api/code/forge":
+            res = CODEFORGE.forge(str(body.get("kind") or "โค้ด/สคริปต์"),
+                                  body.get("title"), int(body.get("price") or 499)) if CODEFORGE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/money/generate":
             res = MONEYFIELD.generate(str(body.get("field") or ""),
                                      str(body.get("zyphere_answer") or "")) if MONEYFIELD else {"ok": False, "error": "unavailable"}
@@ -4307,6 +4341,34 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/auto/observe":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": len(GUARD.status().get("role", "")) if GUARD else 0,
+                  "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.observe(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/decide":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": 0, "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.decide(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/log":
+            self._send_json(200, AUTOFILL.log() if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/help/pending":
+            self._send_json(200, {"ok": True, "pending": HELP.pending() if HELP else [],
+                                  "stats": HELP.stats() if HELP else {}})
+            return
+        if u.path == "/api/code/list":
+            self._send_json(200, {"ok": True, "products": CODEFORGE.list_products() if CODEFORGE else [],
+                                  "stats": CODEFORGE.stats() if CODEFORGE else {}})
             return
         if u.path == "/api/money/fields":
             self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
