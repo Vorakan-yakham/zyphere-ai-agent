@@ -52,6 +52,15 @@ class DevCompanion:
             self.actions = json.load(open(DATA, encoding="utf-8")).get("actions", [])
         except Exception:
             pass
+        if not self.actions:
+            try:
+                r = requests.get("https://raw.githubusercontent.com/" + REPO +
+                                 "/main/data/dev_actions.json?t=" + str(int(time.time())),
+                                 timeout=15)
+                if r.ok:
+                    self.actions = (r.json() or {}).get("actions", [])
+            except Exception:
+                pass
 
     def save(self):
         with self.lock:
@@ -103,6 +112,20 @@ class DevCompanion:
                    "- ผล: " + a["outcome"],
                    "- บทเรียน: " + (a["lesson"] or "-"), ""]
         push("DEV_COMPANION.md", "\n".join(md))
+        try:
+            h = {"Authorization": "Bearer " + token(), "Accept": "application/vnd.github+json"}
+            url = BASE + "data/dev_actions.json"
+            g = requests.get(url, headers=h, timeout=15)
+            sha = (g.json() or {}).get("sha") if g.ok else None
+            p2 = {"message": "Dev actions " + str(int(time.time())),
+                  "content": base64.b64encode(json.dumps(
+                      {"actions": self.actions[-1000:]}, ensure_ascii=False).encode()).decode(),
+                  "branch": "main"}
+            if sha:
+                p2["sha"] = sha
+            requests.put(url, headers=h, json=p2, timeout=30)
+        except Exception:
+            pass
 
     def status(self):
         return {"ok": True, "actions": len(self.actions),
