@@ -61,6 +61,16 @@ class CoLearning:
             self.log = json.load(open(DATA, encoding="utf-8")).get("log", [])
         except Exception:
             pass
+        # Render has no local disk persistence: load the durable copy from GitHub.
+        if not self.log:
+            try:
+                u = ("https://raw.githubusercontent.com/" + REPO +
+                     "/main/co_learning.json?t=" + str(int(time.time())))
+                r = requests.get(u, timeout=15)
+                if r.ok:
+                    self.log = (r.json() or {}).get("log", [])
+            except Exception:
+                pass
 
     def save(self):
         with self.lock:
