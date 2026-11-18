@@ -519,6 +519,20 @@ body{--meta-w:68px}
 .side .list{display:flex!important;flex-direction:column!important;gap:2px;max-height:38vh;overflow:auto}
 .side #search{display:block!important}
 
+
+/* === centered composer on first open (reference clip) === */
+body.is-empty .chat{flex:0 0 auto!important;padding:22vh 24px 0!important;display:block!important}
+body.is-empty .col{min-height:0!important;gap:12px!important}
+body.is-empty .empty{margin:0 auto!important;text-align:center!important;padding:0!important}
+body.is-empty .empty h1{font-size:26px!important;font-weight:600!important;letter-spacing:0!important;
+  color:#202124!important;background:none!important;-webkit-text-fill-color:#202124!important;margin:0 0 24px!important}
+body.is-empty .empty .hero{display:none!important}
+body.is-empty .dock{padding:18px 24px 24px!important}
+body.is-empty .chips{max-width:840px!important;margin:14px auto 0!important}
+body.is-empty .chip{border-radius:999px!important;padding:7px 14px!important;font-size:12.5px!important}
+body.is-empty .box{max-width:840px!important;box-shadow:0 2px 14px rgba(60,64,67,.08)!important}
+body.is-empty .box textarea{min-height:34px!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -556,7 +570,7 @@ body{--meta-w:68px}
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
 <button class="ib" id="plusBtn" title="แนบไฟล์"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
-<textarea id="q" rows="1" placeholder="คุยกับไซเฟอร์ หรือสั่งงานได้เลย..."></textarea>
+<textarea id="q" rows="1" placeholder="ถาม Zyphere..."></textarea>
 <button class="ib" id="videoBtn" title="สร้างวิดีโอจากภาพ+ข้อความ+เสียง"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></button>
 <button class="ib" id="agentBtn" title="โหมด Agent: ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง (ต้องรันผ่าน python app.py)"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg></button>
 <button class="ib" id="micBtn" title="พูด"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
@@ -934,8 +948,8 @@ function bubble(m,live){const col=$('col');let d;
    mk('ฟัง',b=>{if(b.dataset.on==='1'){stopSpeak();b.dataset.on='0';b.textContent='ฟัง';return}b.dataset.on='1';b.textContent='หยุด';lastLang=resolveLang(m.c);speak(m.c,b).then(()=>{b.dataset.on='0';b.textContent='ฟัง'}).catch(()=>{b.dataset.on='0';b.textContent='ฟัง'})});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
 const SUG=['ช่วยค้นข้อมูลล่าสุดเกี่ยวกับ AI ที่น่าสนใจให้หน่อย','จำไว้ว่าเรียกฉันว่าเพื่อน และชอบคำอธิบายสั้น ๆ','ช่วยสรุปสิ่งที่ควรทำต่อจากไฟล์/งานที่ฉันให้','อากาศที่กรุงเทพตอนนี้เป็นยังไง'];
-function view(){const col=$('col');col.innerHTML='';const c=chats.find(x=>x.id===cur);
- if(!c||!c.m.length){col.innerHTML='<div class="empty"><div class="hero">'+lg()+'</div><h1>สวัสดีครับ ผมไซเฟอร์</h1><p>คุยกับผมเหมือนคุยกับคนได้เลย สั่งงานให้ค้นข้อมูล อ่านไฟล์ หรือช่วยคิดงานต่อได้ — ถ้าเปิดโหมด Agent ผมจะค้นและจดจำสิ่งสำคัญให้เอง</p><div class="sug"></div></div>';SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
+function view(){const col=$('col');col.innerHTML='';document.body.classList.remove('is-empty');const c=chats.find(x=>x.id===cur);
+ if(!c||!c.m.length){col.innerHTML='<div class="empty"><h1>เราควรเริ่มจากตรงไหนดี</h1><div class="sug"></div></div>';document.body.classList.add('is-empty');SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
  else c.m.forEach(m=>bubble(m));
  renderList()}
 function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
