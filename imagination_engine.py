@@ -128,3 +128,7 @@ if __name__ == "__main__":
     r = create("ภาพหญิงสายลมยามเย็น กล้องระยะใกล้", apply=False)
     print(json.dumps({"direction": r["direction"], "artefact": r["artefact"]},
                      ensure_ascii=False)[:900])
+
+
+def run():
+    return create("สายลมสร้างสรรค์จากข้อมูลจริงของทีม", "auto", apply=True)
