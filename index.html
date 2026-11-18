@@ -362,6 +362,13 @@ body.zy-admin #set .kr{display:flex!important}
 .side.rail.hide{margin-left:-62px!important;opacity:0;pointer-events:none;transition:margin .22s,opacity .18s}
 .side.rail{transition:margin .22s,opacity .18s}
 
+
+.side.rail.hide + .main .reopen-rail{display:grid}
+.reopen-rail{display:none;position:fixed;left:12px;top:14px;z-index:12;width:38px;height:38px;
+  border:1px solid var(--z-line);border-radius:11px;background:var(--z-sf);color:var(--z-acc);
+  place-items:center;cursor:pointer;box-shadow:var(--z-shadow)}
+.reopen-rail svg{width:19px;height:19px}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side rail" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
@@ -388,7 +395,7 @@ body.zy-admin #set .kr{display:flex!important}
  <div class="side-foot"><button class="acct" id="acctBtn"><span class="avatar">VY</span><span class="acct-name" id="acctName">vorakan_yakham</span></button><button class="bell" id="bellBtn" title="แจ้งเตือน"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div>
  <button class="sb" id="setBtn" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button>
 </aside>
-<div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="main"><button class="reopen-rail" id="reopenRail" title="เปิดเมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="jv" id="gTop" title="ล็อกอินด้วย Google">Google</button><button class="jv" id="logoutBtn" title="ออกจากระบบ" style="display:none">Logout</button><button class="ib" id="adminBtn" title="Admin"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></button><button class="ib" id="shopBtn" title="Pro / สนับสนุน"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg></button><button class="ib" id="storeBtn" title="ร้านค้า — ซื้อผลงาน 46 นักวิชาการ"><svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></svg><span style="font-size:10px">ร้านค้า</span></button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
@@ -1662,7 +1669,8 @@ $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
 $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('agentMode').value=agentOn?'on':'off';toast(agentOn?'เปิดโหมด Agent แล้ว (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)':'ปิดโหมด Agent แล้ว'); if(agentOn)loadMemory()};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('menu').onclick=()=>$('side').classList.toggle('open');
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open')};
+$('menu').onclick=()=>{const sd=$('side');sd.classList.toggle('hide');sd.classList.toggle('open');};
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
 renderStatusPanel();
@@ -1710,7 +1718,7 @@ if(!window.__sideNavWired){
  // clicking any nav item collapses the sidebar automatically (mobile-like)
  document.querySelectorAll('.side-nav .nv, .side-foot .acct, .side-foot .bell').forEach(function(el){
   el.addEventListener('click',function(){
-   var sd=document.getElementById('side');if(sd)sd.classList.add('hide');
+   var sd=document.getElementById('side');if(sd)sd.classList.toggle('hide');
   });
  });
  go('bellBtn',()=>{if(window.toast)toast('ไม่มีการแจ้งเตือนใหม่ครับ')});
