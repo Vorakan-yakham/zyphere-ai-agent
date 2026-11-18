@@ -503,7 +503,7 @@ body{--meta-w:68px}
 .acct-menu .am{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;
   padding:9px 11px;border-radius:9px;font-size:13.5px;color:#202124;cursor:pointer;text-align:left}
 .acct-menu .am:hover{background:#f1f3f4}
-.acct-menu .am span{margin-left:auto;font-size:11px;color:#9aa0a6}
+.acct-menu .am span{font-size:13.5px!important;color:#202124!important;white-space:nowrap}
 .acct-menu .am-sep{border-top:1px solid #e8eaed;margin:6px 4px}
 .acct-menu .am-foot{font-size:10px;color:#9aa0a6;padding:8px 11px 2px;line-height:1.6}
 @media(prefers-color-scheme:dark){
@@ -618,6 +618,22 @@ body:before{display:none!important}
 .acct-menu .am:hover{transform:translateX(3px)!important}
 .acct-menu .am:hover svg{stroke:#1a73e8!important;transform:translateX(3px) scale(1.08)!important}
 .acct-menu .am:active svg{transform:scale(.92)!important}
+
+
+/* === icon polish: label hugs icon; every icon nudges on hover === */
+.acct-menu .am{justify-content:flex-start!important;text-align:left!important}
+.acct-menu .am span{margin-left:0!important;margin-right:auto!important;font-size:13.5px!important;color:#202124!important}
+/* any icon inside an interactive control gets a subtle micro-motion */
+button svg,.nv svg,.am svg,.sb svg,.ib svg,.box svg,.side-foot svg,
+.side-head svg,.acct-menu svg,.hist-more,.chip svg,.top svg,.dock svg{
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),stroke .18s,opacity .18s!important;
+  transform-origin:center!important}
+button:hover>svg,.nv:hover svg,.am:hover svg,.sb:hover svg,.ib:hover svg,
+.side-foot button:hover svg,.acct-menu button:hover svg,.top button:hover svg,
+.dock button:hover svg{transform:translateX(2px) scale(1.06)!important}
+button:active>svg,.nv:active svg,.am:active svg,.ib:active svg{transform:scale(.92)!important}
+/* keep rail icons centred while still nudging */
+.side.rail .nv:hover svg,.side.rail button:hover svg{transform:scale(1.08)!important}
 
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
