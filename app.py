@@ -3982,9 +3982,10 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/improve/config":
             if u.command == "POST":
+                payload = body if isinstance(body, dict) else {}
                 for k in ("enabled", "interval_minutes"):
-                    if k in body:
-                        IMPROVE_CFG[k] = body[k]
+                    if k in payload:
+                        IMPROVE_CFG[k] = payload[k]
                 return self._send_json(200, {"ok": True, "config": IMPROVE_CFG})
             self._send_json(200, {"ok": True, "config": IMPROVE_CFG,
                                   "busy": _improve_busy})
