@@ -3905,6 +3905,21 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/governance/registry":
+            try:
+                gp = os.path.join(BASE_DIR, "governance", "registry.json")
+                reg = json.load(open(gp, encoding="utf-8")) if os.path.exists(gp) else {}
+                self._send_json(200, {"ok": bool(reg), "registry": reg})
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": str(e)[:120]})
+            return
+        if u.path == "/api/governance/status":
+            gp = os.path.join(BASE_DIR, "governance")
+            files = sorted(os.listdir(gp)) if os.path.isdir(gp) else []
+            self._send_json(200, {"ok": True, "documents": len(files),
+                                  "divisions": 12, "engines": 5,
+                                  "files": files})
+            return
         if u.path == "/api/co-learn/levels":
             self._send_json(200, CO.levels() if CO
                             else {"ok": False, "error": "unavailable"})

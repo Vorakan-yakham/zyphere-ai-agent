@@ -1,0 +1,390 @@
+{
+  "divisions": {
+    "01": [
+      "Research & Science Division",
+      "วิจัยและวิทยาศาสตร์พื้นฐาน",
+      [
+        "scholars.py 46 คณะ",
+        "research.py",
+        "scholar_research.py",
+        "Scientific Discovery Center*",
+        "Open Science Center*",
+        "Standards & Benchmark Center*"
+      ]
+    ],
+    "02": [
+      "Engineering & Technology Division",
+      "วิศวกรรมและเทคโนโลยี",
+      [
+        "โปรแกรมเมอร์",
+        "นักวิเคราะห์ระบบ",
+        "Autonomous Systems Center*",
+        "Advanced Computing Center*",
+        "Digital Twin Center*"
+      ]
+    ],
+    "03": [
+      "AI & Data Intelligence Division",
+      "AI และข้อมูล",
+      [
+        "brain_ensemble.py",
+        "local_brain.py",
+        "dev_brain.py",
+        "ฐานข้อมูล",
+        "AI Memory & Knowledge Systems*",
+        "Agentic AI Research*"
+      ]
+    ],
+    "04": [
+      "Humanities & Society Division",
+      "มนุษยศาสตร์และสังคม",
+      [
+        "ฝ่ายภาษา",
+        "ฝ่ายวิชาการ (ส่วนมนุษยศาสตร์)",
+        "กฎหมาย/ปรัชญา/ประวัติศาสตร์"
+      ]
+    ],
+    "05": [
+      "Earth & Life Systems Division",
+      "โลกและชีวิต",
+      [
+        "geo/bio/agri/water/energy faculties",
+        "Resilience & Crisis Research*",
+        "Global Problem Solving Center*"
+      ]
+    ],
+    "06": [
+      "Innovation & Futures Division",
+      "นวัตกรรมและอนาคต",
+      [
+        "Strategic Foresight Center*",
+        "Digital Civilization Research*",
+        "Human Potential Research*",
+        "concept.py",
+        "cross_disciplinary.py"
+      ]
+    ],
+    "07": [
+      "Product & Business Division",
+      "ผลิตภัณฑ์และธุรกิจ",
+      [
+        "ฝ่ายผลิตหนังสือ",
+        "ฝ่ายการตลาด",
+        "ฝ่ายออกแบบผลิตภัณฑ์",
+        "store.py",
+        "Technology Transfer Center*"
+      ]
+    ],
+    "08": [
+      "Learning & Development Division",
+      "การเรียนรู้และพัฒนาบุคลากร",
+      [
+        "co_learning.py",
+        "cross_disciplinary.py",
+        "curriculum.py",
+        "academy.py",
+        "Employee Growth System*"
+      ]
+    ],
+    "09": [
+      "Knowledge & Research Operations Division",
+      "ปฏิบัติการความรู้และวิจัย",
+      [
+        "ฐานข้อมูล",
+        "research.py",
+        "knowledge_graph.py",
+        "rag.py",
+        "Living Knowledge System*",
+        "Global Collaboration Center*"
+      ]
+    ],
+    "10": [
+      "Safety & Governance Division",
+      "ความปลอดภัยและกำกับดูแล",
+      [
+        "ฝ่ายความปลอดภัย",
+        "ฝ่ายทดสอบ",
+        "นักวิเคราะห์ระบบ",
+        "quality_ops.py",
+        "Independent Evaluation Office*"
+      ]
+    ],
+    "11": [
+      "Operations & Resources Division",
+      "ปฏิบัติการและทรัพยากร",
+      [
+        "ฝ่ายปฏิบัติการ",
+        "Render",
+        "Upstash KV",
+        "GitHub",
+        "ratelimit.py"
+      ]
+    ],
+    "12": [
+      "Strategy & Partnerships Division",
+      "กลยุทธ์และความร่วมมือ",
+      [
+        "Global Intelligence Center*",
+        "demand.py",
+        "market.py",
+        "autopost.py"
+      ]
+    ]
+  },
+  "existing": [
+    [
+      "นักวิเคราะห์ระบบ",
+      "systems_analyst.py",
+      "ตรวจสถาปัตยกรรม/secret/route",
+      "02,10"
+    ],
+    [
+      "ฐานข้อมูล",
+      "app.py remote KV + github_backup.py",
+      "KV + GitHub persistence",
+      "03,09"
+    ],
+    [
+      "โปรแกรมเมอร์",
+      "app.py + test_zyphere.py",
+      "เขียนโค้ด commit/deploy",
+      "02"
+    ],
+    [
+      "ฝ่ายวิชาการ",
+      "scholars.py (46), faculty_expansion.py",
+      "46 คณะ 184 สาขา",
+      "01,04"
+    ],
+    [
+      "ฝ่ายภาษา",
+      "language.py + co_learning",
+      "แก้คำ ตรวจข้อความ",
+      "04"
+    ],
+    [
+      "ฝ่ายออกแบบผลิตภัณฑ์",
+      "book_design_system.py",
+      "ปก layout grid",
+      "07,02"
+    ],
+    [
+      "ฝ่ายผลิตหนังสือ",
+      "book_team.py..v5",
+      "ผลิตเล่ม + QA",
+      "07"
+    ],
+    [
+      "ฝ่ายการตลาด",
+      "marketing_promoter.py",
+      "PROMO.md โพสต์",
+      "07,12"
+    ],
+    [
+      "ฝ่ายทดสอบ",
+      "test_zyphere.py + systems_analyst.py",
+      "regression 11/11",
+      "10"
+    ],
+    [
+      "ฝ่ายปฏิบัติการ",
+      "Render + trigger2.py + restart",
+      "deploy/restart",
+      "11"
+    ],
+    [
+      "ฝ่ายความปลอดภัย",
+      "safety.py, authz.py, audit.py",
+      "fail-closed gate",
+      "10"
+    ]
+  ],
+  "centers": [
+    [
+      "Global Intelligence Center",
+      "12"
+    ],
+    [
+      "Scientific Discovery Center",
+      "01"
+    ],
+    [
+      "Advanced Simulation Center",
+      "06"
+    ],
+    [
+      "Autonomous Systems Center",
+      "02"
+    ],
+    [
+      "Digital Civilization Research Center",
+      "06"
+    ],
+    [
+      "Human Potential Research Center",
+      "08"
+    ],
+    [
+      "Strategic Foresight Center",
+      "06"
+    ],
+    [
+      "Global Problem Solving Center",
+      "05"
+    ],
+    [
+      "Advanced Computing Center",
+      "02"
+    ],
+    [
+      "Technology Transfer Center",
+      "07"
+    ],
+    [
+      "Standards & Benchmark Center",
+      "10"
+    ],
+    [
+      "Digital Twin Center",
+      "02"
+    ],
+    [
+      "Open Science Center",
+      "01"
+    ],
+    [
+      "Global Collaboration Center",
+      "09"
+    ],
+    [
+      "Resilience & Crisis Research Center",
+      "05"
+    ]
+  ],
+  "engines": [
+    [
+      "Knowledge Engine",
+      "รวบรวม จัดหมวดหมู่ เชื่อมโยงความรู้",
+      "research.py, knowledge_graph.py, rag.py, world_taxonomy.json",
+      "ยังไม่มี ontology/vector DB จริง",
+      "09"
+    ],
+    [
+      "Learning Engine",
+      "พัฒนาความรู้ AI และบุคลากร",
+      "curriculum.py, co_learning.py, cross_disciplinary.py, dev_brain.py",
+      "เป็น text accumulation ไม่ใช่ model training",
+      "08"
+    ],
+    [
+      "Research Engine",
+      "ค้นคว้า ตั้งสมมติฐาน ทดลอง ตรวจสอบ",
+      "research.py, scholar_research.py, elibrary.py",
+      "ไม่มี experiment registry / statistical stack",
+      "01"
+    ],
+    [
+      "Innovation Engine",
+      "เปลี่ยนองค์ความรู้เป็นต้นแบบ",
+      "book_team*, codeforge.py, media.py, concept.py",
+      "ไม่มี image generation / 3D",
+      "06"
+    ],
+    [
+      "Governance Engine",
+      "ตรวจคุณภาพ ความปลอดภัย ผลกระทบ",
+      "safety.py, authz.py, audit.py, quality_ops.py, systems_analyst.py",
+      "authz ยังไม่บังคับทุก endpoint",
+      "10"
+    ]
+  ],
+  "kpi": [
+    [
+      "Knowledge Coverage",
+      "46 คณะ / 184 สาขา / 4225 สาขาโลก",
+      "ครบทุกสาขามีเจ้าภาพ",
+      "Master Registry"
+    ],
+    [
+      "Knowledge Accuracy",
+      "แหล่งที่มา 20/46 มี URL จริง",
+      ">80% มี URL",
+      "scholar_research.py"
+    ],
+    [
+      "Understanding & Reasoning",
+      "QA 11/11, test pass",
+      "ไม่ถอยหลัง",
+      "systems_analyst.py"
+    ],
+    [
+      "Research Quality",
+      "documents 20, A=12 B=7 C=1",
+      "เพิ่ม A ratio",
+      "research.py"
+    ],
+    [
+      "Innovation Capability",
+      "หนังสือ/ร้าน/วิดีโอ slideshow",
+      "เพิ่ม image studio",
+      "Creative directive"
+    ],
+    [
+      "Employee Development",
+      "11/11 doctor + cross",
+      "รักษาระดับ + certification",
+      "LEARNING.html"
+    ],
+    [
+      "Cross-Dept Collaboration",
+      "11 แผนก cross-disciplinary",
+      "โปรเจกต์จริง 1 ขึ้นไป",
+      "cross_disciplinary.py"
+    ],
+    [
+      "Real-World Impact",
+      "ร้าน/ebook อยู่ GitHub",
+      "ยอดที่ตรวจได้จริง",
+      "store.py"
+    ]
+  ],
+  "risks": [
+    [
+      "Hardcoded credential",
+      "set_pw.py มีรหัสจริงฝังในโค้ด",
+      "critical",
+      "เปลี่ยนเป็น env var"
+    ],
+    [
+      "Fake status",
+      "self-reported counters",
+      "high",
+      "แยก status จริงออกจากตัวเลข"
+    ],
+    [
+      "No GPU",
+      "Render free ไม่มี GPU",
+      "high",
+      "ส่งไป engine ภายนอก"
+    ],
+    [
+      "Fragmented source of truth",
+      "46 คณะอยู่ 2 ไฟล์",
+      "medium",
+      "ใช้ Master Registry เป็นกลาง"
+    ],
+    [
+      "No CI gate",
+      "GitHub Actions ไม่รัน test",
+      "medium",
+      "เพิ่ม test job"
+    ],
+    [
+      "Authz ไม่ครบ",
+      "endpoint ส่วนใหญ่เปิด",
+      "medium",
+      "บังคับทีละกลุ่ม"
+    ]
+  ],
+  "t": 1794981890
+}

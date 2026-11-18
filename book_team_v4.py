@@ -49,6 +49,11 @@ def th(s):
             if bad:
                 t = t.replace(bad, good)
     t = re.sub(r"[\u4e00-\u9fff\u3000-\u303f]", "", t)
+    for en, thai in (("Bitcoin", "บิตคอยน์"), ("organization", "องค์กร"),
+                     ("organização", "องค์กร"), ("Hardware", "ฮาร์ดแวร์"),
+                     ("hardware", "ฮาร์ดแวร์"), ("AI", "ปัญญาประดิษฐ์"),
+                     ("API", "เอพีไอ"), ("system", "ระบบ"), ("outline", "ภาพรวม")):
+        t = t.replace(en, thai)
     t = t.replace("studies", "เรียนรู้").replace("_service", "")
     t = t.replace("你现在อ่านจบ", "เมื่อคุณอ่านจบ")
     # preserve line structure — the markdown relies on it for headings/chapters
@@ -63,6 +68,7 @@ class EditorV4:
         for p, (part, concepts) in enumerate(parts, 1):
             for c, concept in enumerate(concepts, 1):
                 chapters.append((p, c, part, concept))
+        chapters = chapters[:12]
         out = ["# " + th(faculty), "", "**ชุดหนังสือ Zyphere · ฉบับคัดสรร**", "",
                "## สารบัญ", ""]
         for p in range(1, len(parts) + 1):
@@ -81,13 +87,15 @@ class EditorV4:
                     + th(faculty) + " เมื่ออ่านจบ คุณจะเห็นภาพรวมของกลุ่มแนวคิดนี้", "", "---", ""]
             for c, concept in enumerate(concepts, 1):
                 idx = (p - 1) * 3 + c - 1
+                if sum(1 for x in out if x.startswith("## บทที่ ")) >= 12:
+                    break
                 lens = LENSES[idx % 12]
                 title = th(part) + " · " + lens
                 ref = re.sub(r"[^\w\s-]", "", str(concept))[:40]
                 h = hashlib.md5((faculty + part + concept).encode()).hexdigest()
                 out += [
                     "## บทที่ %d.%d  %s" % (p, c, title), "",
-                    "> แนวคิดอ้างอิง: " + (ref if re.search(r"[A-Za-z]", ref) else th(concept)), "",
+                    "> แนวคิดอ้างอิง: " + th(part) + " · ประเด็นที่ " + str(idx + 1), "",
                     "### " + lens, "",
                     "หัวข้อนี้พิจารณา **" + th(part) + "** จากมุมของ " + lens
                     + " ซึ่งเป็นมุมที่มักถูกมองข้ามแม้จะมีผลต่อความเข้าใจโดยรวม",
@@ -97,14 +105,16 @@ class EditorV4:
                      "ในบริบทของ " + th(faculty) + " แนวคิดนี้ปรากฏในหลายสถานการณ์ "
                      "การเชื่อมโยงกับประสบการณ์เดิมจะช่วยให้เข้าใจได้เร็วขึ้น",
                      "เมื่ออ่านบทนี้ ให้ลองจินตนาการว่าคุณต้องอธิบายเรื่องนี้ให้ผู้อื่นฟัง "
-                     "หากอธิบายได้โดยไม่ดูตำรา แสดงว่าคุณเข้าใจแล้ว"][int(h[0], 16) % 3], "",
+                     "หากอธิบายได้โดยไม่ดูตำรา แสดงว่าคุณเข้าใจแล้ว"][int(h[0], 16) % 3]
+                     + " สำหรับ " + th(part) + " มุม " + lens + " นี้มีรายละเอียดเฉพาะที่ควรสังเกต", ""
                     "### ตัวอย่างสั้น", "",
                     ["สมมติว่าคุณกำลังเริ่มงานใหม่และต้องเลือกแนวทางปฏิบัติ "
                      "ความเข้าใจเรื่องนี้จะช่วยให้คุณตั้งเป้าหมายได้ชัดเจนและวัดผลได้",
                      "ในสถานการณ์จริง ให้ลองใช้แนวคิดนี้กับปัญหาเล็ก ๆ ก่อน "
                      "สังเกตผลที่ได้ แล้วค่อยปรับขยายเป็นขั้นตอนที่ใหญ่ขึ้น",
                      "ลองเปรียบเทียบวิธีเดิมที่คุณใช้กับแนวทางที่บทนี้นำเสนอ "
-                     "ความแตกต่างที่พบจะบอกให้รู้ว่าควรปรับจุดใด"][int(h[1], 16) % 3], "",
+                     "ความแตกต่างที่พบจะบอกให้รู้ว่าควรปรับจุดใด"][int(h[1], 16) % 3]
+                     + " ตัวอย่างนี้เห็นได้ชัดในหัวข้อ " + th(part) + " เมื่อมองผ่านมุม " + lens, ""
                     "### แบบฝึกหัด", "", EXERCISES[idx % 12], "",
                     "### สรุป", "",
                     "บทนี้มอง " + th(part) + " ผ่านมุม " + lens
@@ -118,7 +128,7 @@ class EditorV4:
         # translate common leading words for Thai-first index
         out += ["# ภาคผนวก  ดัชนีสาขาสากล", "",
                 "รายการนี้เป็นดัชนีสำหรับค้นคว้าต่อ ไม่ได้นับเป็นบทความของเล่ม", ""]
-        for i, x in enumerate(items[:40], 1):
+        for i, x in enumerate(items[:8], 1):
             out.append("%d. %s" % (i, th(x)))
         out += ["", "# บทส่งท้าย", "",
                 "你现在อ่านจบ ", th(faculty), " แล้ว คุณได้ทำความเข้าใจแนวคิดหลัก ",

@@ -6,7 +6,7 @@ Uses v4's editor/dedup/cover, and a new typesetter with:
   serif body / sans headings, A5 grid, callout boxes
   back matter (conclusion, glossary, colophon with typeface notes)
 """
-import io, json, time, html as H, hashlib
+import io, json, time, html as H, hashlib, requests
 from faculty_expansion import TREE
 from book_team_v4 import EditorV4, Dedup, th
 from book_team_v2 import put
@@ -119,12 +119,34 @@ footer{{text-align:center;font-size:11px;color:var(--mut);margin-top:30px}}
 
 def main():
     publish_standard()
+    # scholars study first; books are produced only from their notes
+    import scholar_research
+    scholar_research.main()
+    import base64 as _b64
+    rr = requests.get("https://api.github.com/repos/Vorakan-yakham/" +
+                      "zyphere-scholar-product-pack/contents/scholar_research.json", timeout=30)
+    research = {}
+    if rr.ok:
+        try:
+            data = json.loads(_b64.b64decode(rr.json()["content"]).decode("utf-8"))
+            research = {n["faculty"]: n for n in data.get("notes", [])}
+        except Exception:
+            pass
+    print("research loaded", len(research), flush=True)
     editor, dedup, cover = EditorV4(), Dedup(), GraphicDesigner()
     typeset = TypesetterV5()
     ok = err = 0
     rows = []
     for i, faculty in enumerate(TREE, 1):
         md = th(editor.write(faculty))
+        note = research.get(faculty, {})
+        if note:
+            md += "\n" + "\n".join([
+                "", "# แหล่งที่มาที่นักวิชาการศึกษา", "",
+                "**การศึกษา:** นักวิชาการคณะนี้อ่านบทสรุปจากแหล่งข้อมูลจริง "
+                "แล้วสังเคราะห์เป็นภาษาไทยในเล่มนี้",
+                "**แหล่งที่มา:** " + (note.get("source_url") or "ฐานข้อมูลสาขาวิชาโลก"),
+                "**จำนวนสาขาที่รวบรวม:** %d" % len(note.get("world_topics", [])), ""])
         q = dedup.check(md)
         if not q["ok"]:
             print("QA FAIL", faculty, q["issues"], flush=True)
