@@ -4,7 +4,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:#f8fafc;color:#1f2430}
 header{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:28px 20px;text-align:center}
-header h1{margin:0;font-size:28px}header p{margin:6px 0 0;opacity:.9}
+header h1{margin:0;font-size:28px}header p{margin:6px 0 0;opacity:.9;font-size:14px}
 .wrap{max-width:1100px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
 .card{background:#fff;border:1px solid #e5e8ef;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.05)}
 .card h3{margin:10px 0 6px;font-size:16px} .card p{color:#64748b;font-size:13px;min-height:36px}
@@ -13,386 +13,418 @@ header h1{margin:0;font-size:28px}header p{margin:6px 0 0;opacity:.9}
 .buy{background:#2563eb;color:#fff;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:600}
 .buy:hover{background:#1d4ed8}
 #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:9}
-#box{background:#fff;border-radius:20px;padding:28px;max-width:420px;width:92%}
+#box{background:#fff;border-radius:20px;padding:28px;max-width:440px;width:92%;max-height:90vh;overflow:auto}
 #box h2{margin:0 0 10px} .pay{background:#f1f5f9;border-radius:12px;padding:14px;font-size:20px;text-align:center;letter-spacing:2px;margin:12px 0}
+input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;margin:6px 0}
 button.go{width:100%;background:#16a34a;color:#fff;border:0;border-radius:10px;padding:12px;margin-top:10px;cursor:pointer;font-weight:600}
 button.no{width:100%;background:#e2e8f0;border:0;border-radius:10px;padding:10px;margin-top:8px;cursor:pointer}
-#done{display:none;text-align:center}#done a{display:block;background:#2563eb;color:#fff;padding:12px;border-radius:10px;text-decoration:none;margin-top:12px}
+.note{color:#64748b;font-size:12px;line-height:1.6}
+#done{display:none;text-align:center}#done a{display:block;background:#2563eb;color:#fff;padding:12px;border-radius:10px;text-decoration:none;margin-top:12px;word-break:break-all}
+.pill{display:inline-block;padding:4px 10px;border-radius:99px;background:#fef3c7;color:#92400e;font-size:12px;margin-top:8px}
 </style></head><body>
-<header><h1>🛒 Zyphere Store</h1><p>ผลงานจาก 46 นักวิชาการ · จ่าย PromptPay 0941939686 · ส่งไฟล์ทันที</p></header>
+<header><h1>🛒 Zyphere Store</h1><p>ผลงานจาก 46 นักวิชาการ · ชำระ PromptPay 0941939686 · Admin ตรวจแล้วส่งไฟล์</p></header>
 <div class="wrap">
-<div class="card" data-id="01_การเอาชีวิตรอด-ความปลอดภัย.md" data-title="01 การเอาชีวิตรอด-ความปลอดภัย" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/01_การเอาชีวิตรอด-ความปลอดภัย.md">
+<div class="card" data-title="01 การเอาชีวิตรอด-ความปลอดภัย" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/01_การเอาชีวิตรอด-ความปลอดภัย.md">
   <div class="ic">📦</div>
   <h3>01 การเอาชีวิตรอด-ความปลอดภัย</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="02_อวกาศ-การสำรวจ.md" data-title="02 อวกาศ-การสำรวจ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/02_อวกาศ-การสำรวจ.md">
+<div class="card" data-title="02 อวกาศ-การสำรวจ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/02_อวกาศ-การสำรวจ.md">
   <div class="ic">📦</div>
   <h3>02 อวกาศ-การสำรวจ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="03_พลังงาน-นิวเคลียร์.md" data-title="03 พลังงาน-นิวเคลียร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/03_พลังงาน-นิวเคลียร์.md">
+<div class="card" data-title="03 พลังงาน-นิวเคลียร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/03_พลังงาน-นิวเคลียร์.md">
   <div class="ic">📦</div>
   <h3>03 พลังงาน-นิวเคลียร์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="04_น้ำ-ทรัพยากร.md" data-title="04 น้ำ-ทรัพยากร" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/04_น้ำ-ทรัพยากร.md">
+<div class="card" data-title="04 น้ำ-ทรัพยากร" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/04_น้ำ-ทรัพยากร.md">
   <div class="ic">📦</div>
   <h3>04 น้ำ-ทรัพยากร</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="05_เกษตร-อาหาร.md" data-title="05 เกษตร-อาหาร" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/05_เกษตร-อาหาร.md">
+<div class="card" data-title="05 เกษตร-อาหาร" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/05_เกษตร-อาหาร.md">
   <div class="ic">📦</div>
   <h3>05 เกษตร-อาหาร</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="06_ภูมิอากาศ-สิ่งแวดล้อม.md" data-title="06 ภูมิอากาศ-สิ่งแวดล้อม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/06_ภูมิอากาศ-สิ่งแวดล้อม.md">
+<div class="card" data-title="06 ภูมิอากาศ-สิ่งแวดล้อม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/06_ภูมิอากาศ-สิ่งแวดล้อม.md">
   <div class="ic">📦</div>
   <h3>06 ภูมิอากาศ-สิ่งแวดล้อม</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="07_ภาพยนตร์-สื่อ-กราฟฟิก.md" data-title="07 ภาพยนตร์-สื่อ-กราฟฟิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/07_ภาพยนตร์-สื่อ-กราฟฟิก.md">
+<div class="card" data-title="07 ภาพยนตร์-สื่อ-กราฟฟิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/07_ภาพยนตร์-สื่อ-กราฟฟิก.md">
   <div class="ic">📦</div>
   <h3>07 ภาพยนตร์-สื่อ-กราฟฟิก</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="08_ดนตรี-เสียง.md" data-title="08 ดนตรี-เสียง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/08_ดนตรี-เสียง.md">
+<div class="card" data-title="08 ดนตรี-เสียง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/08_ดนตรี-เสียง.md">
   <div class="ic">📦</div>
   <h3>08 ดนตรี-เสียง</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="09_การสอน-การศึกษา.md" data-title="09 การสอน-การศึกษา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/09_การสอน-การศึกษา.md">
+<div class="card" data-title="09 การสอน-การศึกษา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/09_การสอน-การศึกษา.md">
   <div class="ic">📦</div>
   <h3>09 การสอน-การศึกษา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="10_วรรณกรรม-การเขียน.md" data-title="10 วรรณกรรม-การเขียน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/10_วรรณกรรม-การเขียน.md">
+<div class="card" data-title="10 วรรณกรรม-การเขียน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/10_วรรณกรรม-การเขียน.md">
   <div class="ic">📦</div>
   <h3>10 วรรณกรรม-การเขียน</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="11_ภาษาศาสตร์-การแปล.md" data-title="11 ภาษาศาสตร์-การแปล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/11_ภาษาศาสตร์-การแปล.md">
+<div class="card" data-title="11 ภาษาศาสตร์-การแปล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/11_ภาษาศาสตร์-การแปล.md">
   <div class="ic">📦</div>
   <h3>11 ภาษาศาสตร์-การแปล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="12_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ.md" data-title="12 รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/12_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ.md">
+<div class="card" data-title="12 รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/12_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ.md">
   <div class="ic">📦</div>
   <h3>12 รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="13_สังคมวิทยา-มานุษยวิทยา.md" data-title="13 สังคมวิทยา-มานุษยวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/13_สังคมวิทยา-มานุษยวิทยา.md">
+<div class="card" data-title="13 สังคมวิทยา-มานุษยวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/13_สังคมวิทยา-มานุษยวิทยา.md">
   <div class="ic">📦</div>
   <h3>13 สังคมวิทยา-มานุษยวิทยา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="14_ประวัติศาสตร์-อารยธรรม.md" data-title="14 ประวัติศาสตร์-อารยธรรม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/14_ประวัติศาสตร์-อารยธรรม.md">
+<div class="card" data-title="14 ประวัติศาสตร์-อารยธรรม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/14_ประวัติศาสตร์-อารยธรรม.md">
   <div class="ic">📦</div>
   <h3>14 ประวัติศาสตร์-อารยธรรม</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="15_จริยธรรม-ปรัชญา.md" data-title="15 จริยธรรม-ปรัชญา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/15_จริยธรรม-ปรัชญา.md">
+<div class="card" data-title="15 จริยธรรม-ปรัชญา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/15_จริยธรรม-ปรัชญา.md">
   <div class="ic">📦</div>
   <h3>15 จริยธรรม-ปรัชญา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="16_กฎหมาย-สิทธิมนุษยชน.md" data-title="16 กฎหมาย-สิทธิมนุษยชน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/16_กฎหมาย-สิทธิมนุษยชน.md">
+<div class="card" data-title="16 กฎหมาย-สิทธิมนุษยชน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/16_กฎหมาย-สิทธิมนุษยชน.md">
   <div class="ic">📦</div>
   <h3>16 กฎหมาย-สิทธิมนุษยชน</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="17_การจัดการ-ภาวะผู้นำ.md" data-title="17 การจัดการ-ภาวะผู้นำ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/17_การจัดการ-ภาวะผู้นำ.md">
+<div class="card" data-title="17 การจัดการ-ภาวะผู้นำ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/17_การจัดการ-ภาวะผู้นำ.md">
   <div class="ic">📦</div>
   <h3>17 การจัดการ-ภาวะผู้นำ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="18_การตลาด-ธุรกิจ.md" data-title="18 การตลาด-ธุรกิจ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/18_การตลาด-ธุรกิจ.md">
+<div class="card" data-title="18 การตลาด-ธุรกิจ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/18_การตลาด-ธุรกิจ.md">
   <div class="ic">📦</div>
   <h3>18 การตลาด-ธุรกิจ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="19_การบัญชี-ตรวจสอบ.md" data-title="19 การบัญชี-ตรวจสอบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/19_การบัญชี-ตรวจสอบ.md">
+<div class="card" data-title="19 การบัญชี-ตรวจสอบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/19_การบัญชี-ตรวจสอบ.md">
   <div class="ic">📦</div>
   <h3>19 การบัญชี-ตรวจสอบ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="20_การเงิน-การลงทุน.md" data-title="20 การเงิน-การลงทุน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/20_การเงิน-การลงทุน.md">
+<div class="card" data-title="20 การเงิน-การลงทุน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/20_การเงิน-การลงทุน.md">
   <div class="ic">📦</div>
   <h3>20 การเงิน-การลงทุน</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="21_เศรษฐกิจมหภาค-การเงิน.md" data-title="21 เศรษฐกิจมหภาค-การเงิน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/21_เศรษฐกิจมหภาค-การเงิน.md">
+<div class="card" data-title="21 เศรษฐกิจมหภาค-การเงิน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/21_เศรษฐกิจมหภาค-การเงิน.md">
   <div class="ic">📦</div>
   <h3>21 เศรษฐกิจมหภาค-การเงิน</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="22_สถาปัตยกรรม-การออกแบบ.md" data-title="22 สถาปัตยกรรม-การออกแบบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/22_สถาปัตยกรรม-การออกแบบ.md">
+<div class="card" data-title="22 สถาปัตยกรรม-การออกแบบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/22_สถาปัตยกรรม-การออกแบบ.md">
   <div class="ic">📦</div>
   <h3>22 สถาปัตยกรรม-การออกแบบ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="23_วิศวกรรมเคมี-วัสดุ.md" data-title="23 วิศวกรรมเคมี-วัสดุ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/23_วิศวกรรมเคมี-วัสดุ.md">
+<div class="card" data-title="23 วิศวกรรมเคมี-วัสดุ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/23_วิศวกรรมเคมี-วัสดุ.md">
   <div class="ic">📦</div>
   <h3>23 วิศวกรรมเคมี-วัสดุ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="24_วิศวกรรมโยธา-โครงสร้าง.md" data-title="24 วิศวกรรมโยธา-โครงสร้าง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/24_วิศวกรรมโยธา-โครงสร้าง.md">
+<div class="card" data-title="24 วิศวกรรมโยธา-โครงสร้าง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/24_วิศวกรรมโยธา-โครงสร้าง.md">
   <div class="ic">📦</div>
   <h3>24 วิศวกรรมโยธา-โครงสร้าง</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="25_วิศวกรรมเครื่องกล.md" data-title="25 วิศวกรรมเครื่องกล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/25_วิศวกรรมเครื่องกล.md">
+<div class="card" data-title="25 วิศวกรรมเครื่องกล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/25_วิศวกรรมเครื่องกล.md">
   <div class="ic">📦</div>
   <h3>25 วิศวกรรมเครื่องกล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="26_วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์.md" data-title="26 วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/26_วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์.md">
+<div class="card" data-title="26 วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/26_วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์.md">
   <div class="ic">📦</div>
   <h3>26 วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="27_หุ่นยนต์-ระบบอัตโนมัติ.md" data-title="27 หุ่นยนต์-ระบบอัตโนมัติ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/27_หุ่นยนต์-ระบบอัตโนมัติ.md">
+<div class="card" data-title="27 หุ่นยนต์-ระบบอัตโนมัติ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/27_หุ่นยนต์-ระบบอัตโนมัติ.md">
   <div class="ic">📦</div>
   <h3>27 หุ่นยนต์-ระบบอัตโนมัติ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="28_คอมพิวเตอร์วิทัศน์-เสียง.md" data-title="28 คอมพิวเตอร์วิทัศน์-เสียง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/28_คอมพิวเตอร์วิทัศน์-เสียง.md">
+<div class="card" data-title="28 คอมพิวเตอร์วิทัศน์-เสียง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/28_คอมพิวเตอร์วิทัศน์-เสียง.md">
   <div class="ic">📦</div>
   <h3>28 คอมพิวเตอร์วิทัศน์-เสียง</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="29_ฐานข้อมูล-ข้อมูลขนาดใหญ่.md" data-title="29 ฐานข้อมูล-ข้อมูลขนาดใหญ่" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/29_ฐานข้อมูล-ข้อมูลขนาดใหญ่.md">
+<div class="card" data-title="29 ฐานข้อมูล-ข้อมูลขนาดใหญ่" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/29_ฐานข้อมูล-ข้อมูลขนาดใหญ่.md">
   <div class="ic">📦</div>
   <h3>29 ฐานข้อมูล-ข้อมูลขนาดใหญ่</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="30_ความมั่นคงไซเบอร์.md" data-title="30 ความมั่นคงไซเบอร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/30_ความมั่นคงไซเบอร์.md">
+<div class="card" data-title="30 ความมั่นคงไซเบอร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/30_ความมั่นคงไซเบอร์.md">
   <div class="ic">📦</div>
   <h3>30 ความมั่นคงไซเบอร์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="31_วิศวกรรมซอฟต์แวร์.md" data-title="31 วิศวกรรมซอฟต์แวร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/31_วิศวกรรมซอฟต์แวร์.md">
+<div class="card" data-title="31 วิศวกรรมซอฟต์แวร์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/31_วิศวกรรมซอฟต์แวร์.md">
   <div class="ic">📦</div>
   <h3>31 วิศวกรรมซอฟต์แวร์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="32_อัลกอริทึม-โครงสร้างข้อมูล.md" data-title="32 อัลกอริทึม-โครงสร้างข้อมูล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/32_อัลกอริทึม-โครงสร้างข้อมูล.md">
+<div class="card" data-title="32 อัลกอริทึม-โครงสร้างข้อมูล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/32_อัลกอริทึม-โครงสร้างข้อมูล.md">
   <div class="ic">📦</div>
   <h3>32 อัลกอริทึม-โครงสร้างข้อมูล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="33_ปัญญาประดิษฐ์.md" data-title="33 ปัญญาประดิษฐ์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/33_ปัญญาประดิษฐ์.md">
+<div class="card" data-title="33 ปัญญาประดิษฐ์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/33_ปัญญาประดิษฐ์.md">
   <div class="ic">📦</div>
   <h3>33 ปัญญาประดิษฐ์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="34_จิตวิทยา.md" data-title="34 จิตวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/34_จิตวิทยา.md">
+<div class="card" data-title="34 จิตวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/34_จิตวิทยา.md">
   <div class="ic">📦</div>
   <h3>34 จิตวิทยา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="35_การแพทย์คลินิก.md" data-title="35 การแพทย์คลินิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/35_การแพทย์คลินิก.md">
+<div class="card" data-title="35 การแพทย์คลินิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/35_การแพทย์คลินิก.md">
   <div class="ic">📦</div>
   <h3>35 การแพทย์คลินิก</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="36_สรีระและเภสัช.md" data-title="36 สรีระและเภสัช" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/36_สรีระและเภสัช.md">
+<div class="card" data-title="36 สรีระและเภสัช" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/36_สรีระและเภสัช.md">
   <div class="ic">📦</div>
   <h3>36 สรีระและเภสัช</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="37_สมอง-ประสาทวิทยา.md" data-title="37 สมอง-ประสาทวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/37_สมอง-ประสาทวิทยา.md">
+<div class="card" data-title="37 สมอง-ประสาทวิทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/37_สมอง-ประสาทวิทยา.md">
   <div class="ic">📦</div>
   <h3>37 สมอง-ประสาทวิทยา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="38_ภูมิคุ้มกัน-โรค.md" data-title="38 ภูมิคุ้มกัน-โรค" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/38_ภูมิคุ้มกัน-โรค.md">
+<div class="card" data-title="38 ภูมิคุ้มกัน-โรค" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/38_ภูมิคุ้มกัน-โรค.md">
   <div class="ic">📦</div>
   <h3>38 ภูมิคุ้มกัน-โรค</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="39_เซลล์และเนื้อเยื่อ.md" data-title="39 เซลล์และเนื้อเยื่อ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/39_เซลล์และเนื้อเยื่อ.md">
+<div class="card" data-title="39 เซลล์และเนื้อเยื่อ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/39_เซลล์และเนื้อเยื่อ.md">
   <div class="ic">📦</div>
   <h3>39 เซลล์และเนื้อเยื่อ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="40_พันธุกรรม-ชีวโมเลกุล.md" data-title="40 พันธุกรรม-ชีวโมเลกุล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/40_พันธุกรรม-ชีวโมเลกุล.md">
+<div class="card" data-title="40 พันธุกรรม-ชีวโมเลกุล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/40_พันธุกรรม-ชีวโมเลกุล.md">
   <div class="ic">📦</div>
   <h3>40 พันธุกรรม-ชีวโมเลกุล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="41_ตรรกะและทฤษฎีข้อมูล.md" data-title="41 ตรรกะและทฤษฎีข้อมูล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/41_ตรรกะและทฤษฎีข้อมูล.md">
+<div class="card" data-title="41 ตรรกะและทฤษฎีข้อมูล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/41_ตรรกะและทฤษฎีข้อมูล.md">
   <div class="ic">📦</div>
   <h3>41 ตรรกะและทฤษฎีข้อมูล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="42_คณิตศาสตร์ประยุกต์.md" data-title="42 คณิตศาสตร์ประยุกต์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/42_คณิตศาสตร์ประยุกต์.md">
+<div class="card" data-title="42 คณิตศาสตร์ประยุกต์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/42_คณิตศาสตร์ประยุกต์.md">
   <div class="ic">📦</div>
   <h3>42 คณิตศาสตร์ประยุกต์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="43_คณิตศาสตร์บริสุทธิ์.md" data-title="43 คณิตศาสตร์บริสุทธิ์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/43_คณิตศาสตร์บริสุทธิ์.md">
+<div class="card" data-title="43 คณิตศาสตร์บริสุทธิ์" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/43_คณิตศาสตร์บริสุทธิ์.md">
   <div class="ic">📦</div>
   <h3>43 คณิตศาสตร์บริสุทธิ์</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="44_ดาราศาสตร์-จักรวาล.md" data-title="44 ดาราศาสตร์-จักรวาล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/44_ดาราศาสตร์-จักรวาล.md">
+<div class="card" data-title="44 ดาราศาสตร์-จักรวาล" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/44_ดาราศาสตร์-จักรวาล.md">
   <div class="ic">📦</div>
   <h3>44 ดาราศาสตร์-จักรวาล</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="45_ฟิสิกส์คลาสสิก.md" data-title="45 ฟิสิกส์คลาสสิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/45_ฟิสิกส์คลาสสิก.md">
+<div class="card" data-title="45 ฟิสิกส์คลาสสิก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/45_ฟิสิกส์คลาสสิก.md">
   <div class="ic">📦</div>
   <h3>45 ฟิสิกส์คลาสสิก</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="46_ฟิสิกส์ควอนตัม.md" data-title="46 ฟิสิกส์ควอนตัม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/46_ฟิสิกส์ควอนตัม.md">
+<div class="card" data-title="46 ฟิสิกส์ควอนตัม" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/46_ฟิสิกส์ควอนตัม.md">
   <div class="ic">📦</div>
   <h3>46 ฟิสิกส์ควอนตัม</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="กฎหมาย-ส_ทธ_มน_ษยชน.md" data-title="กฎหมาย-ส ทธ มน ษยชน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/กฎหมาย-ส_ทธ_มน_ษยชน.md">
+<div class="card" data-title="กฎหมาย-ส ทธ มน ษยชน" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/กฎหมาย-ส_ทธ_มน_ษยชน.md">
   <div class="ic">📦</div>
   <h3>กฎหมาย-ส ทธ มน ษยชน</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การจ_ดการ-ภาวะผ__นำ.md" data-title="การจ ดการ-ภาวะผ  นำ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การจ_ดการ-ภาวะผ__นำ.md">
+<div class="card" data-title="การจ ดการ-ภาวะผ  นำ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การจ_ดการ-ภาวะผ__นำ.md">
   <div class="ic">📦</div>
   <h3>การจ ดการ-ภาวะผ  นำ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การตลาด-ธ_รก_จ.md" data-title="การตลาด-ธ รก จ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การตลาด-ธ_รก_จ.md">
+<div class="card" data-title="การตลาด-ธ รก จ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การตลาด-ธ_รก_จ.md">
   <div class="ic">📦</div>
   <h3>การตลาด-ธ รก จ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การบ_ญช_-ตรวจสอบ.md" data-title="การบ ญช -ตรวจสอบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การบ_ญช_-ตรวจสอบ.md">
+<div class="card" data-title="การบ ญช -ตรวจสอบ" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การบ_ญช_-ตรวจสอบ.md">
   <div class="ic">📦</div>
   <h3>การบ ญช -ตรวจสอบ</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การสอน-การศ_กษา.md" data-title="การสอน-การศ กษา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การสอน-การศ_กษา.md">
+<div class="card" data-title="การสอน-การศ กษา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การสอน-การศ_กษา.md">
   <div class="ic">📦</div>
   <h3>การสอน-การศ กษา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การเง_น-การลงท_น.md" data-title="การเง น-การลงท น" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การเง_น-การลงท_น.md">
+<div class="card" data-title="การเง น-การลงท น" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การเง_น-การลงท_น.md">
   <div class="ic">📦</div>
   <h3>การเง น-การลงท น</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การเอาช_ว_ตรอด-ความปลอดภ_ย.md" data-title="การเอาช ว ตรอด-ความปลอดภ ย" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การเอาช_ว_ตรอด-ความปลอดภ_ย.md">
+<div class="card" data-title="การเอาช ว ตรอด-ความปลอดภ ย" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การเอาช_ว_ตรอด-ความปลอดภ_ย.md">
   <div class="ic">📦</div>
   <h3>การเอาช ว ตรอด-ความปลอดภ ย</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="การแพทย_คล_น_ก.md" data-title="การแพทย คล น ก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การแพทย_คล_น_ก.md">
+<div class="card" data-title="การแพทย คล น ก" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/การแพทย_คล_น_ก.md">
   <div class="ic">📦</div>
   <h3>การแพทย คล น ก</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="คณ_ตศาสตร_บร_ส_ทธ__.md" data-title="คณ ตศาสตร บร ส ทธ  " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คณ_ตศาสตร_บร_ส_ทธ__.md">
+<div class="card" data-title="คณ ตศาสตร บร ส ทธ  " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คณ_ตศาสตร_บร_ส_ทธ__.md">
   <div class="ic">📦</div>
   <h3>คณ ตศาสตร บร ส ทธ  </h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="คณ_ตศาสตร_ประย_กต_.md" data-title="คณ ตศาสตร ประย กต " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คณ_ตศาสตร_ประย_กต_.md">
+<div class="card" data-title="คณ ตศาสตร ประย กต " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คณ_ตศาสตร_ประย_กต_.md">
   <div class="ic">📦</div>
   <h3>คณ ตศาสตร ประย กต </h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="ความม__นคงไซเบอร_.md" data-title="ความม  นคงไซเบอร " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/ความม__นคงไซเบอร_.md">
+<div class="card" data-title="ความม  นคงไซเบอร " data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/ความม__นคงไซเบอร_.md">
   <div class="ic">📦</div>
   <h3>ความม  นคงไซเบอร </h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="คอมพ_วเตอร_ว_ท_ศน_-เส_ยง.md" data-title="คอมพ วเตอร ว ท ศน -เส ยง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คอมพ_วเตอร_ว_ท_ศน_-เส_ยง.md">
+<div class="card" data-title="คอมพ วเตอร ว ท ศน -เส ยง" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/คอมพ_วเตอร_ว_ท_ศน_-เส_ยง.md">
   <div class="ic">📦</div>
   <h3>คอมพ วเตอร ว ท ศน -เส ยง</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="จ_ตว_ทยา.md" data-title="จ ตว ทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/จ_ตว_ทยา.md">
+<div class="card" data-title="จ ตว ทยา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/จ_ตว_ทยา.md">
   <div class="ic">📦</div>
   <h3>จ ตว ทยา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div>
-<div class="card" data-id="จร_ยธรรม-ปร_ชญา.md" data-title="จร ยธรรม-ปร ชญา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/จร_ยธรรม-ปร_ชญา.md">
+<div class="card" data-title="จร ยธรรม-ปร ชญา" data-price="99" data-url="https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/blob/main/products/จร_ยธรรม-ปร_ชญา.md">
   <div class="ic">📦</div>
   <h3>จร ยธรรม-ปร ชญา</h3>
   <p>ผลงานจากนักวิชาการ Zyphere · ไฟล์จริงดาวน์โหลดได้ทันที</p>
   <div class="row"><span class="price">฿99</span><button class="buy" onclick="buy(this)">ซื้อเลย</button></div>
 </div></div>
-<div id="modal"><div id="box"><div id="payView"><h2>ชำระสินค้า</h2><p id="pTitle"></p>
-<div class="pay">PromptPay 0941939686</div><p style="color:#64748b;font-size:13px">โอนเงินตามจำนวนด้านล่าง แล้วกด "จ่ายแล้ว / รับลิงก์"</p>
-<h3 id="pPrice"></h3><button class="go" onclick="confirmPay()">จ่ายแล้ว / รับลิงก์ดาวน์โหลด</button>
+<div id="modal"><div id="box">
+<div id="payView"><h2>ชำระสินค้า</h2><p id="pTitle"></p>
+<div style="text-align:center;background:#f8fafc;border-radius:12px;padding:12px;margin:12px 0">
+<img id="pQR" src="" alt="PromptPay QR" style="width:190px;height:190px;background:#fff;border:1px solid #e5e8ef;border-radius:10px">
+<div style="font-size:11px;color:#64748b;margin-top:8px;letter-spacing:0">PromptPay 0941939686</div>
+</div>
+<p class="note">สแกน QR โอนตามยอด แล้วกรอก "รหัสอ้างอิง/4 ตัวสุดท้าย" ของรายการโอน แอดมินจะตรวจแล้วอนุมัติการดาวน์โหลดครับ<br><b>หมายเหตุ:</b> ระบบไม่มี API ธนาคาร จึงต้องให้แอดมินตรวจรายการโอนด้วยตนเอง — ไม่ใช่กดแล้วได้ไฟล์ทันที</p>
+<h3 id="pPrice"></h3>
+<input id="pRef" placeholder="รหัสอ้างอิงการโอน (เช่น 4 ตัวสุดท้าย)">
+<button class="go" onclick="submitPay()">ส่งหลักฐานชำระ → รอ Admin ตรวจ</button>
 <button class="no" onclick="closeM()">ยกเลิก</button></div>
-<div id="done"><h2>✅ ขอบคุณครับ</h2><p>หากโอนเงินแล้ว ระบบ will แสดงลิงก์ไฟล์ด้านล่าง</p><a id="dl" href="#" download>⬇ ดาวน์โหลดสินค้า</a><button class="no" onclick="closeM()">ปิด</button></div>
+<div id="pending" style="display:none"><h2>⏳ รอ Admin ตรวจสอบ</h2>
+<p class="note">ส่งหลักฐานแล้วครับ เก็บรหัส订单นี้ไว้ แล้วกลับมาตรวจสถานะได้เลย</p>
+<div class="pay" id="pOrder"></div><span class="pill">awaiting_verification</span>
+<button class="go" onclick="checkStatus()">ตรวจสถานะ / รับลิงก์</button>
+<button class="no" onclick="closeM()">ปิด</button></div>
+<div id="done" style="display:none"><h2>✅ ชำระผ่านแล้ว</h2><p id="dMsg"></p>
+<a id="dl" href="#" download>⬇ ดาวน์โหลดแพ็กเกจสินค้า</a>
+<button class="no" onclick="closeM()">ปิด</button></div>
 </div></div>
 <script>
-let cur={};
-function buy(b){const c=b.parentElement.parentElement;cur={title:c.dataset.title,price:c.dataset.price,url:c.dataset.url,id:c.dataset.id};
+const API='https://zyphere-ai-agent.onrender.com';
+let cur={},oid='',tk='';
+function buy(b){const c=b.parentElement.parentElement;cur={title:c.dataset.title,price:c.dataset.price,url:c.dataset.url};
 document.getElementById('pTitle').textContent=cur.title;document.getElementById('pPrice').textContent='฿'+cur.price;
-document.getElementById('modal').style.display='flex';document.getElementById('payView').style.display='block';document.getElementById('done').style.display='none';}
+document.getElementById('pQR').src=API+'/api/store/qr?amount='+encodeURIComponent(cur.price)+'&t='+Date.now();
+show('payView');}
 function closeM(){document.getElementById('modal').style.display='none';}
-function confirmPay(){document.getElementById('payView').style.display='none';document.getElementById('done').style.display='block';
-const a=document.getElementById('dl');if(cur.url){a.href=cur.url;a.style.display='block';}else{a.textContent='📦 ผลงานอยู่ใน GitHub — ติดต่อเพื่อรับไฟล์';a.href='https://github.com/Vorakan-yakham/zyphere-scholar-product-pack';}}
+function show(id){['payView','pending','done'].forEach(x=>document.getElementById(x).style.display=(x===id?'block':'none'));document.getElementById('modal').style.display='flex';}
+async function submitPay(){
+ try{const r=await fetch(API+'/api/store/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:cur.title,amount:cur.price})});const o=await r.json();
+ if(!o.ok)throw new Error(o.error||'order failed');oid=o.id;tk=o.token;
+ const s=await fetch(API+'/api/store/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_id:oid,token:tk,ref:document.getElementById('pRef').value})});const sj=await s.json();
+ if(!sj.ok)throw new Error(sj.error||'submit failed');
+ document.getElementById('pOrder').textContent=oid;show('pending');}
+ catch(e){alert('ส่งหลักฐานไม่ได้: '+e.message)}
+}
+async function checkStatus(){
+ try{const r=await fetch(API+'/api/store/download?order_id='+encodeURIComponent(oid)+'&token='+encodeURIComponent(tk));const j=await r.json();
+ if(j.ok){document.getElementById('dMsg').textContent='แอดมินอนุมัติแล้ว ขอบคุณครับ';const a=document.getElementById('dl');a.href=j.url;a.download=j.filename||'zyphere-product-pack.zip';show('done');}
+ else{alert('ยังไม่ได้รับการอนุมัติ: '+(j.error||j.status||'r_pending'));}
+ }catch(e){alert('ตรวจสถานะไม่ได้: '+e.message)}
+}
 </script></body></html>

@@ -3836,7 +3836,41 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/store/status":
             self._send_json(200, {"ok": True, "promptpay": "0941939686",
                                   "orders": len(STORE.orders) if STORE else 0,
+                                  "pending": len(STORE.pending()) if STORE else 0,
                                   "built": os.path.exists(os.path.join(MEDIA_DIR, "STORE.html"))})
+            return
+        if u.path == "/api/store/qr":
+            # Real PromptPay EMV QR (amount-aware) for the payment modal
+            try:
+                q = urllib.parse.parse_qs(u.query)
+                amount = q.get("amount", [""])[0]
+                from promptpay_qr import make_png
+                png = make_png("0941939686", amount if amount else None)
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(png)))
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(png)
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": str(e)[:120]})
+            return
+        if u.path == "/api/store/download":
+            # GATED: only an ADMIN-approved order may download
+            q = urllib.parse.parse_qs(u.query)
+            oid = q.get("order_id", [""])[0]
+            tk = q.get("token", [""])[0]
+            res = STORE.download(oid, tk) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 403, res)
+            return
+        if u.path == "/api/store/orders":
+            # ADMIN only: list orders / pending verification queue
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            self._send_json(200, {"ok": True, "orders": STORE.all_orders() if STORE else [],
+                                  "pending": STORE.pending() if STORE else []})
             return
         if u.path == "/api/scholars/faculty":
             self._send_json(200, SCHOLARS.faculty() if SCHOLARS else {"ok": False, "error": "unavailable"})
@@ -4894,8 +4928,28 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, res)
             return
         if u.path == "/api/store/order":
-            res = STORE.order(str(body.get("product") or ""), int(body.get("amount") or 0),
-                              str(body.get("buyer") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            res = STORE.create_order(str(body.get("product") or ""), int(body.get("amount") or 0),
+                                     str(body.get("buyer") or ""), str(body.get("email") or "")) \
+                if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/store/submit":
+            # Buyer submits transfer reference (no auto bank verification)
+            res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
+                                       str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path in ("/api/store/approve", "/api/store/reject"):
+            # ADMIN ONLY — verify the PromptPay transfer then unlock download
+            tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not admin_token_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden — admin token required"})
+                return
+            oid = str(body.get("order_id") or "")
+            if u.path.endswith("approve"):
+                res = STORE.approve(oid, by="admin") if STORE else {"ok": False, "error": "unavailable"}
+            else:
+                res = STORE.reject(oid, by="admin") if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/shop/list":
