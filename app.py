@@ -392,7 +392,7 @@ MEDIA_DIR = os.path.join(BASE_DIR, "media")
 
 try:
     from packbuilder import PackBuilder
-    PACKS = PackBuilder(MEDIA_DIR, os.path.join(DATA_DIR, "packs"))
+    PACKS = PackBuilder(MEDIA_DIR, MEDIA_DIR)
 except Exception:
     PACKS = None
 
