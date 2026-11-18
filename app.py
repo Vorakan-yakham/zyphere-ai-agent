@@ -342,6 +342,10 @@ try:
     REPORT = Report()
 except Exception:
     REPORT = None
+try:
+    import gmail_oauth as GMAIL_OAUTH
+except Exception:
+    GMAIL_OAUTH = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -3845,6 +3849,16 @@ class Handler(SimpleHTTPRequestHandler):
                           "grant_type": "authorization_code"},
                     timeout=20)
                 tokens = tok_res.json()
+                # If owner granted gmail.send scope, persist token for mail sending
+                if GMAIL_OAUTH and tokens.get("access_token") and "gmail" in str(tokens.get("scope", "")):
+                    try:
+                        mp = os.path.join(DATA_DIR, "gmail_token.json")
+                        json.dump({"access_token": tokens.get("access_token"),
+                                   "refresh_token": tokens.get("refresh_token"),
+                                   "scope": tokens.get("scope", ""), "t": int(time.time())},
+                                  open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
                 idt = tokens.get("id_token") or ""
                 # Verify id_token signature via Google's JWKS, then read email.
                 import base64 as _b64
@@ -4272,6 +4286,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         return super().do_GET()
 
+        if u.path == "/api/mail/auth":
+            self._send_json(200, GMAIL_OAUTH.auth_url() if GMAIL_OAUTH else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/shop/catalog":
             self._send_json(200, SHOP.catalog() if SHOP else {"ok": False, "error": "unavailable"})
             return
@@ -4423,6 +4440,26 @@ class Handler(SimpleHTTPRequestHandler):
                                    str(body.get("to") or ""), str(body.get("subject") or ""),
                                    str(body.get("message") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
+            return
+        if u.path == "/api/mail/send":
+            tok = None; refresh = None
+            try:
+                mt = json.load(open(os.path.join(DATA_DIR, "gmail_token.json"), encoding="utf-8"))
+                tok, refresh = mt.get("access_token"), mt.get("refresh_token")
+            except Exception:
+                pass
+            # build money report and send via Gmail OAuth
+            data = {"products": (CODEFORGE.list_products() if CODEFORGE else []),
+                    "channels": [c["name"] for c in (MARKET.list_plans()[0].get("channels", []) if MARKET and MARKET.list_plans() else [])],
+                    "otp": OTPASSIST.pending() if OTPASSIST else [],
+                    "help": HELP.pending() if HELP else [],
+                    "revenue": INCOME.stats().get("earned_reported", 0) if INCOME else 0,
+                    "assets": INCOME.stats().get("assets_ready", 0) if INCOME else 0,
+                    "orders": SHOP.stats().get("orders", 0) if SHOP else 0}
+            bodytxt = REPORT.build(data) if REPORT else "Zyphere report"
+            to = str(body.get("to") or "vorayakham@gmail.com")
+            res = GMAIL_OAUTH.send(to, "Zyphere — รายงานหาเงิน", bodytxt, tok, refresh) if GMAIL_OAUTH else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/report/send":
             data = {"products": (CODEFORGE.list_products() if CODEFORGE else []),
