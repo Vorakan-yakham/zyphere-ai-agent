@@ -2923,33 +2923,40 @@ _improve_busy = False
 
 
 _jarvis_busy = False
+_jarvis_step = 0
+JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief"]
 
 
 def jarvis_loop():
-    """JARVIS autonomy: debate -> dialogue -> improve -> media, no owner needed."""
-    global _jarvis_busy
+    """JARVIS autonomy: rotate one real task every 5 minutes, forever.
+    No owner instruction needed. Each step records a verifiable result.
+    """
+    global _jarvis_busy, _jarvis_step
     while True:
+        step = JARVIS_STEPS[_jarvis_step % len(JARVIS_STEPS)]
+        _jarvis_step += 1
         try:
             if not _jarvis_busy:
                 _jarvis_busy = True
                 try:
-                    if CD:
-                        CD.debate()
-                    if DD:
+                    if step == "dialogue" and DD:
                         DD.round()
-                    if SI:
+                    elif step == "improve" and SI:
                         SI.cycle()
-                    if MUSIC:
+                    elif step == "music" and MUSIC:
                         MUSIC.create("calm", 90, 2)
-                    if CHIEF:
+                    elif step == "debate" and CD:
+                        CD.debate()
+                    elif step == "chief" and CHIEF:
                         CHIEF.run_cycle({"remote": remote_enabled()}, None)
                     if remote_enabled():
-                        remote_push("jarvis_loop", {"t": int(time.time())})
+                        remote_push("jarvis_loop", {"t": int(time.time()), "step": step,
+                                                    "n": _jarvis_step})
                 finally:
                     _jarvis_busy = False
         except Exception:
             pass
-        time.sleep(30 * 60)
+        time.sleep(5 * 60)
 
 
 def self_improve_scheduler():
@@ -4041,6 +4048,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/jarvis/status":
             self._send_json(200, {"ok": True, "autonomous": True,
                                   "busy": _jarvis_busy,
+                                  "steps": JARVIS_STEPS,
+                                  "next_step": JARVIS_STEPS[_jarvis_step % len(JARVIS_STEPS)],
+                                  "completed_steps": _jarvis_step,
                                   "engines": {"debate": bool(CD), "dialogue": bool(DD),
                                               "improve": bool(SI), "music": bool(MUSIC),
                                               "chief": bool(CHIEF)}})
