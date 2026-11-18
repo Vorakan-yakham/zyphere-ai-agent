@@ -2941,7 +2941,7 @@ _improve_busy = False
 _jarvis_busy = False
 _jarvis_step = 0
 JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
-                "council", "engineers", "grow", "hr", "image_lab"]
+                "council", "engineers", "grow", "hr", "image_lab", "ebooks"]
 _council_busy = False
 _council_last = None
 CINEMA_JOBS = {}
@@ -3017,6 +3017,14 @@ def jarvis_loop():
                         try:
                             import image_quality_loop
                             image_quality_loop.run(apply=True)
+                        except Exception:
+                            pass
+                    elif step == "ebooks":
+                        try:
+                            import ebook_design_team, ebook_editor_gate
+                            er = ebook_design_team.run(apply=True)
+                            if er.get("ok"):
+                                ebook_editor_gate.run()
                         except Exception:
                             pass
                     if remote_enabled():
