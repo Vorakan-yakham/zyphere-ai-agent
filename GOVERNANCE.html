@@ -1,0 +1,50 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zyphere Governance — 5 Engines & Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#1b1f2a;font-family:'Noto Sans Thai',sans-serif}
+header{background:linear-gradient(120deg,#312e81,#6d28d9);color:#fff;padding:26px 20px;text-align:center}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.wrap{max-width:1100px;margin:0 auto;padding:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.card{background:#fff;border:1px solid #e8eaf1;border-radius:18px;padding:20px}
+.card h3{margin:0 0 6px;font-size:17px;color:#312e81}
+.sub{font-size:12px;color:#6b7280;line-height:1.7}
+.tag{display:inline-block;background:#eef2ff;color:#4f46e5;border-radius:99px;padding:3px 10px;font-size:11px;margin:3px 3px 0 0}
+.gap{background:#fff7ed;color:#c2410c;border-radius:8px;padding:6px 10px;font-size:11.5px;margin-top:5px}
+.data{background:#f8fafc;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:10px;line-height:1.8}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.k{background:#fff;border:1px solid #e8eaf1;border-radius:14px;padding:14px}
+.k b{display:block;font-size:24px;color:#4f46e5}
+footer{text-align:center;color:#9ca3af;font-size:12px;margin:30px 0}
+</style></head><body>
+<header><h1>🏛️ Zyphere Governance — 5 Engines</h1>
+<p>ข้อมูลจากระบบจริง · อัพเดทอัตโนมัติทุก 20 วินาที</p></header>
+<div class="wrap">
+<div class="kpi" id="kpi"></div>
+<div class="grid" id="engines"></div>
+<footer>ไม่แสดงสถานะ Completed หากยังไม่มีโค้ดและการทดสอบรองรับ</footer>
+</div>
+<script>
+const API='https://zyphere-ai-agent.onrender.com';
+function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+async function load(){
+ try{
+  const e=await(await fetch(API+'/api/engines/status')).json();
+  const g=await(await fetch(API+'/api/governance/status')).json();
+  const p=await(await fetch(API+'/api/research/projects')).json();
+  document.getElementById('kpi').innerHTML=[
+   ['Engines',e.engines],['ฝ่าย',g.divisions],['เอกสารกำกับ',g.documents],
+   ['โปรเจกต์วิจัย',p.count]
+  ].map(x=>'<div class="k"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
+  document.getElementById('engines').innerHTML=Object.entries(e.details||{}).map(([k,v])=>
+   '<div class="card"><h3>'+esc(k)+'</h3><div class="sub">'+esc(v.mission)+'</div>'+
+   '<div><span class="tag">ฝ่าย '+v.division+'</span></div>'+
+   '<div class="data">'+Object.entries(v.data||{}).map(([a,b])=>esc(a)+': '+esc(typeof b==='object'?JSON.stringify(b):b)).join('<br>')+'</div>'+
+   (v.gaps||[]).map(x=>'<div class="gap">ขาด: '+esc(x)+'</div>').join('')+
+   '<div class="sub" style="margin-top:8px">แหล่ง: '+esc((v.sources||[]).join(', '))+'</div></div>').join('');
+ }catch(err){document.getElementById('engines').innerHTML='<p>โหลดไม่ได้: '+esc(err.message)+'</p>'}
+}
+load();setInterval(load,20000);
+</script></body></html>

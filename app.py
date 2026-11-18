@@ -435,6 +435,14 @@ try:
 except Exception:
     QOPS = None
 try:
+    from five_engines import FE
+except Exception:
+    FE = None
+try:
+    from research_projects import RP
+except Exception:
+    RP = None
+try:
     from co_learning import CO
 except Exception:
     CO = None
@@ -3905,6 +3913,19 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/research/projects":
+            self._send_json(200, RP.list() if RP
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/engines/status":
+            self._send_json(200, FE.status() if FE
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/engines/view":
+            name = urllib.parse.parse_qs(u.query).get("name", [""])[0]
+            self._send_json(200, FE.engine(name) if FE
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/governance/registry":
             try:
                 gp = os.path.join(BASE_DIR, "governance", "registry.json")
@@ -5113,6 +5134,12 @@ class Handler(SimpleHTTPRequestHandler):
             # Buyer submits transfer reference (no auto bank verification)
             res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/research/projects/create":
+            res = RP.create(body) if RP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and RP:
+                res["publish"] = RP.publish()
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/co-learn/run-cross":
