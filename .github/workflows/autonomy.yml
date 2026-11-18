@@ -24,6 +24,7 @@ jobs:
           import json, traceback
           import time as _t
           steps = [
+            ("wish", "wish_cycle", "run"),
             ("ebook", "ebook_design_team", "run"),
             ("ebook_editor", "ebook_editor_gate", "run"),
             ("differentiation", "differentiation_lab", "run"),
@@ -68,7 +69,8 @@ jobs:
           # Owner wants ~1-minute pulses. GitHub cron minimum is 5 min, so
           # run five sub-cycles inside this job (~every 60 seconds).
           for cycle in range(5):
-              for name, mod, fn in [("ebook", "ebook_design_team", "run"),
+              for name, mod, fn in [("wish", "wish_cycle", "run"),
+                                    ("ebook", "ebook_design_team", "run"),
                                     ("editor", "ebook_editor_gate", "run"),
                                     ("diff", "differentiation_lab", "run")]:
                   try:
