@@ -69,7 +69,7 @@ def mesh(w, h, pal):
     gd.ellipse((int(w*.45), -int(h*.22), int(w*1.22), int(h*.62)), fill=(*a[0], 165))
     gd.ellipse((-int(w*.20), int(h*.48), int(w*.75), int(h*1.28)), fill=(*a[1], 135))
     gd.ellipse((int(w*.05), int(h*.02), int(w*.55), int(h*.48)), fill=(*a[0], 85))
-    glow = glow.filter(ImageFilter.GaussianBlur(100))
+    glow = glow.filter(ImageFilter.GaussianBlur(62))
     return Image.alpha_composite(img.convert("RGBA"), glow).convert("RGB")
 
 
@@ -78,7 +78,7 @@ def texture(img, seed):
     rnd = random.Random(seed)
     lay = Image.new("RGBA", img.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(lay)
-    for _ in range(90):
+    for _ in range(58):
         x, y = rnd.randrange(img.width), rnd.randrange(img.height)
         r = rnd.randrange(40, 260)
         d.ellipse((x-r, y-r, x+r, y+r), outline=(255, 255, 255, rnd.randrange(3, 14)), width=1)

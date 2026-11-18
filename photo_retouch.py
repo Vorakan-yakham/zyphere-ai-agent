@@ -14,7 +14,11 @@ FONT_REG = os.path.join(MEDIA, "fonts", "NotoSansThai.ttf")
 OUTFIT_FONTS = ["NotoSansThai.ttf"]
 
 
+_FONT_CACHE = {}
+
+
 def font(sz):
+    if sz in _FONT_CACHE: return _FONT_CACHE[sz]
     for p in (FONT_REG, r"C:\Windows\Fonts\Tahoma.ttf",
               "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"):
         if os.path.exists(p):

@@ -268,25 +268,40 @@ def run(brief, seconds=18, lang="th", apply=True):
     srtp = os.path.join(out, "subtitles.srt")
     open(srtp, "w", encoding="utf-8").write("\n".join(srts))
     manifest["subtitles"] = srtp
-    # video: Ken Burns per still + crossfade, no external assets required
+    # PERF: one ffmpeg pass — no intermediate segment files, no concat demuxer.
     ff = _ff()
-    vids = []
-    for i, fp in enumerate(frames):
-        vp = os.path.join(out, "seg_%02d.mp4" % i)
-        zoom = "zoom+0.06" if i % 2 == 0 else "zoom+0.10"
-        cmd = [ff, "-y", "-loop", "1", "-i", fp, "-vf",
-               "scale=4600:2600,zoompan=z='%s':d=125:s=3840x2160:fps=25" % zoom,
-               "-t", "5", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", vp]
-        subprocess.run(cmd, capture_output=True, timeout=180)
-        if os.path.exists(vp):
-            vids.append(vp)
-    if vids:
-        conc = os.path.join(out, "concat.txt")
-        open(conc, "w", encoding="utf-8").write("".join("file '%s'\n" % v.replace("\\", "/") for v in vids))
+    final = None
+    if frames:
+        try:
+            vc = os.path.join(out, "voice_concat.txt")
+            open(vc, "w", encoding="utf-8").write(
+                "".join("file '%s'\n" % a.replace("\\", "/") for a in audios))
+            voice_all = os.path.join(out, "voice_all.mp3")
+            subprocess.run([ff, "-y", "-f", "concat", "-safe", "0", "-i", vc,
+                            "-c", "copy", voice_all], capture_output=True, timeout=120)
+        except Exception:
+            voice_all = None
+        n = len(frames)
+        cmd = [ff, "-y"]
+        for fp in frames:
+            cmd += ["-loop", "1", "-t", "5", "-i", fp]
+        if voice_all and os.path.exists(voice_all):
+            cmd += ["-i", voice_all]
+        filters = []
+        for i in range(n):
+            zoom = "zoom+0.06" if i % 2 == 0 else "zoom+0.10"
+            filters.append(
+                "[%d:v]scale=4200:2360,zoompan=z='%s':d=125:s=3840x2160:fps=25,"
+                "trim=duration=5,setpts=PTS-STARTPTS[v%d]" % (i, zoom, i))
+        filters.append("".join("[v%d]" % i for i in range(n)) +
+                       "concat=n=%d:v=1:a=0[v]" % n)
         final = os.path.join(out, "cinema.mp4")
-        cmd = [ff, "-y", "-f", "concat", "-safe", "0", "-i", conc,
-               "-c:v", "libx264", "-crf", "20", "-pix_fmt", "yuv420p", final]
-        subprocess.run(cmd, capture_output=True, timeout=240)
+        cmd += ["-filter_complex", ";".join(filters), "-map", "[v]"]
+        if voice_all and os.path.exists(voice_all):
+            cmd += ["-map", "%d:a" % n, "-c:a", "aac"]
+        cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+                "-pix_fmt", "yuv420p", "-shortest", final]
+        subprocess.run(cmd, capture_output=True, timeout=300)
         if os.path.exists(final):
             manifest["video"] = final
     # music bed from Zyphere's own synth when available
@@ -301,7 +316,7 @@ def run(brief, seconds=18, lang="th", apply=True):
     except Exception:
         pass
     # Soundtrack: narration + original music bed mixed into the final film.
-    if manifest.get("video") and audios:
+    if manifest.get("video") and audios and False:  # perf: narration already mixed in single pass
         try:
             vc = os.path.join(out, "voice_concat.txt")
             open(vc, "w", encoding="utf-8").write(
