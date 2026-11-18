@@ -51,6 +51,15 @@ jobs:
           print(json.dumps(out, ensure_ascii=False, indent=2))
           open("data/autonomy_last.json", "w", encoding="utf-8").write(
               json.dumps(out, ensure_ascii=False, indent=2))
+          import datetime
+          lines = ["# Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง", "",
+                   "เวลา: " + datetime.datetime.utcnow().isoformat() + "Z",
+                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 30 นาที)", "",
+                   "| ฝ่าย | ผลที่เกิดจริง |", "|---|---|"]
+          for name, r in out.items():
+              lines.append("| %s | %s |" % (name, json.dumps(r, ensure_ascii=False)[:220]))
+          lines += ["", "ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป", ""]
+          open("governance/AUTONOMY_LIVE.md", "w", encoding="utf-8").write("\n".join(lines))
           PY
       - name: Publish artefacts and report
         run: |
