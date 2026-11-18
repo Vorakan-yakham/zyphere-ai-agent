@@ -3668,6 +3668,25 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
+        if u.path.startswith("/media/"):
+            fn = os.path.basename(u.path[len("/media/"):])
+            fp = os.path.join(MEDIA_DIR, fn)
+            if fn and os.path.exists(fp) and os.path.isfile(fp):
+                try:
+                    import mimetypes
+                    ctype = mimetypes.guess_type(fp)[0] or "application/octet-stream"
+                    data = open(fp, "rb").read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", ctype)
+                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(data)
+                except Exception:
+                    self.send_error(500, "read failed")
+            else:
+                self.send_error(404, "not found")
+            return
         if u.path == "/api/listing/refresh":
             res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
