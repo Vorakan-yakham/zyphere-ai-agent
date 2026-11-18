@@ -75,9 +75,9 @@ class Chief:
             if "remote" in g:
                 actions.append({"do": "alert_owner", "why": g, "priority": 0})
             elif "ผลิต" in g:
-                actions.append({"do": "study_scholars", "why": g, "priority": 2})
+                actions.append({"do": "study_scholars", "why": g, "priority": 1})
             elif "ฝึก" in g:
-                actions.append({"do": "enroll_academy", "why": g, "priority": 1})
+                actions.append({"do": "enroll_academy", "why": g, "priority": 2})
             elif "ลงแพลตฟอร์ม" in g:
                 actions.append({"do": "launch_marketplace", "why": g, "priority": 3})
         if not actions:

@@ -4524,7 +4524,14 @@ class Handler(SimpleHTTPRequestHandler):
                   "remote": remote_enabled()}
             def _dispatch(action, state):
                 if action == "study_scholars" and SCHOLAR_INCOME:
-                    return SCHOLAR_INCOME.study_all(None)
+                    r = SCHOLAR_INCOME.study_all(None)
+                    if r.get("ok") and SHOP:
+                        for p in r.get("products", [])[:12]:
+                            try:
+                                SHOP.list_product(p["product"], p["price"], "", p["scholar"], p["category"])
+                            except Exception:
+                                pass
+                    return r
                 if action == "enroll_academy" and ACADEMY and SCHOLAR_INCOME:
                     return ACADEMY.enroll(SCHOLAR_INCOME.list_catalog(), LAUNCHPAD)
                 if action == "launch_marketplace" and LAUNCHPAD and SCHOLAR_INCOME:
