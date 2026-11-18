@@ -387,6 +387,14 @@ body.zy-admin #set .kr{display:flex!important}
 #sideCollapse svg{transition:transform .2s}
 .side.expanded #search::placeholder{color:var(--z-mut)}
 
+
+.side.hide{margin-left:-272px!important;opacity:0;pointer-events:none}
+.side.rail.hide{margin-left:-62px!important}
+.side.expanded{opacity:1;pointer-events:auto}
+.side.expanded .nv span,.side.expanded .nv kbd{display:inline!important}
+.side.expanded .side-sec,.side.expanded .list{display:block!important}
+.side.expanded .side-tools{display:none!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side rail" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
@@ -1687,7 +1695,7 @@ $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
 $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('agentMode').value=agentOn?'on':'off';toast(agentOn?'เปิดโหมด Agent แล้ว (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)':'ปิดโหมด Agent แล้ว'); if(agentOn)loadMemory()};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open')};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open');sd.classList.add('rail');sd.classList.remove('expanded')};
 $('menu').onclick=()=>{const sd=$('side');sd.classList.toggle('hide');sd.classList.toggle('open');};
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
@@ -1733,8 +1741,10 @@ if(!window.__sideNavWired){
  go('schBtn',()=>{const q=$('q');if(q){q.value='กำหนดเวลาสรุปความเคลื่อนไหว';q.dispatchEvent(new Event('input'));$('sendBtn').click()}});
  go('vibeBtn',()=>{const q=$('q');if(q){q.value='สร้างวิดีโอ Vibes จากหัวข้อที่กำลังคุย';q.dispatchEvent(new Event('input'));$('sendBtn').click()}});
  go('sideCollapse',()=>{const sd=document.getElementById('side');
-  if(sd.classList.contains('rail')){sd.classList.remove('rail');sd.classList.add('expanded');sd.classList.remove('hide')}
-  else{sd.classList.remove('expanded');sd.classList.add('rail');sd.classList.remove('hide')}
+  // 3 states: hidden -> rail -> expanded -> hidden
+  if(sd.classList.contains('hide')){sd.classList.remove('hide');sd.classList.add('rail');sd.classList.remove('expanded')}
+  else if(sd.classList.contains('rail')){sd.classList.remove('rail');sd.classList.add('expanded')}
+  else{sd.classList.remove('expanded');sd.classList.add('hide')}
  });
  // clicking any nav item collapses the sidebar automatically (mobile-like)
  document.querySelectorAll('.side-nav .nv, .side-foot .acct, .side-foot .bell').forEach(function(el){
