@@ -339,6 +339,11 @@ try:
 except Exception:
     REPORT = None
 try:
+    from listing import ListingWriter
+    LISTING = ListingWriter()
+except Exception:
+    LISTING = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -3683,6 +3688,10 @@ class Handler(SimpleHTTPRequestHandler):
                      "research": (RESEARCH.library() if RESEARCH else []),
                      "lessons": (DEV_BRAIN.lessons if DEV_BRAIN else [])}
             res = RAG_ENGINE.retrieve(q, state) if RAG_ENGINE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/listing/refresh":
+            res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
         if u.path == "/api/tools/list":
