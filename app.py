@@ -4012,7 +4012,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/store/stats":
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            if not store_admin_ok(tok):
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and (str(me.get("email", "")).lower() in OWNER_EMAILS))
+            if not (store_admin_ok(tok) or owner_session):
                 self._send_json(403, {"ok": False, "error": "forbidden"})
                 return
             self._send_json(200, STORE.stats() if STORE else {"ok": False, "error": "unavailable"})
@@ -4066,7 +4068,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/store/orders":
             # ADMIN only: list orders / pending verification queue
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            if not store_admin_ok(tok):
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and (str(me.get("email", "")).lower() in OWNER_EMAILS))
+            if not (store_admin_ok(tok) or owner_session):
                 self._send_json(403, {"ok": False, "error": "forbidden"})
                 return
             self._send_json(200, {"ok": True, "orders": STORE.all_orders() if STORE else [],
@@ -4416,6 +4420,12 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception:
                 names = []
             self._send_json(200, {"ok": True, "providers": names, "enabled": bool(names)})
+            return
+        if u.path == "/api/auth/logout":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if USERS and tok:
+                USERS.logout(tok)
+            self._send_json(200, {"ok": True, "message": "logged out"})
             return
         if u.path == "/api/auth/google/config":
             self._send_json(200, {"ok": True, "enabled": GOOGLE_ENABLED})
@@ -5347,7 +5357,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path in ("/api/store/approve", "/api/store/reject"):
             # ADMIN ONLY — verify the PromptPay transfer then unlock download
             tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            if not store_admin_ok(tok):
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and (str(me.get("email", "")).lower() in OWNER_EMAILS))
+            if not (store_admin_ok(tok) or owner_session):
                 self._send_json(403, {"ok": False, "error": "forbidden — admin token required"})
                 return
             oid = str(body.get("order_id") or "")

@@ -28,7 +28,11 @@ code{background:#f1f5f9;border-radius:6px;padding:2px 6px;font-size:11px}
 <header><h1>🔐 หลังบ้าน Zyphere Store</h1><p>ติดตามการคลิก ยอดขาย ลูกค้า และตรวจสอบออเดอร์</p></header>
 <div class="wrap">
 <div class="note">ใส่ <b>Admin token</b> (จากหน้า Admin → login) แล้วกดโหลดข้อมูล ข้อมูลทั้งหมดมาจากระบบจริง ไม่ได้ประมาณการ</div>
-<div class="bar"><input id="tok" type="password" placeholder="วาง admin token..."><button onclick="load()">โหลดข้อมูล</button></div>
+<div class="bar"><input id="tok" type="password" placeholder="วาง admin token หรือล็อกอิน Google ด้านล่าง"><button onclick="load()">โหลดข้อมูล</button></div>
+<div style="display:flex;gap:8px;margin-bottom:16px">
+ <button class="ok" onclick="googleLogin()">เข้าสู่ระบบด้วย Google (เจ้าของ)</button>
+ <button class="no" onclick="logout()">Logout</button>
+ <span class="mini" id="who"></span></div>
 
 <div id="dash" style="display:none">
  <div class="cards" id="kpis"></div>
@@ -41,6 +45,23 @@ code{background:#f1f5f9;border-radius:6px;padding:2px 6px;font-size:11px}
 const API='https://zyphere-ai-agent.onrender.com';
 function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 function money(n){return '฿'+Number(n||0).toLocaleString('th-TH')}
+function utoken(){return localStorage.getItem('zy_token')||''}
+function googleLogin(){location.href=API+'/api/auth/google?next='+encodeURIComponent(location.href.split('#')[0])}
+async function logout(){const t=utoken();try{await fetch(API+'/api/auth/logout?token='+encodeURIComponent(t))}catch(e){}
+ try{localStorage.removeItem('zy_token')}catch(e){}document.getElementById('tok').value='';
+ document.getElementById('who').textContent='ออกจากระบบแล้ว';load()}
+async function boot(){
+ const h=location.hash.match(/oauth=([^&]+)/);
+ if(h){try{const p=new URLSearchParams(decodeURIComponent(h[1]));localStorage.setItem('zy_token',p.get('token')||'');
+  history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
+ const t=utoken();
+ if(t){document.getElementById('tok').value=t;
+  try{const me=await(await fetch(API+'/api/store/me?token='+encodeURIComponent(t))).json();
+   if(me.ok){document.getElementById('who').textContent='ล็อกอินเป็น '+(me.me.name||me.me.email)+(me.me.is_owner?' (เจ้าของ)':'');}
+  }catch(e){}
+  await load();
+ }
+}
 async function load(){
  const t=document.getElementById('tok').value.trim();
  if(!t){alert('ใส่ admin token ก่อนครับ');return}
@@ -83,4 +104,5 @@ async function act(a,id){
   if(!r.ok)throw new Error(r.error||'failed');alert(a==='approve'?'อนุมัติแล้ว':'ปฏิเสธแล้ว');load();}
  catch(e){alert(e.message)}
 }
+boot();
 </script></body></html>
