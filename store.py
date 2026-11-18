@@ -241,7 +241,7 @@ class Store:
         copy = {
             "brand": th("ร้านค้า Zyphere"),
             "hero_h": th("ผลงานความรู้จากคณะวิชา ส่งมอบถึงมือคุณ"),
-            "hero_p": th("ไซเฟอร์จัดทำเอกสารความรู้จากคณะวิชาทั้ง 46 สาขา เลือกหัวข้อที่ต้องการ จากนั้นชำระเงินผ่านพรีมเพย์ ระบบจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้ครับ"),
+            "hero_p": th("ไซเฟอร์จัดทำเอกสารความรู้ครอบคลุม 46 คณะวิชา เลือกหัวข้อที่ต้องการ จากนั้นชำระเงินผ่านพรีมเพย์ ระบบจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้ครับ"),
             "all": th("ผลงานทั้งหมด"),
             "search": th("ค้นหาหัวข้อ…"),
             "orders": th("คำสั่งซื้อของฉัน"),
@@ -368,7 +368,7 @@ footer{{text-align:center;color:var(--mut);font-size:12px;padding:26px 16px 40px
     <button class="btn ghost" onclick="closeM()">{copy['cancel']}</button>
   </div>
   <div id="vWait" style="display:none"><h2>{copy['pending_h']}</h2><p class="sub">{copy['pending_p']}</p>
-    <div class="code" id="pOrder"></div><span class="pill">awaiting_verification</span>
+    <div class="code" id="pOrder"></div><span class="pill">{th("กำลังรอการตรวจสอบ")}</span>
     <button class="btn primary" onclick="checkStatus()">{copy['check']}</button>
     <button class="btn ghost" onclick="closeM()">{copy['close']}</button>
   </div>
