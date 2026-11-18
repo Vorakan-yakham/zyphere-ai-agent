@@ -54,7 +54,10 @@ async function boot(){
  const h=location.hash.match(/oauth=([^&]+)/);
  if(h){try{const p=new URLSearchParams(decodeURIComponent(h[1]));localStorage.setItem('zy_token',p.get('token')||'');
   history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
- const t=utoken();
+ const t=(localStorage.getItem('zy_admin_token')||'')||utoken();
+ const em=localStorage.getItem('zy_email')||localStorage.getItem('zy_admin_user')||'';
+ if(em){document.getElementById('who').textContent='จดจำบัญชี: '+em;
+  if(document.getElementById('adUser'))document.getElementById('adUser').value=em}
  if(t){document.getElementById('tok').value=t;
   try{const me=await(await fetch(API+'/api/store/me?token='+encodeURIComponent(t))).json();
    if(me.ok){document.getElementById('who').textContent='ล็อกอินเป็น '+(me.me.name||me.me.email)+(me.me.is_owner?' (เจ้าของ)':'');}
