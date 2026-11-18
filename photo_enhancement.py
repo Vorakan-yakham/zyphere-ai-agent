@@ -42,7 +42,7 @@ def e01_fetch(query):
     mood = "warm" if any(k in str(query) for k in
                          ("warm", "golden", "sunset", "อบอุ่น")) else "cool"
     pal = LAB.palette(mood, seed)
-    im = LAB.mesh(2160, 3840, pal)
+    im = LAB.mesh(1080, 1920, pal)
     im = LAB.texture(im, seed)
     im = LAB.depth(im, pal)
     im = LAB.silhouette(im, pal)

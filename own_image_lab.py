@@ -22,6 +22,7 @@ import advanced_filters as af
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(ROOT, "media")
 W, H = 2160, 3840
+RW, RH = 1080, 1920  # render at quarter pixels, upscale to true 4K
 FONT = os.path.join(MEDIA, "fonts", "NotoSansThai.ttf")
 
 
@@ -200,7 +201,7 @@ def generate(prompt, apply=True):
     seed = int(hashlib.md5(prompt.encode()).hexdigest()[:8], 16)
     p = parse_prompt(prompt)
     pal = palette(p["mood"], seed)
-    img = mesh(W, H, pal)
+    img = mesh(RW, RH, pal)
     img = texture(img, seed)
     img = depth(img, pal)
     img = silhouette(img, pal)
@@ -210,6 +211,7 @@ def generate(prompt, apply=True):
     img = finish(img)
     # --- leap-forward in-house passes (keep the original 12 engineers intact) ---
     img, adv = af.apply_pipeline(img, seed=seed, palette=pal)
+    img = img.resize((W, H), Image.LANCZOS)  # true 4K output, low peak memory
     q = critique(img)
     out = None
     if apply:
