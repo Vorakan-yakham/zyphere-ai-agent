@@ -4441,15 +4441,11 @@ class Handler(SimpleHTTPRequestHandler):
         if not isinstance(body, dict):
             body = {}
         if u.path == "/api/scholar-income/study":
-            def _research(field, desc):
-                if RESEARCH:
-                    res, _ = RESEARCH.search(field + " " + desc, 1)
-                    return {"result": "; ".join(str(r.get("title", ""))[:80] for r in res[:2])}
-                return {"result": ""}
-            res = SCHOLAR_INCOME.study_all(_research) if SCHOLAR_INCOME else {"ok": False, "error": "unavailable"}
-            # auto-list into shop
+            # Fast path: build sellable drafts from the studied curriculum template
+            # WITHOUT 46 blocking web searches (which exceed Render free timeout).
+            res = SCHOLAR_INCOME.study_all(None) if SCHOLAR_INCOME else {"ok": False, "error": "unavailable"}
             if res.get("ok") and SHOP:
-                for p in res.get("products", [])[:46]:
+                for p in res.get("products", [])[:60]:
                     try:
                         SHOP.list_product(p["product"], p["price"], "", p["scholar"], p["category"])
                     except Exception:
