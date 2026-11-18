@@ -395,6 +395,31 @@ body.zy-admin #set .kr{display:flex!important}
 .side.expanded .side-sec,.side.expanded .list{display:block!important}
 .side.expanded .side-tools{display:none!important}
 
+
+/* === exact collapsed rail: icons only, no text, no tools === */
+.side.rail .side-nav.compact,
+.side.rail #sideMusic,
+.side.rail #sideVideo,
+.side.rail #sideIncome,
+.side.rail #search,
+.side.rail #sideCollapse,
+.side.rail .side-sec,
+.side.rail .list,
+.side.rail .sb{display:none!important}
+.side.rail .side-head{justify-content:center!important;flex-direction:row!important;padding:2px 0 14px!important}
+.side.rail .logo{margin:0 auto}
+.side.rail .side-nav{width:100%;align-items:center;margin-top:2px}
+.side.rail .nv{width:44px!important;height:44px!important;justify-content:center!important;padding:0!important}
+.side.rail .nv span,.side.rail .nv kbd{display:none!important}
+.side.rail .side-foot{margin-top:auto}
+/* expanded: show tools and labels again */
+.side.expanded .side-nav.compact,
+.side.expanded #search,
+.side.expanded .side-sec,
+.side.expanded .list{display:flex!important}
+.side.expanded .side-sec{display:block!important}
+.side.expanded #sideCollapse{display:grid!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side rail" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
