@@ -5621,6 +5621,37 @@ class Handler(SimpleHTTPRequestHandler):
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
+        if u.path == "/api/media/chat":
+            text = str(body.get("text") or "").strip()
+            want_video = bool(re.search(
+                r"วิดีโอ|คลิป|video|film|ภาพยนตร์|สั่งทำคลิป", text, re.I))
+            if want_video:
+                def _mk(jid, brief):
+                    try:
+                        import cinema_studio
+                        res = cinema_studio.run(brief, 18, "th")
+                        CINEMA_JOBS[jid] = {"ok": True, "done": True, "result": res}
+                    except Exception as e:
+                        CINEMA_JOBS[jid] = {"ok": False, "done": True, "error": str(e)[:200]}
+                jid = "cin_" + str(int(time.time() * 1000))
+                CINEMA_JOBS[jid] = {"ok": True, "done": False, "job": jid}
+                threading.Thread(target=_mk, args=(jid, text), daemon=True).start()
+                self._send_json(200, {"ok": True, "type": "video", "id": jid,
+                                      "note": "กำลังสร้างภาพยนตร์ — ผลจะโผล่ในแชท"})
+                return
+            try:
+                import image_studio
+                title = re.sub(r"^\s*(ช่วย|กรุณา|โปรด)?\s*(สร้าง|ทำ|วาด|ออกแบบ|generate|create)\s*"
+                               r"(ภาพ|รูป|รูปภาพ|poster|image|picture)?\s*", "", text,
+                               flags=re.I).strip()[:120] or "Zyphere"
+                res = image_studio.produce(title, "ออกแบบโดย Zyphere · งานจริง",
+                                           "poster", "wind")
+                self._send_json(200, {"ok": True, "type": "image",
+                                      "url": res.get("url"),
+                                      "quality": res.get("quality")})
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:180]})
+            return
         if u.path == "/api/cinema/create":
             def _cinema_task(jid, brief, secs, lang):
                 try:
