@@ -30,6 +30,9 @@ button{border:0;background:#4f46e5;color:#fff;border-radius:10px;padding:9px 14p
  <button onclick="run()">จี้ให้เรียนรู้ตอนนี้ (Doctor)</button>
  <span class="mini" id="statusLine">กำลังโหลด…</span></div>
 <div id="list"></div>
+<div class="my" style="margin-top:24px"><h3>📈 การพัฒนาตนเองของทุกแผนก (ก่อน/หลัง)</h3>
+<button onclick="improve()">จี้ให้ทุกแผนกพัฒนาตนเองตอนนี้</button>
+<span class="mini" id="impStatus"></span><div id="impList" style="margin-top:10px"></div></div>
 <div class="foot">ข้อมูลจริงจาก Zyphere · ไม่มีการอ้างตัวเลขที่ไม่มีอยู่</div>
 </div>
 <script>
@@ -65,5 +68,17 @@ async function run(){
   document.getElementById('statusLine').textContent='จี้แล้ว '+ (r.departments||0) +' แผนก';load();}
  catch(e){document.getElementById('statusLine').textContent=e.message}
 }
-load();setInterval(load,10000);
+async function improve(){
+ document.getElementById('impStatus').textContent='กำลังพัฒนา...';
+ try{const r=await(await fetch(API+'/api/improve/run',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();
+  document.getElementById('impStatus').textContent=r.departments+' แผนก · '+new Date().toLocaleTimeString('th-TH');imp();}catch(e){document.getElementById('impStatus').textContent=e.message}
+}
+async function imp(){
+ try{const j=await(await fetch(API+'/api/improve/status')).json();
+  document.getElementById('impList').innerHTML=(j.last||[]).map(x=>
+   '<div style="padding:8px 0;border-bottom:1px solid #eef0f5;font-size:12.5px">'+esc(x.dept)+
+   ' · '+esc(x.metric)+' · ก่อน '+x.before.analyst+'/'+x.before.analyst_total+' → หลัง '+x.after.analyst+'/'+x.after.analyst_total+
+   ' · '+(x.improved?'ไม่ถอยหลัง':'ถอยหลัง')+'</div>').join('');}catch(e){}
+}
+imp();load();setInterval(load,10000);
 </script></body></html>

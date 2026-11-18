@@ -455,6 +455,10 @@ try:
 except Exception:
     ROLEP = None
 try:
+    from self_improvement import SI
+except Exception:
+    SI = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3942,6 +3946,10 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/improve/status":
+            self._send_json(200, SI.status() if SI
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/roles/profile":
             name = urllib.parse.parse_qs(u.query).get("name", [""])[0]
             self._send_json(200, ROLEP.get(name) if ROLEP
@@ -5260,6 +5268,11 @@ class Handler(SimpleHTTPRequestHandler):
             res = RP.create(body) if RP else {"ok": False, "error": "unavailable"}
             if res.get("ok") and RP:
                 res["publish"] = RP.publish()
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/improve/run":
+            dept = str(body.get("dept") or "") or None
+            res = SI.cycle(dept) if SI else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/co-learn/run-cross":
