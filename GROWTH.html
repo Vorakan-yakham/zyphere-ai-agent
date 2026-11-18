@@ -1,0 +1,53 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zyphere — ผลการค้นหา: ฝ่ายโปรโมทด้าน IT</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#1b1f2a;font-family:'Noto Sans Thai',sans-serif}
+header{background:linear-gradient(120deg,#312e81,#6d28d9);color:#fff;padding:24px 20px}
+header h1{margin:0;font-size:21px}header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.wrap{max-width:1080px;margin:0 auto;padding:20px}
+.bar{display:flex;gap:8px;margin-bottom:16px}
+input{flex:1;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;font:15px inherit;outline:none}
+input:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px #eef2ff}
+button{border:0;background:#4f46e5;color:#fff;border-radius:12px;padding:10px 18px;font:600 14px inherit;cursor:pointer}
+.summary{background:#fff;border:1px solid #e8eaf1;border-radius:14px;padding:14px 18px;margin-bottom:16px;font-size:13px;color:#4b5563}
+.card{background:#fff;border:1px solid #e8eaf1;border-radius:16px;padding:18px;margin-bottom:12px}
+.card h3{margin:0 0 4px;font-size:16px;color:#312e81}
+.team{font-size:12px;color:#6b7280;margin-bottom:10px}
+.row{font-size:13px;line-height:1.8;margin:4px 0}
+.tag{display:inline-block;border-radius:99px;padding:3px 10px;font-size:11px;margin-right:6px}
+.t-in{background:#dcfce7;color:#166534}.t-out{background:#fef3c7;color:#92400e}
+.p1{background:#eef2ff;color:#4f46e5}.p2{background:#f3f4f6;color:#6b7280}
+.gap{color:#b45309}
+footer{text-align:center;color:#9ca3af;font-size:12px;margin:26px 0}
+</style></head><body>
+<header><h1>🔎 ผลการค้นหา — ฝ่ายโปรโมท / Growth & Digital Marketing (ด้าน IT)</h1>
+<p>ค้นหาจากระบบจริง · แสดงโครงสร้าง 4 ฝ่ายย่อย / 8 บทบาท · แปลงเข้า 12 ฝ่ายเดิม</p></header>
+<div class="wrap">
+<div class="bar"><input id="q" value="ฝ่ายโปรโมท ด้าน IT" placeholder="ค้นหาบทบาท ฝ่าย หน้าที่...">
+<button onclick="run()">ค้นหา</button></div>
+<div class="summary" id="sum">กำลังค้นหา…</div>
+<div id="list"></div>
+<footer>เฉพาะผลการค้นหา — ไม่ได้เปลี่ยนโครงสร้างเดิม</footer>
+</div>
+<script>
+const API='https://zyphere-ai-agent.onrender.com';
+function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+async function run(){
+ const q=document.getElementById('q').value.trim();
+ try{
+  const j=await(await fetch(API+'/api/growth/search?q='+encodeURIComponent(q))).json();
+  document.getElementById('sum').innerHTML='พบ <b>'+j.count+'</b> ผลลัพธ์สำหรับ “'+esc(j.query)+'” · '+esc(j.advice);
+  document.getElementById('list').innerHTML=(j.results||[]).map(r=>
+   '<div class="card"><h3>'+esc(r.role)+'</h3>'+
+   '<div class="team">'+esc(r.team)+' · ฝ่าย '+esc(r.division)+'</div>'+
+   '<span class="tag '+(r.mode==='in-house'?'t-in':'t-out')+'">'+(r.mode==='in-house'?'ในทีม':'Outsource')+'</span>'+
+   '<span class="tag '+(r.priority===1?'p1':'p2')+'">ความสำคัญ '+r.priority+'</span>'+
+   '<div class="row"><b>หน้าที่:</b> '+esc(r.duty)+'</div>'+
+   '<div class="row"><b>ที่มีจริง:</b> '+esc(r.current)+'</div>'+
+   '<div class="row gap"><b>ยังขาด:</b> '+esc(r.gap)+'</div></div>').join('')||'ไม่พบผลลัพธ์';
+ }catch(e){document.getElementById('sum').textContent='ค้นหาไม่ได้: '+e.message}
+}
+run();
+</script></body></html>

@@ -447,6 +447,10 @@ try:
 except Exception:
     IT = None
 try:
+    from growth_org import GO
+except Exception:
+    GO = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3782,7 +3786,8 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
         # Dashboard pages — served from the repo so they work on Render too.
-        if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html"):
+        if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
+                      "/GROWTH.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()
@@ -3932,6 +3937,15 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/growth/search":
+            q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+            self._send_json(200, GO.search(q) if GO
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/growth/org":
+            self._send_json(200, GO.all() if GO
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/it/org":
             self._send_json(200, IT.list() if IT
