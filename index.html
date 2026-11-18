@@ -546,6 +546,25 @@ body.is-empty .box{max-width:760px!important}
 .acct-menu{min-width:290px!important}
 .acct-menu .am{font-size:13px!important;padding:8px 11px!important}
 
+
+.side .it .hist-more{display:none;border:0;background:transparent;color:#9aa0a6;font-size:16px;
+  line-height:1;padding:2px 6px;cursor:pointer;border-radius:6px}
+.side .it:hover .hist-more,.side .it.on .hist-more{display:block}
+.side .it .hist-more:hover{background:#e8eaed;color:#202124}
+.side .it i{display:none!important}
+.del-ov{display:none;position:fixed;inset:0;background:rgba(32,33,36,.42);z-index:60;
+  align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.del-ov.show{display:flex}
+.del-box{position:relative;background:#fff;border-radius:20px;padding:28px;width:min(440px,92vw);
+  box-shadow:0 24px 70px rgba(0,0,0,.25);color:#202124}
+.del-box h3{margin:0 0 10px;font-size:17px;font-weight:600}
+.del-box p{margin:0 0 22px;font-size:13.5px;line-height:1.7;color:#5f6368}
+.del-x{position:absolute;right:14px;top:12px;border:0;background:transparent;color:#9aa0a6;font-size:15px;cursor:pointer}
+.del-row{display:flex;gap:10px;justify-content:flex-end}
+.del-no,.del-yes{border:0;border-radius:999px;padding:10px 22px;font-size:13.5px;cursor:pointer;font-weight:500}
+.del-no{background:#f1f3f4;color:#202124}
+.del-yes{background:#e11d48;color:#fff}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -961,15 +980,25 @@ function bubble(m,live){const col=$('col');let d;
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
    mk('ฟัง',b=>{if(b.dataset.on==='1'){stopSpeak();b.dataset.on='0';b.textContent='ฟัง';return}b.dataset.on='1';b.textContent='หยุด';lastLang=resolveLang(m.c);speak(m.c,b).then(()=>{b.dataset.on='0';b.textContent='ฟัง'}).catch(()=>{b.dataset.on='0';b.textContent='ฟัง'})});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
-const SUG=['ช่วยค้นข้อมูลล่าสุดเกี่ยวกับ AI ที่น่าสนใจให้หน่อย','จำไว้ว่าเรียกฉันว่าเพื่อน และชอบคำอธิบายสั้น ๆ','ช่วยสรุปสิ่งที่ควรทำต่อจากไฟล์/งานที่ฉันให้','อากาศที่กรุงเทพตอนนี้เป็นยังไง'];
+const SUG=['ค้นหา','ถามอะไรก็ได้','สร้างเนื้อหา','สร้างรูปภาพ'];
 function view(){const col=$('col');col.innerHTML='';document.body.classList.remove('is-empty');const c=chats.find(x=>x.id===cur);
  if(!c||!c.m.length){col.innerHTML='<div class="empty"><h1>เราควรเริ่มจากตรงไหนดี</h1><div class="sug"></div></div>';document.body.classList.add('is-empty');SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
  else c.m.forEach(m=>bubble(m));
  renderList()}
 function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
  chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>String(m.c||'').toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
-  d.innerHTML='<span>'+esc(c.t)+'</span><i title="ลบ">✕</i>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
-  d.querySelector('i').onclick=e=>{e.stopPropagation();chats=chats.filter(x=>x.id!==c.id);if(cur===c.id)cur=null;save();view()};L.appendChild(d)})}
+  d.innerHTML='<span>'+esc(c.t)+'</span><button class="hist-more" title="จัดการแชท">···</button>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
+  d.querySelector('.hist-more').onclick=e=>{e.stopPropagation();showDeleteChat(c.id,c.t)};L.appendChild(d)})}
+
+function showDeleteChat(id,title){
+ const ov=document.getElementById('delChatModal');if(!ov)return;
+ const t=document.getElementById('delChatTitle');if(t)t.textContent=title||'แชทนี้';
+ ov.classList.add('show');
+ const b=document.getElementById('delChatYes');
+ if(b)b.onclick=()=>{chats=chats.filter(x=>x.id!==id);if(cur===id)cur=null;save();view();ov.classList.remove('show')};
+ const n=document.getElementById('delChatNo');if(n)n.onclick=()=>ov.classList.remove('show');
+ const x=document.getElementById('delChatX');if(x)x.onclick=()=>ov.classList.remove('show');
+}
 
 // files (lightweight: text + images)
 const IMGX=/\.(png|jpe?g|gif|webp|bmp|avif)$/i;
@@ -1953,4 +1982,10 @@ if(!window.__popupVis){
  setTimeout(applyPopupVis,600);
  setInterval(applyPopupVis,10000);
 }
-</script></body></html>
+</script><div class="del-ov" id="delChatModal"><div class="del-box">
+ <button class="del-x" id="delChatX" title="ปิด">✕</button>
+ <h3>ลบแชทใช่ไหม</h3>
+ <p>การลบแชท '<span id="delChatTitle"></span>' จะถูกลบถาวรและกู้คืนไม่ได้</p>
+ <div class="del-row"><button class="del-no" id="delChatNo">ยกเลิก</button><button class="del-yes" id="delChatYes">ลบ</button></div>
+</div></div>
+</body></html>
