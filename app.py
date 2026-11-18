@@ -5629,6 +5629,7 @@ class Handler(SimpleHTTPRequestHandler):
                 # GitHub Actions survives Render restarts. Dispatch the cinema
                 # workflow there and let the chat poll its public result file.
                 dispatched = False
+                dr_status = None
                 try:
                     import method_transfer as _MT
                     import requests as _rq
@@ -5641,12 +5642,14 @@ class Handler(SimpleHTTPRequestHandler):
                                      "Accept": "application/vnd.github+json"},
                             json={"ref": "main", "inputs": {"brief": text[:180], "lang": "th"}},
                             timeout=25)
-                        dispatched = dr.status_code in (200, 201, 204)
+                        dr_status = dr.status_code
+                        dispatched = dr_status in (200, 201, 204)
                 except Exception:
                     pass
                 if dispatched:
                     self._send_json(200, {"ok": True, "type": "video",
-                                          "mode": "github", "t": int(time.time()),
+                                          "mode": "github", "dispatch_status": dr_status,
+                                          "t": int(time.time()),
                                           "note": "ส่งงานสร้างภาพยนตร์ไป GitHub แล้ว ผลจะโผล่ในแชท"})
                     return
                 # Fallback when no repo token is configured on Render.
