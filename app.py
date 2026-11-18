@@ -3913,6 +3913,13 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/image/studio/status":
+            self._send_json(200, {"ok": True, "engine": "Innovation",
+                                  "capability": "design composition (PIL)",
+                                  "generative_diffusion": False,
+                                  "font": "Noto Sans Thai (free, cached)",
+                                  "media_dir": "/media/images/"})
+            return
         if u.path == "/api/research/projects":
             self._send_json(200, RP.list() if RP
                             else {"ok": False, "error": "unavailable"})
@@ -5155,6 +5162,18 @@ class Handler(SimpleHTTPRequestHandler):
             res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/image/studio/generate":
+            try:
+                import image_studio
+                res = image_studio.produce(
+                    str(body.get("title") or "Zyphere"),
+                    str(body.get("subtitle") or ""),
+                    str(body.get("kind") or "poster"),
+                    str(body.get("palette") or "indigo"))
+                self._send_json(200, res)
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 180)})
             return
         if u.path == "/api/research/projects/create":
             res = RP.create(body) if RP else {"ok": False, "error": "unavailable"}
