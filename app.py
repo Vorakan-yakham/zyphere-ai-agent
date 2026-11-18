@@ -3572,6 +3572,81 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
+        if u.path == "/api/mail/auth":
+            self._send_json(200, GMAIL_OAUTH.auth_url() if GMAIL_OAUTH else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/shop/catalog":
+            self._send_json(200, SHOP.catalog() if SHOP else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/shop/stats":
+            self._send_json(200, {"ok": True, "stats": SHOP.stats() if SHOP else {}})
+            return
+        if u.path == "/api/market/plans":
+            self._send_json(200, {"ok": True, "plans": MARKET.list_plans() if MARKET else [],
+                                  "stats": MARKET.stats() if MARKET else {}})
+            return
+        if u.path == "/api/expert/checklist":
+            kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]
+            self._send_json(200, {"ok": True, "stages": ["understand","research","plan","produce","qa","deliver"],
+                                  "checklist": EXPERT.checklist(kind) if EXPERT else []})
+            return
+        if u.path == "/api/expert/status":
+            self._send_json(200, EXPERT.status() if EXPERT else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/otp/pending":
+            self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
+                                  "stats": OTPASSIST.stats() if OTPASSIST else {}})
+            return
+        if u.path == "/api/income/channels":
+            self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/income/stats":
+            self._send_json(200, {"ok": True, "stats": INCOME.stats() if INCOME else {},
+                                  "recent": INCOME.list(10) if INCOME else []})
+            return
+        if u.path == "/api/auto/observe":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": len(GUARD.status().get("role", "")) if GUARD else 0,
+                  "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.observe(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/decide":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": 0, "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.decide(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/log":
+            self._send_json(200, AUTOFILL.log() if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/help/pending":
+            self._send_json(200, {"ok": True, "pending": HELP.pending() if HELP else [],
+                                  "stats": HELP.stats() if HELP else {}})
+            return
+        if u.path == "/api/code/list":
+            self._send_json(200, {"ok": True, "products": CODEFORGE.list_products() if CODEFORGE else [],
+                                  "stats": CODEFORGE.stats() if CODEFORGE else {}})
+            return
+        if u.path == "/api/money/fields":
+            self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/money/catalog":
+            self._send_json(200, {"ok": True, "catalog": MONEYFIELD.catalog_list() if MONEYFIELD else [],
+                                  "stats": MONEYFIELD.stats() if MONEYFIELD else {}})
+            return
+        if u.path == "/api/pack/list":
+            self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],
+                                  "stats": PACKS.stats() if PACKS else {}})
+            return
+        if u.path == "/api/delivery/stats":
+            self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
+                                  "pending": DELIVERY.pending() if DELIVERY else []})
+            return
         if u.path.startswith("/data/"):
             self.send_error(403, "Forbidden")
             return
@@ -4286,81 +4361,6 @@ class Handler(SimpleHTTPRequestHandler):
             return
         return super().do_GET()
 
-        if u.path == "/api/mail/auth":
-            self._send_json(200, GMAIL_OAUTH.auth_url() if GMAIL_OAUTH else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/shop/catalog":
-            self._send_json(200, SHOP.catalog() if SHOP else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/shop/stats":
-            self._send_json(200, {"ok": True, "stats": SHOP.stats() if SHOP else {}})
-            return
-        if u.path == "/api/market/plans":
-            self._send_json(200, {"ok": True, "plans": MARKET.list_plans() if MARKET else [],
-                                  "stats": MARKET.stats() if MARKET else {}})
-            return
-        if u.path == "/api/expert/checklist":
-            kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]
-            self._send_json(200, {"ok": True, "stages": ["understand","research","plan","produce","qa","deliver"],
-                                  "checklist": EXPERT.checklist(kind) if EXPERT else []})
-            return
-        if u.path == "/api/expert/status":
-            self._send_json(200, EXPERT.status() if EXPERT else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/otp/pending":
-            self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
-                                  "stats": OTPASSIST.stats() if OTPASSIST else {}})
-            return
-        if u.path == "/api/income/channels":
-            self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/income/stats":
-            self._send_json(200, {"ok": True, "stats": INCOME.stats() if INCOME else {},
-                                  "recent": INCOME.list(10) if INCOME else []})
-            return
-        if u.path == "/api/auto/observe":
-            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
-                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
-                  "knowledge": len(load_knowledge().get("items") or []),
-                  "alerts": len(GUARD.status().get("role", "")) if GUARD else 0,
-                  "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
-                  "remote": remote_enabled()}
-            self._send_json(200, AUTOFILL.observe(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/auto/decide":
-            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
-                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
-                  "knowledge": len(load_knowledge().get("items") or []),
-                  "alerts": 0, "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
-                  "remote": remote_enabled()}
-            self._send_json(200, AUTOFILL.decide(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/auto/log":
-            self._send_json(200, AUTOFILL.log() if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/help/pending":
-            self._send_json(200, {"ok": True, "pending": HELP.pending() if HELP else [],
-                                  "stats": HELP.stats() if HELP else {}})
-            return
-        if u.path == "/api/code/list":
-            self._send_json(200, {"ok": True, "products": CODEFORGE.list_products() if CODEFORGE else [],
-                                  "stats": CODEFORGE.stats() if CODEFORGE else {}})
-            return
-        if u.path == "/api/money/fields":
-            self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/money/catalog":
-            self._send_json(200, {"ok": True, "catalog": MONEYFIELD.catalog_list() if MONEYFIELD else [],
-                                  "stats": MONEYFIELD.stats() if MONEYFIELD else {}})
-            return
-        if u.path == "/api/pack/list":
-            self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],
-                                  "stats": PACKS.stats() if PACKS else {}})
-            return
-        if u.path == "/api/delivery/stats":
-            self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
-                                  "pending": DELIVERY.pending() if DELIVERY else []})
-            return
     def do_POST(self):
         u = urllib.parse.urlparse(self.path)
         try:
