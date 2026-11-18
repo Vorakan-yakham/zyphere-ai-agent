@@ -2941,7 +2941,7 @@ _improve_busy = False
 _jarvis_busy = False
 _jarvis_step = 0
 JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
-                "council", "engineers"]
+                "council", "engineers", "grow", "hr"]
 _council_busy = False
 _council_last = None
 
@@ -2997,6 +2997,19 @@ def jarvis_loop():
                         try:
                             from it_engineers import ITE
                             ITE.run_all(dry=False)
+                        except Exception:
+                            pass
+                    elif step == "grow":
+                        try:
+                            import auto_grow
+                            auto_grow.run(apply=True)
+                        except Exception:
+                            pass
+                    elif step == "hr":
+                        try:
+                            from hr_head import HR
+                            HR.assign(apply=True)
+                            HR.analyze()
                         except Exception:
                             pass
                     if remote_enabled():
@@ -4026,6 +4039,23 @@ class Handler(SimpleHTTPRequestHandler):
                    "note": "แต่ละแผนกเรียนต่างแหล่ง แข่งขัน จำได้ และพัฒนาตัวเอง"}
             out.update(extra)
             self._send_json(200, out)
+            return
+        if u.path == "/api/hr/status":
+            try:
+                from hr_head import HR
+                _hr = HR.status()
+            except Exception:
+                _hr = {"ok": False, "error": "unavailable"}
+            self._send_json(200, _hr)
+            return
+        if u.path == "/api/auto-grow/status":
+            try:
+                import auto_grow as _AG
+                _ag = json.load(open(os.path.join(_AG.ROOT, "data", "auto_grow.json"),
+                                     encoding="utf-8"))
+            except Exception:
+                _ag = {"ok": False, "error": "no scan yet"}
+            self._send_json(200, _ag)
             return
         if u.path == "/api/chief/identity":
             self._send_json(200, CHIEF.identity() if CHIEF else {"ok": False, "error": "unavailable"})

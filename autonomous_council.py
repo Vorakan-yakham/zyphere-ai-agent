@@ -536,6 +536,15 @@ def run(apply=True):
                                     "sample": itr.get("results", [])[:3]}
     except Exception:
         findings["it_engineers"] = {"error": "IT engineers unavailable"}
+    # HR head decides ADD/CUT from real workload, not from headcount vanity.
+    try:
+        from hr_head import HR
+        HR.assign(apply=apply)
+        hra = HR.analyze()
+        findings["hr"] = {"evidence": hra.get("evidence"),
+                          "decision": (hra.get("decision") or "")[:1200]}
+    except Exception:
+        findings["hr"] = {"error": "HR unavailable"}
     mem = findings.get("recall") or {}
     cons = deb.get("consensus") or ""
     recall_used = bool(mem.get("previous")) and any(
