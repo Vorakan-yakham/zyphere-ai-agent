@@ -34,6 +34,7 @@ jobs:
             ("imagination", "imagination_engine", "run"),
             ("media", "media_twin_track", "run"),
             ("nudge", "nudge_lazy", "run"),
+            ("commerce", "commerce_lab", "run"),
             ("qa", "qa_audit_team", "run"),
           ]
           out = {}
