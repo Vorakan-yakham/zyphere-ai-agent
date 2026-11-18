@@ -349,6 +349,11 @@ try:
 except Exception:
     RSS = None
 try:
+    from agents import AgentOrg
+    ORG = AgentOrg(os.path.join(DATA_DIR, "agents.json"))
+except Exception:
+    ORG = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -434,6 +439,7 @@ REMOTE_KEYS = {
     "expert": "zyphere:expert",
     "market": "zyphere:market",
     "shop": "zyphere:shop",
+    "agents": "zyphere:agents",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -545,7 +551,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents"):
         try:
             data = {
                 "memory": load_mem,
@@ -579,6 +585,7 @@ def remote_push_all():
                 "codeforge": (CODEFORGE.snapshot() if CODEFORGE else None),
                 "otpassist": (OTPASSIST.snapshot() if OTPASSIST else None),
                 "shop": (SHOP.snapshot() if SHOP else None),
+                "agents": (ORG.snapshot() if ORG else None),
             }[name]()
         except Exception:
             continue
@@ -619,6 +626,7 @@ def remote_pull_all():
         "delivery": os.path.join(DATA_DIR, "delivery.json"),
         "otpassist": os.path.join(DATA_DIR, "otpassist.json"),
         "shop": os.path.join(DATA_DIR, "shop.json"),
+        "agents": os.path.join(DATA_DIR, "agents.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -659,7 +667,7 @@ def remote_pull_all():
                    "behavior": BEHAVIOR, "audit": AUDIT, "jarvis": JARVIS, "privacy": PRIVACY,
                    "guard": GUARD, "delivery": DELIVERY, "moneyfield": MONEYFIELD, "income": INCOME,
                    "help": HELP, "autofill": AUTOFILL, "codeforge": CODEFORGE,
-                   "otpassist": OTPASSIST}[name]
+                   "otpassist": OTPASSIST, "shop": SHOP, "agents": ORG}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3695,6 +3703,24 @@ class Handler(SimpleHTTPRequestHandler):
             res = RAG_ENGINE.retrieve(q, state) if RAG_ENGINE else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/org/plan":
+            res = ORG.plan(str(body.get("mission") or "")) if ORG else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("agents", ORG.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/org/run":
+            state = {"research": lambda t: (INCOME.channels() if False else
+                       (str(RESEARCH.library())[:400] if RESEARCH else "no data")),
+                     "concept": lambda t: (CONCEPT.explore(str(t).replace("ตีความ/สรุป/ขยายแขนง ", "")) if CONCEPT else {}),
+                     "work": lambda t: (WORKS.produce(str(t)[:160]) if WORKS else {}),
+                     "review": lambda t: (SAFETY.evaluate(str(t)) if SAFETY else {}),
+                     "market": lambda t: (MARKET.analyze(str(t).replace("หาตลาด+เขียน listing ", "")) if MARKET else {})}
+            res = ORG.run(str(body.get("id") or ""), state) if ORG else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("agents", ORG.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/listing/refresh":
             res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
@@ -3703,6 +3729,13 @@ class Handler(SimpleHTTPRequestHandler):
             q = urllib.parse.parse_qs(u.query)
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
+            return
+        if u.path == "/api/org/team":
+            self._send_json(200, ORG.team() if ORG else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/org/missions":
+            self._send_json(200, {"ok": True, "missions": ORG.list_missions() if ORG else [],
+                                  "stats": ORG.stats() if ORG else {}})
             return
         if u.path == "/api/tools/list":
             self._send_json(200, TOOLS.list() if TOOLS else {"ok": False, "error": "unavailable"})
