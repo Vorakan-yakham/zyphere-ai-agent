@@ -3918,7 +3918,7 @@ class Handler(SimpleHTTPRequestHandler):
                                   "capability": "design composition (PIL)",
                                   "generative_diffusion": False,
                                   "font": "Noto Sans Thai (free, cached)",
-                                  "media_dir": "/media/images/"})
+                                  "media_dir": "/media/"})
             return
         if u.path == "/api/research/projects":
             self._send_json(200, RP.list() if RP

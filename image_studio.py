@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(ROOT, "media")
 FONTS = os.path.join(MEDIA, "fonts")
-OUT = os.path.join(MEDIA, "images")
+OUT = MEDIA  # /media/<file> is served by the existing flat media handler
 FONT_URL = ("https://raw.githubusercontent.com/google/fonts/main/ofl/"
             "notosansthai/NotoSansThai%5Bwght%5D.ttf")
 
@@ -135,6 +135,6 @@ def produce(title, subtitle="", kind="poster", palette="indigo"):
     name = "%s_%d.png" % (hashlib.md5(title.encode()).hexdigest()[:10], int(time.time()))
     path = os.path.join(OUT, name)
     open(path, "wb").write(best[0])
-    return {"ok": True, "path": path, "url": "/media/images/" + name,
+    return {"ok": True, "path": path, "url": "/media/" + name,
             "palette": best[2], "quality": best[1],
             "note": "design composition (PIL), not diffusion image generation"}
