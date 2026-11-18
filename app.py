@@ -439,6 +439,10 @@ try:
 except Exception:
     FE = None
 try:
+    from creative_director import CD
+except Exception:
+    CD = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3913,6 +3917,10 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/creative/status":
+            self._send_json(200, CD.status() if CD
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/image/studio/status":
             self._send_json(200, {"ok": True, "engine": "Innovation",
                                   "capability": "design composition (PIL)",
@@ -5162,6 +5170,21 @@ class Handler(SimpleHTTPRequestHandler):
             res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/creative/direct":
+            res = CD.direct(str(body.get("title") or "Zyphere"),
+                            str(body.get("subtitle") or ""),
+                            str(body.get("kind") or "poster"),
+                            int(body.get("variants") or 3)) if CD \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/creative/rate":
+            res = CD.rate(str(body.get("url") or ""),
+                          int(body.get("score") or 0),
+                          str(body.get("note") or "")) if CD \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
             return
         if u.path == "/api/image/studio/generate":
             try:
