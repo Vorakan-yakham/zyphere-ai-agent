@@ -455,6 +455,10 @@ try:
 except Exception:
     EC = None
 try:
+    from user_learning import UL
+except Exception:
+    UL = None
+try:
     from it_org import IT
 except Exception:
     IT = None
@@ -2932,7 +2936,7 @@ _improve_busy = False
 
 _jarvis_busy = False
 _jarvis_step = 0
-JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief"]
+JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode"]
 
 
 def jarvis_loop():
@@ -2957,6 +2961,8 @@ def jarvis_loop():
                         CD.debate()
                     elif step == "chief" and CHIEF:
                         CHIEF.run_cycle({"remote": remote_enabled()}, None)
+                    elif step == "selfcode" and SC:
+                        SC.cycle(None, False)
                     if remote_enabled():
                         remote_push("jarvis_loop", {"t": int(time.time()), "step": step,
                                                     "n": _jarvis_step})
@@ -4048,6 +4054,17 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/learning/feedback":
+            res = UL.record(str(body.get("text") or ""), int(body.get("rating") or 0),
+                            str(body.get("source") or "user"),
+                            str(body.get("tag") or "")) if UL \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/learning/status":
+            self._send_json(200, UL.status() if UL
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/engineering/status":
             self._send_json(200, EC.status() if EC

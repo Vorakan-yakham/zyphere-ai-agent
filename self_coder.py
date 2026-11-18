@@ -130,7 +130,7 @@ class SelfCoder:
     def _commit(self, f, reason):
         msgs = [["git", "add", f],
                 ["git", "commit", "-m", "self-coder: " + str(reason)[:70]],
-                ["git", "pull", "--rebase", "origin", "main"],
+                ["git", "-c", "rebase.autoStash=true", "pull", "--rebase", "origin", "main"],
                 ["git", "push", "origin", "main"]]
         for c in msgs:
             r = subprocess.run(c, cwd=ROOT, capture_output=True, text=True, timeout=180)

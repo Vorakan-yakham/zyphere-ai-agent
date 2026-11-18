@@ -42,17 +42,15 @@ def _tone(freq, dur, sr, vol=0.3, kind="sine"):
 
 
 def _drum(dur, sr, kind="kick"):
-    n = int(sr * max(0.0, dur))
+    n = int(sr * dur)
     out = []
-    if n <= 0:
-        return out
     for i in range(n):
-        t = i / float(sr)
-        env = max(0.0, 1.0 - t / dur) if dur > 0 else 0.0
+        t = i / sr
+        env = max(0.0, 1.0 - t / dur)
         if kind == "kick":
-            v = math.sin(2.0 * math.pi * (110.0 - 70.0 * t / dur) * t) if dur > 0 else 0.0
+            v = math.sin(2 * math.pi * (110 - 70 * t / dur) * t)
         else:
-            v = math.sin(2.0 * math.pi * 1800.0 * t) * env
+            v = math.sin(2 * math.pi * 1800 * t) * env
         out.append(int(16000 * env * v))
     return out
 
