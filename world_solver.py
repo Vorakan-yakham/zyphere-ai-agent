@@ -75,3 +75,7 @@ def solve(problem, apply=True):
 
 if __name__ == "__main__":
     print(json.dumps(solve("ข้อความภาษาเพี้ยนเป็นอังกฤษในหนังสือ"), ensure_ascii=False)[:800])
+
+
+def run():
+    return solve("ปัญหาจากข้อมูลจริงที่ระบบตรวจพบ")

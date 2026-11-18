@@ -150,3 +150,7 @@ if __name__ == "__main__":
     r = harvest("quantum computing")
     print("harvested", r["sources"], len(r["hits"]))
     print(json.dumps(coverage(), ensure_ascii=False))
+
+
+def run():
+    return coverage()

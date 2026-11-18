@@ -23,8 +23,13 @@ jobs:
           python - <<'PY'
           import json, traceback
           steps = [
+            ("thai_language", "thai_language_brain", "build"),
+            ("world", "world_knowledge", "run"),
+            ("solver", "world_solver", "run"),
+            ("devices", "device_bridge", "auto_product"),
             ("knowledge", "knowledge_engine", "run"),
             ("disciplines", "discipline_lab", "propose"),
+            ("books", "ebook_design_team", "run"),
             ("brain", "own_brain", "grow"),
             ("media", "media_twin_track", "run"),
             ("nudge", "nudge_lazy", "run"),

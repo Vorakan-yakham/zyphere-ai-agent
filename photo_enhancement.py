@@ -36,46 +36,19 @@ def sharpness(im):
 
 # 12 engineers, each with one measurable job -----------------------------------
 def e01_fetch(query):
-    """Engineer 01: create the SOURCE entirely in-house (no network, no API).
-    Builds a layered algorithmic scene from our own image lab primitives.
-    """
+    """Engineer 01: build the SOURCE in-house (no network, no API)."""
     import own_image_lab as LAB
-    seed = int(hashlib.md5(query.encode()).hexdigest()[:8], 16)
-    padef generate_image_from_query(query: str, seed: int) -> Tuple[Image.Image, Dict[str, str]]:
-    """
-    Generate a stylized image based on a textual query.
-
-    Parameters
-    ----------
-    query : str
-        Text describing the desired style (e.g. "warm", "golden", "sunset", "อบอุ่น").
-    seed : int
-        Random seed for reproducible palette and texture generation.
-
-    Returns
-    -------
-    Tuple[Image.Image, Dict[str, str]]
-        The generated image and a metadata dictionary.
-    """
-    # Determine palette type from query keywords
-    palette_type = "warm" if any(k in query.lower() for k in ("warm", "golden", "sunset", "อบอุ่น")) else "cool"
-
-    # Create base image with specified dimensions
-    width, height = 1200, 1500
-    im = LAB.mesh(width=width, height=height, palette=palette_type, seed=seed)
-
-    # Apply successive stylization steps
-    im = LAB.texture(im, seed=seed)
-    im = LAB.depth(im, palette=palette_type)
-    im = LAB.silhouette(im, palette=palette_type)
-    im = LAB.ornaments(im, palette=palette_type)
-
-    metadata = {
-        "source": "in-house algorithm (own_image_lab)",
-        "license": "Zyphere own",
-        "query": query
-    }
-    return im, metadata
+    seed = int(hashlib.md5(str(query).encode()).hexdigest()[:8], 16)
+    mood = "warm" if any(k in str(query) for k in
+                         ("warm", "golden", "sunset", "อบอุ่น")) else "cool"
+    pal = LAB.palette(mood, seed)
+    im = LAB.mesh(1200, 1500, pal)
+    im = LAB.texture(im, seed)
+    im = LAB.depth(im, pal)
+    im = LAB.silhouette(im, pal)
+    im = LAB.ornaments(im, pal)
+    return im, {"source": "in-house algorithm (own_image_lab)",
+                "license": "Zyphere own", "query": query}
 
 
 def e02_crop(im, w=1200, h=1500):

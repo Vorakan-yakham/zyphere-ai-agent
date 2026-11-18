@@ -58,7 +58,13 @@ def run(topics=None, apply=True, batch=25):
     import world_knowledge as WK
     import own_brain
     before = coverage()
-    allf = all_disciplines()
+    try:
+        import thai_language_brain as _TL
+        lang = _TL.build(apply=False)
+        allf = ["พยัญชนะไทย", "สระไทย", "วรรณยุกต์ไทย", "การประสมคำ",
+                "โครงสร้างประโยค", "ย่อหน้า", "บทความ"] + all_disciplines()
+    except Exception:
+        allf = all_disciplines()
     known = set()
     try:
         db = json.load(open(os.path.join(ROOT, "data", "world_knowledge.json"), encoding="utf-8"))

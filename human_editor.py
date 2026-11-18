@@ -73,7 +73,9 @@ def humanize(text, seed=0):
                 cut = s.rfind(" ", 80, 180)
             if cut > 0:
                 s = s[:cut] + " — " + s[cut+1:].strip()
-        out.append(s if s else "")
+        if s and not re.search(r"[.!?。！？]$", s):
+            s += "。"
+        out.append(s if s else "")  # ENABLE_PERIOD
     out = [x for x in out if x]
     # group into short, human paragraphs (2-3 sentences)
     paras, cur = [], []
@@ -97,11 +99,11 @@ def md_to_human_paragraphs(md):
         elif re.match(r"^\d+\.\s", s):
             if buf:
                 blocks.append(("p", thai_term(" ".join(buf)))); buf = []
-            blocks.append(("li", re.sub(r"^\d+\.\s", "", re.sub(r"[*`#|>]", "", s))))
+            blocks.append(("li", thai_term(re.sub(r"^\d+\.\s", "", re.sub(r"[*`#|>]", "", s)))))
         elif s.startswith("- "):
             if buf:
                 blocks.append(("p", thai_term(" ".join(buf)))); buf = []
-            blocks.append(("li", re.sub(r"^-\s*", "", re.sub(r"[*`#|>]", "", s))))
+            blocks.append(("li", thai_term(re.sub(r"^-\s*", "", re.sub(r"[*`#|>]", "", s)))))
         elif s and not s.startswith("<!--"):
             buf.append(re.sub(r"[*`#|>]", "", s))
     if buf:
@@ -171,7 +173,11 @@ def render(md, title, price=190, cover_uri=""):
 
 def check_human(html):
     import re
-    issues = []
+    try:
+        import thai_language_brain as _TLB
+        issues = list(_TLB.analyse(html).get("issues", []))
+    except Exception:
+        issues = []
     if html.count("<p ") < 8:
         issues.append("ย่อหน้าน้อยเกินไป")
     if "ในบทนี้" in html or "บทนี้จะกล่าวถึง" in html:
