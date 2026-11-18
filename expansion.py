@@ -28,6 +28,19 @@ EXPANSION_DOMAINS = {
     "การคิดระดับสูง": ["Abstract Thinking", "Analogical Reasoning", "Causal Reasoning", "Counterfactual Thinking", "Abductive Reasoning", "Meta-Reasoning", "Hypothesis Generation"],
     "ภูมิปัญญาท้องถิ่น": ["ภูมิปัญญาการเกษตร", "การจัดการน้ำชุมชน", "สมุนไพรและพฤกษศาสตร์ชาติพันธุ์", "งานหัตถกรรม", "ชลประทานโบราณ", "สถาปัตยกรรมพื้นถิ่น"],
     "การวิจัยข้ามศาสตร์": ["Computational Civilization Science", "Human-AI Collaborative Intelligence", "Planetary Systems Engineering", "Autonomous Research Systems", "Civilization Resilience"],
+    # --- batch 2: more branches the owner wants Zyphere to keep learning ---
+    "เกษตรและการปลูก": ["Agronomy", "Hydroponics", "Aquaponics", "Soil Science", "Plant Pathology", "Sustainable farming", "Urban Agriculture"],
+    "อาหารและการปรุง": ["Food Science", "Culinary Arts", "Food Safety", "Fermentation", "Nutrition Science", "Menu Design", "Food Preservation"],
+    "กีฬาและการฝึก": ["Sports Science", "Kinesiology", "Exercise Physiology", "Strength Training", "Recovery Science", "Sports Nutrition"],
+    "ดนตรีและเสียง": ["Music Theory", "Harmony", "Rhythm", "Audio Engineering", "Sound Design", "Acoustics", "Composition"],
+    "ภาพยนตร์และสื่อ": ["Filmmaking", "Cinematography", "Editing", "Screenwriting", "Animation", "Visual Effects", "Storytelling"],
+    "การศึกษาพิเศษ": ["Special Education", "Inclusive Education", "Learning Disabilities", "Gifted Education", "Assistive Technology", "Differentiated Instruction"],
+    "ภาษาและวรรณกรรม": ["Thai Literature", "Comparative Literature", "Poetics", "Rhetoric", "Translation Theory", "Corpus Linguistics", "Digital Humanities"],
+    "จิตวิทยาสังคม": ["Social Psychology", "Group Dynamics", "Persuasion", "Behavioral Economics", "Cross-Cultural Psychology", "Conflict Studies"],
+    "สถิติและการวิเคราะห์": ["Statistical Inference", "Experimental Design", "Bayesian Statistics", "Regression", "Time Series", "Causal Inference", "Data Visualization"],
+    "การออกแบบและประสบการณ์": ["Design Thinking", "UX Research", "Interaction Design", "Typography", "Color Theory", "Service Design", "Design Systems"],
+    "การบำบัดและดูแล": ["Counseling Psychology", "Mindfulness", "Cognitive Behavioral principles", "Stress Management", "Wellbeing Science", "Palliative Care"],
+    "การบริการและธุรกิจขนาดเล็ก": ["Service Design", "Customer Experience", "Operations", "Social Entrepreneurship", "Microfinance", "Cooperative Models", "Local Business"],
 }
 
 EXPANSION_TOPICS = []
