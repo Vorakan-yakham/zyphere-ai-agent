@@ -420,8 +420,59 @@ body.zy-admin #set .kr{display:flex!important}
 .side.expanded .side-sec{display:block!important}
 .side.expanded #sideCollapse{display:grid!important}
 
+
+.side.expanded #sideCollapse{display:grid!important}
+.side.expanded .side-nav.compact,.side.expanded #search,.side.expanded .side-sec,.side.expanded .list{display:flex!important}
+.side.expanded .side-sec{display:block!important}
+
+
+/* === META-EXACT RAIL — final authoritative override === */
+body{--meta-w:68px}
+.side{width:var(--meta-w)!important;min-width:var(--meta-w)!important;
+  padding:18px 10px!important;background:#fff!important;border-right:1px solid #e8eaf1!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;overflow:hidden!important}
+.side.expanded{width:272px!important;min-width:272px!important;align-items:stretch!important;padding:16px 12px!important}
+.side .side-head{padding:0 0 18px!important;width:100%;display:flex;justify-content:center!important}
+/* purple flower logo */
+.side .logo{display:grid!important;place-items:center!important;width:100%;padding:0!important}
+.side .logo svg,.side .logo .orb{width:26px!important;height:26px!important}
+.side .logo span{display:none!important}
+.side #sideCollapse{display:none!important}
+.side .side-nav{width:100%;align-items:center;gap:4px!important}
+.side .nv{width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;
+  display:grid!important;place-items:center!important;border-radius:12px!important;border:0!important;
+  background:transparent!important;color:#202124!important;margin:0!important}
+.side .nv svg{width:20px!important;height:20px!important;stroke:#202124!important;stroke-width:1.7!important}
+.side .nv span,.side .nv kbd{display:none!important}
+.side .nv:hover{background:#f1f3f4!important}
+.side .nv:active{background:#e8eaed!important}
+.side .side-nav.compact,.side .side-sec,.side #search,.side .list,.side #setBtn,.side .side-tools{display:none!important}
+.side .side-foot{margin-top:auto!important;width:100%;display:flex;justify-content:center;
+  padding:10px 0 2px!important;border-top:1px solid #eef0f5!important}
+.side .acct{width:44px!important;justify-content:center!important;padding:0!important}
+.side .avatar{width:30px!important;height:30px!important;border-radius:50%;background:#3c4043;color:#fff;
+  display:grid;place-items:center;font:500 11px Inter;overflow:hidden}
+.side .avatar img{width:100%;height:100%;object-fit:cover}
+.side .acct-name,.side .bell{display:none!important}
+/* expanded shows all functions */
+.side.expanded .side-head{justify-content:space-between!important}
+.side.expanded #sideCollapse{display:grid!important}
+.side.expanded .nv{width:100%!important;height:auto!important;min-height:0!important;
+  display:flex!important;justify-content:flex-start!important;padding:9px 12px!important;gap:11px}
+.side.expanded .nv svg{width:18px!important;height:18px!important}
+.side.expanded .nv span,.side.expanded .nv kbd{display:inline!important}
+.side.expanded .side-nav.compact,.side.expanded .side-sec,
+.side.expanded #search,.side.expanded .list{display:flex!important}
+.side.expanded .side-sec{display:block!important}
+.side.expanded .side-foot{justify-content:flex-start!important;padding:10px 4px 2px!important}
+.side.expanded .acct{width:auto!important;justify-content:flex-start!important;gap:9px}
+.side.expanded .acct-name,.side.expanded .bell{display:inline!important}
+/* hidden */
+.side.hide{margin-left:calc(-1 * var(--meta-w))!important;opacity:0;pointer-events:none}
+.side.expanded.hide{margin-left:-272px!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
-<aside class="side rail" id="side">
+<aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
  <nav class="side-nav">
   <button class="nv" id="newBtn" title="แชทใหม่"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>แชทใหม่</span><kbd>⌘⇧O</kbd></button>
@@ -1720,7 +1771,7 @@ $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
 $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('agentMode').value=agentOn?'on':'off';toast(agentOn?'เปิดโหมด Agent แล้ว (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)':'ปิดโหมด Agent แล้ว'); if(agentOn)loadMemory()};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open');sd.classList.add('rail');sd.classList.remove('expanded')};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open');sd.classList.add('expanded');sd.classList.remove('rail')};
 $('menu').onclick=()=>{const sd=$('side');sd.classList.toggle('hide');sd.classList.toggle('open');};
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
@@ -1766,10 +1817,10 @@ if(!window.__sideNavWired){
  go('schBtn',()=>{const q=$('q');if(q){q.value='กำหนดเวลาสรุปความเคลื่อนไหว';q.dispatchEvent(new Event('input'));$('sendBtn').click()}});
  go('vibeBtn',()=>{const q=$('q');if(q){q.value='สร้างวิดีโอ Vibes จากหัวข้อที่กำลังคุย';q.dispatchEvent(new Event('input'));$('sendBtn').click()}});
  go('sideCollapse',()=>{const sd=document.getElementById('side');
-  // 3 states: hidden -> rail -> expanded -> hidden
-  if(sd.classList.contains('hide')){sd.classList.remove('hide');sd.classList.add('rail');sd.classList.remove('expanded')}
-  else if(sd.classList.contains('rail')){sd.classList.remove('rail');sd.classList.add('expanded')}
-  else{sd.classList.remove('expanded');sd.classList.add('hide')}
+  // start expanded -> click: rail -> click: hidden -> click: expanded
+  if(sd.classList.contains('expanded')){sd.classList.remove('expanded');sd.classList.add('rail');sd.classList.remove('hide')}
+  else if(sd.classList.contains('rail')){sd.classList.remove('rail');sd.classList.add('hide')}
+  else{sd.classList.remove('hide');sd.classList.add('expanded')}
  });
  // clicking any nav item collapses the sidebar automatically (mobile-like)
  document.querySelectorAll('.side-nav .nv, .side-foot .acct, .side-foot .bell').forEach(function(el){
