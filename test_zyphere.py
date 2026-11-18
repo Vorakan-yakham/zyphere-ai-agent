@@ -280,6 +280,16 @@ def main():
         r1 = mf.generate("กฎหมาย")
         r2 = mf.generate("การแพทย์/สุขภาพ")
         assert r1["product"] != r2["product"], "field fidelity failed (same product for different fields)"
+        from income import Income
+        ipath = os.path.join(tempfile.gettempdir(), "zy_income_test.json")
+        if os.path.exists(ipath): os.remove(ipath)
+        inc = Income(ipath)
+        assert len(inc.channels()["channels"]) >= 8, "income channels missing"
+        assert inc.produce("ภาพดิจิทัล", "ชุดภาพ", "/media/x.zip", 500)["ok"], "income produce failed"
+        assert inc.affiliate("https://shop.example/aff/123")["ok"], "affiliate failed"
+        assert not inc.affiliate("not-a-link")["ok"], "affiliate accepted bad link"
+        inc.earned("ภาพดิจิทัล", 500, "ขายได้จริง")
+        assert inc.stats()["earned_reported"] == 500, "income earned failed"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

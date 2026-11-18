@@ -312,6 +312,11 @@ try:
     HELP = Help(os.path.join(DATA_DIR, "help.json"))
 except Exception:
     HELP = None
+try:
+    from income import Income
+    INCOME = Income(os.path.join(DATA_DIR, "income.json"))
+except Exception:
+    INCOME = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -380,6 +385,10 @@ REMOTE_KEYS = {
     "delivery": "zyphere:delivery",
     "packs": "zyphere:packs",
     "moneyfield": "zyphere:moneyfield",
+    "income": "zyphere:income",
+    "help": "zyphere:help",
+    "autofill": "zyphere:autofill",
+    "codeforge": "zyphere:codeforge",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -491,7 +500,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge"):
         try:
             data = {
                 "memory": load_mem,
@@ -518,6 +527,11 @@ def remote_push_all():
                 "privacy": (PRIVACY.snapshot() if PRIVACY else None),
                 "guard": (GUARD.snapshot() if GUARD else None),
                 "delivery": (DELIVERY.snapshot() if DELIVERY else None),
+                "moneyfield": (MONEYFIELD.snapshot() if MONEYFIELD else None),
+                "income": (INCOME.snapshot() if INCOME else None),
+                "help": (HELP.snapshot() if HELP else None),
+                "autofill": (AUTOFILL.snapshot() if AUTOFILL else None),
+                "codeforge": (CODEFORGE.snapshot() if CODEFORGE else None),
             }[name]()
         except Exception:
             continue
@@ -4297,6 +4311,28 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/income/produce":
+            res = INCOME.produce(str(body.get("channel") or ""), str(body.get("title") or ""),
+                                 str(body.get("asset_url") or ""), int(body.get("price") or 0),
+                                 str(body.get("note") or "")) if INCOME else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("income", INCOME.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/income/affiliate":
+            res = INCOME.affiliate(str(body.get("link") or ""), str(body.get("note") or ""),
+                                   str(body.get("platform") or "")) if INCOME else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("income", INCOME.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/income/earned":
+            res = INCOME.earned(str(body.get("channel") or ""), int(body.get("amount") or 0),
+                                str(body.get("note") or "")) if INCOME else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("income", INCOME.snapshot())
+            self._send_json(200, res)
+            return
         if u.path == "/api/help/ask":
             res = HELP.ask(str(body.get("action") or ""), str(body.get("blocker") or ""),
                            str(body.get("need") or ""), str(body.get("context") or "")) if HELP else {"ok": False, "error": "unavailable"}
@@ -4341,6 +4377,13 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/income/channels":
+            self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/income/stats":
+            self._send_json(200, {"ok": True, "stats": INCOME.stats() if INCOME else {},
+                                  "recent": INCOME.list(10) if INCOME else []})
             return
         if u.path == "/api/auto/observe":
             st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
