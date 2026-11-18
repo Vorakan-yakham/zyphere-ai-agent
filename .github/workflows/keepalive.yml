@@ -2,26 +2,68 @@ name: Zyphere JARVIS Autonomy
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
   jarvis:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Wake + JARVIS status
-        run: curl -sSf --max-time 45 https://zyphere-ai-agent.onrender.com/api/jarvis/status || true
+        run: >-
+          curl -sSf --max-time 45
+          https://zyphere-ai-agent.onrender.com/api/jarvis/status || true
+
       - name: Learning tick
-        run: curl -sSf --max-time 90 "https://zyphere-ai-agent.onrender.com/api/learn/tick" || true
+        run: >-
+          curl -sSf --max-time 90
+          "https://zyphere-ai-agent.onrender.com/api/learn/tick" || true
+
       - name: Council debate + decision (no owner)
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/debate/run || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/debate/run || true
+
       - name: Department dialogue
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/dialogue/run || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/dialogue/run || true
+
       - name: Chief cycle (nags improvement)
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/chief/run || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/chief/run || true
+
       - name: Self-improvement round
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/improve/run || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/improve/run || true
+
+      - name: Quality cycle (PDCA gate)
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/quality/cycle || true
+
+      - name: Autonomous cross-department council (different sources, real repo edits)
+        run: >-
+          curl -sSf --max-time 300 -X POST
+          -H 'Content-Type: application/json' -d '{}'
+          https://zyphere-ai-agent.onrender.com/api/council/autonomous || true
+
       - name: Create real music file
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{"style":"calm","bpm":90,"bars":2}' https://zyphere-ai-agent.onrender.com/api/music/create || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{"style":"calm","bpm":90,"bars":2}'
+          https://zyphere-ai-agent.onrender.com/api/music/create || true
+
       - name: Create real video file
-        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{"topic":"Zyphire AI","seconds":12,"quality":"fhd"}' https://zyphere-ai-agent.onrender.com/api/video || true
+        run: >-
+          curl -sSf --max-time 120 -X POST
+          -H 'Content-Type: application/json' -d '{"topic":"Zyphere AI","seconds":12,"quality":"fhd"}'
+          https://zyphere-ai-agent.onrender.com/api/video || true

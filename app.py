@@ -2940,7 +2940,30 @@ _improve_busy = False
 
 _jarvis_busy = False
 _jarvis_step = 0
-JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode"]
+JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode", "council"]
+_council_busy = False
+_council_last = None
+
+
+def _run_autonomous_council(apply=True):
+    """Cross-department council — every department learns from a different
+    source, debates, then edits the real product repo. Runs without owner."""
+    global _council_busy, _council_last
+    if _council_busy:
+        return {"ok": False, "error": "council already running"}
+    _council_busy = True
+    try:
+        import autonomous_council as AC
+        res = AC.run(apply=apply)
+        _council_last = {"t": int(time.time()), "ok": res.get("ok"),
+                         "products": res.get("products_rebuilt"),
+                         "applied": res.get("applied")}
+        return res
+    except Exception as e:
+        _council_last = {"t": int(time.time()), "ok": False, "error": str(e)[:180]}
+        return {"ok": False, "error": str(e)[:180]}
+    finally:
+        _council_busy = False
 
 
 def jarvis_loop():
@@ -2967,6 +2990,8 @@ def jarvis_loop():
                         CHIEF.run_cycle({"remote": remote_enabled()}, None)
                     elif step == "selfcode" and SC:
                         SC.cycle(None, False)
+                    elif step == "council":
+                        _run_autonomous_council(True)
                     if remote_enabled():
                         remote_push("jarvis_loop", {"t": int(time.time()), "step": step,
                                                     "n": _jarvis_step})
@@ -3977,6 +4002,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/chief/status":
             self._send_json(200, CHIEF.status() if CHIEF else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/council/status":
+            self._send_json(200, {"ok": True, "busy": _council_busy,
+                                  "last": _council_last,
+                                  "departments": 5,
+                                  "note": "แต่ละแผนกเรียนต่างแหล่ง แล้วถกกันก่อนแก้ repo จริง"})
             return
         if u.path == "/api/chief/identity":
             self._send_json(200, CHIEF.identity() if CHIEF else {"ok": False, "error": "unavailable"})
@@ -5463,6 +5494,11 @@ class Handler(SimpleHTTPRequestHandler):
             res = CD.debate(str(body.get("issue") or "") or None) if CD \
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/council/autonomous":
+            threading.Thread(target=_run_autonomous_council, args=(True,), daemon=True).start()
+            self._send_json(200, {"ok": True, "started": True,
+                                  "note": "สภาทำงานต่อเบื้องหลัง ดูผลที่ /api/council/status"})
             return
         if u.path == "/api/template/create":
             res = TD.create(str(body.get("title") or "Zyphere Elite"),
