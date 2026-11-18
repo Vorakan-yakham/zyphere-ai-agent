@@ -459,6 +459,10 @@ try:
 except Exception:
     UL = None
 try:
+    from template_designer import TD
+except Exception:
+    TD = None
+try:
     from it_org import IT
 except Exception:
     IT = None
@@ -3904,7 +3908,7 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         # Dashboard pages — served from the repo so they work on Render too.
         if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
-                      "/GROWTH.html"):
+                      "/GROWTH.html", "/ZY_TEMPLATE.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()
@@ -4054,6 +4058,11 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/template/status":
+            self._send_json(200, {"ok": True, "designer": bool(TD),
+                                  "spec": TD.spec if TD else {},
+                                  "exists": os.path.exists(os.path.join(BASE_DIR, "ZY_TEMPLATE.html"))})
             return
         if u.path == "/api/learning/feedback":
             res = UL.record(str(body.get("text") or ""), int(body.get("rating") or 0),
@@ -5452,6 +5461,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/debate/run":
             res = CD.debate(str(body.get("issue") or "") or None) if CD \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/template/create":
+            res = TD.create(str(body.get("title") or "Zyphere Elite"),
+                            bool(body.get("use_ensemble", True))) if TD \
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
