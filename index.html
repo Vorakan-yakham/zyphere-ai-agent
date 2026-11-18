@@ -513,6 +513,12 @@ body{--meta-w:68px}
 }
 .side.rail .acct-menu{left:6px;width:270px;bottom:58px}
 
+
+.side.expanded .list{display:flex!important}
+.side.expanded #search{display:block!important}
+.side .list{display:flex!important;flex-direction:column!important;gap:2px;max-height:38vh;overflow:auto}
+.side #search{display:block!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -526,12 +532,8 @@ body{--meta-w:68px}
   <button class="nv" id="vibeBtn" title="Vibes"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg><span>Vibes</span></button>
  </nav>
  <div class="side-sec">ประวัติ</div>
- <div class="hist-list" id="histList">
-  <button class="hist" id="hist1">สร้าง AI พรีเซ็นต์ผลงาน</button>
-  <button class="hist" id="hist2">SEO สำหรับหน้าเว็บจากหมวดหมู่</button>
- </div>
- <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off" style="display:none">
- <div class="list" id="list" style="display:none"></div>
+ <div class="list" id="list"></div>
+ <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off">
  <div class="acct-menu" id="acctMenu">
   <button class="am" id="amProfile">👤 โปรไฟล์</button>
   <button class="am" id="amApps">✦ แอป</button>
@@ -1883,15 +1885,12 @@ if(!window.__sideNavWired){
   });
  });
  go('bellBtn',()=>{if(window.toast)toast('ไม่มีการแจ้งเตือนใหม่ครับ')});
- go('acctBtn',()=>{const p=document.getElementById('acctMenu');if(p)p.classList.toggle('show')});
+ (function(){const b=document.getElementById('acctBtn');if(b)b.addEventListener('click',function(e){e.stopPropagation();const p=document.getElementById('acctMenu');if(p)p.classList.toggle('show')})})();
 }
 
 if(!window.__histWired){
  window.__histWired=true;
  const hs=(id,msg)=>{const e=document.getElementById(id);if(e)e.onclick=()=>{const q=$('q');if(q){q.value=msg;q.dispatchEvent(new Event('input'));$('sendBtn').click()}}};
- hs('hist1','สร้าง AI พรีเซ็นต์ผลงานของ Zyphere');
- hs('hist2','ทำ SEO สำหรับหน้าเว็บจากหมวดหมู่ความรู้');
- const ll=document.getElementById('list');if(ll&&ll.children.length){ll.style.display='flex';const se=document.getElementById('search');if(se)se.style.display='block'}
 }
 
 if(!window.__acctMenuWired){
