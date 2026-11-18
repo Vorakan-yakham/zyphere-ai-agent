@@ -74,6 +74,14 @@ def build():
                     if other != faculty + " :: " + sub:
                         links.add(other)
             bridges = [b for b in BRIDGES if b[0] == faculty or b[1] == faculty]
+            # Fallback 1: same-faculty siblings (every branch has neighbours).
+            if not links:
+                links = {f + " :: " + s for f, ss in TREE.items() for s in ss
+                         if f == faculty and s != sub}
+            # Fallback 2: same specialist connects branches across faculties.
+            if not bridges:
+                bridges = [((faculty, "สาขาที่ใช้นักวิชาการคนเดียวกัน",
+                             "ใช้ผู้เชี่ยวชาญ " + role + " ร่วมกัน จึงถ่ายโอนวิธีคิดระหว่างกันได้"))]
             rows.append({
                 "faculty": faculty,
                 "sub_branch": sub,
