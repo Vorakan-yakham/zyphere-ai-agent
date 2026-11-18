@@ -1,12 +1,12 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 26 หัวข้อ / 132 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 290 ข้อเท็จจริง
+ก่อน: 26 หัวข้อ / 144 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 306 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| Maxwell equations | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
-| fields | OpenAlex, Wikipedia, arXiv | 8 |
+| Maxwell equations | OpenAlex, arXiv | 6 |
+| fields | OpenAlex, arXiv | 6 |
 | waves | OpenAlex, arXiv | 6 |
 | refraction | OpenAlex, arXiv | 6 |
 | interference | OpenAlex, arXiv | 6 |
@@ -26,8 +26,8 @@
 | group | OpenAlex, arXiv | 6 |
 | ring | OpenAlex, arXiv | 6 |
 | field | OpenAlex, arXiv | 6 |
-| limit | OpenAlex, arXiv | 6 |
-| continuity | OpenAlex, arXiv | 6 |
+| limit | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| continuity | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
 | series | OpenAlex, arXiv | 6 |
 | manifold | OpenAlex, arXiv | 6 |
 
