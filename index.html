@@ -1514,6 +1514,10 @@ async function send(voice){
      c.m.push({r:'assistant',c:'สร้างภาพให้แล้วครับ'+(concept?' — จินตนาการ: '+concept:' — ออกแบบจากคำสั่งของคุณ'),pic:localBase()+mr.url,q:t});
      save();view();setBusy(false);lastLang='th';speak('สร้างภาพให้แล้วครับ','th');return
     }
+    if(mr.ok&&mr.type==='video_local'&&mr.video){
+     c.m.push({r:'assistant',c:'สร้างภาพยนตร์ให้แล้วครับ — ใบหน้าเดิมทุกฉาก เปลี่ยนชุดตามบริบท ('+(mr.scenes||[]).join(' → ')+')',q:t,vid:localBase()+mr.video});
+     save();view();setBusy(false);speak('สร้างภาพยนตร์ให้แล้วครับ','th');return
+    }
     if(mr.ok&&mr.type==='video'&&mr.mode==='github'){
      c.m.push({r:'assistant',c:'ส่งงานสร้างภาพยนตร์ไประบบแล้ว... ผลจะโผล่ที่นี่เมื่อเสร็จครับ',q:t,_ght:mr.t||Date.now()});
      save();view();setBusy(false);

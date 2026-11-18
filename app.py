@@ -5654,6 +5654,21 @@ class Handler(SimpleHTTPRequestHandler):
             text = str(body.get("text") or "").strip()
             want_video = bool(re.search(
                 r"วิดีโอ|คลิป|video|film|ภาพยนตร์|สั่งทำคลิป", text, re.I))
+            if want_video and re.search(r"ภาพยนตร์|ดารานำ|ตัวละคร|เรื่อง|ต่อคลิป|Multiple scene|film", text, re.I):
+                try:
+                    import film_editor as FE
+                    scenes = [x.strip() for x in re.split(r"[,،/|]+|แล้ว|จากนั้น", text)
+                              if x.strip()][:8] or ["ดารานำเดินในป่า", "ดารานำในวัด"]
+                    fr = FE.build(scenes, apply=True)
+                    if fr.get("ok"):
+                        self._send_json(200, {"ok": True, "type": "video_local",
+                                              "video": fr.get("video"),
+                                              "scenes": fr.get("scenes"),
+                                              "character": fr.get("character", {}).get("file"),
+                                              "note": "ใบหน้าเดิมทุกฉาก เปลี่ยนชุดตามบริบท"})
+                        return
+                except Exception as e:
+                    pass
             if want_video:
                 # GitHub Actions survives Render restarts. Dispatch the cinema
                 # workflow there and let the chat poll its public result file.
@@ -5702,6 +5717,23 @@ class Handler(SimpleHTTPRequestHandler):
                                r"(ภาพ|รูป|รูปภาพ|poster|image|picture)?\s*", "", text,
                                flags=re.I).strip()[:120] or "Zyphere"
                 res = None
+                if re.search(r"retouch|ปรับภาพ|แก้ภาพ|แต่งภาพ|เพิ่มฟอนต์|ภาพเก่า|ภาพเดิม", text, re.I):
+                    try:
+                        import photo_retouch as PR
+                        src = str(body.get("src") or "")
+                        if not src:
+                            import glob as _g
+                            cands = sorted(_g.glob(os.path.join(DATA_DIR, "..", "media",
+                                                                "ownlab_*.png")))
+                            if cands:
+                                src = "/media/" + os.path.basename(cands[-1])
+                        rr = PR.retouch(src, title, apply=True)
+                        if rr.get("ok"):
+                            res = {"ok": True, "type": "image", "url": rr.get("url"),
+                                   "overlay": rr.get("overlay_url"),
+                                   "engine": "Photo Retouch Studio (in-house)"}
+                    except Exception:
+                        pass
                 try:
                     import imagination_engine as IE
                     imagined = IE.create(text, "image", apply=True)
