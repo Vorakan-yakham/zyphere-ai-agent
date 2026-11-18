@@ -3378,14 +3378,27 @@ def _font(size, bold=False):
     if ImageFont is None:
         return None
     name = "NotoSansThai-Bold.ttf" if bold else "NotoSansThai-Regular.ttf"
-    path = os.path.join(FONT_DIR, name)
-    try:
-        return ImageFont.truetype(path, size)
-    except Exception:
+    # Prefer image_studio's cached Noto Sans Thai (variable font supports Thai).
+    candidates = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "media", "fonts",
+                     "NotoSansThai.ttf"),
+        os.path.join(FONT_DIR, name),
+        r"C:\Windows\Fonts\Tahoma.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    ]
+    for path in candidates:
         try:
-            return ImageFont.truetype("arial.ttf", size)
+            if path and os.path.exists(path):
+                return ImageFont.truetype(path, size)
         except Exception:
-            return ImageFont.load_default()
+            continue
+    try:
+        import image_studio
+        image_studio.ensure_dirs()
+        return ImageFont.truetype(os.path.join(image_studio.FONTS, "NotoSansThai.ttf"), size)
+    except Exception:
+        pass
+    return ImageFont.load_default()
 
 
 def _wrap(draw, text, font, maxw):
@@ -3432,25 +3445,52 @@ def _wrap(draw, text, font, maxw):
     return lines
 
 
+
+def _turbine(d, cx, cy, r, color):
+    """Three-blade motif matching the Zyphere logo."""
+    import math
+    for deg in (0, 120, 240):
+        a = math.radians(deg - 90)
+        bx, by = cx + math.cos(a)*r*.28, cy + math.sin(a)*r*.28
+        tx, ty = cx + math.cos(a)*r, cy + math.sin(a)*r
+        nx, ny = -math.sin(a)*r*.13, math.cos(a)*r*.13
+        d.polygon([(bx-nx, by-ny), (tx, ty), (bx+nx, by+ny)], fill=color)
+    d.ellipse((cx-r*.13, cy-r*.13, cx+r*.13, cy+r*.13), fill=(255, 255, 255))
+
+
+def _shadow_text(d, xy, text, fnt, fill, off=3):
+    x, y = xy
+    d.text((x+off, y+off), text, font=fnt, fill=(0, 8, 14))
+    d.text((x, y), text, font=fnt, fill=fill)
+
+
 def _gradient_bg(w=VIDEO_W, h=VIDEO_H):
-    top = (17, 24, 48)
-    bot = (74, 32, 110)
+    """Wind-palette mesh background — depth and brand consistency."""
+    top = (8, 24, 38)
+    bot = (12, 52, 68)
     im = Image.new("RGB", (w, h))
     d = ImageDraw.Draw(im)
     for y in range(h):
         t = y / max(1, h - 1)
-        d.line([(0, y), (w, y)], fill=tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3)))
+        d.line([(0, y), (w, y)],
+               fill=tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3)))
     try:
         ov = Image.new("RGBA", (w, h), (0, 0, 0, 0))
         od = ImageDraw.Draw(ov)
-        od.ellipse([int(w * 0.55), -int(h * 0.35), int(w * 1.3), int(h * 0.75)], fill=(236, 72, 153, 60))
-        od.ellipse([-int(w * 0.2), int(h * 0.45), int(w * 0.65), int(h * 1.35)], fill=(59, 130, 246, 80))
-        ov = ov.filter(ImageFilter.GaussianBlur(70))
+        od.ellipse([int(w*.52), -int(h*.30), int(w*1.30), int(h*.62)],
+                   fill=(34, 211, 238, 85))
+        od.ellipse([-int(w*.22), int(h*.45), int(w*.66), int(h*1.32)],
+                   fill=(45, 212, 191, 70))
+        ov = ov.filter(ImageFilter.GaussianBlur(90))
         im = Image.alpha_composite(im.convert("RGBA"), ov).convert("RGB")
+        gd = ImageDraw.Draw(im)
+        for x in range(0, w, 100):
+            gd.line((x, 0, x, h), fill=(16, 44, 58), width=1)
+        for y in range(0, h, 100):
+            gd.line((0, y, w, y), fill=(16, 44, 58), width=1)
     except Exception:
         pass
     return im
-
 
 def _base_image(img_path, style="clean"):
     if img_path and Image is not None:
@@ -3473,55 +3513,47 @@ def _overlay(im, strength=1.0):
     return Image.alpha_composite(im.convert("RGBA"), ov).convert("RGB")
 
 
+
 def _scene_image(img_path, title, body, idx, total, style="clean"):
     im = _base_image(img_path, style)
-    if style == "dark":
-        im = _overlay(im, 1.18)
-    elif style == "warm":
-        warm = Image.new("RGBA", im.size, (255, 140, 60, 26))
-        im = Image.alpha_composite(im.convert("RGBA"), warm).convert("RGB")
-        im = _overlay(im, 0.94)
-    else:
-        im = _overlay(im, 1.0)
-    d = ImageDraw.Draw(im)
     w, h = im.size
-    accent = (61, 224, 255) if style == "dark" else (139, 92, 246)
-    d.rectangle([0, 0, w, 6], fill=accent)
-
-    f_small = _font(22)
-    f_title = _font(56, True)
-    f_body = _font(32)
-    d.text((68, 34), "ZYPHERE", font=f_small, fill=(235, 240, 250))
-    d.text((w - 68, 34), f"{idx}/{total}", font=f_small, fill=(235, 240, 250), anchor="ra")
-
-    margin = 68
-    maxw = w - margin * 2
-    body_lines = _wrap(d, body, f_body, maxw)[:4]
-    title_lines = _wrap(d, title, f_title, maxw)[:2]
-    line_h_body = 44
-    line_h_title = 68
-    body_h = len(body_lines) * line_h_body
-    title_h = len(title_lines) * line_h_title
-    block_h = title_h + body_h + 44
-    box_top = h - 64 - block_h
-
+    # cinematic scrim (top mild, bottom strong) instead of a flat black box
+    ov = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    od = ImageDraw.Draw(ov)
+    for y in range(h):
+        t = y / max(1, h - 1)
+        a = int(24 + 205 * (t ** 2.1))
+        od.line((0, y, w, y), fill=(3, 12, 20, min(232, a)))
+    im = Image.alpha_composite(im.convert("RGBA"), ov).convert("RGB")
+    d = ImageDraw.Draw(im)
+    m = int(w * 0.055)
+    accent = (34, 211, 238)
+    _turbine(d, m + 16, 58, 13, accent)
+    d.text((m + 44, 38), "ZYPHERE", font=_font(24, True), fill=(240, 250, 255))
+    # page pill
+    pill = "%02d / %02d" % (idx, total)
+    pw = int(d.textlength(pill, font=_font(22))) + 32
     try:
-        box = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        bd = ImageDraw.Draw(box)
-        bd.rounded_rectangle([margin - 28, box_top - 26, w - margin + 28, h - 36], radius=26, fill=(0, 0, 0, 118))
-        im = Image.alpha_composite(im.convert("RGBA"), box).convert("RGB")
-        d = ImageDraw.Draw(im)
+        d.rounded_rectangle((w - m - pw, 34, w - m, 82), radius=24,
+                            fill=(3, 20, 30, 150), outline=(34, 211, 238, 140), width=2)
     except Exception:
         pass
-
-    y = box_top
-    for line in title_lines:
-        d.text((margin, y), line, font=f_title, fill=(255, 255, 255))
-        y += line_h_title
-    y += 4
-    for line in body_lines:
-        d.text((margin, y), line, font=f_body, fill=(232, 238, 250))
-        y += line_h_body
+    d.text((w - m - pw + 16, 44), pill, font=_font(22), fill=(225, 248, 255))
+    # eyebrow + accent rule
+    d.text((m, h - int(h*.34)), "ZYPHERE ORIGINAL", font=_font(22), fill=accent)
+    d.line((m, h - int(h*.34) + 38, m + 170, h - int(h*.34) + 38), fill=accent, width=5)
+    f_title, f_body = _font(int(min(w,h)*.056), True), _font(int(min(w,h)*.031))
+    y = h - int(h*.30)
+    for ln in _wrap(d, title, f_title, w - m*2)[:2]:
+        _shadow_text(d, (m, y), ln, f_title, (255, 255, 255), 4)
+        y += int(min(w,h)*.066)
+    y += 8
+    for ln in _wrap(d, body, f_body, w - m*2)[:3]:
+        d.text((m, y), ln, font=f_body, fill=(214, 238, 246))
+        y += int(min(w,h)*.044)
+    # progress line
+    d.line((0, h-6, w, h-6), fill=(10, 42, 56), width=6)
+    d.line((0, h-6, int(w*idx/max(1,total)), h-6), fill=accent, width=6)
     return im
 
 
@@ -3529,22 +3561,32 @@ def _title_image(title, subtitle, style="clean"):
     im = _gradient_bg()
     d = ImageDraw.Draw(im)
     w, h = im.size
-    d.rectangle([0, 0, w, 6], fill=(61, 224, 255) if style == "dark" else (139, 92, 246))
-    f_small = _font(26)
-    f_title = _font(66, True)
-    f_sub = _font(30)
-    d.text((68, 40), "ZYPHERE", font=f_small, fill=(220, 235, 255))
-    lines = _wrap(d, title, f_title, w - 180)[:4]
-    y = h // 2 - (len(lines) * 78) // 2 - 30
-    for line in lines:
-        d.text((90, y), line, font=f_title, fill=(255, 255, 255))
-        y += 78
+    accent = (34, 211, 238)
+    # brand
+    _turbine(d, int(w*.5), int(h*.24), int(min(w,h)*.055), accent)
+    for rr in (.10, .14):
+        r = int(min(w,h)*rr)
+        cx, cy = int(w*.5), int(h*.24)
+        d.ellipse((cx-r, cy-r, cx+r, cy+r), outline=(*accent, 70), width=2)
+    d.text((int(w*.5), 40), "ZYPHERE", font=_font(26, True),
+           fill=(236, 250, 255), anchor="ma")
+    f_title = _font(int(min(w,h)*.072), True)
+    lines = _wrap(d, title, f_title, int(w*.80))[:3]
+    y = int(h*.44) - (len(lines) * int(min(w,h)*.085)) // 2
+    for ln in lines:
+        _shadow_text(d, ((w - d.textlength(ln, font=f_title))//2, y),
+                     ln, f_title, (255, 255, 255), 5)
+        y += int(min(w,h)*.085)
     if subtitle:
-        for line in _wrap(d, subtitle, f_sub, w - 200)[:2]:
-            d.text((92, y + 12), line, font=f_sub, fill=(190, 225, 245))
-            y += 42
+        f_sub = _font(int(min(w,h)*.032))
+        for ln in _wrap(d, subtitle, f_sub, int(w*.72))[:2]:
+            d.text(((w - d.textlength(ln, font=f_sub))//2, y + 10),
+                   ln, font=f_sub, fill=(178, 226, 238))
+            y += int(min(w,h)*.046)
+    d.line((int(w*.32), h-70, int(w*.68), h-70), fill=accent, width=3)
+    d.text((int(w*.5), h-52), "งานจริง · ไม่มีคำอ้างเกินจริง", font=_font(20),
+           fill=(150, 200, 212), anchor="ma")
     return im
-
 
 def _credits_image(lines, lang="th"):
     im = _gradient_bg()
