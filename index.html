@@ -358,6 +358,10 @@ body.zy-admin #set .kr{display:flex!important}
 .side.rail.hide{margin-left:-62px!important}
 .main{margin-left:0}
 
+
+.side.rail.hide{margin-left:-62px!important;opacity:0;pointer-events:none;transition:margin .22s,opacity .18s}
+.side.rail{transition:margin .22s,opacity .18s}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side rail" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
@@ -1706,7 +1710,7 @@ if(!window.__sideNavWired){
  // clicking any nav item collapses the sidebar automatically (mobile-like)
  document.querySelectorAll('.side-nav .nv, .side-foot .acct, .side-foot .bell').forEach(function(el){
   el.addEventListener('click',function(){
-   /* rail mode: keep the icon strip visible */
+   var sd=document.getElementById('side');if(sd)sd.classList.add('hide');
   });
  });
  go('bellBtn',()=>{if(window.toast)toast('ไม่มีการแจ้งเตือนใหม่ครับ')});
