@@ -344,6 +344,11 @@ try:
 except Exception:
     LISTING = None
 try:
+    from rss import RSSReader
+    RSS = RSSReader()
+except Exception:
+    RSS = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -3692,6 +3697,11 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/listing/refresh":
             res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/rss/marketing":
+            q = urllib.parse.parse_qs(u.query)
+            res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
         if u.path == "/api/tools/list":
