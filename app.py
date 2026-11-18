@@ -5667,15 +5667,29 @@ class Handler(SimpleHTTPRequestHandler):
                                       "note": "กำลังสร้างภาพยนตร์ — ผลจะโผล่ในแชท"})
                 return
             try:
-                import image_studio
                 title = re.sub(r"^\s*(ช่วย|กรุณา|โปรด)?\s*(สร้าง|ทำ|วาด|ออกแบบ|generate|create)\s*"
                                r"(ภาพ|รูป|รูปภาพ|poster|image|picture)?\s*", "", text,
                                flags=re.I).strip()[:120] or "Zyphere"
-                res = image_studio.produce(title, "ออกแบบโดย Zyphere · งานจริง",
-                                           "poster", "wind")
+                res = None
+                try:
+                    import photo_enhancement
+                    lab = photo_enhancement.run(title, title, apply=True)
+                    if lab.get("ok") and lab.get("file"):
+                        res = {"url": "/media/" + os.path.basename(lab["file"]),
+                               "quality": {"before": lab.get("before"),
+                                           "after": lab.get("after"),
+                                           "improvement": lab.get("improvement_pct")},
+                               "engine": "Zypher Own Image Lab (in-house, 12 engineers)"}
+                except Exception:
+                    pass
+                if not res:
+                    import image_studio
+                    p = image_studio.produce(title, "ออกแบบโดย Zyphere · งานจริง", "poster", "wind")
+                    res = {"url": p.get("url"), "quality": p.get("quality"),
+                           "engine": "design composition (in-house)"}
                 self._send_json(200, {"ok": True, "type": "image",
-                                      "url": res.get("url"),
-                                      "quality": res.get("quality")})
+                                      "url": res.get("url"), "quality": res.get("quality"),
+                                      "engine": res.get("engine")})
             except Exception as e:
                 self._send_json(200, {"ok": False, "error": str(e)[:180]})
             return
