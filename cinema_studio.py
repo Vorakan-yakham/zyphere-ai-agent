@@ -294,7 +294,8 @@ def run(brief, seconds=18, lang="th", apply=True):
         from music_studio import create as music_create
         mres = music_create("calm", 90, 4, mp3=True)
         if isinstance(mres, dict):
-            _mv = (mres.get("path") or mres.get("file") or mres.get("url"))
+            _mv = (mres.get("path") or mres.get("file") or mres.get("mp3") or
+                   mres.get("wav") or mres.get("url"))
             manifest["music"] = _mv if isinstance(_mv, str) else None
             manifest["music_result"] = str(mres)[:300]
     except Exception:
