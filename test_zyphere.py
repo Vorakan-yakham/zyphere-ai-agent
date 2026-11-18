@@ -111,7 +111,7 @@ def main():
         assert not rl.record("เว็บพนัน บาคาร่า", fake).get("ok"), "gambling must be refused"
         import expansion
         assert expansion.total_topics() >= 150, "expansion curriculum too small"
-        assert len(expansion.EXPANSION_DOMAINS) >= 30, "not enough disciplines taught"
+        assert len(expansion.EXPANSION_DOMAINS) >= 40, "not enough disciplines taught"
         cov = expansion.coverage_matrix(core_topics=150)
         assert cov["not_complete"] and len(cov["axes"]) == 5, "coverage matrix/self-check missing"
         assert len(expansion.NEW_SOURCES) == 8, "new sources missing"

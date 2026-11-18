@@ -41,6 +41,16 @@ EXPANSION_DOMAINS = {
     "การออกแบบและประสบการณ์": ["Design Thinking", "UX Research", "Interaction Design", "Typography", "Color Theory", "Service Design", "Design Systems"],
     "การบำบัดและดูแล": ["Counseling Psychology", "Mindfulness", "Cognitive Behavioral principles", "Stress Management", "Wellbeing Science", "Palliative Care"],
     "การบริการและธุรกิจขนาดเล็ก": ["Service Design", "Customer Experience", "Operations", "Social Entrepreneurship", "Microfinance", "Cooperative Models", "Local Business"],
+    # --- batch 3 ---
+    "การขนส่งและโลจิสติกส์": ["Logistics", "Supply Chain", "Transportation Planning", "Warehouse Management", "Last-Mile Delivery", "Fleet Management"],
+    "การประกันและความเสี่ยง": ["Insurance Principles", "Risk Assessment", "Actuarial Basics", "Claims Management", "Risk Pooling"],
+    "การตลาดและการขาย": ["Marketing Fundamentals", "Digital Marketing", "Branding", "Consumer Behavior", "Sales Techniques", "Pricing Strategy", "Growth Hacking"],
+    "การเจรจาและความขัดแย้ง": ["Negotiation Theory", "Mediation", "Arbitration", "Conflict Resolution", "Diplomacy", "Persuasion Ethics"],
+    "น้ำและทรัพยากรน้ำ": ["Hydrology", "Water Management", "Irrigation", "Water Treatment", "Watershed Management", "Water Governance"],
+    "ขยะและการจัดการของเสีย": ["Waste Management", "Recycling", "Circular Economy", "Hazardous Waste", "Composting", "Waste-to-Energy"],
+    "กฎหมายแรงงานและสิทธิ": ["Labor Law", "Employment Rights", "Occupational Safety", "Social Security", "Labor Relations"],
+    "สาธารณสุขและชุมชน": ["Public Health", "Epidemiology", "Health Promotion", "Community Health", "Disease Prevention", "Health Policy"],
+    "การเงินส่วนบุคคล": ["Personal Finance", "Budgeting", "Saving", "Debt Management", "Retirement Planning", "Financial Literacy"],
 }
 
 EXPANSION_TOPICS = []
