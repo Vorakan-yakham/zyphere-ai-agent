@@ -4,7 +4,7 @@ Knowledge / Learning / Research / Innovation / Governance.
 Each engine reports what actually exists, its real data source, and its gaps.
 No fake status: if a subsystem is missing, it is reported as missing.
 """
-import os, json, time, threading
+import os, json, time, threading, requests
 
 ROOT = r"C:\Users\vornl\Documents\zyphere"
 
@@ -14,6 +14,30 @@ def _safe(fn, default=None):
         return fn()
     except Exception:
         return default
+
+
+RAW = ("https://raw.githubusercontent.com/Vorakan-yakham/"
+       "zyphere-scholar-product-pack/main/")
+
+
+def _json(name, remote=True):
+    """Local file first; durable GitHub copy when Render's disk is empty."""
+    lp = os.path.join(ROOT, "data", name)
+    try:
+        if os.path.exists(lp):
+            v = json.load(open(lp, encoding="utf-8"))
+            if v:
+                return v
+    except Exception:
+        pass
+    if remote:
+        try:
+            r = requests.get(RAW + name + "?t=" + str(int(time.time())), timeout=12)
+            if r.ok:
+                return r.json()
+        except Exception:
+            pass
+    return {}
 
 
 ENGINES = {
@@ -59,41 +83,35 @@ class FiveEngines:
     def __init__(self):
         self.lock = threading.RLock()
 
+    def _stats(self):
+        return _json("engine_stats.json")
+
     def _knowledge(self):
         d = os.path.join(ROOT, "data")
-        j = lambda n: _safe(lambda: json.load(open(os.path.join(d, n), encoding="utf-8")), {})
-        kn = j("knowledge.json")
-        rs = j("research.json")
-        return {"knowledge_items": len(kn.get("items", [])) if isinstance(kn, dict) else 0,
-                "research_documents": len(rs.get("documents", [])) if isinstance(rs, dict) else 0,
+        st = self._stats()
+        return {"knowledge_items": st.get("knowledge_items", 0),
+                "research_documents": st.get("research_documents", 0),
                 "faculties": 46, "sub_branches": 184, "world_disciplines": 4225}
 
     def _learning(self):
         d = os.path.join(ROOT, "data")
-        cl = _safe(lambda: json.load(open(os.path.join(d, "co_learning.json"), encoding="utf-8")), {})
-        log = cl.get("log", []) if isinstance(cl, dict) else []
-        depts = sorted({r.get("dept", "") for r in log if r.get("dept")})
-        return {"learning_sessions": len(log), "departments": len(depts),
-                "doctor_level": len([r for r in log if r.get("level") == "doctor"]),
-                "cross_disciplinary": len([r for r in log
-                                           if r.get("level") == "cross-disciplinary"])}
+        st = self._stats()
+        return {"learning_sessions": st.get("learning_sessions", 0),
+                "departments": st.get("learning_departments", 0),
+                "doctor_lessons": st.get("doctor_lessons", 0),
+                "cross_lessons": st.get("cross_lessons", 0)}
 
     def _research(self):
         d = os.path.join(ROOT, "data")
-        rs = _safe(lambda: json.load(open(os.path.join(d, "research.json"), encoding="utf-8")), {})
-        docs = rs.get("documents", []) if isinstance(rs, dict) else []
-        rel = {}
-        for x in docs:
-            if isinstance(x, dict):
-                k = x.get("reliability", "?")
-                rel[k] = rel.get(k, 0) + 1
-        return {"documents": len(docs), "by_reliability": rel,
+        st = self._stats()
+        return {"documents": st.get("research_documents", 0),
+                "by_reliability": st.get("by_reliability", {}),
                 "studied_faculties": 46, "with_source_url": 20}
 
     def _innovation(self):
         d = os.path.join(ROOT, "data")
-        og = _safe(lambda: json.load(open(os.path.join(d, "orders.json"), encoding="utf-8")), {})
-        return {"shop_orders": len(og.get("orders", [])) if isinstance(og, dict) else 0,
+        st = self._stats()
+        return {"shop_orders": st.get("shop_orders", 0),
                 "creative_modules": ["media.py", "visualize.py", "book_design_system.py"],
                 "image_generation": False, "generative_video": False, "3d": False}
 
