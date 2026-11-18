@@ -8,6 +8,7 @@ import os, json, time, hashlib, subprocess, base64, requests
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "ZY_TEMPLATE.html")
+SPEC_FILE = os.path.join(ROOT, "data", "template_spec.json")
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
 BASE = "https://api.github.com/repos/" + REPO + "/contents/"
 
@@ -46,12 +47,22 @@ def push(text):
 class TemplateDesigner:
     def __init__(self):
         self.spec = dict(DEFAULT)
+        try:
+            saved = json.load(open(SPEC_FILE, encoding="utf-8"))
+            for k in DEFAULT:
+                if k in saved:
+                    self.spec[k] = saved[k]
+        except Exception:
+            pass
 
     def set_spec(self, spec):
         if isinstance(spec, dict):
             for k in DEFAULT:
                 if k in spec:
                     self.spec[k] = spec[k]
+        os.makedirs(os.path.dirname(SPEC_FILE), exist_ok=True)
+        json.dump(self.spec, open(SPEC_FILE, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=2)
         return self.spec
 
     def ask_ensemble(self):
