@@ -451,6 +451,10 @@ try:
 except Exception:
     GO = None
 try:
+    from role_profiles import RP
+except Exception:
+    RP = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3937,6 +3941,16 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/roles/profile":
+            name = urllib.parse.parse_qs(u.query).get("name", [""])[0]
+            self._send_json(200, RP.get(name) if RP
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/roles/search":
+            q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+            self._send_json(200, RP.search(q) if RP
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/growth/search":
             q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
