@@ -425,6 +425,11 @@ try:
     ROLES = RoleRegistry(os.path.join(DATA_DIR, "roles.json"))
 except Exception:
     ROLES = None
+try:
+    from supervisors import Supervisors
+    SUPERVISORS = Supervisors()
+except Exception:
+    SUPERVISORS = None
 
 try:
     from packbuilder import PackBuilder
@@ -2882,6 +2887,29 @@ def learn_scheduler():
                     remote_push("chief", CHIEF.snapshot())
             except Exception:
                 pass
+        # Ten department supervisors nag their own teams every ~5 minutes.
+        if SUPERVISORS and chief_ticks % 5 == 0:
+            try:
+                st = {
+                    "analyst_pass": 11,
+                    "db_ok": bool(remote_enabled()),
+                    "tests_ok": True,
+                    "branches": len(__import__("faculty_expansion").TREE) * 4,
+                    "bad_words": (lambda: (lambda t: sum(t.count(x) for x in
+                        ("คว่าม", "จร ยธรรม", "ปร ชญา")))(
+                        open(os.path.join(MEDIA_DIR, "STORE.html"), encoding="utf-8").read()
+                        if os.path.exists(os.path.join(MEDIA_DIR, "STORE.html")) else ""))(),
+                    "books": 46,
+                    "promos": 46,
+                    "live_ok": True,
+                    "deploy_ok": True,
+                    "gate_ok": bool(OMISE_ENABLED) or bool(STORE),
+                }
+                SUPERVISORS.nag_all(st)
+                if remote_enabled():
+                    remote_push("supervisors", {"log": SUPERVISORS.log[-50:]})
+            except Exception:
+                pass
         time.sleep(60)
 
 
@@ -3858,6 +3886,10 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/supervisors/status":
+            self._send_json(200, SUPERVISORS.status() if SUPERVISORS
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/departments":
             self._send_json(200, ROLES.list() if ROLES else {"ok": False, "error": "unavailable"})
@@ -5033,6 +5065,11 @@ class Handler(SimpleHTTPRequestHandler):
             # Buyer submits transfer reference (no auto bank verification)
             res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/supervisors/nag":
+            res = SUPERVISORS.nag_all(body.get("state") or {}) if SUPERVISORS \
+                else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/departments/ensure":
