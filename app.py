@@ -2944,6 +2944,7 @@ JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
                 "council", "engineers", "grow", "hr"]
 _council_busy = False
 _council_last = None
+CINEMA_JOBS = {}
 
 
 def _run_autonomous_council(apply=True):
@@ -3759,6 +3760,13 @@ def _job_update(job_id, **kw):
         job = JOBS.get(job_id)
         if job:
             job.update(kw)
+            snap = dict(job)
+    # Survive a Render restart: mirror each job into remote KV.
+    try:
+        if remote_enabled():
+            remote_push("video_job_" + job_id, snap)
+    except Exception:
+        pass
 
 
 def _prune_jobs():
@@ -3941,7 +3949,15 @@ def create_video_job(payload):
 def get_job(job_id):
     with JOB_LOCK:
         job = JOBS.get(job_id)
-        return dict(job) if job else None
+        if job:
+            return dict(job)
+    # Render may have restarted — recover the job from remote KV.
+    try:
+        if remote_enabled():
+            return remote_get_json("video_job_" + job_id) or None
+    except Exception:
+        pass
+    return None
 
 
 def list_jobs():
@@ -5592,6 +5608,29 @@ class Handler(SimpleHTTPRequestHandler):
             res = CD.debate(str(body.get("issue") or "") or None) if CD \
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/cinema/create":
+            def _cinema_task(jid, brief, secs, lang):
+                try:
+                    import cinema_studio
+                    res = cinema_studio.run(brief, secs, lang)
+                    CINEMA_JOBS[jid] = {"ok": True, "done": True, "result": res}
+                except Exception as e:
+                    CINEMA_JOBS[jid] = {"ok": False, "done": True, "error": str(e)[:200]}
+            jid = "cin_" + str(int(time.time() * 1000))
+            CINEMA_JOBS[jid] = {"ok": True, "done": False, "job": jid}
+            threading.Thread(target=_cinema_task,
+                             args=(jid, str(body.get("brief") or "Zyphere"),
+                                   int(body.get("seconds") or 18),
+                                   str(body.get("lang") or "th")), daemon=True).start()
+            self._send_json(200, {"ok": True, "id": jid,
+                                  "note": "ดูผลที่ /api/cinema/status?id=" + jid})
+            return
+        if u.path == "/api/cinema/status":
+            q = urllib.parse.parse_qs(u.query)
+            jid = q.get("id", [""])[0]
+            self._send_json(200, CINEMA_JOBS.get(jid) or
+                            {"ok": False, "error": "job not found"})
             return
         if u.path == "/api/conversation/learn":
             try:

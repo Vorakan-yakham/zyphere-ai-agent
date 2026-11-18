@@ -45,7 +45,8 @@ def _drum(dur, sr, kind="kick"):
     n = int(sr * dur)
     out = []
     for i in range(n):
-        t = i / s        env = max(0.0, 1.0 - (t / dur))
+        t = i / sr
+        env = max(0.0, 1.0 - (t / dur))
         if kind == "kick":
             freq = 110.0 - (70.0 * (t / dur))
             v = math.sin(2.0 * math.pi * freq * t)
