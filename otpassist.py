@@ -60,6 +60,30 @@ class OTPAssistant:
         self.save()
         return rec
 
+    def notify(self, tid="", channel="auto", to="", subject="", message=""):
+        """Notify the OWNER that it's their turn to type the OTP.
+
+        channel: auto -> email if configured, else in_app. Never receives code.
+        """
+        with self.lock:
+            task = next((t for t in self.tasks if t["id"] == tid), None)
+        if not task:
+            return {"ok": False, "error": "task not found"}
+        text = str(message or ("ถึงขั้นตอน OTP ของ " + task.get("platform", "") +
+                               " — กรุณาเช็ก SMS/อีเมลของคุณ แล้วพิมพ์รหัสเองในหน้าเว็บครับ"))[:800]
+        result = {"ok": True, "task": tid, "notified_via": "in_app", "in_app": text,
+                  "email": None, "never_asks_for_code": True}
+        if channel in ("email", "auto"):
+            try:
+                from mailer import send_mail
+                m = send_mail(to or "", subject or ("Zyphere: ต้องการ OTP สำหรับ " + task.get("platform", "")), text)
+                result["email"] = m
+                if m.get("ok"):
+                    result["notified_via"] = "email+in_app"
+            except Exception:
+                pass
+        return result
+
     def mark(self, tid="", step="", note=""):
         """Owner reports progress; Zyphere just records it."""
         with self.lock:

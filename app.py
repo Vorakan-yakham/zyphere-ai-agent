@@ -322,6 +322,11 @@ try:
     OTPASSIST = OTPAssistant(os.path.join(DATA_DIR, "otpassist.json"))
 except Exception:
     OTPASSIST = None
+try:
+    from expert import Expert
+    EXPERT = Expert(os.path.join(DATA_DIR, "expert.json"))
+except Exception:
+    EXPERT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -395,6 +400,7 @@ REMOTE_KEYS = {
     "autofill": "zyphere:autofill",
     "codeforge": "zyphere:codeforge",
     "otpassist": "zyphere:otpassist",
+    "expert": "zyphere:expert",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -506,7 +512,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert"):
         try:
             data = {
                 "memory": load_mem,
@@ -4321,6 +4327,22 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/otp/notify":
+            res = OTPASSIST.notify(str(body.get("id") or ""), str(body.get("channel") or "auto"),
+                                   str(body.get("to") or ""), str(body.get("subject") or ""),
+                                   str(body.get("message") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/expert/start":
+            res = EXPERT.start(str(body.get("title") or ""), str(body.get("kind") or ""),
+                               int(body.get("price") or 0), str(body.get("deadline") or "")) if EXPERT else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/expert/advance":
+            res = EXPERT.advance(str(body.get("id") or ""), str(body.get("stage") or ""),
+                                 str(body.get("status") or "done"), str(body.get("note") or "")) if EXPERT else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/otp/prepare":
             res = OTPASSIST.prepare(str(body.get("platform") or ""), str(body.get("name") or ""),
                                    str(body.get("email") or ""), str(body.get("phone") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
@@ -4401,6 +4423,14 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/expert/checklist":
+            kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]
+            self._send_json(200, {"ok": True, "stages": ["understand","research","plan","produce","qa","deliver"],
+                                  "checklist": EXPERT.checklist(kind) if EXPERT else []})
+            return
+        if u.path == "/api/expert/status":
+            self._send_json(200, EXPERT.status() if EXPERT else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/otp/pending":
             self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
