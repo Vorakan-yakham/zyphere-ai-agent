@@ -679,10 +679,13 @@ button:active>svg,.nv:active svg,.am:active svg,.ib:active svg{transform:scale(.
 }
 
 
-/* turbine blades stay still while chatting; spin only while processing */
-.lg .blades{animation:none!important}
+/* turbine blades spin continuously; faster while processing */
+.lg .blades{animation:windSpin 7s linear infinite!important}
 body.busy .logo .lg .blades,.a.busy .lg .blades{
   animation:windSpin 1.1s linear infinite!important}
+/* turbine visibly bigger than the wordmark */
+.side .logo svg.lg{width:32px!important;height:32px!important}
+.side.rail .logo svg.lg{width:30px!important;height:30px!important}
 /* send button: solid dark like the reference */
 #sendBtn.go,#sendBtn.go:hover{
   background:#202124!important;color:#fff!important;opacity:1!important}
