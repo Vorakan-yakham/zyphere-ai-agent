@@ -5626,6 +5626,30 @@ class Handler(SimpleHTTPRequestHandler):
             want_video = bool(re.search(
                 r"วิดีโอ|คลิป|video|film|ภาพยนตร์|สั่งทำคลิป", text, re.I))
             if want_video:
+                # GitHub Actions survives Render restarts. Dispatch the cinema
+                # workflow there and let the chat poll its public result file.
+                dispatched = False
+                try:
+                    import method_transfer as _MT
+                    import requests as _rq
+                    _tok = _MT.token()
+                    if _tok:
+                        dr = _rq.post(
+                            "https://api.github.com/repos/Vorakan-yakham/"
+                            "zyphere-ai-agent/actions/workflows/cinema.yml/dispatches",
+                            headers={"Authorization": "Bearer " + _tok,
+                                     "Accept": "application/vnd.github+json"},
+                            json={"ref": "main", "inputs": {"brief": text[:180], "lang": "th"}},
+                            timeout=25)
+                        dispatched = dr.status_code in (200, 201, 204)
+                except Exception:
+                    pass
+                if dispatched:
+                    self._send_json(200, {"ok": True, "type": "video",
+                                          "mode": "github", "t": int(time.time()),
+                                          "note": "ส่งงานสร้างภาพยนตร์ไป GitHub แล้ว ผลจะโผล่ในแชท"})
+                    return
+                # Fallback when no repo token is configured on Render.
                 def _mk(jid, brief):
                     try:
                         import cinema_studio

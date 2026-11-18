@@ -1500,6 +1500,23 @@ async function send(voice){
      c.m.push({r:'assistant',c:'สร้างภาพให้แล้วครับ — ออกแบบจากคำสั่งของคุณ',pic:localBase()+mr.url,q:t});
      save();view();setBusy(false);lastLang='th';speak('สร้างภาพให้แล้วครับ','th');return
     }
+    if(mr.ok&&mr.type==='video'&&mr.mode==='github'){
+     c.m.push({r:'assistant',c:'ส่งงานสร้างภาพยนตร์ไประบบแล้ว... ผลจะโผล่ที่นี่เมื่อเสร็จครับ',q:t,_ght:mr.t||Date.now()});
+     save();view();setBusy(false);
+     const msg=c.m[c.m.length-1];
+     (function pollGH(){
+      setTimeout(async()=>{
+       try{
+        const r=await fetch('https://raw.githubusercontent.com/Vorakan-yakham/zyphere-ai-agent/main/data/cinema_latest.json?x='+Date.now());
+        const j=await r.json();
+        if(j&&j.ok&&j.t>msg._ght&&j.urls&&j.urls.video){
+         msg.vid='https://raw.githubusercontent.com/Vorakan-yakham/zyphere-ai-agent/main/'+j.urls.video.replace(/^\//,'')+'?x='+Date.now();
+         msg.c='สร้างวิดีโอให้แล้วครับ — พร้อมเสียงและซับไตเติล';delete msg._ght;save();view();speak('สร้างวิดีโอให้แล้วครับ','th')
+        }else pollGH()
+       }catch(e){pollGH()}
+      },6000)
+     })();return
+    }
     if(mr.ok&&mr.type==='video'&&mr.id){
      c.m.push({r:'assistant',c:'กำลังสร้างวิดีโอ... จะโผล่ที่นี่เมื่อเสร็จครับ',q:t,_vidjob:mr.id});
      save();view();setBusy(false);
