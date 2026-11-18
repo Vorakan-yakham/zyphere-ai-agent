@@ -221,7 +221,11 @@ def run(brief, seconds=18, lang="th", apply=True):
         fnt = font(76, lang)
         cov = glyph_coverage(sh["title"] + sh["body"], fnt)
         manifest["fonts"][str(i)] = {"font": getattr(fnt, "path", "default"), "coverage": cov}
-        photo, credit = fetch_photo(brief if i == 1 else sh["title"])
+        # English, photography-style queries find far more real CC photos
+        # than a Thai prose brief; attribution stays in the manifest.
+        photo_queries = ["cinematic aerial landscape nature", "macro detail technology light",
+                         "professional studio team creative work"]
+        photo, credit = fetch_photo(photo_queries[(i-1) % len(photo_queries)])
         bucket = "new" if photo and i % 2 else "archive"
         if photo:
             p = os.path.join(out, "photo_%02d.jpg" % i)

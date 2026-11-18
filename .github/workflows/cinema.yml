@@ -1,0 +1,52 @@
+name: Zyphere Cinema Studio
+
+on:
+  workflow_dispatch:
+    inputs:
+      brief:
+        description: 'คำสั่งภาพยนตร์'
+        required: true
+        default: 'Zyphere สายลมสร้างสรรค์'
+      lang:
+        description: 'th หรือ en'
+        required: true
+        default: 'th'
+  schedule:
+    - cron: '17 */6 * * *'
+
+jobs:
+  cinema:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: Render film, frames, overlays, subtitles and manifest
+        env:
+          CINEMA_BRIEF: ${{ github.event.inputs.brief || 'Zyphere สายลมสร้างสรรค์' }}
+          CINEMA_LANG: ${{ github.event.inputs.lang || 'th' }}
+        run: |
+          python - <<'PY'
+          import os, json
+          import cinema_studio
+          r = cinema_studio.run(os.environ["CINEMA_BRIEF"], 18,
+                                os.environ["CINEMA_LANG"])
+          print(json.dumps(r, ensure_ascii=False)[:1200])
+          open("data/cinema_latest.json", "w", encoding="utf-8").write(
+              json.dumps(r, ensure_ascii=False, indent=2))
+          if not r.get("ok"):
+              raise SystemExit("cinema render did not produce a video")
+          PY
+      - name: Publish artefacts to repository
+        run: |
+          git config user.name "Zyphere Cinema"
+          git config user.email "zyphere@users.noreply.github.com"
+          git add -f media data/cinema_latest.json
+          git commit -m "Cinema: real photo film with sound, captions and edit assets" || true
+          git push
