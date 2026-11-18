@@ -4,79 +4,105 @@
       "t": 1795006257,
       "user": "18 ควรอ่านว่า สิบแปด ไม่ใช่ หนึ่งแปด",
       "rule": "ตัวเลขต้องผ่าน Thai cardinal normalization ก่อน TTS",
-      "proof": "test_tts_numbers.js (23 fixtures)"
+      "proof": "test_tts_numbers.js (23 fixtures)",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "หัวหน้าฝ่าย 10 กว่าคน ไม่กระตุ้นเลย ทำอะไรของมัน",
       "rule": "หัวหน้าฝ่ายต้องวัดเอง ถามคำถามหมุนเวียน และตรวจการซ้ำ",
-      "proof": "supervisors.py nag_all / QUESTIONS"
+      "proof": "supervisors.py nag_all / QUESTIONS",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "ถึงผมปิดเครื่อง它也ต้องทำงาน",
       "rule": "งานต้องรันบน Render + GitHub cron ไม่ใช่ขึ้นกับเครื่องผู้ใช้",
-      "proof": ".github/workflows/keepalive.yml"
+      "proof": ".github/workflows/keepalive.yml",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "อย่าให้ได้พูดไอ้ Dr. สมองปลาทอง",
       "rule": "ห้ามใช้คำว่า Dr. และต้องโหลดความจำรอบก่อนก่อนถกทุกครั้ง",
-      "proof": "autonomous_council.recall_prior()"
+      "proof": "autonomous_council.recall_prior()",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "ผมไม่สั่งมันก็ต้องคิดเองจากที่มันเรียนรู้มา",
       "rule": "บทเรียนใน dept_brains ต้องถูกอ่านเป็น input ไม่ใช่เขียนทิ้ง",
-      "proof": "recall -> debate digest"
+      "proof": "recall -> debate digest",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า",
       "rule": "เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน",
-      "proof": "auto_staffing.py / generated/*.py"
+      "proof": "auto_staffing.py / generated/*.py",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "คนด้วยความสามารถด้วย",
       "rule": "วิศวกร IT ประจำแผนก + ความสามารถที่สร้างเอง ต้องมีทั้งคู่",
-      "proof": "it_engineers.py (12) + auto_grow.py"
+      "proof": "it_engineers.py (12) + auto_grow.py",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "ส่วนที่ไม่มีงานก็ให้คิดงานสิ",
       "rule": "ห้ามยุบฝ่ายที่ว่าง — ให้เสนองานจริงที่วัดผลได้",
-      "proof": "hr_head.WORK_BANK / HR_WORK_ORDERS.md"
+      "proof": "hr_head.WORK_BANK / HR_WORK_ORDERS.md",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "ไม่ได้ให้เขียน ebook แนะนำให้หางานเองว่าทำอะไรได้บ้าง",
       "rule": "เสนอ work proposals ก่อน ไม่ใช่ดำเนินการเองโดยไม่ได้รับสั่ง",
-      "proof": "work_proposals.py"
+      "proof": "work_proposals.py",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "วิศวกร IT คุณจัดให้แล้วมิใช่เหรอ",
       "rule": "ห้ามเสนอคนซ้ำ ให้ใช้วิศวกรที่ประจำอยู่แล้ว",
-      "proof": "work_proposals._engineer_map()"
+      "proof": "work_proposals._engineer_map()",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "คุยมากไปคุณไม่ได้ทำงาน ไปพัฒนาโปรเจกต์ซะ",
       "rule": "รายงานผลที่วัดได้แทนการพูด",
-      "proof": "status endpoints + repo files"
+      "proof": "status endpoints + repo files",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "สี/ไอคอนต้อง mono และ wiggle เฉพาะด้านซ้าย ไม่ใช่ popup",
       "rule": "UI ต้องตรงตามคลิป ทุก icon มี micro-motion แต่ popup ไม่สั่น",
-      "proof": "index.html zyWiggle scope / popup nudge"
+      "proof": "index.html zyWiggle scope / popup nudge",
+      "correction": true,
+      "type": "correction"
     },
     {
       "t": 1795006257,
       "user": "ห้ามอ้างยอดขายปลอม ห้าม claim สิ่งที่ไม่มี",
       "rule": "ของจริง/ลิงก์จริง/status review เมื่อ QA ไม่ผ่าน",
-      "proof": "store manifest gate_ok / INCOME_PLAN.md"
+      "proof": "store manifest gate_ok / INCOME_PLAN.md",
+      "correction": true,
+      "type": "correction"
     }
   ]
 }

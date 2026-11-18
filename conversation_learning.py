@@ -77,7 +77,8 @@ class ConversationLearning:
         known = any(x.get("user") == user_text for x in self.log)
         if known:
             return {"ok": True, "duplicate": True}
-        rec = {"t": int(time.time()), "user": user_text, "rule": rule, "proof": proof}
+        rec = {"t": int(time.time()), "user": user_text, "rule": rule, "proof": proof,
+               "type": "correction", "correction": True}
         with self.lock:
             self.log.append(rec)
         self.save()
@@ -108,7 +109,14 @@ class ConversationLearning:
     def import_all(self):
         out = []
         for user, rule, proof in CORRECTIONS:
-            out.append(self.learn(user, rule, proof))
+            r = self.learn(user, rule, proof)
+            if r.get("duplicate"):
+                for x in self.log:
+                    if x.get("user") == user:
+                        x["correction"] = True
+                        x["type"] = "correction"
+                self.save()
+            out.append(r)
         md = ["# บทเรียนจากคำแก้ไขของผู้ใช้", "",
               "เฉพาะสิ่งที่ผู้ใช้ชี้ว่าผิด → แปลงเป็นกฎพัฒนา + หลักฐานใน repo", ""]
         for i, (u, r, p) in enumerate(CORRECTIONS, 1):
