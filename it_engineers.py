@@ -68,6 +68,13 @@ class ITEngineers:
         round so git commits never collide."""
         n = len(self.log)
         order = ENGINEERS[n % len(ENGINEERS):] + ENGINEERS[:n % len(ENGINEERS)]
+        if not dry:
+            # Apply only engineers whose guarded proposal actually passed.
+            recent = next((x for x in reversed(self.log) if x.get("dry")), None)
+            good = [e for e in ENGINEERS if any(
+                r.get("file") == e[2] and r.get("ok")
+                for r in (recent or {}).get("results", []))]
+            order = good or order
         picked = order if dry else order[:2]
         if dry:
             results = []
