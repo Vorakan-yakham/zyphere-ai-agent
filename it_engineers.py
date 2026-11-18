@@ -86,6 +86,19 @@ class ITEngineers:
                 "pushed": sum(1 for r in results if r.get("pushed")),
                 "results": results}
 
+    def assignments(self):
+        """Who is stationed at which division, what they must deliver, and
+        whether they have actually pushed a patch for that file."""
+        done = {}
+        for rnd in self.log:
+            for r in rnd.get("results", []):
+                if r.get("pushed"):
+                    done.setdefault(r.get("file"), []).append(r.get("reason", "")[:100])
+        return {"ok": True, "stations": [
+            {"division": d, "engineer": role, "file": f, "needs": goal,
+             "pushed": len(done.get(f, [])), "latest": done.get(f, [])[-1:]}
+            for d, role, f, goal in ENGINEERS]}
+
     def status(self):
         last = self.log[-1] if self.log else {}
         return {"ok": True, "engineers": len(ENGINEERS), "rounds": len(self.log),
