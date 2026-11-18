@@ -395,15 +395,15 @@ try:
 except Exception:
     DEMAND = None
 try:
-    from ebook import EbookStudio
-    EBOOK = EbookStudio(os.path.join(MEDIA_DIR, "ebooks"))
-except Exception:
-    EBOOK = None
-try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
+try:
+    from ebook import EbookStudio
+    EBOOK = EbookStudio(os.path.join(MEDIA_DIR, "ebooks"))
+except Exception:
+    EBOOK = None
 
 try:
     from packbuilder import PackBuilder
