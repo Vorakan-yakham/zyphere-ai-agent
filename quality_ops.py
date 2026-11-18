@@ -16,7 +16,7 @@ import os, json, time, threading, subprocess, base64, requests
 
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
 BASE = "https://api.github.com/repos/" + REPO + "/contents/"
-DATA = r"C:\Users\vornl\Documents\zyphere\data\quality_ops.json"
+DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "quality_ops.json")
 
 # department -> (quality metric key, target, learning curriculum)
 DEPTS = {

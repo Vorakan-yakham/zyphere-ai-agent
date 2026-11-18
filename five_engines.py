@@ -6,7 +6,7 @@ No fake status: if a subsystem is missing, it is reported as missing.
 """
 import os, json, time, threading, requests
 
-ROOT = r"C:\Users\vornl\Documents\zyphere"
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 def _safe(fn, default=None):

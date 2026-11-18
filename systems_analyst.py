@@ -6,7 +6,7 @@ Writes SYSTEM_ANALYSIS.md to the repo so the owner can open and verify.
 """
 import os, re, json, time
 
-ROOT = r"C:\Users\vornl\Documents\zyphere"
+ROOT = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.join(ROOT, "app.py")
 STORE = os.path.join(ROOT, "store.py")
 

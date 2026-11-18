@@ -5,7 +5,7 @@ Only numbers and safe metadata are published — never personal memory content.
 """
 import os, json, time, subprocess, base64, requests
 
-ROOT = r"C:\Users\vornl\Documents\zyphere"
+ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
 BASE = "https://api.github.com/repos/" + REPO + "/contents/"
 

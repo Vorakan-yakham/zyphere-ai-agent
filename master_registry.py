@@ -11,7 +11,7 @@ to governance/ in the main repo so they are versioned and visible.
 """
 import os, json, time
 
-ROOT = r"C:\Users\vornl\Documents\zyphere"
+ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "governance")
 
 # ---------------------------------------------------------------- existing state

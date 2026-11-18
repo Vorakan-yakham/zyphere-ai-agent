@@ -12,7 +12,7 @@ learning material — no claim they are verified expertise.
 """
 import os, json, time, re, threading, subprocess, base64, requests
 
-ROOT = r"C:\Users\vornl\Documents\zyphere"
+ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, "data", "co_learning.json")
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
 BASE = "https://api.github.com/repos/" + REPO + "/contents/"

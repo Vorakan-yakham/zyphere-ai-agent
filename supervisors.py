@@ -6,7 +6,7 @@ HONEST: nudges are recorded as files + status; they do not invent results.
 """
 import os, json, time, threading
 
-DATA = r"C:\Users\vornl\Documents\zyphere\data\supervisors.json"
+DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "supervisors.json")
 
 
 class Supervisor:
