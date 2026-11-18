@@ -1,36 +1,40 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 1 หัวข้อ / 0 ข้อเท็จจริง
-หลัง: 26 หัวข้อ / 110 ข้อเท็จจริง
+ก่อน: 26 หัวข้อ / 132 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 261 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| พยัญชนะไทย | OpenAlex, Wikidata, Wikipedia | 4 |
-| สระไทย | OpenAlex, Wikipedia | 6 |
-| วรรณยุกต์ไทย | OpenAlex | 1 |
-| การประสมคำ | OpenAlex | 3 |
-| โครงสร้างประโยค | OpenAlex | 3 |
-| ย่อหน้า | OpenAlex | 3 |
-| บทความ |  | 0 |
-| wave function | arXiv | 3 |
-| operators | OpenAlex, arXiv | 6 |
-| superposition | OpenAlex, arXiv | 6 |
-| Bell state | OpenAlex, arXiv | 6 |
-| nonlocality | arXiv | 3 |
-| teleportation | OpenAlex, arXiv | 6 |
-| qubit | OpenAlex, arXiv | 6 |
-| quantum gate | OpenAlex, arXiv | 6 |
-| decoherence | OpenAlex, arXiv | 6 |
-| field quantization | Wikidata, Wikipedia, arXiv | 9 |
-| Feynman diagram | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
-| renormalization | arXiv | 3 |
-| motion laws | OpenAlex | 3 |
-| momentum | OpenAlex | 3 |
-| energy | OpenAlex | 3 |
-| entropy | OpenAlex | 3 |
-| heat engine | OpenAlex | 3 |
-| laws of thermodynamics | OpenAlex | 3 |
+| Maxwell equations | OpenAlex, arXiv | 6 |
+| fields | OpenAlex, arXiv | 6 |
+| waves | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| refraction | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| interference | OpenAlex, arXiv | 6 |
+| diffraction | OpenAlex, arXiv | 6 |
+| telescope | OpenAlex, arXiv | 6 |
+| spectroscopy | OpenAlex, arXiv | 6 |
+| photometry | OpenAlex, arXiv | 6 |
+| stellar lifecycle | OpenAlex, arXiv | 6 |
+| nuclear fusion | OpenAlex, arXiv | 6 |
+| supernova | OpenAlex, arXiv | 6 |
+| Big Bang | OpenAlex, arXiv | 6 |
+| dark matter | OpenAlex, arXiv | 6 |
+| expansion | OpenAlex | 3 |
+| planets | OpenAlex | 3 |
+| orbits | OpenAlex | 3 |
+| comets | OpenAlex | 3 |
+| group | OpenAlex | 3 |
+| ring | OpenAlex | 3 |
+| field | OpenAlex | 3 |
+| limit | OpenAlex | 3 |
+| continuity | OpenAlex | 3 |
+| series | OpenAlex | 3 |
+| manifold | OpenAlex | 3 |
 
-ความรู้ในสมอง Zyphere: 13 รายการ · รอบเติบโตที่ 1
+ความรู้ในสมอง Zyphere: 31 รายการ · รอบเติบโตที่ 1
 
 - QA ยังมีจุดไม่ผ่าน → ran
+
+- ภาพยังพัฒนาได้อีก → ran
+
+- วิดีโอยังพัฒนาได้อีก → error:Object of type BytesIO is not JSON serializable
