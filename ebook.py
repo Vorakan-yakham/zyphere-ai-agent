@@ -123,9 +123,14 @@ class EbookStudio:
         base = "ebook_" + str(int(time.time()))
         hp = os.path.join(self.out_dir, base + ".html")
         open(hp, "w", encoding="utf-8").write(html["html"])
+        def media_path(p):
+            try:
+                return "/media/" + os.path.relpath(p, self.out_dir).replace("\\", "/")
+            except Exception:
+                return p
         rec = {"ok": True, "id": "eb_" + str(int(time.time() * 1000)), "title": t,
                "price": int(price or 199), "category": category,
-               "cover": cov.get("path"), "html": hp, "demand_score": demand_score,
+               "cover": media_path(cov.get("path")), "html": media_path(hp), "demand_score": demand_score,
                "kdp": {"title": t[:200], "keywords": ["zyphere", "AI", category.lower()][:7],
                        "category": category, "price": int(price or 199), "cover": cov.get("path")},
                "meb": {"title": t[:200], "format": "HTML/PDF", "price": int(price or 199)},

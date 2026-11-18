@@ -396,7 +396,7 @@ except Exception:
     DEMAND = None
 try:
     from ebook import EbookStudio
-    EBOOK = EbookStudio(os.path.join(DATA_DIR, "ebooks"))
+    EBOOK = EbookStudio(os.path.join(MEDIA_DIR, "ebooks"))
 except Exception:
     EBOOK = None
 try:
