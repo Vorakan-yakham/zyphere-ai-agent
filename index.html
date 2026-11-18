@@ -1233,6 +1233,35 @@ const TTS_SYMBOLS={
   ':':' ', ';':' ', ',':' ', '(':' ', ')':' ',
   '...':' จบประโยค ', '…':' จบประโยค '
 };
+// Thai number reading (cardinal), used before TTS so 18 -> "สิบแปด" not "หนึ่งแปด"
+function thaiNumWords(n){
+  n=Math.floor(Number(n));
+  if(!isFinite(n))return String(n);
+  if(n===0)return 'ศูนย์';
+  const D=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  function h100(x){
+    const h=Math.floor(x/100),r=x%100;
+    let out=h?(D[h]+'ร้อย'):'';
+    if(r)out+= (h&&r<10) ? (r===1?'เอ็ด':D[r]) : (function(){
+      const t=Math.floor(r/10),o=r%10;
+      let v=t===1?'สิบ':(t===2?'ยี่สิบ':D[t]+'สิบ');
+      if(o)v+=(o===1?'เอ็ด':D[o]);
+      return v;
+    })();
+    return out;
+  }
+  if(n<1000)return h100(n);
+  const scales=[[1e9,'พันล้าน'],[1e6,'ล้าน'],[1e5,'แสน'],[1e4,'หมื่น'],[1e3,'พัน']];
+  for(const [u,w] of scales){
+    if(n>=u){
+      const q=Math.floor(n/u),r=n%u;
+      let out=h100(q)+w;
+      if(r)out+=(r<10)?(r===1?'เอ็ด':D[r]):thaiNumWords(r);
+      return out;
+    }
+  }
+  return String(n);
+}
 function ttsNorm(t){let s=String(t||'')
   .replace(/https?:\/\/\S+/g,' ')
   .replace(/^\s*([-—=_])\1{2,}\s*$/gm,' ')   // --- === ___ rule
@@ -1251,11 +1280,13 @@ function ttsNorm(t){let s=String(t||'')
   });
   // all line-breaks / whitespace runs -> single space (continuous narration)
   s=s.replace(/\s*\n+\s*/g,' ').replace(/[\t\u00A0]+/g,' ').replace(/ {2,}/g,' ');
-  // digits to Thai words (integers; decimals read as 'จุด')
+  // digits to spoken Thai cardinal numbers; decimals/phone numbers stay digit-by-digit
   s=s.replace(/\d+(?:[.,]\d+)?/g,m=>{
-    const p=m.replace(',','.').split('.');
-    let out='';
-    for(const ch of p[0]) out+=THD[+ch];
+    const raw=m.replace(/,/g,'');
+    if(/^0\d{5,}$/.test(raw)||raw.length>12)
+      return raw.split('').map(c=>THD[+c]).join(' ');   // phone / account number
+    const p=raw.split('.');
+    let out=thaiNumWords(Number(p[0]));
     if(p[1]) out+=' จุด '+p[1].split('').map(c=>THD[+c]).join('');
     return out;
   });
