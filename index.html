@@ -1944,7 +1944,8 @@ async function checkNotifs(){
 }
 setInterval(checkNotifs,30000);
 detectBackend().then(()=>{handleOAuthHash();
-applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
+applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();
+setTimeout(function(){var col=document.getElementById('col');if(col&&col.querySelector('.empty'))document.body.classList.add('is-empty')},400);});
 
 if($('sideMusic'))$('sideMusic').onclick=()=>{const t=$('q');t.value='สร้างเพลงแนว calm ความยาว 2 ท่อน แล้วให้ลิงก์ MP3';t.dispatchEvent(new Event('input'));$('sendBtn').click()};
 if($('sideVideo'))$('sideVideo').onclick=()=>{const t=$('q');t.value='สร้างวิดีโอ 12 วินาที หัวข้อ Zyphere AI';t.dispatchEvent(new Event('input'));$('sendBtn').click()};
