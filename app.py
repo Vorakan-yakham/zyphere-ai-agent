@@ -332,6 +332,16 @@ try:
     MARKET = Market(os.path.join(DATA_DIR, "market.json"))
 except Exception:
     MARKET = None
+try:
+    from shopfront import Shopfront
+    SHOP = Shopfront(os.path.join(DATA_DIR, "shop.json"))
+except Exception:
+    SHOP = None
+try:
+    from report import Report
+    REPORT = Report()
+except Exception:
+    REPORT = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -407,6 +417,7 @@ REMOTE_KEYS = {
     "otpassist": "zyphere:otpassist",
     "expert": "zyphere:expert",
     "market": "zyphere:market",
+    "shop": "zyphere:shop",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -518,7 +529,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop"):
         try:
             data = {
                 "memory": load_mem,
@@ -551,6 +562,7 @@ def remote_push_all():
                 "autofill": (AUTOFILL.snapshot() if AUTOFILL else None),
                 "codeforge": (CODEFORGE.snapshot() if CODEFORGE else None),
                 "otpassist": (OTPASSIST.snapshot() if OTPASSIST else None),
+                "shop": (SHOP.snapshot() if SHOP else None),
             }[name]()
         except Exception:
             continue
@@ -590,6 +602,7 @@ def remote_pull_all():
         "guard": os.path.join(DATA_DIR, "guard.json"),
         "delivery": os.path.join(DATA_DIR, "delivery.json"),
         "otpassist": os.path.join(DATA_DIR, "otpassist.json"),
+        "shop": os.path.join(DATA_DIR, "shop.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -4259,6 +4272,78 @@ class Handler(SimpleHTTPRequestHandler):
             return
         return super().do_GET()
 
+        if u.path == "/api/shop/catalog":
+            self._send_json(200, SHOP.catalog() if SHOP else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/shop/stats":
+            self._send_json(200, {"ok": True, "stats": SHOP.stats() if SHOP else {}})
+            return
+        if u.path == "/api/market/plans":
+            self._send_json(200, {"ok": True, "plans": MARKET.list_plans() if MARKET else [],
+                                  "stats": MARKET.stats() if MARKET else {}})
+            return
+        if u.path == "/api/expert/checklist":
+            kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]
+            self._send_json(200, {"ok": True, "stages": ["understand","research","plan","produce","qa","deliver"],
+                                  "checklist": EXPERT.checklist(kind) if EXPERT else []})
+            return
+        if u.path == "/api/expert/status":
+            self._send_json(200, EXPERT.status() if EXPERT else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/otp/pending":
+            self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
+                                  "stats": OTPASSIST.stats() if OTPASSIST else {}})
+            return
+        if u.path == "/api/income/channels":
+            self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/income/stats":
+            self._send_json(200, {"ok": True, "stats": INCOME.stats() if INCOME else {},
+                                  "recent": INCOME.list(10) if INCOME else []})
+            return
+        if u.path == "/api/auto/observe":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": len(GUARD.status().get("role", "")) if GUARD else 0,
+                  "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.observe(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/decide":
+            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
+                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
+                  "knowledge": len(load_knowledge().get("items") or []),
+                  "alerts": 0, "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, AUTOFILL.decide(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/auto/log":
+            self._send_json(200, AUTOFILL.log() if AUTOFILL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/help/pending":
+            self._send_json(200, {"ok": True, "pending": HELP.pending() if HELP else [],
+                                  "stats": HELP.stats() if HELP else {}})
+            return
+        if u.path == "/api/code/list":
+            self._send_json(200, {"ok": True, "products": CODEFORGE.list_products() if CODEFORGE else [],
+                                  "stats": CODEFORGE.stats() if CODEFORGE else {}})
+            return
+        if u.path == "/api/money/fields":
+            self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/money/catalog":
+            self._send_json(200, {"ok": True, "catalog": MONEYFIELD.catalog_list() if MONEYFIELD else [],
+                                  "stats": MONEYFIELD.stats() if MONEYFIELD else {}})
+            return
+        if u.path == "/api/pack/list":
+            self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],
+                                  "stats": PACKS.stats() if PACKS else {}})
+            return
+        if u.path == "/api/delivery/stats":
+            self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
+                                  "pending": DELIVERY.pending() if DELIVERY else []})
+            return
     def do_POST(self):
         u = urllib.parse.urlparse(self.path)
         try:
@@ -4338,6 +4423,37 @@ class Handler(SimpleHTTPRequestHandler):
                                    str(body.get("to") or ""), str(body.get("subject") or ""),
                                    str(body.get("message") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
+            return
+        if u.path == "/api/report/send":
+            data = {"products": (CODEFORGE.list_products() if CODEFORGE else []),
+                    "channels": [c["name"] for c in (MARKET.list_plans()[0].get("channels", []) if MARKET and MARKET.list_plans() else [])],
+                    "otp": OTPASSIST.pending() if OTPASSIST else [],
+                    "help": HELP.pending() if HELP else [],
+                    "revenue": INCOME.stats().get("earned_reported", 0) if INCOME else 0,
+                    "assets": INCOME.stats().get("assets_ready", 0) if INCOME else 0,
+                    "orders": SHOP.stats().get("orders", 0) if SHOP else 0}
+            res = REPORT.send(str(body.get("to") or ""), data, str(body.get("subject") or "")) if REPORT else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/shop/list":
+            res = SHOP.list_product(str(body.get("title") or ""), int(body.get("price") or 0),
+                                    str(body.get("asset_url") or ""), str(body.get("desc") or ""),
+                                    str(body.get("category") or "digital")) if SHOP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("shop", SHOP.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/shop/order":
+            res = SHOP.order(str(body.get("product_id") or ""), str(body.get("buyer") or "")) if SHOP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("shop", SHOP.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/shop/confirm":
+            res = SHOP.confirm(str(body.get("id") or "")) if SHOP else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("shop", SHOP.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/market/analyze":
             res = MARKET.analyze(str(body.get("product") or ""), str(body.get("audience") or ""),
@@ -4436,72 +4552,6 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
-            return
-        if u.path == "/api/market/plans":
-            self._send_json(200, {"ok": True, "plans": MARKET.list_plans() if MARKET else [],
-                                  "stats": MARKET.stats() if MARKET else {}})
-            return
-        if u.path == "/api/expert/checklist":
-            kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]
-            self._send_json(200, {"ok": True, "stages": ["understand","research","plan","produce","qa","deliver"],
-                                  "checklist": EXPERT.checklist(kind) if EXPERT else []})
-            return
-        if u.path == "/api/expert/status":
-            self._send_json(200, EXPERT.status() if EXPERT else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/otp/pending":
-            self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
-                                  "stats": OTPASSIST.stats() if OTPASSIST else {}})
-            return
-        if u.path == "/api/income/channels":
-            self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/income/stats":
-            self._send_json(200, {"ok": True, "stats": INCOME.stats() if INCOME else {},
-                                  "recent": INCOME.list(10) if INCOME else []})
-            return
-        if u.path == "/api/auto/observe":
-            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
-                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
-                  "knowledge": len(load_knowledge().get("items") or []),
-                  "alerts": len(GUARD.status().get("role", "")) if GUARD else 0,
-                  "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
-                  "remote": remote_enabled()}
-            self._send_json(200, AUTOFILL.observe(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/auto/decide":
-            st = {"briefings": len(JARVIS.latest(200).get("briefings", [])) if JARVIS else 0,
-                  "products": CODEFORGE.stats().get("products", 0) if CODEFORGE else 0,
-                  "knowledge": len(load_knowledge().get("items") or []),
-                  "alerts": 0, "pending_orders": len(DELIVERY.pending()) if DELIVERY else 0,
-                  "remote": remote_enabled()}
-            self._send_json(200, AUTOFILL.decide(st) if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/auto/log":
-            self._send_json(200, AUTOFILL.log() if AUTOFILL else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/help/pending":
-            self._send_json(200, {"ok": True, "pending": HELP.pending() if HELP else [],
-                                  "stats": HELP.stats() if HELP else {}})
-            return
-        if u.path == "/api/code/list":
-            self._send_json(200, {"ok": True, "products": CODEFORGE.list_products() if CODEFORGE else [],
-                                  "stats": CODEFORGE.stats() if CODEFORGE else {}})
-            return
-        if u.path == "/api/money/fields":
-            self._send_json(200, MONEYFIELD.fields() if MONEYFIELD else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/money/catalog":
-            self._send_json(200, {"ok": True, "catalog": MONEYFIELD.catalog_list() if MONEYFIELD else [],
-                                  "stats": MONEYFIELD.stats() if MONEYFIELD else {}})
-            return
-        if u.path == "/api/pack/list":
-            self._send_json(200, {"ok": True, "packs": PACKS.list_packs() if PACKS else [],
-                                  "stats": PACKS.stats() if PACKS else {}})
-            return
-        if u.path == "/api/delivery/stats":
-            self._send_json(200, {"ok": True, "stats": DELIVERY.stats() if DELIVERY else {},
-                                  "pending": DELIVERY.pending() if DELIVERY else []})
             return
         if u.path == "/api/brain/gap":
             gap = BRAIN.log_gap(body.get("need") or "", body.get("context") or "") if BRAIN else None
