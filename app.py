@@ -5669,7 +5669,9 @@ class Handler(SimpleHTTPRequestHandler):
                             "zyphere-ai-agent/actions/workflows/cinema.yml/dispatches",
                             headers={"Authorization": "Bearer " + _tok,
                                      "Accept": "application/vnd.github+json"},
-                            json={"ref": "main", "inputs": {"brief": text[:180], "lang": "th"}},
+                            json={"ref": "main", "inputs": {
+                                "brief": (str(__import__("imagination_engine").interpret(text, "video").get("motif"))[:60] + " | " + text)[:180],
+                                "lang": "th"}},
                             timeout=25)
                         dr_status = dr.status_code
                         dispatched = dr_status in (200, 201, 204)
@@ -5701,14 +5703,15 @@ class Handler(SimpleHTTPRequestHandler):
                                flags=re.I).strip()[:120] or "Zyphere"
                 res = None
                 try:
-                    import photo_enhancement
-                    lab = photo_enhancement.run(title, title, apply=True)
-                    if lab.get("ok") and lab.get("file"):
-                        res = {"url": "/media/" + os.path.basename(lab["file"]),
-                               "quality": {"before": lab.get("before"),
-                                           "after": lab.get("after"),
-                                           "improvement": lab.get("improvement_pct")},
-                               "engine": "Zypher Own Image Lab (in-house, 12 engineers)"}
+                    import imagination_engine as IE
+                    imagined = IE.create(text, "image", apply=True)
+                    art = imagined.get("artefact") or {}
+                    if art.get("ok") and art.get("file"):
+                        res = {"url": "/media/" + os.path.basename(art["file"]),
+                               "quality": art.get("quality"),
+                               "direction": {k: imagined["direction"].get(k)
+                                             for k in ("subject", "mood", "camera", "motif")},
+                               "engine": "Zypher Imagination -> Own Image Lab (4K)"}
                 except Exception:
                     pass
                 if not res:
