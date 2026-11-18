@@ -1104,6 +1104,7 @@ function bubble(m,live){const col=$('col');let d;
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
    if(m.vid){const v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=m.vid;v.style.cssText='width:100%;max-width:640px;border-radius:16px;margin-top:8px';bd.appendChild(v)}
+   if(m.vid){const dl=document.createElement('a');dl.href=m.vid;dl.download='zyphire_cinema.mp4';dl.className='spk';dl.textContent='⬇ ดาวน์โหลดวิดีโอ';bd.appendChild(dl)}
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
    mk('ฟัง',b=>{if(b.dataset.on==='1'){stopSpeak();b.dataset.on='0';b.textContent='ฟัง';return}b.dataset.on='1';b.textContent='หยุด';lastLang=resolveLang(m.c);speak(m.c,b).then(()=>{b.dataset.on='0';b.textContent='ฟัง'}).catch(()=>{b.dataset.on='0';b.textContent='ฟัง'})});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
@@ -1477,12 +1478,7 @@ async function send(voice){
  if(busy){ctrl&&ctrl.abort();stopSpeak();return}
  const t=$('q').value.trim();
  if(!voice&&t&&!pend.items.length){
-  const vm=t.match(/^\s*(?:สร้าง|ทำ)\s*(?:คลิป|วิดีโอ|video)\s*(?:เรื่อง|เกี่ยวกับ|:|about|on)?\s*([\s\S]+)$/i)||t.match(/^\s*make\s+(?:a\s+)?video\s*(?:about|on|:)?\s*([\s\S]+)$/i);
-  if(vm){
-   let topic=vm[1].trim().replace(/^\d+\s*(?:วินาที|seconds?)\s*/i,'').replace(/^(?:เรื่อง|เกี่ยวกับ|about|on)\s*/i,'').trim();
-    const sm=t.match(/(\d+)\s*(?:วินาที|seconds?)/i);$('vLen').value=sm?Math.max(10,Math.min(90,parseInt(sm[1],10))):10;$('vStyle').value='clean';$('vLang').value='auto';
-   if(topic){$('vTopic').value=topic;$('q').value='';$('q').style.height='';openVideo();createVideo();return}
-  }
+   // วิดีโอถูกสร้างในแชทผ่าน chat media flow — ไม่เปิด modal แยก
   const lm=t.match(/^\s*(?:เรียนรู้เพิ่ม|สอนตัวเอง|ไปเรียนรู้|learn about)\s*(?:เรื่อง|เกี่ยวกับ|:)?\s*([\s\S]+)$/i);
   if(lm&&lm[1].trim().length>=3){const topic=lm[1].trim();$('q').value='';$('q').style.height='';$('learnTopic').value=topic;openKnow();learnStart(topic,false);return}
  }
