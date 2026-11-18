@@ -1,35 +1,35 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
-หลัง: 25 หัวข้อ / 123 ข้อเท็จจริง
+ก่อน: 1 หัวข้อ / 0 ข้อเท็จจริง
+หลัง: 26 หัวข้อ / 84 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| wave function | Wikidata, Wikipedia, arXiv | 9 |
-| operators | Wikidata, Wikipedia, arXiv | 9 |
+| พยัญชนะไทย | Wikidata, Wikipedia | 2 |
+| สระไทย | Wikipedia | 3 |
+| วรรณยุกต์ไทย | Wikipedia | 1 |
+| การประสมคำ |  | 0 |
+| โครงสร้างประโยค | OpenAlex | 3 |
+| ย่อหน้า | Wikidata | 1 |
+| บทความ | Wikidata, Wikipedia | 6 |
+| wave function | Wikipedia, arXiv | 5 |
+| operators | arXiv | 3 |
 | superposition | arXiv | 3 |
-| Bell state | OpenAlex, arXiv | 6 |
-| nonlocality | OpenAlex, arXiv | 6 |
+| Bell state | arXiv | 3 |
+| nonlocality | arXiv | 3 |
 | teleportation | arXiv | 3 |
-| qubit | OpenAlex, arXiv | 6 |
-| quantum gate | OpenAlex, arXiv | 6 |
+| qubit | arXiv | 3 |
+| quantum gate | arXiv | 3 |
 | decoherence | arXiv | 3 |
 | field quantization | arXiv | 3 |
 | Feynman diagram | arXiv | 3 |
-| renormalization | OpenAlex, arXiv | 6 |
+| renormalization | arXiv | 3 |
 | motion laws | arXiv | 3 |
-| momentum | OpenAlex, arXiv | 6 |
-| energy | arXiv | 3 |
-| entropy | OpenAlex, arXiv | 6 |
-| heat engine | OpenAlex, arXiv | 6 |
-| laws of thermodynamics | OpenAlex, arXiv | 6 |
-| Maxwell equations | arXiv | 3 |
-| fields | arXiv | 3 |
-| waves | OpenAlex, arXiv | 6 |
-| refraction | OpenAlex, arXiv | 6 |
-| interference | OpenAlex, arXiv | 6 |
-| diffraction | arXiv | 3 |
-| telescope | arXiv | 3 |
+| momentum | Wikidata, Wikipedia, arXiv | 9 |
+| energy | Wikidata, Wikipedia, arXiv | 9 |
+| entropy | arXiv | 3 |
+| heat engine | arXiv | 3 |
+| laws of thermodynamics | arXiv | 3 |
 
 ความรู้ในสมอง Zyphere: 13 รายการ · รอบเติบโตที่ 1
 
