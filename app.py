@@ -409,6 +409,11 @@ try:
     EBOOK = EbookStudio(os.path.join(MEDIA_DIR, "ebooks"))
 except Exception:
     EBOOK = None
+try:
+    from store import Store
+    STORE = Store(MEDIA_DIR)
+except Exception:
+    STORE = None
 
 try:
     from packbuilder import PackBuilder
@@ -3783,6 +3788,37 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "products": SCHOLAR_INCOME.list_catalog() if SCHOLAR_INCOME else [],
                                   "stats": SCHOLAR_INCOME.stats() if SCHOLAR_INCOME else {}})
             return
+        if u.path == "/api/store/view":
+            # Build a real storefront from current catalog, then serve it directly
+            products = []
+            try:
+                if SCHOLAR_INCOME:
+                    products += SCHOLAR_INCOME.list_catalog() or []
+            except Exception:
+                pass
+            try:
+                if SHOP:
+                    products += SHOP.catalog().get("products", []) or []
+            except Exception:
+                pass
+            if STORE:
+                res = STORE.build(products)
+                fp = res.get("path")
+                if fp and os.path.exists(fp):
+                    data = open(fp, "rb").read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/html; charset=utf-8")
+                    self.send_header("Content-Length", str(len(data)))
+                    self.end_headers()
+                    self.wfile.write(data)
+                    return
+            self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/store/status":
+            self._send_json(200, {"ok": True, "promptpay": "0941939686",
+                                  "orders": len(STORE.orders) if STORE else 0,
+                                  "built": os.path.exists(os.path.join(MEDIA_DIR, "STORE.html"))})
+            return
         if u.path == "/api/scholars/faculty":
             self._send_json(200, SCHOLARS.faculty() if SCHOLARS else {"ok": False, "error": "unavailable"})
             return
@@ -4837,6 +4873,11 @@ class Handler(SimpleHTTPRequestHandler):
                     "orders": SHOP.stats().get("orders", 0) if SHOP else 0}
             res = REPORT.send(str(body.get("to") or ""), data, str(body.get("subject") or "")) if REPORT else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
+            return
+        if u.path == "/api/store/order":
+            res = STORE.order(str(body.get("product") or ""), int(body.get("amount") or 0),
+                              str(body.get("buyer") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/shop/list":
             res = SHOP.list_product(str(body.get("title") or ""), int(body.get("price") or 0),
