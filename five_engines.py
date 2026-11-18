@@ -84,7 +84,14 @@ class FiveEngines:
         self.lock = threading.RLock()
 
     def _stats(self):
-        return _json("engine_stats.json")
+        # GitHub is the durable source; local Render disk is ephemeral/cache.
+        try:
+            r = requests.get(RAW + "engine_stats.json?t=" + str(int(time.time())), timeout=12)
+            if r.ok:
+                return r.json()
+        except Exception:
+            pass
+        return _json("engine_stats.json", remote=False)
 
     def _knowledge(self):
         d = os.path.join(ROOT, "data")
