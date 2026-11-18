@@ -5669,6 +5669,21 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception as e:
                     self._send_json(200, {"ok": False, "error": str(e)[:150]})
                     return
+            if re.search(r"เสียง|sound|fx|whoosh|ฝน|ลม|ฟ้าผ่า|สุนัข|แมว|รถยนต์|ไซเรน|กระดิ่ง|วูบ", text, re.I):
+                try:
+                    import sound_forge as SF
+                    fx = SF.forge(text, 4.0, apply=True)
+                    mp3 = fx.get("mp3") or {}
+                    if fx.get("ok") and mp3.get("url"):
+                        self._send_json(200, {"ok": True, "type": "audio",
+                                              "url": mp3.get("url"),
+                                              "category": fx.get("category"),
+                                              "seconds": fx.get("seconds"),
+                                              "note": fx.get("note")})
+                        return
+                except Exception as e:
+                    self._send_json(200, {"ok": False, "error": str(e)[:150]})
+                    return
             want_video = bool(re.search(
                 r"วิดีโอ|คลิป|video|film|ภาพยนตร์|สั่งทำคลิป", text, re.I))
             if want_video and re.search(r"ภาพยนตร์|ดารานำ|ตัวละคร|เรื่อง|ต่อคลิป|Multiple scene|film", text, re.I):

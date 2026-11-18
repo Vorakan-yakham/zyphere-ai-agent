@@ -1514,7 +1514,7 @@ async function send(voice){
  view();lastLang=resolveLang(t);resetStreamSpeak();claimVoice();const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
   // User ordered media creation straight from chat — build it, show it here.
   if(/^\s*(ช่วย|กรุณา|โปรด)?\s*(สร้าง|ทำ|วาด|ออกแบบ|generate|create|render)/i.test(t)&&
-     /ภาพ|รูป|poster|image|picture|วิดีโอ|คลิป|video|film/i.test(t)){
+     /ภาพ|รูป|poster|image|picture|วิดีโอ|คลิป|video|film|เสียง|sound|whoosh/i.test(t)){
    cur=c.id;save();view();setBusy(true);body.innerHTML='<div style="opacity:.8;font-size:13px">กำลังสร้างผลงานจริง...</div>';
    try{
     const mr=await api('/api/media/chat',{method:'POST',body:JSON.stringify({text:t})});
@@ -1526,7 +1526,7 @@ async function send(voice){
     }
     if(mr.ok&&mr.type==='audio'&&mr.url){
      var pl=mr.plan||{};
-     c.m.push({r:'assistant',c:'แต่งเพลงให้แล้วครับ — '+[pl.mode,pl.bpm+' BPM',pl.texture].filter(Boolean).join(' · ')+' ('+mr.seconds+' วิ)',q:t,audio:localBase()+mr.url});
+     c.m.push({r:'assistant',c:(mr.category?'สร้างเสียงให้แล้วครับ ('+mr.category+') — ':'แต่งเพลงให้แล้วครับ — ')+[pl.mode,pl.bpm+' BPM',pl.texture].filter(Boolean).join(' · ')+' ('+mr.seconds+' วิ)',q:t,audio:localBase()+mr.url});
      save();view();setBusy(false);speak('แต่งเพลงให้แล้วครับ','th');return
     }
     if(mr.ok&&mr.type==='video_local'&&mr.video){
