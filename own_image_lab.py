@@ -5,6 +5,10 @@ NO external image API. Twelve engineer modules compose an image:
  05 depth layers    06 subject silhouette   07 ornament         08 rule-of-thirds layout
  09 typography      10 film grain/vignette  11 self-critique    12 export manifest
 
+Leap-forward passes from advanced_filters.py (edge-aware smoothing, colour harmony,
+flow-field/fractal texture, multi-scale local contrast, Laplacian sharpness metric)
+are composed after pass 10; the original twelve engineer modules are all kept.
+
 HONEST LIMIT: this is algorithmic design composition, NOT a diffusion model.
 Photorealistic faces/scenes like the reference samples require a trained model
 and GPU; we do not have one. The lab produces real, inspectable PNG artefacts
@@ -12,6 +16,7 @@ that our engineers can keep improving without outside services.
 """
 import os, math, json, time, hashlib, random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+import advanced_filters as af
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(ROOT, "media")
@@ -202,6 +207,8 @@ def generate(prompt, apply=True):
     layout = guide_layout(prompt, pal)
     img = typography(img, prompt, pal)
     img = finish(img)
+    # --- leap-forward in-house passes (keep the original 12 engineers intact) ---
+    img, adv = af.apply_pipeline(img, seed=seed, palette=pal)
     q = critique(img)
     out = None
     if apply:
@@ -210,13 +217,14 @@ def generate(prompt, apply=True):
         out = os.path.join(MEDIA, name)
         img.save(out)
         json.dump({"prompt": prompt, "seed": seed, "palette": pal, "layout": layout,
-                   "quality": q, "file": out, "note": "in-house algorithmic design, not diffusion"},
+                   "quality": q, "advanced_filters": adv, "file": out,
+                   "note": "in-house algorithmic design, not diffusion"},
                   open(os.path.join(MEDIA, name + ".json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=2)
-    return {"ok": q["ok"], "quality": q, "file": out,
+    return {"ok": q["ok"], "quality": q, "file": out, "advanced_filters": adv,
             "engines": ["01 parse", "02 palette", "03 lighting", "04 texture", "05 depth",
                         "06 subject", "07 ornament", "08 layout", "09 type", "10 finish",
-                        "11 critique", "12 export"]}
+                        "11 critique", "12 export"] + adv["passes"]}
 
 
 if __name__ == "__main__":

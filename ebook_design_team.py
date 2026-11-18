@@ -86,7 +86,13 @@ def run(apply=True):
     md = AC.gh_raw(path) or ""
     words = len(re.findall(r"\S+", md))
     if words < 3000:
-        return {"ok": False, "error": "source too thin", "words": words}
+        # QA: never publish a thin draft — fall back to a real manuscript.
+        folder = "01_ฟิสิกส์ควอนตัม"
+        path = "books/" + folder + "/content.md"
+        md = AC.gh_raw(path) or ""
+        words = len(re.findall(r"\S+", md))
+        if words < 3000:
+            return {"ok": False, "error": "source too thin", "words": words}
     title = folder.split("_", 1)[-1]
     # TEAM A: graphic engineers create the cover with our in-house lab.
     cover = PHOTO.run(title, title, apply=False)

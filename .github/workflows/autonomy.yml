@@ -1,0 +1,55 @@
+name: Zyphere Always-On Development
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  develop:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: ALL DEPARTMENTS — learn, create, improve, verify
+        run: |
+          python - <<'PY'
+          import json, traceback
+          steps = [
+            ("knowledge", "knowledge_engine", "run"),
+            ("disciplines", "discipline_lab", "propose"),
+            ("brain", "own_brain", "grow"),
+            ("media", "media_twin_track", "run"),
+            ("nudge", "nudge_lazy", "run"),
+            ("qa", "qa_audit_team", "run"),
+          ]
+          out = {}
+          for name, mod, fn in steps:
+            try:
+              m = __import__(mod)
+              r = getattr(m, fn)()
+              out[name] = {"ok": bool(r.get("ok", True)),
+                           "summary": {k: r.get(k) for k in
+                                       ("topics", "facts", "count", "round", "status",
+                                        "keep", "fix", "idle", "sources") if k in r}}
+            except Exception as e:
+              out[name] = {"ok": False, "error": str(e)[:160]}
+              traceback.print_exc()
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          open("data/autonomy_last.json", "w", encoding="utf-8").write(
+              json.dumps(out, ensure_ascii=False, indent=2))
+          PY
+      - name: Publish artefacts and report
+        run: |
+          git config user.name "Zyphere Autonomy"
+          git config user.email "zyphere@users.noreply.github.com"
+          git add -A
+          git commit -m "Autonomy: all departments learn and develop (unattended)" || true
+          git push || true

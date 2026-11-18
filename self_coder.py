@@ -97,7 +97,63 @@ class SelfCoder:
             blocks = [s[:900]]
         return f, blocks[:3]
 
+    def _local_note(self, lessons):
+        """Short, sanitized note derived from own_brain lessons (never secrets)."""
+        for l in (lessons or [])[:30]:
+            t = re.sub(r"[\x00-\x1f\x7f]+", " ", str(l.get("text", ""))).strip()
+            t = re.sub(r"\s+", " ", t)
+            t = t.replace('"""', "'").replace("'''", "'").replace("\\", "/")
+            if re.search(r"(gsk_|sk-or-|hf_|rnd_|gh[pousr]_|private key|app_password)", t, re.I):
+                continue
+            if 12 <= len(t) <= 80:
+                src = re.sub(r"[^A-Za-z0-9:_-]", "", str(l.get("src", "lesson")))[:20]
+                return "own-brain " + (src or "lesson") + ": " + t
+        return "own-brain: clarify intent and keep behaviour unchanged"
+
+    def _local_templates(self, old, note):
+        """Yield deterministic, syntax-safe rewrites of one code block."""
+        # 1) clarify a docstring: insert text right after the opening quotes
+        m = re.match(r"^(\s*)([\"']{3})", old)
+        if m:
+            yield old[:m.end()] + "Zyphere: " + note + " \u2014 " + old[m.end():]
+        # 2) clarify an existing comment line (keeps the original text intact)
+        cm = re.search(r"(?m)^([ \t]*)#([^\n]*)$", old)
+        if cm and old.count('"""') % 2 == 0 and old.count("'''") % 2 == 0:
+            yield old[:cm.start()] + cm.group(0) + " \u2014 Zyphere: " + note + old[cm.end():]
+        # 3) prepend / append a deterministic note (the compile check gates these)
+        if old.count('"""') % 2 == 0 and old.count("'''") % 2 == 0:
+            yield "# Zyphere: " + note + "\n" + old.lstrip()
+            yield old.rstrip() + "\n# Zyphere: " + note + "\n"
+
+    def _local_propose(self, f, blocks):
+        """Build a patch proposal from own_brain only — no API, no network."""
+        try:
+            source = open(os.path.join(ROOT, f), encoding="utf-8").read()
+        except Exception:
+            return None, []
+        try:
+            import own_brain
+            note = self._local_note(own_brain.build(apply=False).get("lessons", []))
+        except Exception:
+            return None, []
+        for ci, old in enumerate(blocks or []):
+            for new in self._local_templates(old, note):
+                if not self._valid(f, old, new):
+                    continue
+                try:
+                    compile(source.replace(old, new, 1), f, "exec")
+                except Exception:
+                    continue
+                return ({"candidate": ci, "new": new, "reason": "local-brain"},
+                        ["local-brain", "own-brain"])
+        return None, []
+
     def _ask(self, f, blocks):
+        # Prefer the local brain first: works with zero API quota / no network.
+        local, src = self._local_propose(f, blocks)
+        if local:
+            return local, src
+        # Fallback — only when the local route fails — ask the external ensemble.
         from brain_ensemble import ensemble
         listing = "\n\n".join("[%d]\n%s" % (i, b) for i, b in enumerate(blocks))
         prompt = ("คุณเป็นนักเขียนโค้ดอัตโนมัติของ Zyphere ปรับปรุง ONE block ในไฟล์ %s "

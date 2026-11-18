@@ -16,7 +16,8 @@ EDITORS = ["บรรณาธิการภาษา", "บรรณาธิ�
 
 
 def fetch(path):
-    r = requests.get(BASE + path, timeout=60)
+    import time as _t
+    r = requests.get(BASE + path + "?x=" + str(_t.time()), timeout=60)
     if not r.ok:
         return None
     # Decode explicitly as UTF-8 — no PowerShell/UTF-16 ambiguity in pipeline.
@@ -45,6 +46,14 @@ def check(html):
         issues.append("ไม่มีปกที่ฝังอยู่ในไฟล์")
     if "COVER_URL" in html:
         issues.append("ยังมี placeholder ของปก")
+    visible = re.sub(r"<style[^>]*>[\s\S]*?</style>", " ", html, flags=re.I)
+    visible = re.sub(r"<script[^>]*>[\s\S]*?</script>", " ", visible, flags=re.I)
+    visible = re.sub(r"<[^>]+>", " ", visible)
+    visible = re.sub(r"(?i)noto\s+(sans|serif)|utf-8|promptpay|zyphere|http|banner|x{2,}",
+                     " ", visible)
+    eng = re.findall(r"\b[A-Za-z]{3,}\b", visible)
+    if len(eng) > 6:
+        issues.append("มีคำภาษาอังกฤษปนในเนื้อหาไทย %d คำ" % len(eng))
     h2 = len(re.findall(r"<h2>", html))
     if h2 < 4:
         issues.append("จำนวนหัวข้อน้อยเกินไป (%d)" % h2)

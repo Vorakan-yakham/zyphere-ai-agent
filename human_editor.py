@@ -7,6 +7,42 @@ rearranges the concepts already present in the source chapters.
 """
 import re, hashlib
 
+
+TERMS = {
+ "acoustics":"เสียงและการสั่น", "quantum acoustics":"เสียงควอนตัม",
+ "agrophysics":"ฟิสิกส์การเกษตร", "aerodynamics":"พลศาสตร์อากาศ",
+ "applied physics":"ฟิสิกส์ประยุกต์", "accelerator physics":"ฟิสิกส์เครื่องเร่งอนุภาค",
+ "communication physics":"ฟิสิกส์การสื่อสาร", "astrophysics":"ฟิสิกส์ดาราศาสตร์",
+ "atmospheric physics":"ฟิสิกส์บรรยากาศ", "atomic physics":"ฟิสิกส์อะตอม",
+ "biophysics":"ชีวฟิสิกส์", "neurophysics":"ฟิสิกส์ระบบประสาท",
+ "chemical physics":"ฟิสิกส์เคมี", "classical physics":"ฟิสิกส์คลาสสิก",
+ "computational physics":"ฟิสิกส์คำนวณ", "condensed matter physics":"ฟิสิกส์สสารควบแน่น",
+ "cryogenics":"วิทยาศาสตร์อุณหภูมิต่ำ", "digital physics":"ฟิสิกส์ดิจิทัล",
+ "dynamics":"พลศาสตร์", "analytical dynamics":"พลศาสตร์วิเคราะห์",
+ "astrodynamics":"พลศาสตร์อวกาศ", "brownian dynamics":"พลศาสตร์บราวน์",
+ "field quantization":"การควอนต์สนาม", "feynman diagram":"แผนภาพไฟน์แมน",
+ "renormalization":"การทำให้ค่ากลับเข้าสู่สมดุล",
+ "wave function":"ฟังก์ชันคลื่น", "operators":"ตัวดำเนินการ",
+ "superposition":"การซ้อนทับของสถานะ", "quantum":"ควอนตัม",
+ "robot":"หุ่นยนต์", "network":"โครงข่าย", "algorithm":"ขั้นตอนวิธี",
+ "geometry":"เรขาคณิต", "statistics":"สถิติ",
+}
+
+
+def thai_term(text):
+    """Replace English terminology with Thai using the in-house dictionary."""
+    t = str(text or "")
+    low = t.lower().strip()
+    if low in TERMS:
+        return TERMS[low]
+    # longest phrase first
+    for en, th in sorted(TERMS.items(), key=lambda x: -len(x[0])):
+        t = re.sub(re.escape(en), th, t, flags=re.I)
+    # any remaining English words -> neutral Thai phrase (never invent facts)
+    t = re.sub(r"\b[A-Za-z][A-Za-z\-]{2,}\b", "แนวคิดหลัก", t)
+    t = re.sub(r"\s*,\s*แนวคิดหลัก", "", t)
+    return t
+
 AI_CLICHE = ["ในบทนี้", "ดังนั้น", "สรุปแล้ว", "สิ่งสำคัญคือต้อง", "เป็นสิ่งสำคัญที่",
              "ในยุคปัจจุบัน", "บทนี้จะกล่าวถึง"]
 CONNECT = ["เมื่อมองให้ใกล้ขึ้น ", "ในอีกมุมหนึ่ง ", "สิ่งที่ควรสังเกตคือ ",
@@ -15,8 +51,11 @@ CONNECT = ["เมื่อมองให้ใกล้ขึ้น ", "ใน
 
 def split_sentences(text):
     t = re.sub(r"\s+", " ", str(text or "")).strip()
-    parts = re.split(r"(?<=[.!?。！？])\s+|(?<=[ Koh])", t)
-    return [p.strip() for p in parts if len(p.strip()) > 12]
+    if not t:
+        return []
+    # split on end punctuation only — never chop words by character class
+    parts = re.split(r"(?<=[.!?。！？])\s+", t)
+    return [p.strip() for p in parts if p.strip()]
 
 
 def humanize(text, seed=0):
@@ -34,7 +73,8 @@ def humanize(text, seed=0):
                 cut = s.rfind(" ", 80, 180)
             if cut > 0:
                 s = s[:cut] + " — " + s[cut+1:].strip()
-        out.append(s)
+        out.append(s if s else "")
+    out = [x for x in out if x]
     # group into short, human paragraphs (2-3 sentences)
     paras, cur = [], []
     for s in out:
@@ -52,12 +92,20 @@ def md_to_human_paragraphs(md):
         s = ln.strip()
         if re.match(r"(?m)^#{2,4} ", s):
             if buf:
-                blocks.append(("p", " ".join(buf))); buf = []
-            blocks.append(("h", re.sub(r"^#+\s*", "", s)))
+                blocks.append(("p", thai_term(" ".join(buf)))); buf = []
+            blocks.append(("h", thai_term(re.sub(r"^#+\s*", "", s))))
+        elif re.match(r"^\d+\.\s", s):
+            if buf:
+                blocks.append(("p", thai_term(" ".join(buf)))); buf = []
+            blocks.append(("li", re.sub(r"^\d+\.\s", "", re.sub(r"[*`#|>]", "", s))))
+        elif s.startswith("- "):
+            if buf:
+                blocks.append(("p", thai_term(" ".join(buf)))); buf = []
+            blocks.append(("li", re.sub(r"^-\s*", "", re.sub(r"[*`#|>]", "", s))))
         elif s and not s.startswith("<!--"):
             buf.append(re.sub(r"[*`#|>]", "", s))
     if buf:
-        blocks.append(("p", " ".join(buf)))
+        blocks.append(("p", thai_term(" ".join(buf))))
     return blocks
 
 
@@ -96,14 +144,16 @@ def render(md, title, price=190, cover_uri=""):
     ch = 0
     first = False
     for kind, text in blocks:
-        if kind == "h":
+        if kind == "li":
+            parts.append('<li>%s</li>' % text)
+        elif kind == "h":
             ch += 1
             parts.append('<section class="chapter"><div class="eyebrow">บทที่ %02d</div><h2>%s</h2>'
                          % (ch, text))
             first = True
         else:
             paras = humanize(text, seed=ch)
-            for p in paras[:8]:
+            for p in paras:
                 parts.append('<p class="%s">%s</p>' % ("first" if first else "", p))
                 first = False
             parts.append('<div class="ornament">· · ·</div>')

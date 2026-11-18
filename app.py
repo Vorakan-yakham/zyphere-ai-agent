@@ -2941,7 +2941,7 @@ _improve_busy = False
 _jarvis_busy = False
 _jarvis_step = 0
 JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
-                "council", "engineers", "grow", "hr", "image_lab", "ebooks"]
+                "council", "engineers", "grow", "hr", "image_lab", "ebooks", "zybrain"]
 _council_busy = False
 _council_last = None
 CINEMA_JOBS = {}
@@ -3025,6 +3025,12 @@ def jarvis_loop():
                             er = ebook_design_team.run(apply=True)
                             if er.get("ok"):
                                 ebook_editor_gate.run()
+                        except Exception:
+                            pass
+                    elif step == "zybrain":
+                        try:
+                            import own_brain
+                            own_brain.grow(apply=True)
                         except Exception:
                             pass
                     if remote_enabled():
@@ -4131,6 +4137,15 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception:
                 _cl = {"ok": False, "error": "unavailable"}
             self._send_json(200, _cl)
+            return
+        if u.path == "/api/zy-brain/ask":
+            try:
+                import own_brain as _OB
+                _q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
+                _ans = _OB.ask(_q)
+            except Exception as e:
+                _ans = {"ok": False, "error": str(e)[:120]}
+            self._send_json(200, _ans)
             return
         if u.path == "/api/hr/status":
             try:
@@ -5739,6 +5754,14 @@ class Handler(SimpleHTTPRequestHandler):
                 from conversation_learning import CL
                 _r = CL.store_chat(body.get("user") or body.get("text"),
                                    body.get("assistant") or "")
+            except Exception as e:
+                _r = {"ok": False, "error": str(e)[:120]}
+            self._send_json(200, _r)
+            return
+        if u.path == "/api/zy-brain/grow":
+            try:
+                import own_brain as _OB
+                _r = _OB.grow(apply=True)
             except Exception as e:
                 _r = {"ok": False, "error": str(e)[:120]}
             self._send_json(200, _r)
