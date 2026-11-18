@@ -1,40 +1,36 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 2 หัวข้อ / 9 ข้อเท็จจริง
-หลัง: 27 หัวข้อ / 104 ข้อเท็จจริง
+ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
+หลัง: 25 หัวข้อ / 123 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
 | wave function | Wikidata, Wikipedia, arXiv | 9 |
-| operators | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| operators | Wikidata, Wikipedia, arXiv | 9 |
 | superposition | arXiv | 3 |
-| Bell state | arXiv | 3 |
-| nonlocality | arXiv | 3 |
+| Bell state | OpenAlex, arXiv | 6 |
+| nonlocality | OpenAlex, arXiv | 6 |
 | teleportation | arXiv | 3 |
 | qubit | OpenAlex, arXiv | 6 |
 | quantum gate | OpenAlex, arXiv | 6 |
 | decoherence | arXiv | 3 |
 | field quantization | arXiv | 3 |
 | Feynman diagram | arXiv | 3 |
-| renormalization | arXiv | 3 |
+| renormalization | OpenAlex, arXiv | 6 |
 | motion laws | arXiv | 3 |
-| momentum | arXiv | 3 |
+| momentum | OpenAlex, arXiv | 6 |
 | energy | arXiv | 3 |
-| entropy | arXiv | 3 |
-| heat engine | arXiv | 3 |
-| laws of thermodynamics | Wikidata, arXiv | 5 |
-| Maxwell equations | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
-| fields | Wikipedia, arXiv | 6 |
-| waves |  | 0 |
-| refraction |  | 0 |
-| interference |  | 0 |
-| diffraction |  | 0 |
-| telescope |  | 0 |
+| entropy | OpenAlex, arXiv | 6 |
+| heat engine | OpenAlex, arXiv | 6 |
+| laws of thermodynamics | OpenAlex, arXiv | 6 |
+| Maxwell equations | arXiv | 3 |
+| fields | arXiv | 3 |
+| waves | OpenAlex, arXiv | 6 |
+| refraction | OpenAlex, arXiv | 6 |
+| interference | OpenAlex, arXiv | 6 |
+| diffraction | arXiv | 3 |
+| telescope | arXiv | 3 |
 
-ความรู้ในสมอง Zyphere: 43 รายการ · รอบเติบโตที่ 1
+ความรู้ในสมอง Zyphere: 13 รายการ · รอบเติบโตที่ 1
 
 - QA ยังมีจุดไม่ผ่าน → ran
-
-- ภาพยังพัฒนาได้อีก → error:invalid syntax (photo_enhancement.py, line 44)
-
-- วิดีโอยังพัฒนาได้อีก → error:invalid syntax (photo_enhancement.py, line 44)
