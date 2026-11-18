@@ -4098,6 +4098,12 @@ class Handler(SimpleHTTPRequestHandler):
             out.update(extra)
             self._send_json(200, out)
             return
+        if u.path == "/api/cinema/status":
+            q = urllib.parse.parse_qs(u.query)
+            jid = q.get("id", [""])[0]
+            self._send_json(200, CINEMA_JOBS.get(jid) or
+                            {"ok": False, "error": "job not found"})
+            return
         if u.path == "/api/conversation/status":
             try:
                 from conversation_learning import CL
@@ -5625,12 +5631,6 @@ class Handler(SimpleHTTPRequestHandler):
                                    str(body.get("lang") or "th")), daemon=True).start()
             self._send_json(200, {"ok": True, "id": jid,
                                   "note": "ดูผลที่ /api/cinema/status?id=" + jid})
-            return
-        if u.path == "/api/cinema/status":
-            q = urllib.parse.parse_qs(u.query)
-            jid = q.get("id", [""])[0]
-            self._send_json(200, CINEMA_JOBS.get(jid) or
-                            {"ok": False, "error": "job not found"})
             return
         if u.path == "/api/conversation/learn":
             try:
