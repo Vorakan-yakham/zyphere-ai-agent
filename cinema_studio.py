@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(ROOT, "media")
 FONT_TH = os.path.join(MEDIA, "fonts", "NotoSansThai.ttf")
-W, H = 1920, 1080
+W, H = 3840, 2160
 
 
 def _ff():
@@ -275,7 +275,7 @@ def run(brief, seconds=18, lang="th", apply=True):
         vp = os.path.join(out, "seg_%02d.mp4" % i)
         zoom = "zoom+0.06" if i % 2 == 0 else "zoom+0.10"
         cmd = [ff, "-y", "-loop", "1", "-i", fp, "-vf",
-               "scale=2200:1240,zoompan=z='%s':d=125:s=1920x1080:fps=25" % zoom,
+               "scale=4600:2600,zoompan=z='%s':d=125:s=3840x2160:fps=25" % zoom,
                "-t", "5", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", vp]
         subprocess.run(cmd, capture_output=True, timeout=180)
         if os.path.exists(vp):

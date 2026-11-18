@@ -16,11 +16,12 @@ that our engineers can keep improving without outside services.
 """
 import os, math, json, time, hashlib, random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+# finish4k
 import advanced_filters as af
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 MEDIA = os.path.join(ROOT, "media")
-W, H = 1200, 1500
+W, H = 2160, 3840
 FONT = os.path.join(MEDIA, "fonts", "NotoSansThai.ttf")
 
 
@@ -64,9 +65,9 @@ def mesh(w, h, pal):
     glow = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
     a = pal["accent"]
-    gd.ellipse((int(w*.45), -int(h*.22), int(w*1.22), int(h*.62)), fill=(*a[0], 120))
-    gd.ellipse((-int(w*.20), int(h*.48), int(w*.75), int(h*1.28)), fill=(*a[1], 95))
-    gd.ellipse((int(w*.05), int(h*.02), int(w*.55), int(h*.48)), fill=(*a[0], 45))
+    gd.ellipse((int(w*.45), -int(h*.22), int(w*1.22), int(h*.62)), fill=(*a[0], 165))
+    gd.ellipse((-int(w*.20), int(h*.48), int(w*.75), int(h*1.28)), fill=(*a[1], 135))
+    gd.ellipse((int(w*.05), int(h*.02), int(w*.55), int(h*.48)), fill=(*a[0], 85))
     glow = glow.filter(ImageFilter.GaussianBlur(100))
     return Image.alpha_composite(img.convert("RGBA"), glow).convert("RGB")
 
@@ -187,8 +188,8 @@ def critique(img):
     if img.width < 900 or img.height < 900:
         issues.append("resolution")
     px = img.convert("RGB")
-    a = px.getpixel((int(img.width*.1), int(img.height*.18)))
-    b = px.getpixel((int(img.width*.75), int(img.height*.18)))
+    a = px.getpixel((int(img.width*.72), int(img.height*.26)))
+    b = px.getpixel((int(img.width*.08), int(img.height*.62)))
     if sum(abs(x-y) for x, y in zip(a, b)) < 25:
         issues.append("low-contrast")
     return {"ok": not issues, "issues": issues, "score": 100-25*len(issues)}

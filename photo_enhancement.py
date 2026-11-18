@@ -42,7 +42,7 @@ def e01_fetch(query):
     mood = "warm" if any(k in str(query) for k in
                          ("warm", "golden", "sunset", "อบอุ่น")) else "cool"
     pal = LAB.palette(mood, seed)
-    im = LAB.mesh(1200, 1500, pal)
+    im = LAB.mesh(2160, 3840, pal)
     im = LAB.texture(im, seed)
     im = LAB.depth(im, pal)
     im = LAB.silhouette(im, pal)
@@ -51,7 +51,7 @@ def e01_fetch(query):
                 "license": "Zyphere own", "query": query}
 
 
-def e02_crop(im, w=1200, h=1500):
+def e02_crop(im, w=2160, h=3840):
     return ImageOps.fit(im, (w, h), method=Image.LANCZOS, centering=(0.5, 0.35))
 
 
