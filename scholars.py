@@ -10,16 +10,59 @@ No gambling/illegal.
 import os, json, time, threading
 
 FACULTY = {
-    "ฟิสิกส์-คณิต": ["quantum", "relativity", "thermodynamics", " mathematics", "statistics"],
-    "ชีวะ-แพทย์": ["genetics", "cell biology", "immunology", "medicine", "neuroscience"],
-    "คอมพิวเตอร์-AI": ["machine learning", "algorithms", "LLM", "security", "data"],
-    "กฎหมาย-จริยธรรม": ["law", "rights", "ethics", "governance", "privacy"],
-    "เศรษฐกิจ-การเงิน": ["economics", "finance", "market", "trade", "accounting"],
-    "ประวัติศาสตร์-สังคม": ["history", "civilization", "culture", "anthropology", "sociology"],
-    "ภาษา-การสื่อสาร": ["linguistics", "translation", "rhetoric", "narration", "writing"],
-    "วิศวกรรม-ออกแบบ": ["engineering", "design", "robotics", "architecture", "materials"],
-    "สิ่งแวดล้อม-เกษตร": ["climate", "ecology", "agriculture", "water", "energy"],
-    "ศิลปะ-สื่อ": ["music", "film", "visual art", "design thinking", "storytelling"],
+    # --- วิทยาศาสตร์พื้นฐาน ---
+    "ฟิสิกส์ควอนตัม": ["quantum", "particle", "wave function", "spin"],
+    "ฟิสิกส์คลาสสิก": ["mechanics", "electromagnetism", "thermodynamics", "optics"],
+    "ดาราศาสตร์-จักรวาล": ["astrophysics", "cosmology", "galaxy", "exoplanet"],
+    "คณิตศาสตร์บริสุทธิ์": ["algebra", "geometry", "number theory", "topology"],
+    "คณิตศาสตร์ประยุกต์": ["statistics", "probability", "calculus", "optimization"],
+    "ตรรกะและทฤษฎีข้อมูล": ["logic", "information theory", "computability", "proof"],
+    # --- ชีวะ-แพทย์ ---
+    "พันธุกรรม-ชีวโมเลกุล": ["genetics", "DNA", "genome", "CRISPR"],
+    "เซลล์และเนื้อเยื่อ": ["cell biology", "microscopy", "stem cell"],
+    "ภูมิคุ้มกัน-โรค": ["immunology", "vaccine", "pathogen", "disease"],
+    "สมอง-ประสาทวิทยา": ["neuroscience", "synapse", "memory", "cognition"],
+    "สรีระและเภสัช": ["physiology", "anatomy", "pharmacology", "nutrition"],
+    "การแพทย์คลินิก": ["diagnosis", "treatment", "clinical", "surgery"],
+    "จิตวิทยา": ["psychology", "behavior", "emotion", "therapy"],
+    # --- คอมพิวเตอร์ ---
+    "ปัญญาประดิษฐ์": ["machine learning", "neural network", "LLM", "agent"],
+    "อัลกอริทึม-โครงสร้างข้อมูล": ["algorithm", "data structure", "complexity", "graph"],
+    "วิศวกรรมซอฟต์แวร์": ["software", "architecture", "testing", "devops"],
+    "ความมั่นคงไซเบอร์": ["security", "cryptography", "privacy", "network"],
+    "ฐานข้อมูล-ข้อมูลขนาดใหญ่": ["database", "big data", "pipeline", "ETL"],
+    "คอมพิวเตอร์วิทัศน์-เสียง": ["computer vision", "speech", "image", "audio"],
+    "หุ่นยนต์-ระบบอัตโนมัติ": ["robotics", "control", "automation", "sensor"],
+    # --- วิศวกรรม ---
+    "วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์": ["circuit", "signal", "power", "embedded"],
+    "วิศวกรรมเครื่องกล": ["mechanics", "material", "manufacturing", "thermal"],
+    "วิศวกรรมโยธา-โครงสร้าง": ["civil", "structure", "bridge", "construction"],
+    "วิศวกรรมเคมี-วัสดุ": ["chemical", "polymer", "nanotech", "materials"],
+    "สถาปัตยกรรม-การออกแบบ": ["architecture", "urban", "interior", "BIM"],
+    # --- เศรษฐกิจ-สังคม-กฎหมาย ---
+    "เศรษฐกิจมหภาค-การเงิน": ["economics", "inflation", "monetary", "GDP"],
+    "การเงิน-การลงทุน": ["finance", "investment", "portfolio", "banking"],
+    "การบัญชี-ตรวจสอบ": ["accounting", "audit", "tax", "statement"],
+    "การตลาด-ธุรกิจ": ["marketing", "brand", "consumer", "strategy"],
+    "การจัดการ-ภาวะผู้นำ": ["management", "leadership", "operations", "HR"],
+    "กฎหมาย-สิทธิมนุษยชน": ["law", "rights", "constitution", "court"],
+    "จริยธรรม-ปรัชญา": ["ethics", "philosophy", "moral", "existentialism"],
+    "ประวัติศาสตร์-อารยธรรม": ["history", "civilization", "archaeology", "era"],
+    "สังคมวิทยา-มานุษยวิทยา": ["society", "culture", "anthropology", "community"],
+    "รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ": ["politics", "diplomacy", "governance", "policy"],
+    # --- ภาษา-ศิลปะ-การศึกษา ---
+    "ภาษาศาสตร์-การแปล": ["linguistics", "translation", "syntax", "semantics"],
+    "วรรณกรรม-การเขียน": ["literature", "writing", "narrative", "poetry"],
+    "การสอน-การศึกษา": ["education", "pedagogy", "learning", "curriculum"],
+    "ดนตรี-เสียง": ["music", "acoustics", "composition", "rhythm"],
+    "ภาพยนตร์-สื่อ-กราฟฟิก": ["film", "animation", "design", "visual"],
+    # --- สิ่งแวดล้อม-พลังงาน-อาหาร ---
+    "ภูมิอากาศ-สิ่งแวดล้อม": ["climate", "ecology", "biodiversity", "pollution"],
+    "เกษตร-อาหาร": ["agriculture", "crop", "soil", "food science"],
+    "น้ำ-ทรัพยากร": ["water", "irrigation", "hydrology", "resource"],
+    "พลังงาน-นิวเคลียร์": ["energy", "solar", "nuclear", "fusion"],
+    "อวกาศ-การสำรวจ": ["space", "rocket", "orbit", "habitat"],
+    "การเอาชีวิตรอด-ความปลอดภัย": ["survival", "disaster", "safety", "risk"],
 }
 
 
