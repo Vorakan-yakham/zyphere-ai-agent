@@ -533,6 +533,12 @@ body.is-empty .chip{border-radius:999px!important;padding:7px 14px!important;fon
 body.is-empty .box{max-width:840px!important;box-shadow:0 2px 14px rgba(60,64,67,.08)!important}
 body.is-empty .box textarea{min-height:34px!important}
 
+
+#setBtn{display:none!important}
+body.zy-admin #setBtn{display:flex!important}
+body.is-empty .chat{padding-top:16vh!important}
+body.is-empty .box{max-width:760px!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -1852,7 +1858,7 @@ $('wipeMemBtn').onclick=async()=>{if(!confirm('ล้างความจำท
 $('rate').oninput=function(){$('rv').textContent=this.value+'x'};$('rv').textContent=$('rate').value+'x';
 $('testBtn').onclick=async()=>{lastLang='th';const g=localAns('สวัสดีครับ')||'สวัสดีครับ ผมไซเฟอร์ พร้อมช่วยคุณแล้วครับ';toast(g);await speak(g)};
 $('agentBtn').classList.toggle('on',agentOn);
-if(!key('groq')&&!key('gemini')&&!key('openrouter')&&!key('hf'))setTimeout(()=>$('setBtn').click(),400);
+// ไม่เด้งหน้าตั้งค่าเองตอนเปิด — ผู้ใช้เป็นคนกดเองเท่านั้น
 $('logo').innerHTML=lg()+'<span>Zyphere</span>';
 let lastNotif='';
 async function checkNotifs(){
