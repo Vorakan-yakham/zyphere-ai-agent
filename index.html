@@ -1493,7 +1493,7 @@ async function send(voice){
   // User ordered media creation straight from chat — build it, show it here.
   if(/^\s*(ช่วย|กรุณา|โปรด)?\s*(สร้าง|ทำ|วาด|ออกแบบ|generate|create|render)/i.test(t)&&
      /ภาพ|รูป|poster|image|picture|วิดีโอ|คลิป|video|film/i.test(t)){
-   setBusy(true);body.innerHTML='<div style="opacity:.8;font-size:13px">กำลังสร้างผลงานจริง...</div>';
+   cur=c.id;save();view();setBusy(true);body.innerHTML='<div style="opacity:.8;font-size:13px">กำลังสร้างผลงานจริง...</div>';
    try{
     const mr=await api('/api/media/chat',{method:'POST',body:JSON.stringify({text:t})});
     if(mr.ok&&mr.type==='image'&&mr.url){
@@ -1533,7 +1533,7 @@ async function send(voice){
       },5000)
      })();return
     }
-   }catch(e){}
+   }catch(e){cur=c.id;save();view()}
    setBusy(false);body.innerHTML=md('สร้างไม่ได้: '+redact(e.message||''));
   }
 
