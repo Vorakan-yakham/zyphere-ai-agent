@@ -43,7 +43,7 @@ def put(path, content):
 
 
 def build():
-    d = requests.get(RAW + "book_pricing.json", timeout=30).json()
+    d = requests.get(RAW + "book_pricing.json?t=" + str(int(time.time())), timeout=30).json()
     rows = d.get("rows", [])
     promos = []
     for b in rows:

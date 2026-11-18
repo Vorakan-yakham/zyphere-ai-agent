@@ -44,7 +44,7 @@ def push_site(path, content):
 
 
 def build():
-    r = requests.get(RAW + "book_pricing.json", timeout=30)
+    r = requests.get(RAW + "book_pricing.json?t=" + str(int(time.time())), timeout=30)
     data = r.json() if r.ok else {"rows": []}
     rows = data.get("rows", [])
     print("pricing rows", len(rows))

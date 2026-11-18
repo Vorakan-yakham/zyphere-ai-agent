@@ -29,7 +29,8 @@ def token():
 
 
 def fetch_json(name):
-    r = requests.get(RAW + name, timeout=30)
+    # cache-buster: raw.githubusercontent can serve stale content after a PUT
+    r = requests.get(RAW + name + "?t=" + str(int(time.time())), timeout=30)
     return r.json() if r.ok else {}
 
 
