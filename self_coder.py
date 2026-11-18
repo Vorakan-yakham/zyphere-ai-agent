@@ -33,6 +33,8 @@ ALLOWED = {
     "dev_brain.py": ["class DevBrain"],
     "self_coder.py": ["class SelfCoder"],
     "division_heads.py": ["class DivisionHeads"],
+    "photo_enhancement.py": ["def e06_sharpen", "def run("],
+    "own_image_lab.py": ["def generate", "def mesh"],
 }
 
 BAN = ("gsk_", "rnd_", "gho_", "sk-or-v1-", "hf_", "APP_PASSWORD", "PRIVATE KEY",

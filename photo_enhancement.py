@@ -56,7 +56,10 @@ def e02_crop(im, w=1200, h=1500):
 
 
 def e03_dehaze(im):
-    return ImageEnhance.Contrast(im).enhance(1.08)
+    """v2: multi-scale local tone recovery (in-house, Pillow only)."""
+    blur = im.filter(ImageFilter.GaussianBlur(26))
+    detail = ImageEnhance.Contrast(im).enhance(1.10)
+    return Image.blend(im, Image.blend(detail, blur, 0.18), 0.62)
 
 
 def e04_local_contrast(im):
@@ -70,7 +73,10 @@ def e05_denoise(im):
 
 
 def e06_sharpen(im):
-    return im.filter(ImageFilter.UnsharpMask(radius=1.6, percent=145, threshold=3))
+    """v2: two-scale unsharp mask for fine edges and mid-frequency detail."""
+    fine = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=135, threshold=2))
+    mid = fine.filter(ImageFilter.UnsharpMask(radius=3.2, percent=70, threshold=4))
+    return Image.blend(fine, mid, 0.55)
 
 
 def e07_grade(im):
