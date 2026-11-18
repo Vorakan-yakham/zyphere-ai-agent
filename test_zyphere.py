@@ -290,6 +290,14 @@ def main():
         assert not inc.affiliate("not-a-link")["ok"], "affiliate accepted bad link"
         inc.earned("ภาพดิจิทัล", 500, "ขายได้จริง")
         assert inc.stats()["earned_reported"] == 500, "income earned failed"
+        from otpassist import OTPAssistant
+        opath = os.path.join(tempfile.gettempdir(), "zy_otp_test.json")
+        if os.path.exists(opath): os.remove(opath)
+        oa = OTPAssistant(opath)
+        r = oa.prepare("Fastwork", "วรกันต์", "a@b.com", "081xxx")
+        assert r["ok"] and "คุณพิมพ์ OTP" in r["otp_step"], "otp prepare failed"
+        assert "ไม่รับรหัส OTP" in r["never"], "otp never-store missing"
+        assert not oa.prepare("เว็บพนัน บาคาร่า")["ok"], "gambling signup must be refused"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:

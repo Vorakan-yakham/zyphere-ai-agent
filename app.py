@@ -317,6 +317,11 @@ try:
     INCOME = Income(os.path.join(DATA_DIR, "income.json"))
 except Exception:
     INCOME = None
+try:
+    from otpassist import OTPAssistant
+    OTPASSIST = OTPAssistant(os.path.join(DATA_DIR, "otpassist.json"))
+except Exception:
+    OTPASSIST = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -389,6 +394,7 @@ REMOTE_KEYS = {
     "help": "zyphere:help",
     "autofill": "zyphere:autofill",
     "codeforge": "zyphere:codeforge",
+    "otpassist": "zyphere:otpassist",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -500,7 +506,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist"):
         try:
             data = {
                 "memory": load_mem,
@@ -532,6 +538,7 @@ def remote_push_all():
                 "help": (HELP.snapshot() if HELP else None),
                 "autofill": (AUTOFILL.snapshot() if AUTOFILL else None),
                 "codeforge": (CODEFORGE.snapshot() if CODEFORGE else None),
+                "otpassist": (OTPASSIST.snapshot() if OTPASSIST else None),
             }[name]()
         except Exception:
             continue
@@ -570,6 +577,7 @@ def remote_pull_all():
         "privacy": os.path.join(DATA_DIR, "privacy.json"),
         "guard": os.path.join(DATA_DIR, "guard.json"),
         "delivery": os.path.join(DATA_DIR, "delivery.json"),
+        "otpassist": os.path.join(DATA_DIR, "otpassist.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -605,10 +613,12 @@ def remote_pull_all():
             else:
                 skipped.append(name)
             continue
-        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery"):
+        if name in ("safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist"):
             obj = {"safety": SAFETY, "eval": EVAL, "intent": INTENT, "selfcorrect": SELFCORRECT,
                    "behavior": BEHAVIOR, "audit": AUDIT, "jarvis": JARVIS, "privacy": PRIVACY,
-                   "guard": GUARD, "delivery": DELIVERY}[name]
+                   "guard": GUARD, "delivery": DELIVERY, "moneyfield": MONEYFIELD, "income": INCOME,
+                   "help": HELP, "autofill": AUTOFILL, "codeforge": CODEFORGE,
+                   "otpassist": OTPASSIST}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -4311,6 +4321,20 @@ class Handler(SimpleHTTPRequestHandler):
             o = BILLING.create_order(body.get("email"), body.get("plan"), body.get("ref")) if BILLING else {"ok": False}
             self._send_json(200, o)
             return
+        if u.path == "/api/otp/prepare":
+            res = OTPASSIST.prepare(str(body.get("platform") or ""), str(body.get("name") or ""),
+                                   str(body.get("email") or ""), str(body.get("phone") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("otpassist", OTPASSIST.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/otp/mark":
+            res = OTPASSIST.mark(str(body.get("id") or ""), str(body.get("step") or ""),
+                                 str(body.get("note") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("otpassist", OTPASSIST.snapshot())
+            self._send_json(200, res)
+            return
         if u.path == "/api/income/produce":
             res = INCOME.produce(str(body.get("channel") or ""), str(body.get("title") or ""),
                                  str(body.get("asset_url") or ""), int(body.get("price") or 0),
@@ -4377,6 +4401,10 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/otp/pending":
+            self._send_json(200, {"ok": True, "pending": OTPASSIST.pending() if OTPASSIST else [],
+                                  "stats": OTPASSIST.stats() if OTPASSIST else {}})
             return
         if u.path == "/api/income/channels":
             self._send_json(200, INCOME.channels() if INCOME else {"ok": False, "error": "unavailable"})
