@@ -85,6 +85,7 @@ class EbookStudio:
         d.text((90, H - 250), str(author), font=font(42), fill=(240, 240, 245))
         d.text((90, H - 180), "zyphere.ai · ผลิตโดย AI", font=font(30), fill=(210, 215, 225))
         p = path or os.path.join(self.out_dir, "cover_" + str(int(time.time())) + ".png")
+        os.makedirs(os.path.dirname(p), exist_ok=True)
         im.save(p, "PNG")
         return {"ok": True, "path": p, "size": os.path.getsize(p), "w": W, "h": H}
 
