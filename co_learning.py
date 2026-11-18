@@ -157,18 +157,26 @@ class CoLearning:
         for d in DEPTS:
             recs = [r for r in self.log if r.get("dept") == d]
             doctor = [r for r in recs if r.get("level") == "doctor"]
+            cross = [r for r in recs if r.get("level") == "cross-disciplinary"]
             last = recs[-1] if recs else None
+            level = ("cross-disciplinary" if cross else
+                     "doctor" if doctor else "foundation" if recs else "none")
             out[d] = {
-                "level": "doctor" if doctor else ("foundation" if recs else "none"),
+                "level": level,
                 "lessons": sum(len(r.get("lessons", [])) for r in recs),
                 "doctor_lessons": sum(len(r.get("lessons", [])) for r in doctor),
+                "cross_lessons": sum(len(r.get("lessons", [])) for r in cross),
+                "related_faculties": last.get("related_faculties", []) if last else [],
                 "sessions": len(recs),
                 "last_studied": last.get("t", 0) if last else 0,
                 "latest_lessons": (last.get("lessons", [])[:5] if last else []),
                 "sources": last.get("sources", []) if last else [],
             }
         return {"ok": True, "departments": len(DEPTS),
-                "doctor_departments": sum(1 for v in out.values() if v["level"] == "doctor"),
+                "doctor_departments": sum(1 for v in out.values()
+                                          if v["level"] in ("doctor", "cross-disciplinary")),
+                "cross_departments": sum(1 for v in out.values()
+                                         if v["level"] == "cross-disciplinary"),
                 "levels": out, "t": int(time.time())}
 
     def status(self):

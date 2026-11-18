@@ -14,7 +14,7 @@ header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:1
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .dept h3{margin:0;font-size:16px}
 .lv{font-size:11px;border-radius:99px;padding:5px 12px;font-weight:600}
-.lv-doctor{background:#dcfce7;color:#166534}.lv-foundation{background:#fef3c7;color:#92400e}.lv-none{background:#f3f4f6;color:#6b7280}
+.lv-doctor{background:#dcfce7;color:#166534}.lv-cross-disciplinary{background:#dbeafe;color:#1e40af}.lv-foundation{background:#fef3c7;color:#92400e}.lv-none{background:#f3f4f6;color:#6b7280}
 .bar{height:8px;background:#eef0f5;border-radius:99px;margin:14px 0 10px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:99px;transition:.4s}
 .mini{font-size:12px;color:#6b7280;line-height:1.7}
@@ -45,15 +45,15 @@ async function load(){
   ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
   const lv=r.levels||{};
   document.getElementById('list').innerHTML=Object.entries(lv).map(([d,v])=>{
-   const pct=v.level==='doctor'?100:(v.level==='foundation'?50:0);
-   const cls=v.level==='doctor'?'lv-doctor':(v.level==='foundation'?'lv-foundation':'lv-none');
+   const pct=v.level==='cross-disciplinary'?100:(v.level==='doctor'?80:(v.level==='foundation'?50:0));
+   const cls=v.level==='cross-disciplinary'?'lv-cross-disciplinary':(v.level==='doctor'?'lv-doctor':(v.level==='foundation'?'lv-foundation':'lv-none'));
    const last=v.last_studied?new Date(v.last_studied*1000).toLocaleString('th-TH'):'ยังไม่เคยเรียน';
    const ls=(v.latest_lessons||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
    return '<div class="dept"><div class="top"><h3>'+esc(d)+'</h3>'+
     '<span class="lv '+cls+'">'+esc(v.level).toUpperCase()+'</span></div>'+
     '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
-    '<div class="mini">บทเรียน '+v.lessons+' · ระดับ Doctor '+v.doctor_lessons+' · session '+v.sessions+' · เรียนล่าสุด '+last+
-    ' · แหล่ง: '+esc((v.sources||[]).join(', '))+'</div>'+
+    '<div class="mini">บทเรียน '+v.lessons+' · Doctor '+v.doctor_lessons+' · ข้ามสาขา '+v.cross_lessons+' · session '+v.sessions+' · เรียนล่าสุด '+last+
+    ' · สาขาที่เรียน: '+esc((v.related_faculties||[]).join(', '))+'</div>'+
     (ls?'<ul class="lessons">'+ls+'</ul>':'')+'</div>';
   }).join('');
   document.getElementById('statusLine').textContent='อัพเดทล่าสุด '+new Date().toLocaleTimeString('th-TH');

@@ -5100,6 +5100,15 @@ class Handler(SimpleHTTPRequestHandler):
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
+        if u.path == "/api/co-learn/run-cross":
+            try:
+                import cross_disciplinary
+                cross_disciplinary.run()
+                res = {"ok": True, "departments": len(cross_disciplinary.RELATED)}
+            except Exception as e:
+                res = {"ok": False, "error": str(e)[:160]}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/co-learn/run":
             dept = str(body.get("dept") or "") or None
             res = CO.run(dept) if CO else {"ok": False, "error": "unavailable"}
