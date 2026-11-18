@@ -359,6 +359,11 @@ try:
 except Exception:
     SCHOLARS = None
 try:
+    from scholar_income import ScholarIncome
+    SCHOLAR_INCOME = ScholarIncome(os.path.join(DATA_DIR, "scholar_income.json"))
+except Exception:
+    SCHOLAR_INCOME = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -446,6 +451,7 @@ REMOTE_KEYS = {
     "shop": "zyphere:shop",
     "agents": "zyphere:agents",
     "scholars": "zyphere:scholars",
+    "scholar_income": "zyphere:scholar_income",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -557,7 +563,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars", "scholar_income"):
         try:
             data = {
                 "memory": load_mem,
@@ -593,6 +599,7 @@ def remote_push_all():
                 "shop": (SHOP.snapshot() if SHOP else None),
                 "agents": (ORG.snapshot() if ORG else None),
                 "scholars": (SCHOLARS.snapshot() if SCHOLARS else None),
+                "scholar_income": (SCHOLAR_INCOME.snapshot() if SCHOLAR_INCOME else None),
             }[name]()
         except Exception:
             continue
@@ -635,6 +642,7 @@ def remote_pull_all():
         "shop": os.path.join(DATA_DIR, "shop.json"),
         "agents": os.path.join(DATA_DIR, "agents.json"),
         "scholars": os.path.join(DATA_DIR, "scholars.json"),
+        "scholar_income": os.path.join(DATA_DIR, "scholar_income.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -676,7 +684,7 @@ def remote_pull_all():
                    "guard": GUARD, "delivery": DELIVERY, "moneyfield": MONEYFIELD, "income": INCOME,
                    "help": HELP, "autofill": AUTOFILL, "codeforge": CODEFORGE,
                    "otpassist": OTPASSIST, "shop": SHOP, "agents": ORG,
-                   "scholars": SCHOLARS}[name]
+                   "scholars": SCHOLARS, "scholar_income": SCHOLAR_INCOME}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3610,6 +3618,10 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/scholar-income/catalog":
+            self._send_json(200, {"ok": True, "products": SCHOLAR_INCOME.list_catalog() if SCHOLAR_INCOME else [],
+                                  "stats": SCHOLAR_INCOME.stats() if SCHOLAR_INCOME else {}})
+            return
         if u.path == "/api/scholars/faculty":
             self._send_json(200, SCHOLARS.faculty() if SCHOLARS else {"ok": False, "error": "unavailable"})
             return
@@ -4428,6 +4440,27 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/scholar-income/study":
+            def _research(field, desc):
+                if RESEARCH:
+                    res, _ = RESEARCH.search(field + " " + desc, 1)
+                    return {"result": "; ".join(str(r.get("title", ""))[:80] for r in res[:2])}
+                return {"result": ""}
+            res = SCHOLAR_INCOME.study_all(_research) if SCHOLAR_INCOME else {"ok": False, "error": "unavailable"}
+            # auto-list into shop
+            if res.get("ok") and SHOP:
+                for p in res.get("products", [])[:46]:
+                    try:
+                        SHOP.list_product(p["product"], p["price"], "", p["scholar"], p["category"])
+                    except Exception:
+                        pass
+                if remote_enabled():
+                    remote_push("shop", SHOP.snapshot())
+            if res.get("ok") and remote_enabled():
+                remote_push("scholar_income", SCHOLAR_INCOME.snapshot())
+            self._send_json(200, {"ok": True, "studied": res.get("studied", 0),
+                                  "potential": res.get("potential_revenue", 0)})
+            return
         if u.path == "/api/scholars/convene":
             def _research(query):
                 if RESEARCH:
