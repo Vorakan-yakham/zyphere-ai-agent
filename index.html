@@ -337,16 +337,37 @@ body.zy-admin #set .kr{display:flex!important}
 .side.hide{margin-left:-272px!important}
 @media(min-width:761px){.side.hide{margin-left:-272px!important}}
 
+
+/* === ICON RAIL — exactly the requested order, icons only === */
+.side.rail{width:62px!important;padding:14px 8px!important;align-items:center!important;overflow:visible}
+.side.rail .side-head{padding:2px 0 16px!important;justify-content:center!important;flex-direction:column;gap:10px}
+.side.rail .logo{padding:0!important;justify-content:center!important;font-size:0!important}
+.side.rail .logo .orb,.side.rail .logo svg{width:26px!important;height:26px!important}
+.side.rail #sideCollapse{width:30px!important;height:26px!important}
+.side.rail .side-nav{width:100%;align-items:center}
+.side.rail .nv{width:44px!important;height:44px!important;justify-content:center!important;
+  padding:0!important;border-radius:12px!important;margin:2px 0}
+.side.rail .nv svg{width:21px!important;height:21px!important}
+.side.rail .nv span,.side.rail .nv kbd{display:none!important}
+.side.rail .side-sec,.side.rail .side-tools,.side.rail #search,
+.side.rail .list,.side.rail #setBtn{display:none!important}
+.side.rail .side-foot{margin-top:auto;width:100%;justify-content:center;padding:10px 0 2px!important}
+.side.rail .acct{justify-content:center;width:44px!important}
+.side.rail .acct-name,.side.rail .bell{display:none!important}
+.side.rail .avatar{width:32px!important;height:32px!important}
+.side.rail.hide{margin-left:-62px!important}
+.main{margin-left:0}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
-<aside class="side" id="side">
+<aside class="side rail" id="side">
  <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
  <nav class="side-nav">
-  <button class="nv" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>แชทใหม่</span><kbd>⌘⇧O</kbd></button>
-  <button class="nv" id="searchBtn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>ค้นหา</span><kbd>⌘K</kbd></button>
-  <button class="nv" id="libBtn"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 9v11"/></svg><span>คลังความรู้</span></button>
-  <button class="nv" id="artBtn"><svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"/></svg><span>อาร์ติแฟกต์</span></button>
-  <button class="nv" id="schBtn"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>กำหนดเวลาแล้ว</span></button>
-  <button class="nv" id="vibeBtn"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg><span>Vibes / สตูดิโอ</span></button>
+  <button class="nv" id="newBtn" title="แชทใหม่"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>แชทใหม่</span><kbd>⌘⇧O</kbd></button>
+  <button class="nv" id="searchBtn" title="ค้นหา"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>ค้นหา</span><kbd>⌘K</kbd></button>
+  <button class="nv" id="libBtn" title="คลังความรู้"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 9v11"/></svg><span>คลังความรู้</span></button>
+  <button class="nv" id="artBtn" title="อาร์ติแฟกต์"><svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"/></svg><span>อาร์ติแฟกต์</span></button>
+  <button class="nv" id="schBtn" title="กำหนดเวลาแล้ว"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>กำหนดเวลาแล้ว</span></button>
+  <button class="nv" id="vibeBtn" title="Vibes / สตูดิโอ"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg><span>Vibes / สตูดิโอ</span></button>
  </nav>
  <div class="side-sec">เครื่องมือ / สร้างรายได้</div>
  <nav class="side-nav compact">
@@ -1685,7 +1706,7 @@ if(!window.__sideNavWired){
  // clicking any nav item collapses the sidebar automatically (mobile-like)
  document.querySelectorAll('.side-nav .nv, .side-foot .acct, .side-foot .bell').forEach(function(el){
   el.addEventListener('click',function(){
-   setTimeout(function(){var sd=document.getElementById('side');if(sd&&window.innerWidth<=1100)sd.classList.add('hide')},120);
+   /* rail mode: keep the icon strip visible */
   });
  });
  go('bellBtn',()=>{if(window.toast)toast('ไม่มีการแจ้งเตือนใหม่ครับ')});
