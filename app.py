@@ -287,10 +287,6 @@ try:
     DELIVERY = Delivery(os.path.join(DATA_DIR, "delivery.json"))
 except Exception:
     DELIVERY = None
-try:
-    from packbuilder import PackBuilder
-    PACKS = PackBuilder(MEDIA_DIR, os.path.join(DATA_DIR, "packs"))
-except Exception:
     PACKS = None
 try:
     from moneyfield import MoneyField
@@ -393,6 +389,12 @@ try:
 except Exception:
     GMAIL_OAUTH = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
+
+try:
+    from packbuilder import PackBuilder
+    PACKS = PackBuilder(MEDIA_DIR, os.path.join(DATA_DIR, "packs"))
+except Exception:
+    PACKS = None
 
 try:
     from codeforge import CodeForge
