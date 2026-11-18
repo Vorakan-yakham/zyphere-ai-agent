@@ -4101,8 +4101,14 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/cinema/status":
             q = urllib.parse.parse_qs(u.query)
             jid = q.get("id", [""])[0]
-            self._send_json(200, CINEMA_JOBS.get(jid) or
-                            {"ok": False, "error": "job not found"})
+            job = CINEMA_JOBS.get(jid)
+            if not job:
+                try:
+                    if remote_enabled():
+                        job = remote_get_json("cinema_job_" + jid)
+                except Exception:
+                    pass
+            self._send_json(200, job or {"ok": False, "error": "job not found"})
             return
         if u.path == "/api/conversation/status":
             try:
@@ -5621,10 +5627,20 @@ class Handler(SimpleHTTPRequestHandler):
                     import cinema_studio
                     res = cinema_studio.run(brief, secs, lang)
                     CINEMA_JOBS[jid] = {"ok": True, "done": True, "result": res}
+                    try:
+                        if remote_enabled():
+                            remote_push("cinema_job_" + jid, CINEMA_JOBS[jid])
+                    except Exception:
+                        pass
                 except Exception as e:
                     CINEMA_JOBS[jid] = {"ok": False, "done": True, "error": str(e)[:200]}
             jid = "cin_" + str(int(time.time() * 1000))
             CINEMA_JOBS[jid] = {"ok": True, "done": False, "job": jid}
+            try:
+                if remote_enabled():
+                    remote_push("cinema_job_" + jid, CINEMA_JOBS[jid])
+            except Exception:
+                pass
             threading.Thread(target=_cinema_task,
                              args=(jid, str(body.get("brief") or "Zyphere"),
                                    int(body.get("seconds") or 18),
