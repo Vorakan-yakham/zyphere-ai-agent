@@ -1,0 +1,91 @@
+{
+  "job": "cinema_71af3d2feb",
+  "brief": "สร้างเป็นคลิป",
+  "lang": "th",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "new": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/photo_03.jpg"
+  ],
+  "archive": [
+    "designed:01",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/photo_02.jpg"
+  ],
+  "cuts": [
+    {
+      "shot": 1,
+      "camera": "wide / establishing",
+      "start": 0.0,
+      "end": 3.41,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/frame_01.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/overlay_01.png",
+      "transition": "cut"
+    },
+    {
+      "shot": 2,
+      "camera": "medium / detail",
+      "start": 3.41,
+      "end": 6.55,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/frame_02.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/overlay_02.png",
+      "transition": "crossfade"
+    },
+    {
+      "shot": 3,
+      "camera": "close / conclusion",
+      "start": 6.55,
+      "end": 9.55,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/frame_03.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/overlay_03.png",
+      "transition": "crossfade"
+    }
+  ],
+  "fonts": {
+    "1": {
+      "font": "<_io.BytesIO object at 0x78b369d22480>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "2": {
+      "font": "<_io.BytesIO object at 0x78b36723b420>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "3": {
+      "font": "<_io.BytesIO object at 0x78b3672886d0>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    }
+  },
+  "credits": [
+    {
+      "source": "Wikimedia Commons",
+      "creator": "Krzysztof Popławski",
+      "license": "CC BY-SA 4.0",
+      "page": "File:8 Śląski Festiwal Nauki, MCK, Katowice,, 09.12.2024, 1234.jpg"
+    },
+    {
+      "source": "Wikimedia Commons",
+      "creator": "TechRegistrar401",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Ally Sleiman Official Professional Portrait.jpg"
+    }
+  ],
+  "status": "done",
+  "subtitles": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/subtitles.srt",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/cinema_sound.mp4",
+  "music": "/media/song_calm_1795014203.mp3",
+  "music_result": "{'ok': True, 'wav': '/media/song_calm_1795014203.wav', 'seconds': 50.4, 'style': 'calm', 'mp3': '/media/song_calm_1795014203.mp3', 'bytes': 1009937}",
+  "soundtrack": {
+    "narration": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_71af3d2feb/voice_all.mp3",
+    "music": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/song_calm_1795014203.mp3"
+  }
+}
