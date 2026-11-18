@@ -23,6 +23,7 @@ jobs:
           python - <<'PY'
           import json, traceback
           steps = [
+            ("council_briefing", "council_briefing", "run"),
             ("thai_language", "thai_language_brain", "build"),
             ("world", "knowledge_engine", "run"),
             ("solver", "world_solver", "run"),
