@@ -1,0 +1,91 @@
+{
+  "job": "cinema_02b4ffc289",
+  "brief": "สร้างวิดีโอ ทดสอบ",
+  "lang": "th",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "new": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/photo_03.jpg"
+  ],
+  "archive": [
+    "designed:01",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/photo_02.jpg"
+  ],
+  "cuts": [
+    {
+      "shot": 1,
+      "camera": "wide / establishing",
+      "start": 0.0,
+      "end": 3.84,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/frame_01.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/overlay_01.png",
+      "transition": "cut"
+    },
+    {
+      "shot": 2,
+      "camera": "medium / detail",
+      "start": 3.84,
+      "end": 6.98,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/frame_02.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/overlay_02.png",
+      "transition": "crossfade"
+    },
+    {
+      "shot": 3,
+      "camera": "close / conclusion",
+      "start": 6.98,
+      "end": 9.98,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/frame_03.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/overlay_03.png",
+      "transition": "crossfade"
+    }
+  ],
+  "fonts": {
+    "1": {
+      "font": "<_io.BytesIO object at 0x70a341930f40>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "2": {
+      "font": "<_io.BytesIO object at 0x70a33fbc4ea0>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "3": {
+      "font": "<_io.BytesIO object at 0x70a33f8ccae0>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    }
+  },
+  "credits": [
+    {
+      "source": "flickr",
+      "creator": "Groman123",
+      "license": "by-sa",
+      "page": "https://www.flickr.com/photos/85203634@N05/16087542047"
+    },
+    {
+      "source": "Wikimedia Commons",
+      "creator": "TechRegistrar401",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Ally Sleiman Official Professional Portrait.jpg"
+    }
+  ],
+  "status": "done",
+  "subtitles": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/subtitles.srt",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/cinema_sound.mp4",
+  "music": "/media/song_calm_1795011635.mp3",
+  "music_result": "{'ok': True, 'wav': '/media/song_calm_1795011635.wav', 'seconds': 50.4, 'style': 'calm', 'mp3': '/media/song_calm_1795011635.mp3', 'bytes': 1009937}",
+  "soundtrack": {
+    "narration": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_02b4ffc289/voice_all.mp3",
+    "music": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/song_calm_1795011635.mp3"
+  }
+}
