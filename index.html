@@ -276,10 +276,50 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   .top{padding:8px 12px!important}.box{border-radius:18px!important}
 }
 
+
+/* === ZYPHERE TOP BAR + LIVE STATUS === */
+.top{display:flex!important;align-items:center!important;gap:8px!important;padding:10px 20px!important;
+  border-bottom:1px solid var(--z-line)!important;background:var(--z-sf)!important;min-height:60px}
+#jvBtn{font-size:0!important;letter-spacing:0!important;border:0!important;background:transparent!important;
+  padding:8px!important;color:var(--z-acc)!important;font-weight:700!important}
+#jvBtn::before{content:"Z";font-size:15px}
+#gTop,#logoutBtn{font-size:11px!important;letter-spacing:0!important;padding:6px 11px!important;
+  border:1px solid var(--z-line)!important;border-radius:999px!important;color:var(--z-mut)!important;background:transparent!important}
+#storeBtn{width:auto!important;height:auto!important;border-radius:8px!important;padding:6px 8px!important}
+#storeBtn span{font-size:11px!important;margin-left:4px}
+.top .ib{width:34px!important;height:34px!important;border-radius:9px!important}
+.top .ib svg{width:18px!important;height:18px!important}
+.live-dot{margin-left:auto;font-size:11px;color:var(--z-mut);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.live-dot::first-letter{color:#22c55e}
+/* do not show auto briefing card in chat */
+#brief{display:none!important}
+/* API keys only for admin */
+#set .kr{display:none!important}
+body.zy-admin #set .kr{display:flex!important}
+
+
+.side-tools{display:flex;flex-direction:column;gap:2px;padding:8px 0 12px;border-bottom:1px solid var(--z-line);margin-bottom:8px}
+.st-head{font:600 10px Inter;letter-spacing:.08em;color:var(--z-mut);padding:4px 12px 8px;text-transform:uppercase}
+.side-tools .sb{font-size:13px!important;padding:9px 12px!important;color:var(--z-mut)!important;
+  text-decoration:none;border-radius:10px!important}
+.side-tools .sb:hover{background:var(--z-soft)!important;color:var(--z-acc)!important;transform:translateX(2px)}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side" id="side"><div class="logo" id="logo"></div>
 <button class="sb new" id="newBtn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>แชทใหม่</button>
-<input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off"><div class="list" id="list"></div>
+<input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off">
+<div class="side-tools" id="sideTools">
+ <div class="st-head">เครื่องมือ / สร้างรายได้</div>
+ <a class="sb tool" href="STORE.html" target="_blank" rel="noopener">🛒 ร้านค้าผลงาน</a>
+ <a class="sb tool" href="https://vorakan-yakham.github.io/zyphere-ai-agent/STORE.html" target="_blank" rel="noopener">📚 หนังสือ 46 เล่ม</a>
+ <a class="sb tool" href="GROWTH.html" target="_blank" rel="noopener">📈 โปรโมท / Growth</a>
+ <a class="sb tool" href="LEARNING.html" target="_blank" rel="noopener">🎓 เรียนรู้ 11 แผนก</a>
+ <a class="sb tool" href="GOVERNANCE.html" target="_blank" rel="noopener">🏛️ 5 Engines</a>
+ <button class="sb tool" id="sideMusic">🎵 สร้างเพลง MP3</button>
+ <button class="sb tool" id="sideVideo">🎬 สร้างวิดีโอ MP4</button>
+ <button class="sb tool" id="sideIncome">💰 รายได้ / งานวิจัย</button>
+</div>
+<div class="list" id="list"></div>
 <button class="sb" id="setBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button></aside>
 <div class="main"><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="jv" id="gTop" title="ล็อกอินด้วย Google">Google</button><button class="jv" id="logoutBtn" title="ออกจากระบบ" style="display:none">Logout</button><button class="ib" id="adminBtn" title="Admin"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></button><button class="ib" id="shopBtn" title="Pro / สนับสนุน"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg></button><button class="ib" id="storeBtn" title="ร้านค้า — ซื้อผลงาน 46 นักวิชาการ"><svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></svg><span style="font-size:10px">ร้านค้า</span></button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
@@ -1179,7 +1219,7 @@ async function showBriefing(force){
  const since=force?Math.max(0,Math.floor(Date.now()/1000)-7*86400):seen;
  try{const j=await api('/api/briefing?since='+since+'&limit='+(force?12:8));renderBrief(j,force);setK('zy_brief_seen',String(j.now||Math.floor(Date.now()/1000)))}catch(e){}
   // JARVIS auto-briefing: report Zyphere generated by itself
-  try{const jb=await api('/api/jarvis/latest');const b=(jb.briefings||[])[0];if(b){const box=document.getElementById('brief');if(box){box.style.display='block';box.innerHTML='<h4>'+b.head+'</h4><p class="bmeta">รายงานอัตโนมัติจาก Zyphere</p><div class="bitem"><p>'+b.body+'</p><p>'+b.suggestion+'</p></div>'}}}catch(e){}
+  // auto-briefing shown as a subtle status dot only — not a big card in chat
 }
 async function loadStorage(){if(!localBase())return;
  try{const j=await api('/api/storage');const r=j.remote||{};const C=j.counts||{};
@@ -1455,7 +1495,8 @@ async function applyRoles(){
  const isAdmin=role==='admin';
  const isUser=role==='user'||isAdmin;
  // keep buttons visible so users can log in; access is enforced by API token
- const sb=document.getElementById('setBtn');if(sb)sb.title=isAdmin?'ตั้งค่า (Admin)':'ตั้งค่า';
+ const sb=document.getElementById('setBtn');
+ if(sb){sb.style.display=isAdmin?'':'none';sb.title=isAdmin?'ตั้งค่า (Admin)':'เฉพาะ Admin'}
   const ab=document.getElementById('adminBtn');if(ab)ab.title=isAdmin?'Admin ✓':'Admin — ล็อกอินก่อน';
   const ao=document.getElementById('adminOnly');if(ao)ao.style.display=isAdmin?'':'none';
   const na=document.getElementById('userNoAccess');if(na)na.style.display=isAdmin?'none':'';
@@ -1585,4 +1626,8 @@ async function checkNotifs(){
 setInterval(checkNotifs,30000);
 detectBackend().then(()=>{handleOAuthHash();
 applyRoles();loadMemory();view();loadLearnInfo();loadWatch();checkNewKnowledge();showBriefing();});
+
+$('sideMusic').onclick=()=>{const t=$('q');t.value='สร้างเพลงแนว calm ความยาว 2 ท่อน แล้วให้ลิงก์ MP3';t.dispatchEvent(new Event('input'));$('sendBtn').click()};
+$('sideVideo').onclick=()=>{const t=$('q');t.value='สร้างวิดีโอ 12 วินาที หัวข้อ Zyphere AI';t.dispatchEvent(new Event('input'));$('sendBtn').click()};
+$('sideIncome').onclick=()=>{const t=$('q');t.value='สรุปช่องทางสร้างรายได้ของ Zyphere ที่ทำได้จริงตอนนี้';t.dispatchEvent(new Event('input'));$('sendBtn').click()};
 </script></body></html>
