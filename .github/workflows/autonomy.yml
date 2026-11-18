@@ -2,7 +2,7 @@ name: Zyphere Always-On Development
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,11 @@ jobs:
         run: |
           python - <<'PY'
           import json, traceback
+          import time as _t
           steps = [
+            ("ebook", "ebook_design_team", "run"),
+            ("ebook_editor", "ebook_editor_gate", "run"),
+            ("differentiation", "differentiation_lab", "run"),
             ("council_briefing", "council_briefing", "run"),
             ("thai_language", "thai_language_brain", "build"),
             ("world", "knowledge_engine", "run"),
@@ -30,7 +34,6 @@ jobs:
             ("devices", "device_bridge", "auto_product"),
             ("knowledge", "knowledge_engine", "run"),
             ("disciplines", "discipline_lab", "propose"),
-            ("books", "ebook_design_team", "run"),
             ("brain", "own_brain", "grow"),
             ("imagination", "imagination_engine", "run"),
             ("media", "media_twin_track", "run"),
@@ -62,6 +65,23 @@ jobs:
             except Exception as e:
               out[name] = {"ok": False, "error": str(e)[:160]}
               traceback.print_exc()
+          # Owner wants ~1-minute pulses. GitHub cron minimum is 5 min, so
+          # run five sub-cycles inside this job (~every 60 seconds).
+          for cycle in range(5):
+              for name, mod, fn in [("ebook", "ebook_design_team", "run"),
+                                    ("editor", "ebook_editor_gate", "run"),
+                                    ("diff", "differentiation_lab", "run")]:
+                  try:
+                      m = __import__(mod)
+                      r = getattr(m, fn)()
+                      out[name + "_pulse" + str(cycle+1)] = {
+                          "ok": bool(r.get("ok")),
+                          "fix": r.get("fix"), "keep": r.get("keep")}
+                  except Exception as e:
+                      out[name + "_pulse" + str(cycle+1)] = {"ok": False,
+                                                             "error": str(e)[:120]}
+              if cycle < 4:
+                  _t.sleep(12)
           print(json.dumps(out, ensure_ascii=False, indent=2))
           open("data/autonomy_last.json", "w", encoding="utf-8").write(
               json.dumps(out, ensure_ascii=False, indent=2))
