@@ -647,16 +647,17 @@ button:active>svg,.nv:active svg,.am:active svg,.ib:active svg{transform:scale(.
   75%{transform:translateX(2px) rotate(-2deg) scale(1.06)}
   100%{transform:translateX(2px) rotate(0deg) scale(1.06)}
 }
-.side .nv:hover svg,.side button:hover svg,.acct-menu .am:hover svg,
-.side-foot button:hover svg,.side-head button:hover svg,
-.side .hist-more:hover{animation:zyWiggle .42s ease-in-out both!important}
+.side .nv:hover svg,.side-head button:hover svg,.side .hist-more:hover{
+  animation:zyWiggle .42s ease-in-out both!important}
+/* account popup: gentle nudge only, never the wiggle */
+.acct-menu .am:hover svg{transform:translateX(3px) scale(1.08)!important}
 @keyframes zyWiggleRail{
   0%{transform:rotate(0deg) scale(1)}
   30%{transform:rotate(-6deg) scale(1.08)}
   60%{transform:rotate(5deg) scale(1.1)}
   100%{transform:rotate(0deg) scale(1.08)}
 }
-.side.rail .nv:hover svg,.side.rail button:hover svg{animation:zyWiggleRail .42s ease-in-out both!important}
+.side.rail .nv:hover svg,.side-head button:hover svg{animation:zyWiggleRail .42s ease-in-out both!important}
 
 
 /* === logo hugs the left edge (like meta.ai) and follows the cursor subtly === */
