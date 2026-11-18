@@ -1,21 +1,26 @@
-"""Zyphere Quality Operations — continuous improvement (PDCA) per department.
+"""Zyphere Quality Operations: PDCA-based excellence framework.
 
-The owner asked: how do we make every department work excellently and improve
-continuously? Answer: replace count-based KPIs with QUALITY gates, and run a
-Plan-Do-Check-Act cycle that measures, issues learning tasks, re-measures, and
-publishes the trend where the owner can see it.
+This module enforces quality gates (uniqueness, Thai-first, structure, design,
+payment, persistence, learning) via a continuous Plan-Do-Check-Act cycle.
 
-Departments are measured on what Zyphere's ensemble recommended:
-  uniqueness, Thai-first language, book structure, design discipline,
-  payment integrity, persistence, learning progress.
+Operations:
+1. Measure: Evaluate metrics against defined quality thresholds.
+2. Learn: Generate remediation tasks for non-compliant areas.
+3. Report: Persist findings to QUALITY_REPORT.md and quality_ops.json.
+4. Enforce: Block deployment/publishing if gates fail.
 
-This is REAL: every cycle writes QUALITY_REPORT.md and quality_ops.json to the
-product repo, and the store/publisher may only run when gates pass.
-"""
-import os, json, time, threading, subprocess, base64, requests
+Note: All operations are strictly read-only regarding external repo structure
+except for the mandatory generation of quality artifacts."""
+import os
+import json
+import time
+import threading
+import subprocess
+import base64
+import requests
 
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
-BASE = "https://api.github.com/repos/" + REPO + "/contents/"
+BASE = f"https://api.github.com/repos/{REPO}/contents/"
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "quality_ops.json")
 
 # department -> (quality metric key, target, learning curriculum)
