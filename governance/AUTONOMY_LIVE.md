@@ -1,10 +1,11 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-18T17:53:22.949991Z
+เวลา: 2026-11-18T17:58:00.367597Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 30 นาที)
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
+| council_briefing | {"ok": true, "summary": {}} |
 | thai_language | {"ok": true, "summary": {}} |
 | world | {"ok": true, "summary": {}} |
 | solver | {"ok": true, "summary": {}} |
@@ -17,6 +18,7 @@
 | media | {"ok": true, "summary": {"status": "both"}} |
 | nudge | {"ok": true, "summary": {"idle": []}} |
 | commerce | {"ok": true, "summary": {}} |
+| differentiation | {"ok": true, "summary": {}} |
 | qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
