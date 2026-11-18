@@ -70,6 +70,7 @@ jobs:
           # run five sub-cycles inside this job (~every 60 seconds).
           for cycle in range(5):
               for name, mod, fn in [("wish", "wish_cycle", "run"),
+                                    ("cross", "cross_ask", "run"),
                                     ("ebook", "ebook_design_team", "run"),
                                     ("editor", "ebook_editor_gate", "run"),
                                     ("diff", "differentiation_lab", "run")]:

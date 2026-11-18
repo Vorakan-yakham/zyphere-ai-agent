@@ -9,6 +9,7 @@
 | 3 | 878.15 | 86.7% |
 | 4 | 426.6 | 34.2% |
 | 5 | 426.6 | 34.2% |
+| 6 | 426.6 | 34.2% |
 
 ## ทีมเรียนรู้เพิ่มเติม
 
@@ -16,49 +17,56 @@
 
 ## ข้อเสนอของสภาฯ รอบล่าสุด
 
-**5 ข้อเสนอแนะที่ทำได้จริงด้วย Pillow (Python 3.10 + Pillow 10.x)**  
-(สมมติว่าฟังก์ชันหลักอยู่ในไฟล์ `own_image_lab.py` และ `photo_enhancement.py`)
+สวัสดีครับ ในฐานะที่ปรึกษาทีมวิศวกรภาพ ผมได้วิเคราะห์ข้อมูลรอบล่าสุดแล้ว ผลลัพธ์ที่ `sharp_after` เพิ่มขึ้นจาก 317.82 เป็น 426.6 (Gain 34.2%) และ `lab_score` พุ่งขึ้นไปที่ 100 นั้น แสดงว่าอัลกอริทึมภายในของเรามีประสิทธิภาพสูงมากในการเพิ่มรายละเอียด (Detail Enhancement) โดยไม่ต้องพึ่งพาบริการภายนอก
 
-| # | ฟังก์ชันที่ควรเพิ่ม/แก้ไข | คำอธิบาย | พารามิเตอร์ที่แนะนำ |
-|---|---------------------------|-----------|---------------------|
-| 1 | `apply_sharpening(img)` | ใช้ `ImageFilter.UnsharpMask` แทนการทำ sharp‑only ด้วย convolution ธรรมดา | `radius=2.0, percent=150, threshold=3` |
-| 2 | `enhance_contrast(img)` | เพิ่มความคมชัดโดยการปรับคอนทราสต์ก่อนทำ sharp | `ImageEnhance.Contrast(img).enhance(1.25)` |
-| 3 | `apply_high_pass(img)` | สร้าง high‑pass filter ด้วย `ImageFilter.Kernel` เพื่อให้รายละเอียดที่ละเอียดขึ้น | `kernel=[-1,-1,-1,-1,9,-1,-1,-1,-1]` (3×3) |
-| 4 | `adjust_gamma(img, gamma=0.9)` | ปรับความสว่างโดย gamma‑correction ก่อนทำ sharpening | ใช้ `img.point(lambda p: 255 * (p/255)**gamma)` |
-| 5 | `tone_mapping(img)` | ใช้ `ImageOps.equalize` หรือ `ImageOps.autocontrast` เพื่อกระจายสีให้สม่ำเสมอ | `ImageOps.equalize(img)` หรือ `ImageOps.autocontrast(img, cutoff=2)` |
+อย่างไรก็ตาม การที่คะแนน Lab Score สูงถึง 100 อาจบ่งชี้ว่าภาพมีความ "จัด" (Over-enhanced) หรือมี Noise สูงขึ้นตามไปด้วย ซึ่งอาจส่งผลต่อความสวยงามตามธรรมชาติ (Naturalness) ในบางกรณี
 
----
+เพื่อให้ระบบมีความเสถียรและรองรับภาพที่มีความซับซ้อนมากขึ้น ผมขอเสนอ 5 การปรับปรุงโค้ดที่ทำได้จริงด้วย **Pillow** โดยเจาะจงฟังก์ชันและพารามิเตอร์ ดังนี้:
 
-### คำแนะนำการนำไปใช้
+### 1. ปรับปรุงการ Sharpening แบบ Selective ใน `photo_enhancement.py`
+**ปัญหา:** การใช้ `ImageFilter.UnsharpMask` ทั่วไปอาจทำให้ Noise ในพื้นที่เรียบ (เช่น ฟ้าหรือผนัง) ถูกขยายตามไปด้วย
+**แนวทาง:** ใช้ `UnsharpMask` ร่วมกับพารามิเตอร์ที่ละเอียดขึ้น และพิจารณาใช้ `ImageEnhance.Sharpness` สำหรับภาพที่มีความละเอียดต่ำ
+**โค้ดตัวอย่าง:**
+```python
+from PIL import Image, ImageFilter, ImageEnhance
 
-1. **เรียกใช้ `enhance_contrast` ก่อน**  
-   ```python
-   img = enhance_contrast(img)          # 1.25× contrast
-   ```
+def enhance_sharpness(image, radius=2, percent=150, threshold=3):
+    # radius: ความกว้างของขอบที่เน้น (2-4 เหมาะกับภาพมือถือ)
+    # percent: ความแรงของการ sharpen (100-200)
+    # threshold: ค่าความต่างขั้นต่ำที่จะถูก sharpen (ลด noise ได้)
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # ใช้ UnsharpMask แทน Sharpness filter ธรรมดา เพราะควบคุมได้ดีกว่า
+    enhanced = image.filter(ImageFilter.UnsharpMask(radius=radius, percent=percent, threshold=threshold))
+    return enhanced
+```
+**เหตุผล:** การตั้งค่า `threshold` ช่วยป้องกันไม่ให้พื้นที่ที่มีความต่างของสีน้อย (flat areas) ถูก sharpen ซึ่งลด Noise ได้ดี
 
-2. **ทำ high‑pass ก่อน**  
-   ```python
-   img = apply_high_pass(img)           # เพิ่ม edge detail
-   ```
+### 2. ปรับสมดุลสีแบบ Local Contrast ใน `own_image_lab.py`
+**ปัญหา:** ภาพที่ Sharpen มากอาจทำให้สีดูแข็ง (Harsh) หรือขาดความลึก
+**แนวทาง:** ใช้ `ImageEnhance.Color` และ `ImageEnhance.Contrast` แบบปรับตามค่าเฉลี่ยของภาพ (Adaptive)
+**โค้ดตัวอย่าง:**
+```python
+from PIL import ImageEnhance
+import numpy as np
 
-3. **ปรับ gamma**  
-   ```python
-   img = adjust_gamma(img, gamma=0.9)   # ทำให้ dark‑areas ไม่ “black‑out”
-   ```
-
-4. **ทำ sharpening**  
-   ```python
-   img = apply_sharpening(img)          # UnsharpMask 150% sharpness
-   ```
-
-5. **ทำ tone‑mapping**  
-   ```python
-   img = tone_mapping(img)              # equalize color distribution
-   ```
-
-> **สรุป**  
-> การผสมผสาน 5 ขั้นตอนข้างต้น (contrast → high‑pass → gamma → sharpen → tone‑mapping) จะช่วยเพิ่มความคมชัดและความสมดุลของสีโดยไม่ต้องพึ่งพา API ภายนอก และทำให้ `sharp_after` สูงขึ้นอีกประมาณ 10–15 % พร้อมทั้งรักษา `lab_score` ไว้ที่ 100 หรือสูงกว่าได้อย่างมั่นคง.
+def adaptive_color_balance(image):
+    # แปลงเป็น numpy เพื่อคำนวณค่าเฉลี่ยสี
+    arr = np.array(image)
+    mean_brightness = arr.mean()
+    
+    # ปรับ Contrast และ Color ตามความสว่าง
+    contrast_enhancer = ImageEnhance.Contrast(image)
+    color_enhancer = ImageEnhance.Color(image)
+    
+    # ถ้าภาพมืด (mean < 100) เพิ่ม Contrast น้อยลง เพื่อไม่ให้ดำสนิท
+    # ถ้าภาพสว่าง (mean > 180) เพิ่ม Color น้อยลง เพื่อไม่ให้สีจัดเกินไป
+    if mean_brightness < 100:
+        contrast_factor = 1.1
+        color_factor = 1.05
+  
 
 ## รายงาน self-coder
 
-{"ok": "False", "file": "photo_enhancement.py", "reason": "push failed, reverted: .\nhint: Fix them up in the work tree, and then use 'git add/rm <file>'\nhint: as appropriate to mark resolution and make ", "t": "1795043546", "sources": "['local-brain', 'own-brain']", "focus": "photo_enhancement.py"}
+{"ok": "True", "file": "photo_enhancement.py", "reason": "pushed: local-brain", "t": "1795043706", "sources": "['local-brain', 'own-brain']", "focus": "photo_enhancement.py"}

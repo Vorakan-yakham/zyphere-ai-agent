@@ -111,9 +111,14 @@ def run(apply=True):
         w["answer"] = ("จากผลรอบ %d: %s → งานต่อคือ %s (หลักฐาน: %s)" % (
             rnd, json.dumps(after, ensure_ascii=False)[:120], w["want"],
             json.dumps(rec_ev(w["want"], after), ensure_ascii=False)[:140]))
+    try:
+        import cross_ask
+        cross = cross_ask.run(apply=apply)
+    except Exception as e:
+        cross = {"count": 0, "error": str(e)[:100]}
     rec = {"round": rnd, "t": int(time.time()), "before": before,
            "wishes": wishes, "done": done, "after": after,
-           "next_wishes": next_wishes,
+           "next_wishes": next_wishes, "cross_ask_pairs": cross.get("count"),
            "improved": {k: {"before": before.get(k), "after": after.get(k)}
                         for k in after if before.get(k) != after.get(k)}}
     hist.append(rec)
@@ -135,7 +140,10 @@ def run(apply=True):
         for w in next_wishes:
             md += ["### %s ถาม: %s" % (w["dept"], w["want"]),
                    "- Zyphere ตอบ: " + w["answer"], ""]
-        md += ["", "รอบถัดไปจะถามอีกหลังงานเสร็จ — วนไม่หยุด", ""]
+        md += ["", "## ทุกฝ่ายถามกันเอง (หลังงานเสร็จทุกครั้ง)", "",
+               "- จำนวนคู่ถาม: %s" % rec.get("cross_ask_pairs"),
+               "- ดูบทสนทนา: governance/CROSS_ASK.md", "",
+               "รอบถัดไปจะถามอีกหลังงานเสร็จ — วนไม่หยุด", ""]
         open(OUT, "w", encoding="utf-8").write("\n".join(md))
     return rec
 
