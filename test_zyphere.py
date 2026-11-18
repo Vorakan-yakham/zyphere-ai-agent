@@ -71,9 +71,9 @@ def main():
         # CI has no owner key file — skip key assertion instead of failing deploy.
         if k:
             assert "groq" in k and k["groq"].startswith("gsk_"), "Groq key malformed"
+            assert len([x for x in k if k[x]]) >= 3, "expected 3+ provider keys from file"
         else:
             print("SKIP key check: no local key file (expected in CI)")
-        assert len([x for x in k if k[x]]) >= 3, "expected 3+ provider keys from file"
         from dev_brain import DevBrain
         db = DevBrain(os.path.join(tempfile.gettempdir(), "zy_devbrain_test.json"))
         db.experience("ผมชื่อไซเฟอร์", "user")
