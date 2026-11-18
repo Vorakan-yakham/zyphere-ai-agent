@@ -1509,7 +1509,7 @@ async function send(voice){
        try{
         const r=await fetch('https://raw.githubusercontent.com/Vorakan-yakham/zyphere-ai-agent/main/data/cinema_latest.json?x='+Date.now());
         const j=await r.json();
-        if(j&&j.ok&&j.t>msg._ght&&j.urls&&j.urls.video){
+        if(j&&j.ok&&j.job&&j.job!==msg._lastjob&&j.urls&&j.urls.video){msg._lastjob=j.job;
          msg.vid='https://raw.githubusercontent.com/Vorakan-yakham/zyphere-ai-agent/main/'+j.urls.video.replace(/^\//,'')+'?x='+Date.now();
          msg.c='สร้างวิดีโอให้แล้วครับ — พร้อมเสียงและซับไตเติล';delete msg._ght;save();view();speak('สร้างวิดีโอให้แล้วครับ','th')
         }else pollGH()
