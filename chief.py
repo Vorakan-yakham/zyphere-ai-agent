@@ -80,8 +80,11 @@ class Chief:
                 actions.append({"do": "enroll_academy", "why": g, "priority": 2})
             elif "ลงแพลตฟอร์ม" in g:
                 actions.append({"do": "launch_marketplace", "why": g, "priority": 3})
-        if not actions:
-            actions = [{"do": "research_more", "why": "ทุกอย่างครบ — ขยายความรู้/หาตลาดเพิ่ม", "priority": 4}]
+        # หัวหน้าต้องจี้ให้ทุกแผนกพัฒนาตนเองอยู่เสมอ ไม่ใช่รอของขาดเท่านั้น
+        actions.append({"do": "self_improve", "why": "กระตุ้นทุกแผนกให้เรียนรู้และวัดผลก่อน/หลังต่อเนื่อง",
+                        "priority": 4})
+        if not [a for a in actions if a["do"] != "self_improve"]:
+            actions.append({"do": "research_more", "why": "ทุกอย่างครบ — ขยายความรู้/หาตลาดเพิ่ม", "priority": 5})
         actions.sort(key=lambda x: x["priority"])
         return {"ok": True, "next": actions[0], "plan": actions, "gaps": obs["gaps"]}
 

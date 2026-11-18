@@ -2918,7 +2918,15 @@ def learn_scheduler():
                       "launches": LAUNCHPAD.stats().get("kits", 0) if LAUNCHPAD else 0,
                       "orders": SHOP.stats().get("orders", 0) if SHOP else 0,
                       "remote": remote_enabled()}
-                CHIEF.run_cycle(st, None)  # decide + record, no heavy dispatch here
+                # หัวหน้าจี้ทุกแผนกพัฒนาตนเองทุกครั้งที่ tick (light cycle)
+                def _chief_auto_dispatch(action, state):
+                    if action == "self_improve" and SI:
+                        r = SI.cycle()
+                        return {"ok": True, "departments": r.get("departments"),
+                                "improved": sum(1 for x in r.get("results", [])
+                                                if x.get("improved"))}
+                    return {"ok": True, "note": "decided: " + str(action)}
+                CHIEF.run_cycle(st, _chief_auto_dispatch)
                 if remote_enabled():
                     remote_push("chief", CHIEF.snapshot())
             except Exception:
@@ -5070,6 +5078,12 @@ class Handler(SimpleHTTPRequestHandler):
                     return ACADEMY.enroll(SCHOLAR_INCOME.list_catalog(), LAUNCHPAD)
                 if action == "launch_marketplace" and LAUNCHPAD and SCHOLAR_INCOME:
                     return LAUNCHPAD.scholar_launch(SCHOLAR_INCOME.list_catalog()[:46], OTPASSIST)
+                if action == "self_improve" and SI:
+                    r = SI.cycle()
+                    return {"ok": True, "departments": r.get("departments"),
+                            "improved": sum(1 for x in r.get("results", []) if x.get("improved"))}
+                if action == "research_more":
+                    return {"ok": True, "note": "หัวหน้าสั่งขยายความรู้ — ผ่าน self_improve แล้ว"}
                 return {"ok": False, "error": "no handler"}
             res = CHIEF.run_cycle(st, _dispatch) if CHIEF else {"ok": False, "error": "unavailable"}
             if CHIEF and remote_enabled():
