@@ -4051,10 +4051,10 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/auto-grow/status":
             try:
                 import auto_grow as _AG
-                _ag = json.load(open(os.path.join(_AG.ROOT, "data", "auto_grow.json"),
-                                     encoding="utf-8"))
-            except Exception:
-                _ag = {"ok": False, "error": "no scan yet"}
+                _gaps, _refs, _tpl = _AG.scan()
+                _ag = {"ok": True, "gaps": _gaps, "real_urls": len(_refs)}
+            except Exception as e:
+                _ag = {"ok": False, "error": str(e)[:120]}
             self._send_json(200, _ag)
             return
         if u.path == "/api/chief/identity":
