@@ -471,30 +471,49 @@ body{--meta-w:68px}
 .side.hide{margin-left:calc(-1 * var(--meta-w))!important;opacity:0;pointer-events:none}
 .side.expanded.hide{margin-left:-272px!important}
 
+
+.side .side-head{padding:2px 4px 16px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important}
+.side .logo{font-size:19px!important;font-weight:600!important;padding:0!important}
+.side .logo span{display:inline!important;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+.side .side-nav{gap:2px!important}
+.side .nv{height:auto!important;min-height:0!important;padding:10px 12px!important;display:flex!important;justify-content:flex-start!important;gap:12px!important;width:100%!important}
+.side .nv svg{width:19px!important;height:19px!important;stroke:#202124!important}
+.side .nv span{display:inline!important;font-size:14px!important;color:#202124!important}
+.side .nv kbd{display:inline!important;font:11px Inter!important;color:#9aa0a6!important;border:0!important;background:transparent!important;padding:0!important;margin-left:auto!important}
+.side .side-sec{display:block!important;font:500 12px Inter!important;color:#5f6368!important;padding:18px 12px 8px!important;text-transform:none!important;letter-spacing:0!important}
+.side .hist-list{display:flex!important;flex-direction:column!important}
+.side .hist{border:0;background:transparent;text-align:left;padding:9px 12px;border-radius:9px;font-size:14px;color:#202124;cursor:pointer;width:100%}
+.side .hist:hover{background:#f1f3f4}
+.side .side-foot{padding:10px 4px 4px!important;border-top:1px solid #e8eaed!important}
+.side .acct-name{display:inline!important;font-size:13px!important;color:#202124!important}
+.side .bell{display:grid!important;place-items:center!important;width:32px;height:32px;border-radius:50%;background:#f1f3f4;color:#5f6368}
+.side .avatar{background:#3c4043!important}
+.side.rail .nv span,.side.rail .nv kbd,.side.rail .hist-list,.side.rail .side-sec,.side.rail .acct-name,.side.rail .bell{display:none!important}
+.side.rail .nv{width:44px!important;height:44px!important;justify-content:center!important;padding:0!important}
+.side.rail .nv svg{width:20px!important;height:20px!important}
+.side.rail .side-head{justify-content:center!important}
+.side.rail #sideCollapse{display:none!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
- <div class="side-head"><div class="logo" id="logo"></div><button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
+ <div class="side-head"><div class="logo" id="logo"></div>
+  <button id="sideCollapse" title="ยุบเมนู"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg></button></div>
  <nav class="side-nav">
-  <button class="nv" id="newBtn" title="แชทใหม่"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>แชทใหม่</span><kbd>⌘⇧O</kbd></button>
-  <button class="nv" id="searchBtn" title="ค้นหา"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>ค้นหา</span><kbd>⌘K</kbd></button>
-  <button class="nv" id="libBtn" title="คลังความรู้"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 9v11"/></svg><span>คลังความรู้</span></button>
-  <button class="nv" id="artBtn" title="อาร์ติแฟกต์"><svg viewBox="0 0 24 24"><path d="M12 3l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z"/></svg><span>อาร์ติแฟกต์</span></button>
+  <button class="nv" id="newBtn" title="แชทใหม่"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>แชทใหม่</span><kbd>Ctrl+Shift+O</kbd></button>
+  <button class="nv" id="searchBtn" title="ค้นหา"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>ค้นหา</span><kbd>Ctrl+K</kbd></button>
+  <button class="nv" id="libBtn" title="สื่อ"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6M8 9h.01"/></svg><span>สื่อ</span></button>
+  <button class="nv" id="artBtn" title="อาร์ติแฟกต์"><svg viewBox="0 0 24 24"><path d="M12 3l4 7 7 1-5 5 1 7-7-4-7 4 1-7-5-5 7-1z"/></svg><span>อาร์ติแฟกต์</span></button>
   <button class="nv" id="schBtn" title="กำหนดเวลาแล้ว"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>กำหนดเวลาแล้ว</span></button>
-  <button class="nv" id="vibeBtn" title="Vibes / สตูดิโอ"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg><span>Vibes / สตูดิโอ</span></button>
- </nav>
- <div class="side-sec">เครื่องมือ / สร้างรายได้</div>
- <nav class="side-nav compact">
-  <a class="nv" href="STORE.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 12H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg><span>ร้านค้าผลงาน</span></a>
-  <a class="nv" href="GROWTH.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 18l6-6 4 4 6-8M16 8h4v4"/></svg><span>โปรโมท / Growth</span></a>
-  <a class="nv" href="LEARNING.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4zM7 10v5c0 2 5 4 10 0v-5"/></svg><span>เรียนรู้ 11 แผนก</span></a>
-  <a class="nv" href="GOVERNANCE.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v6c0 5-3 8-8 9-5-1-8-4-8-9V7z"/></svg><span>Governance</span></a>
-  <button class="nv" id="sideMusic"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12M9 9l10-2"/></svg><span>สร้างเพลง</span></button>
-  <button class="nv" id="sideVideo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg><span>สร้างวิดีโอ</span></button>
+  <button class="nv" id="vibeBtn" title="Vibes"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg><span>Vibes</span></button>
  </nav>
  <div class="side-sec">ประวัติ</div>
- <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off">
- <div class="list" id="list"></div>
- <div class="side-foot"><button class="acct" id="acctBtn"><span class="avatar">VY</span><span class="acct-name" id="acctName">vorakan_yakham</span></button><button class="bell" id="bellBtn" title="แจ้งเตือน"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div>
+ <div class="hist-list" id="histList">
+  <button class="hist" id="hist1">สร้าง AI พรีเซ็นต์ผลงาน</button>
+  <button class="hist" id="hist2">SEO สำหรับหน้าเว็บจากหมวดหมู่</button>
+ </div>
+ <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off" style="display:none">
+ <div class="list" id="list" style="display:none"></div>
+ <div class="side-foot"><button class="acct" id="acctBtn"><span class="avatar">VY</span><span class="acct-name">vorakan_yakham</span></button><button class="bell" id="bellBtn" title="แจ้งเตือน"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div>
  <button class="sb" id="setBtn" style="display:none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14.2 3h-4l-.4 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2.4l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.4 2.7h4l.4-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>ตั้งค่า</button>
 </aside>
 <div class="main"><button class="reopen-rail" id="reopenRail" title="เปิดเมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -1832,5 +1851,13 @@ if(!window.__sideNavWired){
  });
  go('bellBtn',()=>{if(window.toast)toast('ไม่มีการแจ้งเตือนใหม่ครับ')});
  go('acctBtn',()=>{const e=document.getElementById('admin');if(e){e.style.display='flex';if(window.autoOtp)window.autoOtp()}});
+}
+
+if(!window.__histWired){
+ window.__histWired=true;
+ const hs=(id,msg)=>{const e=document.getElementById(id);if(e)e.onclick=()=>{const q=$('q');if(q){q.value=msg;q.dispatchEvent(new Event('input'));$('sendBtn').click()}}};
+ hs('hist1','สร้าง AI พรีเซ็นต์ผลงานของ Zyphere');
+ hs('hist2','ทำ SEO สำหรับหน้าเว็บจากหมวดหมู่ความรู้');
+ const ll=document.getElementById('list');if(ll&&ll.children.length){ll.style.display='flex';const se=document.getElementById('search');if(se)se.style.display='block'}
 }
 </script></body></html>
