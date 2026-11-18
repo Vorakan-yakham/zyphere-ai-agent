@@ -333,6 +333,12 @@ def main():
         "- เพิ่ม CI test gate + authz enforcement ทีละกลุ่ม",
     ])
 
+    try:
+        from it_org import IT
+        w("22_IT_ORGANIZATION", IT.report().split("\n"))
+    except Exception as e:
+        w("22_IT_ORGANIZATION", ["# IT Organization", "", "unavailable: " + str(e)[:100]])
+
     w("21_MASTER_REGISTRY", [
         "# Zyphere Global Department & Knowledge Master Registry", "",
         "ทะเบียนกลาง: ศาสตร์ → สาขา → ฝ่าย → แผนก → ผู้เชี่ยวชาญ → หลักสูตร → งานวิจัย → ช่องว่าง", "",

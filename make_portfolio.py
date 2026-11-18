@@ -1,6 +1,6 @@
 """Create a real freelance portfolio pack Zyphere can produce for the owner."""
 import os, zipfile
-BASE = r"C:\Users\vornl\Downloads\zyphere_portfolio"
+BASE = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Downloads", "zyphere_portfolio")
 os.makedirs(BASE, exist_ok=True)
 
 files = {

@@ -213,7 +213,7 @@ function esc(s){{return String(s||'').replace(/[&<>]/g,c=>({{'&':'&amp;','<':'&l
 
 def main():
     doc = build()
-    local = r"C:\Users\vornl\Documents\zyphere\STORE.html"
+    local = os.path.join(os.path.dirname(os.path.abspath(__file__)), "STORE.html")
     open(local, "w", encoding="utf-8").write(doc)
     ok, code = push_site("STORE.html", doc)
     print("published", ok, code, "bytes", len(doc))

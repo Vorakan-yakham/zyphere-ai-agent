@@ -443,6 +443,10 @@ try:
 except Exception:
     CD = None
 try:
+    from it_org import IT
+except Exception:
+    IT = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3928,6 +3932,10 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/it/org":
+            self._send_json(200, IT.list() if IT
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/creative/status":
             self._send_json(200, CD.status() if CD

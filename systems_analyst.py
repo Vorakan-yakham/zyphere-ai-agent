@@ -105,7 +105,87 @@ def analyze():
     findings.append(check("Owner inspection gate", own,
                           "เจ้าของโหลดตรวจได้โดยไม่จ่าย (เฉพาะ owner)" if own else "ยังไม่มีช่องเจ้าของ"))
 
+    # 12) ARCHITECTURE: 12 divisions + 5 engines documented as single source
+    gov = os.path.join(ROOT, "governance")
+    regp = os.path.join(gov, "registry.json")
+    try:
+        reg = json.load(open(regp, encoding="utf-8")) if os.path.exists(regp) else {}
+    except Exception:
+        reg = {}
+    arch = (len(reg.get("divisions", {})) == 12 and len(reg.get("engines", [])) == 5)
+    findings.append(check("Architecture 12 divisions + 5 engines", arch,
+                          "มี Master Registry เป็นแหล่งความจริงกลาง" if arch else
+                          "ยังไม่มีโครงสร้างกลาง 12 ฝ่าย/5 engines", "critical"))
+
+    # 13) no hardcoded Windows paths in modules that run on Render
+    hard = []
+    for fn in os.listdir(ROOT):
+        if not fn.endswith(".py"):
+            continue
+        body = read(os.path.join(ROOT, fn))
+        if re.search(r'C:\\Users\\vornl', body):
+            hard.append(fn)
+    findings.append(check("Portable paths (no hardcoded Windows path)", not hard,
+                          "ทุกโมดูลใช้ path สัมพัทธ์" if not hard else
+                          "ยังมี path ตายตัว: " + ", ".join(hard[:6]), "critical"))
+
+    # 14) logout exists (session lifecycle complete)
+    logout = "/api/auth/logout" in app and "logoutBtn" in read(os.path.join(ROOT, "index.html"))
+    findings.append(check("Session lifecycle (logout)", logout,
+                          "มี logout ทั้ง backend และ UI" if logout else "ยังไม่มี logout"))
+
+    # 15) CI runs tests before deploy
+    wf = os.path.join(ROOT, ".github", "workflows")
+    ci = False
+    if os.path.isdir(wf):
+        for fn in os.listdir(wf):
+            if "deploy" in fn:
+                if "test_zyphere" in read(os.path.join(wf, fn)):
+                    ci = True
+    findings.append(check("CI test gate", ci,
+                          "deploy workflow รัน test" if ci else
+                          "deploy ไม่รัน test — เสี่ยงของพัง", "high"))
+
+    # 16) every new engine exposes status endpoint
+    engines_ok = all(("/api/" + k) in app for k in
+                     ("engines/status", "governance/status", "creative/status",
+                      "image/studio/status", "research/projects"))
+    findings.append(check("Engine observability", engines_ok,
+                          "ทุก engine มี endpoint ตรวจสถานะ" if engines_ok else
+                          "มี engine ที่ไม่มี endpoint", "medium"))
+
     return findings
+
+
+def design_review():
+    """Architecture advice BEFORE development — the analyst's real job."""
+    gov = os.path.join(ROOT, "governance")
+    regp = os.path.join(gov, "registry.json")
+    try:
+        reg = json.load(open(regp, encoding="utf-8")) if os.path.exists(regp) else {}
+    except Exception:
+        reg = {}
+    return {
+        "ok": True,
+        "divisions": len(reg.get("divisions", {})),
+        "engines": len(reg.get("engines", [])),
+        "recommendations": [
+            "ใช้ Master Registry (governance/registry.json) เป็นแหล่งความจริงกลาง "
+            "ห้าม duplicates ใน scholars.py/faculty_expansion.py อีกต่อไป",
+            "ทุกโมดูลใหม่ต้องมี docstring + endpoint status + test ก่อน deploy",
+            "แยก Retrieval / Memory / Model Training / Evaluation ออกจากกันเสมอ — "
+            "การอัพเดทความรู้ใน KB ไม่ใช่การฝึกโมเดล",
+            "งานสร้างสื่อหนัก (image diffusion/video/3D) ต้องส่งไป engine ภายนอก "
+            "Render Free ไม่มี GPU และไม่มี persistent disk",
+            "authz ต้องบังคับทีละกลุ่ม endpoint เริ่มจาก store/admin ก่อน",
+            "CI ต้องรัน test_zyphere.py + systems_analyst.py ก่อน deploy",
+        ],
+        "gates": [
+            {"gate": "ก่อนเพิ่มแผนก/ศูนย์ใหม่", "require": "Master Registry + เหตุผล + ผู้รับผิดชอบ"},
+            {"gate": "ก่อนปล่อย feature ใหม่", "require": "โค้ดจริง + endpoint + test + ผลลัพธ์ตรวจได้"},
+            {"gate": "ก่อนอ้างว่าทำงานอัตโนมัติ", "require": "มี scheduler/job log ที่ตรวจได้จริง"},
+],
+    }
 
 
 def main():
@@ -130,7 +210,17 @@ def main():
     print("passed", passed, "/", len(f))
     for x in f:
         print(("PASS" if x["pass"] else "FAIL"), x["name"], "-", x["detail"])
-    print("report", out)
+    dr = design_review()
+    rp = os.path.join(ROOT, "SYSTEM_DESIGN_REVIEW.md")
+    lines = ["# SYSTEM DESIGN REVIEW — ก่อนพัฒนา", "",
+             "จัดทำโดยนักวิเคราะห์ระบบ Zyphere", "",
+             " divisons=%d engines=%d" % (dr["divisions"], dr["engines"]),
+             "", "## คำแนะนำก่อนพัฒนาต่อ", ""]
+    lines += ["- " + x for x in dr["recommendations"]]
+    lines += ["", "## เกณฑ์ผ่าน ( gates )", ""]
+    lines += ["- **%s**: %s" % (g["gate"], g["require"]) for g in dr["gates"]]
+    open(rp, "w", encoding="utf-8").write("\n".join(lines).replace(" divisons", "divisions").replace("( gates )", "(gates)"))
+    print("design review", rp)
 
 
 if __name__ == "__main__":

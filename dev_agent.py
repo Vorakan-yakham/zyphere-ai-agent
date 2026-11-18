@@ -13,7 +13,8 @@ LOG = os.path.join(ROOT, "data", "dev_agent.log")
 KEY = os.environ.get("GROQ_API_KEY", "").strip()
 if not KEY:
     try:
-        KEY = open(r"C:\Users\vornl\Documents\API-Zyphere.txt", encoding="utf-8").read().splitlines()[1].strip()
+        KEYFILE = os.environ.get("API_ZYPHERE_FILE", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "API-Zyphere.txt"))
+        KEY = open(KEYFILE, encoding="utf-8").read().splitlines()[1].strip() if os.path.exists(KEYFILE) else ""
     except Exception:
         KEY = ""
 

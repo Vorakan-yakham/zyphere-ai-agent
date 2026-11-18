@@ -2,10 +2,11 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import math, os
 
 W, H = 1080, 1920
-D = r"C:\Users\vornl\Documents\zyphere\Downloads_zyphere_intro"
+BASE = os.path.dirname(os.path.abspath(__file__))
+D = os.path.join(BASE, "media", "intro")
 os.makedirs(D, exist_ok=True)
-FB = r"C:\Users\vornl\Documents\zyphere\fonts\NotoSansThai-Bold.ttf"
-FR = r"C:\Users\vornl\Documents\zyphere\fonts\NotoSansThai-Regular.ttf"
+FB = os.path.join(BASE, "fonts", "NotoSansThai-Bold.ttf")
+FR = os.path.join(BASE, "fonts", "NotoSansThai-Regular.ttf")
 LB = r"C:\Windows\Fonts\segoeuib.ttf"
 LR = r"C:\Windows\Fonts\segoeui.ttf"
 

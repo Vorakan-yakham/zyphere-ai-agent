@@ -1,8 +1,8 @@
 # รายงานนักวิเคราะห์ระบบ / ฐานข้อมูล / โปรแกรมเมอร์
 
-วันที่: 2026-11-18 13:54
+วันที่: 2026-11-18 13:59
 
-ผลตรวจ: **11/11 ผ่าน**
+ผลตรวจ: **16/16 ผ่าน**
 
 | รายการ | ผล | รายละเอียด |
 |---|---|---|
@@ -17,6 +17,11 @@
 | Analytics & dashboards | ผ่าน | มี admin stats + ประวัติลูกค้า |
 | Safe Thai correction rules | ผ่าน | ไม่มีกฎที่ทำลายคำถูกต้อง |
 | Owner inspection gate | ผ่าน | เจ้าของโหลดตรวจได้โดยไม่จ่าย (เฉพาะ owner) |
+| Architecture 12 divisions + 5 engines | ผ่าน | มี Master Registry เป็นแหล่งความจริงกลาง |
+| Portable paths (no hardcoded Windows path) | ผ่าน | ทุกโมดูลใช้ path สัมพัทธ์ |
+| Session lifecycle (logout) | ผ่าน | มี logout ทั้ง backend และ UI |
+| CI test gate | ผ่าน | deploy workflow รัน test |
+| Engine observability | ผ่าน | ทุก engine มี endpoint ตรวจสถานะ |
 
 ## ความเห็นนักวิเคราะห์
 

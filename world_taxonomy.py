@@ -10,7 +10,7 @@ what exists globally, not a claim that Zyphere masters all of it.
 """
 import os, re, json, time, requests, subprocess, base64
 
-SRC = r"C:\Users\vornl\.local\share\opencode\tool-output\tool_1ece63d1c001z0YDwa5jTtuSlM"
+SRC = os.environ.get("WORLD_TAXONOMY_SRC", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "wikipedia_disciplines.txt"))
 REPO = "Vorakan-yakham/zyphere-scholar-product-pack"
 BASE = "https://api.github.com/repos/" + REPO + "/contents/"
 

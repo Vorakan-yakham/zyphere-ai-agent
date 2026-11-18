@@ -3,7 +3,7 @@ import os, smtplib, ssl, re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-KEYFILE = r"C:\Users\vornl\Documents\API-Zyphere.txt"
+KEYFILE = os.environ.get("API_ZYPHERE_FILE", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "API-Zyphere.txt"))
 
 def get_mail_creds():
     sender = os.environ.get("MAIL_USER", "")

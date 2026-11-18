@@ -1,14 +1,14 @@
 """Create a sellable digital-product package from Zyphere's generated assets."""
 import os, json, shutil, zipfile
 
-BASE = r"C:\Users\vornl\Documents\zyphere"
-OUT = r"C:\Users\vornl\Downloads\zyphere_product_pack"
+BASE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Downloads", "zyphere_product_pack")
 os.makedirs(OUT, exist_ok=True)
 
 items = [
-    (r"C:\Users\vornl\Downloads\zyphere_promo.mp4", "zyphere_promo.mp4"),
-    (r"C:\Users\vornl\Downloads\zyphere_intro.png", "zyphere_intro.png"),
-    (r"C:\Users\vornl\Downloads\zyphere_chud_khai.txt", "chud_khai.txt"),
+    (os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Downloads", "zyphere_promo.mp4"), "zyphere_promo.mp4"),
+    (os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Downloads", "zyphere_intro.png"), "zyphere_intro.png"),
+    (os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), "Downloads", "zyphere_chud_khai.txt"), "chud_khai.txt"),
 ]
 for src, name in items:
     if os.path.exists(src):
