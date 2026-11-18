@@ -1877,6 +1877,21 @@ def admin_token_ok(supplied):
     return s == expected
 
 
+def store_admin_ok(supplied):
+    """STRICT admin gate for store approvals — never fail-open.
+
+    Payment approval must require a real token. Other legacy endpoints keep
+    the permissive helper for internal sync compatibility.
+    """
+    expected = os.environ.get("BACKUP_TOKEN", "").strip()
+    s = str(supplied or "")
+    if not s:
+        return False
+    if s == ADMIN_PW_HASH[:16]:
+        return True
+    return bool(expected) and s == expected
+
+
 # ----------------------------------------------------------------------------
 # learning history + automatic local snapshots
 # ----------------------------------------------------------------------------
@@ -3866,11 +3881,28 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/store/orders":
             # ADMIN only: list orders / pending verification queue
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            if not admin_token_ok(tok):
+            if not store_admin_ok(tok):
                 self._send_json(403, {"ok": False, "error": "forbidden"})
                 return
             self._send_json(200, {"ok": True, "orders": STORE.all_orders() if STORE else [],
                                   "pending": STORE.pending() if STORE else []})
+            return
+        if u.path == "/api/store/me":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            self._send_json(200, {"ok": bool(me), "me": me} if me else
+                            {"ok": False, "error": "not logged in"})
+            return
+        if u.path == "/api/store/my-orders":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            em = me.get("email", "")
+            orders = [o for o in (STORE.all_orders() if STORE else [])
+                      if o.get("email") == em or o.get("buyer") == em]
+            self._send_json(200, {"ok": True, "orders": orders})
             return
         if u.path == "/api/scholars/faculty":
             self._send_json(200, SCHOLARS.faculty() if SCHOLARS else {"ok": False, "error": "unavailable"})
@@ -4205,13 +4237,19 @@ class Handler(SimpleHTTPRequestHandler):
             if not GOOGLE_ENABLED:
                 self._send_json(400, {"ok": False, "error": "Google login not configured"})
                 return
+            # Carry an optional "next" return URL inside the OAuth state so a
+            # customer signing in from the store returns to the store after consent.
+            nxt = urllib.parse.parse_qs(u.query).get("next", [""])[0]
+            import base64 as _b64s
+            state_obj = {"r": secrets.token_urlsafe(12), "n": nxt[:300]}
+            state = _b64s.urlsafe_b64encode(json.dumps(state_obj).encode()).decode().rstrip("=")
             params = urllib.parse.urlencode({
                 "client_id": GOOGLE_CLIENT_ID,
                 "redirect_uri": GOOGLE_REDIRECT_URI,
                 "response_type": "code",
                 "scope": "openid email profile",
                 "access_type": "online",
-                "state": secrets.token_urlsafe(16),
+                "state": state,
                 "prompt": "select_account",
             })
             self.send_response(302)
@@ -4270,10 +4308,25 @@ class Handler(SimpleHTTPRequestHandler):
                     raise RuntimeError(res.get("error", "login failed"))
                 # Redirect back to the frontend with the session token in the fragment.
                 front = os.environ.get("FRONTEND_URL", "https://vorakan-yakham.github.io/zyphere-ai-agent/")
+                # Honor a safe "next" URL carried in OAuth state (store -> store).
+                nxt = ""
+                try:
+                    st = q.get("state", [""])[0]
+                    st += "=" * (-len(st) % 4)
+                    so = json.loads(_b64.urlsafe_b64decode(st))
+                    cand = str(so.get("n", ""))
+                    allowed = ("https://vorakan-yakham.github.io/", "/")
+                    if cand.startswith(allowed) and ".." not in cand:
+                        nxt = cand
+                except Exception:
+                    pass
+                if not nxt:
+                    nxt = front
                 frag = urllib.parse.urlencode({"token": res["token"], "email": res["email"],
                                                "name": res.get("name", "")})
+                sep = "&" if "?" in nxt else "#"
                 self.send_response(302)
-                self.send_header("Location", front + "#oauth=" + frag)
+                self.send_header("Location", nxt + sep + "oauth=" + frag)
                 self.send_header("Cache-Control", "no-store")
                 self.end_headers()
                 return
@@ -4928,9 +4981,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, res)
             return
         if u.path == "/api/store/order":
+            ut = str(body.get("user_token") or "")
+            me = USERS.me(ut) if (USERS and ut) else None
+            em = me.get("email", "") if me else str(body.get("email") or "")
+            by = me.get("email", "") if me else str(body.get("buyer") or "")
             res = STORE.create_order(str(body.get("product") or ""), int(body.get("amount") or 0),
-                                     str(body.get("buyer") or ""), str(body.get("email") or "")) \
-                if STORE else {"ok": False, "error": "unavailable"}
+                                     by, em) if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/store/submit":
