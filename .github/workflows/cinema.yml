@@ -37,9 +37,10 @@ jobs:
           import cinema_studio
           r = cinema_studio.run(os.environ["CINEMA_BRIEF"], 18,
                                 os.environ["CINEMA_LANG"])
-          print(json.dumps(r, ensure_ascii=False)[:1200])
+          safe = cinema_studio.json_safe(r)
+          print(json.dumps(safe, ensure_ascii=False)[:1200])
           open("data/cinema_latest.json", "w", encoding="utf-8").write(
-              json.dumps(r, ensure_ascii=False, indent=2))
+              json.dumps(safe, ensure_ascii=False, indent=2))
           if not r.get("ok"):
               raise SystemExit("cinema render did not produce a video")
           PY
