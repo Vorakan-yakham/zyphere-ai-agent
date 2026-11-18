@@ -2944,6 +2944,34 @@ JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
                 "council", "engineers", "grow", "hr", "image_lab", "ebooks", "zybrain"]
 _council_busy = False
 _council_last = None
+_AUTONOMY_LAST = {"dispatched": 0, "t": 0, "error": None}
+
+
+def autonomy_dispatch_loop():
+    """Render wakes GitHub Actions every 5 min — the system triggers ITSELF.
+
+    GitHub's own scheduler gets postponed by frequent commits, so an in-process
+    timer on the (kept-awake by keepalive) Render service is the reliable pulse.
+    Uses the owner's GITHUB_TOKEN from env. Never prints token values.
+    """
+    import requests as _rq
+    global _AUTONOMY_LAST
+    while True:
+        try:
+            import method_transfer as _MT
+            tok = _MT.token()
+            if tok:
+                r = _rq.post(
+                    "https://api.github.com/repos/Vorakan-yakham/zyphere-ai-agent/"
+                    "actions/workflows/autonomy.yml/dispatches",
+                    headers={"Authorization": "Bearer " + tok,
+                             "Accept": "application/vnd.github+json"},
+                    json={"ref": "main"}, timeout=25)
+                _AUTONOMY_LAST = {"dispatched": r.status_code, "t": int(time.time())}
+        except Exception as e:
+            _AUTONOMY_LAST = {"dispatched": 0, "t": int(time.time()),
+                              "error": str(e)[:120]}
+        time.sleep(5 * 60)
 CINEMA_JOBS = {}
 
 
@@ -4117,6 +4145,9 @@ class Handler(SimpleHTTPRequestHandler):
                    "note": "แต่ละแผนกเรียนต่างแหล่ง แข่งขัน จำได้ และพัฒนาตัวเอง"}
             out.update(extra)
             self._send_json(200, out)
+            return
+        if u.path == "/api/autonomy/status":
+            self._send_json(200, {"ok": True, "self_dispatch": _AUTONOMY_LAST})
             return
         if u.path == "/api/cinema/status":
             q = urllib.parse.parse_qs(u.query)
@@ -6980,6 +7011,7 @@ if __name__ == "__main__":
     threading.Thread(target=learn_scheduler, daemon=True).start()
     threading.Thread(target=self_improve_scheduler, daemon=True).start()
     threading.Thread(target=jarvis_loop, daemon=True).start()
+    threading.Thread(target=autonomy_dispatch_loop, daemon=True).start()
     # First improvement round immediately on every process start.
     try:
         if SI:
