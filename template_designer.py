@@ -53,7 +53,17 @@ class TemplateDesigner:
                 if k in saved:
                     self.spec[k] = saved[k]
         except Exception:
-            pass
+            try:
+                r = requests.get("https://raw.githubusercontent.com/" + REPO +
+                                 "/main/data/template_spec.json?t=" +
+                                 str(int(time.time())), timeout=12)
+                if r.ok:
+                    saved = r.json()
+                    for k in DEFAULT:
+                        if k in saved:
+                            self.spec[k] = saved[k]
+            except Exception:
+                pass
 
     def set_spec(self, spec):
         if isinstance(spec, dict):
@@ -63,6 +73,19 @@ class TemplateDesigner:
         os.makedirs(os.path.dirname(SPEC_FILE), exist_ok=True)
         json.dump(self.spec, open(SPEC_FILE, "w", encoding="utf-8"),
                   ensure_ascii=False, indent=2)
+        raw = content = json.dumps(self.spec, ensure_ascii=False, indent=2).encode("utf-8")
+        try:
+            h = {"Authorization": "Bearer " + token(), "Accept": "application/vnd.github+json"}
+            url = BASE + "data/template_spec.json"
+            g = requests.get(url, headers=h, timeout=15)
+            sha = (g.json() or {}).get("sha") if g.ok else None
+            pl = {"message": "Template spec " + str(int(time.time())),
+                  "content": base64.b64encode(raw).decode(), "branch": "main"}
+            if sha:
+                pl["sha"] = sha
+            requests.put(url, headers=h, json=pl, timeout=30)
+        except Exception:
+            pass
         return self.spec
 
     def ask_ensemble(self):
