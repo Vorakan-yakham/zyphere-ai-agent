@@ -1239,15 +1239,17 @@ function thaiNumWords(n){
   if(!isFinite(n))return String(n);
   if(n===0)return 'ศูนย์';
   const D=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  function under100(x){
+    const t=Math.floor(x/10),o=x%10;
+    if(t===0)return o===1?'หนึ่ง':D[o];
+    let v=t===1?'สิบ':(t===2?'ยี่สิบ':D[t]+'สิบ');
+    if(o)v+=(o===1?'เอ็ด':D[o]);
+    return v;
+  }
   function h100(x){
     const h=Math.floor(x/100),r=x%100;
     let out=h?(D[h]+'ร้อย'):'';
-    if(r)out+= (h&&r<10) ? (r===1?'เอ็ด':D[r]) : (function(){
-      const t=Math.floor(r/10),o=r%10;
-      let v=t===1?'สิบ':(t===2?'ยี่สิบ':D[t]+'สิบ');
-      if(o)v+=(o===1?'เอ็ด':D[o]);
-      return v;
-    })();
+    if(r)out+=(h&&r<10)?(r===1?'เอ็ด':D[r]):under100(r);
     return out;
   }
   if(n<1000)return h100(n);
