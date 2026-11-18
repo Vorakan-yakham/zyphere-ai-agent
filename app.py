@@ -3777,6 +3777,18 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
+        # Dashboard pages — served from the repo so they work on Render too.
+        if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html"):
+            fp = os.path.join(BASE_DIR, os.path.basename(u.path))
+            if os.path.exists(fp):
+                data = open(fp, "rb").read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(data)
+                return
         if u.path.startswith("/media/"):
             fn = os.path.basename(u.path[len("/media/"):])
             fp = os.path.join(MEDIA_DIR, fn)
