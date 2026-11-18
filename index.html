@@ -1103,6 +1103,7 @@ function bubble(m,live){const col=$('col');let d;
  else{d=document.createElement('div');d.className='a'+(live?' busy':'');d.innerHTML='<div class="av">'+lg()+'</div><div class="bd"><div class="t"></div></div>';const t=d.querySelector('.t'),bd=d.querySelector('.bd');
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
+   if(m.audio){const a=document.createElement('audio');a.controls=true;a.src=m.audio;a.style.cssText='width:100%;max-width:520px;margin-top:8px';bd.appendChild(a)}
    if(m.vid){const v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=m.vid;v.style.cssText='width:100%;max-width:640px;border-radius:16px;margin-top:8px';bd.appendChild(v)}
    if(m.vid){const dl=document.createElement('a');dl.href=m.vid;dl.download='zyphire_cinema.mp4';dl.className='spk';dl.textContent='⬇ ดาวน์โหลดวิดีโอ';bd.appendChild(dl)}
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
@@ -1522,6 +1523,11 @@ async function send(voice){
      var concept=[dr.subject,dr.mood,dr.camera].filter(Boolean).join(' · ')||imagineLocal(t);
      c.m.push({r:'assistant',c:'สร้างภาพให้แล้วครับ'+(concept?' — จินตนาการ: '+concept:' — ออกแบบจากคำสั่งของคุณ'),pic:localBase()+mr.url,q:t});
      save();view();setBusy(false);lastLang='th';speak('สร้างภาพให้แล้วครับ','th');return
+    }
+    if(mr.ok&&mr.type==='audio'&&mr.url){
+     var pl=mr.plan||{};
+     c.m.push({r:'assistant',c:'แต่งเพลงให้แล้วครับ — '+[pl.mode,pl.bpm+' BPM',pl.texture].filter(Boolean).join(' · ')+' ('+mr.seconds+' วิ)',q:t,audio:localBase()+mr.url});
+     save();view();setBusy(false);speak('แต่งเพลงให้แล้วครับ','th');return
     }
     if(mr.ok&&mr.type==='video_local'&&mr.video){
      c.m.push({r:'assistant',c:'สร้างภาพยนตร์ให้แล้วครับ — ใบหน้าเดิมทุกฉาก เปลี่ยนชุดตามบริบท ('+(mr.scenes||[]).join(' → ')+')',q:t,vid:localBase()+mr.video});

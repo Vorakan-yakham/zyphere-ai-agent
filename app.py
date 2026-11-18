@@ -5652,6 +5652,23 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/media/chat":
             text = str(body.get("text") or "").strip()
+            if re.search(r"แต่งเพลง|เขียนเพลง|compose|ทำเพลง|music.*text|เพลงจากข้อความ", text, re.I):
+                try:
+                    import music_composer as MC
+                    song = MC.compose(text, apply=True)
+                    mp3 = song.get("mp3") or {}
+                    if song.get("ok") and mp3.get("url"):
+                        self._send_json(200, {"ok": True, "type": "audio",
+                                              "url": mp3.get("url"),
+                                              "plan": {k: song["plan"].get(k)
+                                                       for k in ("mode", "bpm", "texture",
+                                                                 "progression", "structure")},
+                                              "seconds": song.get("seconds"),
+                                              "voice": song.get("voice")})
+                        return
+                except Exception as e:
+                    self._send_json(200, {"ok": False, "error": str(e)[:150]})
+                    return
             want_video = bool(re.search(
                 r"วิดีโอ|คลิป|video|film|ภาพยนตร์|สั่งทำคลิป", text, re.I))
             if want_video and re.search(r"ภาพยนตร์|ดารานำ|ตัวละคร|เรื่อง|ต่อคลิป|Multiple scene|film", text, re.I):
