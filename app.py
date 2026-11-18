@@ -327,6 +327,11 @@ try:
     EXPERT = Expert(os.path.join(DATA_DIR, "expert.json"))
 except Exception:
     EXPERT = None
+try:
+    from market import Market
+    MARKET = Market(os.path.join(DATA_DIR, "market.json"))
+except Exception:
+    MARKET = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
@@ -401,6 +406,7 @@ REMOTE_KEYS = {
     "codeforge": "zyphere:codeforge",
     "otpassist": "zyphere:otpassist",
     "expert": "zyphere:expert",
+    "market": "zyphere:market",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -512,7 +518,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market"):
         try:
             data = {
                 "memory": load_mem,
@@ -4333,6 +4339,13 @@ class Handler(SimpleHTTPRequestHandler):
                                    str(body.get("message") or "")) if OTPASSIST else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/market/analyze":
+            res = MARKET.analyze(str(body.get("product") or ""), str(body.get("audience") or ""),
+                                 int(body.get("price") or 0)) if MARKET else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("market", MARKET.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/expert/start":
             res = EXPERT.start(str(body.get("title") or ""), str(body.get("kind") or ""),
                                int(body.get("price") or 0), str(body.get("deadline") or "")) if EXPERT else {"ok": False, "error": "unavailable"}
@@ -4423,6 +4436,10 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json(200 if r.get("ok") else 400, r)
+            return
+        if u.path == "/api/market/plans":
+            self._send_json(200, {"ok": True, "plans": MARKET.list_plans() if MARKET else [],
+                                  "stats": MARKET.stats() if MARKET else {}})
             return
         if u.path == "/api/expert/checklist":
             kind = urllib.parse.parse_qs(u.query).get("kind", [""])[0]

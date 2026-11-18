@@ -299,6 +299,13 @@ def main():
         assert r["ok"] and "คุณพิมพ์ OTP" in r["otp_step"], "otp prepare failed"
         assert "ไม่รับรหัส OTP" in r["never"], "otp never-store missing"
         assert not oa.prepare("เว็บพนัน บาคาร่า")["ok"], "gambling signup must be refused"
+        from market import Market
+        mktpath = os.path.join(tempfile.gettempdir(), "zy_market_test.json")
+        if os.path.exists(mktpath): os.remove(mktpath)
+        mk = Market(mktpath)
+        mp = mk.analyze("เขียนโค้ด Python", "เจ้าของธุรกิจ", 1500)
+        assert mp["ok"] and len(mp["channels"]) >= 3 and mp["content_ideas"], "market analyze failed"
+        assert not mk.analyze("เว็บพนัน")["ok"], "gambling market must be refused"
         print("ALL REGRESSION TESTS PASSED")
         return 0
     finally:
