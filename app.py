@@ -2941,7 +2941,7 @@ _improve_busy = False
 _jarvis_busy = False
 _jarvis_step = 0
 JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
-                "council", "engineers", "grow", "hr"]
+                "council", "engineers", "grow", "hr", "image_lab"]
 _council_busy = False
 _council_last = None
 CINEMA_JOBS = {}
@@ -3011,6 +3011,12 @@ def jarvis_loop():
                             from hr_head import HR
                             HR.assign(apply=True)
                             HR.analyze()
+                        except Exception:
+                            pass
+                    elif step == "image_lab":
+                        try:
+                            import image_quality_loop
+                            image_quality_loop.run(apply=True)
                         except Exception:
                             pass
                     if remote_enabled():
