@@ -596,6 +596,12 @@ body{background:#fff!important;background-image:none!important}
 body:before{display:none!important}
 .main,.chat,.dock{background:#fff!important}
 
+
+#logo:hover{opacity:.8}
+.reopen-rail{display:none!important}
+#search{display:none!important}
+.side .side-sec + #search,.side #search{display:none!important}
+
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#ec4899"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -610,7 +616,6 @@ body:before{display:none!important}
  </nav>
  <div class="side-sec">ประวัติ</div>
  <div class="list" id="list"></div>
- <input id="search" class="sb" placeholder="ค้นหาแชท" autocomplete="off">
  <div class="acct-menu" id="acctMenu">
   <button class="am" id="amProfile">👤vorakan_yakham</button>
   <button class="am" id="amShop">🛒 ร้านค้าผลงาน</button>
@@ -629,7 +634,7 @@ body:before{display:none!important}
  </div>
  <div class="side-foot"><button class="acct" id="acctBtn"><span class="avatar">VY</span><span class="acct-name">vorakan_yakham</span></button><button class="bell" id="bellBtn" title="แจ้งเตือน"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div>
 </aside>
-<div class="main"><button class="reopen-rail" id="reopenRail" title="เปิดเมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div class="top compact-top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<div class="main"><div class="top compact-top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="jv" id="gTop" title="ล็อกอินด้วย Google">Google</button><button class="jv" id="logoutBtn" title="ออกจากระบบ" style="display:none">Logout</button><button class="ib" id="adminBtn" title="Admin"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></button><button class="ib" id="shopBtn" title="Pro / สนับสนุน"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg></button><button class="ib" id="storeBtn" title="ร้านค้า — ซื้อผลงาน 46 นักวิชาการ"><svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></svg><span style="font-size:10px">ร้านค้า</span></button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
 <div class="dock"><div class="chips" id="chips"></div><div class="box">
@@ -1016,7 +1021,7 @@ function view(){const col=$('col');col.innerHTML='';document.body.classList.remo
  if(!c||!c.m.length){col.innerHTML='<div class="empty"><h1>เราควรเริ่มจากตรงไหนดี</h1><div class="sug"></div></div>';document.body.classList.add('is-empty');SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
  else c.m.forEach(m=>bubble(m));
  renderList()}
-function renderList(){const f=$('search').value.trim().toLowerCase(),L=$('list');L.innerHTML='';
+function renderList(){const se=document.getElementById('search');const f=(se?se.value:'').trim().toLowerCase(),L=$('list');L.innerHTML='';
  chats.filter(c=>!f||c.t.toLowerCase().includes(f)||c.m.some(m=>String(m.c||'').toLowerCase().includes(f))).forEach(c=>{const d=document.createElement('div');d.className='it'+(c.id===cur?' on':'');
   d.innerHTML='<span>'+esc(c.t)+'</span><button class="hist-more" title="จัดการแชท">···</button>';d.onclick=()=>{cur=c.id;view();$('side').classList.remove('open')};
   d.querySelector('.hist-more').onclick=e=>{e.stopPropagation();showDeleteChat(c.id,c.t)};L.appendChild(d)})}
@@ -2013,6 +2018,23 @@ if(!window.__popupVis){
  }
  setTimeout(applyPopupVis,600);
  setInterval(applyPopupVis,10000);
+}
+
+if(!window.__logoExpand){
+ window.__logoExpand=true;
+ const lg=document.getElementById('logo');
+ if(lg){lg.style.cursor='pointer';lg.title='ขยาย/ยุบเมนู';
+  lg.addEventListener('click',function(){
+   const sd=document.getElementById('side');
+   if(sd.classList.contains('rail')||sd.classList.contains('hide')){
+    sd.classList.remove('rail');sd.classList.remove('hide');sd.classList.add('expanded');
+   }else{
+    sd.classList.remove('expanded');sd.classList.add('rail');
+   }
+  });
+ }
+ // hide search-related handlers safely
+ if(!document.getElementById('search')){/* nothing */}
 }
 </script><div class="del-ov" id="delChatModal"><div class="del-box">
  <button class="del-x" id="delChatX" title="ปิด">✕</button>
