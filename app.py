@@ -297,10 +297,6 @@ try:
     MONEYFIELD = MoneyField(os.path.join(DATA_DIR, "moneyfield.json"))
 except Exception:
     MONEYFIELD = None
-try:
-    from codeforge import CodeForge
-    CODEFORGE = CodeForge(MEDIA_DIR)
-except Exception:
     CODEFORGE = None
 try:
     from autofill import Autofill
@@ -347,6 +343,12 @@ try:
 except Exception:
     GMAIL_OAUTH = None
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
+
+try:
+    from codeforge import CodeForge
+    CODEFORGE = CodeForge(MEDIA_DIR)
+except Exception:
+    CODEFORGE = None
 FONT_DIR = os.path.join(BASE_DIR, "fonts")
 MEM_PATH = os.path.join(DATA_DIR, "memory.json")
 VOICES = {"th": "th-TH-NiwatNeural", "en": "en-GB-RyanNeural"}
