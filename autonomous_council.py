@@ -317,6 +317,18 @@ def debate(findings):
         digest += "\n\n### ตารางแข่งขันฝ่าย (คะแนนจริง)\n" + "\n".join(
             "%d. %s — %d คะแนน (%s)" % (r["rank"], r["dept"], r["score"], r["metric"])
             for r in comp["board"]) + "\nผู้ชนะ: " + str(comp.get("winner"))
+    ite = findings.get("it_engineers") or {}
+    if ite.get("ran"):
+        digest += "\n\n### วิศวกร IT ประจำแผนก 12 คน\n" + (
+            "เสนอ patch %d รอบ, push จริง %d — %s\n" % (
+                ite.get("ran"), ite.get("pushed"),
+                ", ".join(str(x.get("division")) + ":" + str(x.get("file"))
+                          for x in ite.get("sample", []))))
+    div = findings.get("division_heads") or {}
+    if div.get("heads"):
+        digest += "\n\n### หัวหน้าแผนก 12 คนกระตุ้นหัวหน้าฝ่าย (ชั้นที่สอง)\n" + "\n".join(
+            "- %s ถาม: %s | สั่ง: %s" % (h["division"], h["question"], h["action"])
+            for h in div["heads"]) + "\n"
     heads = (findings.get("supervisors") or {}).get("heads") or []
     if heads:
         digest += "\n\n### คำถามจากหัวหน้าฝ่าย 10 คน (ต้องตอบให้ครบ ไม่ใช่ข้าม)\n" + "\n".join(
@@ -457,10 +469,12 @@ def run(apply=True):
     findings, products, pricing, books = observe(tree, raw)
     # Ten department heads question and escalate in their own right — the
     # council must debate WITH them, not replace them.
+    sup_results = []
     try:
         from supervisors import SUP
         sv = SUP.nag_all({"price_mismatch": findings["market"]["price_mismatches"],
                           "gate_ok": False, "workflow_fail": 0})
+        sup_results = sv.get("results", [])
         findings["supervisors"] = {"round": sv.get("round"),
                                    "working": sv.get("working"),
                                    "repeated": sv.get("repeated"),
@@ -499,6 +513,29 @@ def run(apply=True):
         selfcode["focus"] = focus
     except Exception as e:
         selfcode = {"ok": False, "error": str(e)[:160]}
+    # Division heads re-audit AFTER the self-coder result is known: they are
+    # the second layer of pressure on top of the department supervisors.
+    try:
+        from division_heads import DH
+        dh = DH.review_all(sup_results, selfcode)
+        findings["division_heads"] = {"round": dh.get("round"),
+                                      "pressuring": dh.get("pressuring"),
+                                      "heads": [{"division": h["division"],
+                                                 "question": h["question"],
+                                                 "action": h["action"]}
+                                                for h in dh.get("results", [])]}
+    except Exception:
+        findings["division_heads"] = {"error": "division heads unavailable"}
+    # Twelve IT engineers own each division's code. Parallel proposals,
+    # rotated real patches — all still through self_coder's guard.
+    try:
+        from it_engineers import ITE
+        itr = ITE.run_all(dry=not apply)
+        findings["it_engineers"] = {"ran": itr.get("ran"),
+                                    "pushed": itr.get("pushed"),
+                                    "sample": itr.get("results", [])[:3]}
+    except Exception:
+        findings["it_engineers"] = {"error": "IT engineers unavailable"}
     mem = findings.get("recall") or {}
     cons = deb.get("consensus") or ""
     recall_used = bool(mem.get("previous")) and any(
@@ -532,6 +569,22 @@ def run(apply=True):
             for h in sv["heads"]:
                 md += ["- **%s** ถาม: %s | วัดได้: %s | ซ้ำ: %s" % (
                     h["dept"], h["question"], h["detail"], h.get("repeated"))]
+            md += [""]
+        div = result.get("findings", {}).get("division_heads") or {}
+        if div.get("heads"):
+            md += ["## หัวหน้าแผนกกระตุ้นหัวหน้าฝ่าย (12 คน)", "",
+                   "กำลังกดดัน %s รอบ" % div.get("pressuring"), ""]
+            for h in div["heads"]:
+                md += ["- **%s** ถาม: %s → %s" % (
+                    h["division"], h["question"], h["action"])]
+            md += [""]
+        ite = result.get("findings", {}).get("it_engineers") or {}
+        if ite.get("ran"):
+            md += ["## วิศวกร IT ประจำแผนก", "",
+                   "เสนอ %d / push จริง %d" % (ite.get("ran"), ite.get("pushed")), ""]
+            for x in ite.get("sample", []):
+                md += ["- %s (%s) → %s : %s" % (
+                    x.get("division"), x.get("engineer"), x.get("file"), x.get("reason"))]
             md += [""]
         md += ["## การถกเถียง", ""]
         for p in deb.get("positions", []):

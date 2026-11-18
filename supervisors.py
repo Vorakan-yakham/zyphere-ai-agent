@@ -191,9 +191,18 @@ class Supervisors:
         with self.lock:
             self.log.append({"t": int(time.time()), "round": round_no, "results": results})
         self.save()
+        # Division heads sit ABOVE supervisors: they audit the nudgers and
+        # apply extra pressure when a department head goes stale.
+        pressure = None
+        try:
+            from division_heads import DH
+            pressure = DH.review_all(results, None).get("pressuring")
+        except Exception:
+            pass
         return {"ok": True, "supervisors": len(results), "round": round_no,
                 "working": sum(1 for r in results if not r["ok"]),
                 "repeated": sum(1 for r in results if r.get("repeated")),
+                "division_pressure": pressure,
                 "results": results}
 
     def status(self):

@@ -2940,7 +2940,8 @@ _improve_busy = False
 
 _jarvis_busy = False
 _jarvis_step = 0
-JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode", "council"]
+JARVIS_STEPS = ["dialogue", "improve", "music", "debate", "chief", "selfcode",
+                "council", "engineers"]
 _council_busy = False
 _council_last = None
 
@@ -2992,6 +2993,12 @@ def jarvis_loop():
                         SC.cycle(None, False)
                     elif step == "council":
                         _run_autonomous_council(True)
+                    elif step == "engineers":
+                        try:
+                            from it_engineers import ITE
+                            ITE.run_all(dry=False)
+                        except Exception:
+                            pass
                     if remote_enabled():
                         remote_push("jarvis_loop", {"t": int(time.time()), "step": step,
                                                     "n": _jarvis_step})
