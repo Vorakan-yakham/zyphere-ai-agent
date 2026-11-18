@@ -443,6 +443,10 @@ try:
 except Exception:
     CD = None
 try:
+    from capability_ceiling import CC
+except Exception:
+    CC = None
+try:
     from it_org import IT
 except Exception:
     IT = None
@@ -4029,6 +4033,10 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/capabilities/status":
+            self._send_json(200, CC.status() if CC
+                            else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/jarvis/status":
             self._send_json(200, {"ok": True, "autonomous": True,
