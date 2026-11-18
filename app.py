@@ -379,6 +379,16 @@ try:
 except Exception:
     CHIEF = None
 try:
+    from council import Council
+    COUNCIL = Council(os.path.join(DATA_DIR, "council.json"))
+except Exception:
+    COUNCIL = None
+try:
+    from race import Race
+    RACE = Race(os.path.join(DATA_DIR, "race.json"))
+except Exception:
+    RACE = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -470,6 +480,8 @@ REMOTE_KEYS = {
     "launchpad": "zyphere:launchpad",
     "academy": "zyphere:academy",
     "chief": "zyphere:chief",
+    "council": "zyphere:council",
+    "race": "zyphere:race",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -581,7 +593,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars", "scholar_income", "launchpad", "academy", "chief"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars", "scholar_income", "launchpad", "academy", "chief", "council", "race"):
         try:
             data = {
                 "memory": load_mem,
@@ -621,6 +633,8 @@ def remote_push_all():
                 "launchpad": (LAUNCHPAD.snapshot() if LAUNCHPAD else None),
                 "academy": (ACADEMY.snapshot() if ACADEMY else None),
                 "chief": (CHIEF.snapshot() if CHIEF else None),
+                "council": (COUNCIL.snapshot() if COUNCIL else None),
+                "race": (RACE.snapshot() if RACE else None),
             }[name]()
         except Exception:
             continue
@@ -667,6 +681,8 @@ def remote_pull_all():
         "launchpad": os.path.join(DATA_DIR, "launchpad.json"),
         "academy": os.path.join(DATA_DIR, "academy.json"),
         "chief": os.path.join(DATA_DIR, "chief.json"),
+        "council": os.path.join(DATA_DIR, "council.json"),
+        "race": os.path.join(DATA_DIR, "race.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -709,7 +725,8 @@ def remote_pull_all():
                    "help": HELP, "autofill": AUTOFILL, "codeforge": CODEFORGE,
                    "otpassist": OTPASSIST, "shop": SHOP, "agents": ORG,
                    "scholars": SCHOLARS, "scholar_income": SCHOLAR_INCOME,
-                   "launchpad": LAUNCHPAD, "academy": ACADEMY, "chief": CHIEF}[name]
+                   "launchpad": LAUNCHPAD, "academy": ACADEMY, "chief": CHIEF,
+                   "council": COUNCIL, "race": RACE}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -3658,6 +3675,19 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/race/leaderboard":
+            self._send_json(200, RACE.leaderboard() if RACE else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/race/stats":
+            self._send_json(200, {"ok": True, "stats": RACE.stats() if RACE else {}})
+            return
+        if u.path == "/api/council/status":
+            self._send_json(200, COUNCIL.status() if COUNCIL else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/council/leaderboard":
+            scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
+            self._send_json(200, COUNCIL.leaderboard(scholars) if COUNCIL else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/chief/status":
             self._send_json(200, CHIEF.status() if CHIEF else {"ok": False, "error": "unavailable"})
             return
@@ -4515,6 +4545,50 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/race/start":
+            scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
+            res = RACE.start(scholars) if RACE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/race/blocker":
+            res = RACE.report_blocker(str(body.get("scholar") or ""), str(body.get("blocker") or ""),
+                                      str(body.get("detail") or "")) if RACE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/race/it-help":
+            res = RACE.it_help() if RACE else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/council/learn":
+            def _research(field, name):
+                if RESEARCH:
+                    res, _ = RESEARCH.search(field or name, 1)
+                    return {"result": "; ".join(str(r.get("title", ""))[:90] for r in res[:2])}
+                return {"result": ""}
+            def _review(text):
+                if SAFETY:
+                    d = SAFETY.evaluate(str(text), "review")
+                    return d.get("decision", "ok")
+                return "ok"
+            scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
+            res = COUNCIL.learn_round(scholars, _research, _review) if COUNCIL else {"ok": False, "error": "unavailable"}
+            self._send_json(200, {"ok": True, "learned": len(res.get("results", []))})
+            return
+        if u.path == "/api/council/nag":
+            scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else {}
+            res = COUNCIL.chief_nag(scholars) if COUNCIL else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/council/cycle":
+            def _ask(name, field, q):
+                if RESEARCH:
+                    res, _ = RESEARCH.search(field or name, 1)
+                    return "; ".join(str(r.get("title", ""))[:80] for r in res[:2]) or "ต้องการข้อมูลเพิ่ม"
+                return "ต้องการข้อมูลเพิ่ม"
+            scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
+            res = COUNCIL.auto_cycle(scholars, _ask) if COUNCIL else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
         if u.path == "/api/chief/run":
             st = {"knowledge": len(load_knowledge().get("items") or []),
                   "products": SCHOLAR_INCOME.stats().get("products", 0) if SCHOLAR_INCOME else 0,
