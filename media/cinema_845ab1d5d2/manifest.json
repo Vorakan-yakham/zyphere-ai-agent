@@ -1,0 +1,87 @@
+{
+  "job": "cinema_845ab1d5d2",
+  "brief": "Zyphere สายลมสร้างสรรค์",
+  "lang": "th",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "new": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/photo_03.jpg"
+  ],
+  "archive": [
+    "designed:01",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/photo_02.jpg"
+  ],
+  "cuts": [
+    {
+      "shot": 1,
+      "camera": "wide / establishing",
+      "start": 0.0,
+      "end": 4.03,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/frame_01.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/overlay_01.png",
+      "transition": "cut"
+    },
+    {
+      "shot": 2,
+      "camera": "medium / detail",
+      "start": 4.03,
+      "end": 7.17,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/frame_02.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/overlay_02.png",
+      "transition": "crossfade"
+    },
+    {
+      "shot": 3,
+      "camera": "close / conclusion",
+      "start": 7.17,
+      "end": 10.17,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/frame_03.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/overlay_03.png",
+      "transition": "crossfade"
+    }
+  ],
+  "fonts": {
+    "1": {
+      "font": "<_io.BytesIO object at 0x788660134e50>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "2": {
+      "font": "<_io.BytesIO object at 0x78865e2eb100>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "3": {
+      "font": "<_io.BytesIO object at 0x78865cd20720>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    }
+  },
+  "credits": [
+    {
+      "source": "flickr",
+      "creator": "Groman123",
+      "license": "by-sa",
+      "page": "https://www.flickr.com/photos/85203634@N05/16087542047"
+    },
+    {
+      "source": "Wikimedia Commons",
+      "creator": "TechRegistrar401",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Ally Sleiman Official Professional Portrait.jpg"
+    }
+  ],
+  "status": "done",
+  "subtitles": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/subtitles.srt",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_845ab1d5d2/cinema.mp4",
+  "music": null,
+  "music_result": "{'ok': True, 'wav': '/media/song_calm_1795010302.wav', 'seconds': 50.4, 'style': 'calm', 'mp3': '/media/song_calm_1795010302.mp3', 'bytes': 1009937}"
+}
