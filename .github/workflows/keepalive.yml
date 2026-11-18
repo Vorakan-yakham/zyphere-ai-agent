@@ -1,4 +1,4 @@
-name: Zyphere Keepalive + Continuous Self-Improvement
+name: Zyphere JARVIS Autonomy
 
 on:
   schedule:
@@ -6,14 +6,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  wake-and-improve:
+  jarvis:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping health (wake Render)
-        run: curl -sSf --max-time 45 https://zyphere-ai-agent.onrender.com/api/health || true
-      - name: Trigger one learning round
+      - name: Wake + JARVIS status
+        run: curl -sSf --max-time 45 https://zyphere-ai-agent.onrender.com/api/jarvis/status || true
+      - name: Learning tick
         run: curl -sSf --max-time 90 "https://zyphere-ai-agent.onrender.com/api/learn/tick" || true
-      - name: Chief runs a cycle (nags every department to improve)
+      - name: Council debate + decision (no owner)
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/debate/run || true
+      - name: Department dialogue
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/dialogue/run || true
+      - name: Chief cycle (nags improvement)
         run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/chief/run || true
-      - name: Direct self-improvement cycle (keep improving even if chief skips)
+      - name: Self-improvement round
         run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/improve/run || true
+      - name: Create real music file
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{"style":"calm","bpm":90,"bars":2}' https://zyphere-ai-agent.onrender.com/api/music/create || true
+      - name: Create real video file
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{"topic":"Zyphire AI","seconds":12,"quality":"fhd"}' https://zyphere-ai-agent.onrender.com/api/video || true

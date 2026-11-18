@@ -467,6 +467,18 @@ try:
 except Exception:
     MT = None
 try:
+    import music_studio as MUSIC
+except Exception:
+    MUSIC = None
+try:
+    from department_dialogue import DD
+except Exception:
+    DD = None
+try:
+    from council_debate import CD
+except Exception:
+    CD = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -2906,6 +2918,36 @@ IMPROVE_CFG = {"enabled": True, "interval_minutes": 15}
 _improve_busy = False
 
 
+_jarvis_busy = False
+
+
+def jarvis_loop():
+    """JARVIS autonomy: debate -> dialogue -> improve -> media, no owner needed."""
+    global _jarvis_busy
+    while True:
+        try:
+            if not _jarvis_busy:
+                _jarvis_busy = True
+                try:
+                    if CD:
+                        CD.debate()
+                    if DD:
+                        DD.round()
+                    if SI:
+                        SI.cycle()
+                    if MUSIC:
+                        MUSIC.create("calm", 90, 2)
+                    if CHIEF:
+                        CHIEF.run_cycle({"remote": remote_enabled()}, None)
+                    if remote_enabled():
+                        remote_push("jarvis_loop", {"t": int(time.time())})
+                finally:
+                    _jarvis_busy = False
+        except Exception:
+            pass
+        time.sleep(30 * 60)
+
+
 def self_improve_scheduler():
     """Continuously improve every department, independent of external cron.
     Render free sleeps, but whenever the process is alive this loop keeps
@@ -3987,6 +4029,27 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/jarvis/status":
+            self._send_json(200, {"ok": True, "autonomous": True,
+                                  "busy": _jarvis_busy,
+                                  "engines": {"debate": bool(CD), "dialogue": bool(DD),
+                                              "improve": bool(SI), "music": bool(MUSIC),
+                                              "chief": bool(CHIEF)}})
+            return
+        if u.path == "/api/debate/status":
+            self._send_json(200, CD.status() if CD
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/dialogue/status":
+            self._send_json(200, DD.status() if DD
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/music/status":
+            self._send_json(200, {"ok": True, "engine": "Zyphere Music Studio",
+                                  "self_owned": True, "synth": "stdlib + FFmpeg",
+                                  "styles": ["calm", "major", "minor", "epic"],
+                                  "available": bool(MUSIC)})
             return
         if u.path == "/api/method/transfer":
             res = MT.apply() if MT else {"ok": False, "error": "unavailable"}
@@ -5336,6 +5399,26 @@ class Handler(SimpleHTTPRequestHandler):
                 res["publish"] = RP.publish()
             self._send_json(200 if res.get("ok") else 400, res)
             return
+        if u.path == "/api/debate/run":
+            res = CD.debate(str(body.get("issue") or "") or None) if CD \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/dialogue/run":
+            res = DD.round(str(body.get("dept") or "") or None) if DD \
+                else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/music/create":
+            try:
+                res = MUSIC.create(str(body.get("style") or "calm"),
+                                   int(body.get("bpm") or 90),
+                                   int(body.get("bars") or 4)) if MUSIC \
+                    else {"ok": False, "error": "music engine unavailable"}
+                self._send_json(200 if res.get("ok") else 400, res)
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 180)})
+            return
         if u.path == "/api/companion/record":
             res = DC.record(str(body.get("action") or ""), str(body.get("tool") or ""),
                             str(body.get("detail") or ""), str(body.get("outcome") or ""),
@@ -6440,6 +6523,7 @@ if __name__ == "__main__":
         print("Child bootstrap failed:", str(e)[:120])
     threading.Thread(target=learn_scheduler, daemon=True).start()
     threading.Thread(target=self_improve_scheduler, daemon=True).start()
+    threading.Thread(target=jarvis_loop, daemon=True).start()
     # First improvement round immediately on every process start.
     try:
         if SI:
