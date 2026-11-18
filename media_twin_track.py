@@ -34,13 +34,24 @@ def video_team(brief):
         return {"ok": False, "error": str(e)[:180]}
 
 
+def _clean(v):
+    """Remove non-JSON objects (BytesIO from synth) before logging/returning."""
+    if isinstance(v, dict):
+        return {str(k): _clean(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [_clean(x) for x in v]
+    if isinstance(v, (str, int, float, bool)) or v is None:
+        return v
+    return str(v)[:200]
+
+
 def run(brief="Zyphere สายลมสร้างสรรค์", apply=True):
     g, v = {}, {}
     def ga(): g.update(graphics_team(brief) if apply else {"skipped": True})
     def va(): v.update(video_team(brief) if apply else {"skipped": True})
     t1 = threading.Thread(target=ga); t2 = threading.Thread(target=va)
     t1.start(); t2.start(); t1.join(); t2.join()
-    result = {"t": int(time.time()), "brief": brief, "graphics": g, "video": v,
+    result = _clean({"t": int(time.time()), "brief": brief, "graphics": g, "video": v,
               "parallel": True,
               "status": "both" if g.get("file") and v.get("ok") else "partial"}
     os.makedirs(os.path.dirname(DATA), exist_ok=True)
