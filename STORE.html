@@ -1,513 +1,549 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ร้านค้า Zyphere — Zyphere</title>
+<title>Zyphere Book Store — หนังสือความรู้จากคณะวิชา</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f7f8fc;--ink:#1b1f2a;--mut:#6b7280;--line:#e8eaf1;--blue:#4f46e5;--violet:#7c3aed;--ok:#16a34a}
+:root{--ink:#1b1f2a;--mut:#6b7280;--line:#e8eaf1;--ind:#4f46e5;--vio:#7c3aed}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,'Noto Sans Thai',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.navin{max-width:1120px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.2px}
-.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:grid;place-items:center;color:#fff;font-size:16px}
-.gbtn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 14px;font:600 13px Inter,'Noto Sans Thai';cursor:pointer}
-.gbtn:hover{border-color:#c7d2fe;background:#f5f7ff}
-.hero{max-width:1120px;margin:26px auto 0;padding:40px 38px;border-radius:24px;color:#fff;background:linear-gradient(120deg,#4338ca 0%,#6d28d9 55%,#9333ea 100%);box-shadow:0 18px 44px rgba(79,70,229,.22);position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;right:-70px;top:-90px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.08)}
-.hero h1{margin:0;font-size:32px;letter-spacing:-.6px;font-weight:700}
-.hero p{margin:12px 0 0;max-width:660px;line-height:1.75;opacity:.94;font-size:14px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
-.chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:99px;padding:6px 12px;font-size:12px}
-section{max-width:1120px;margin:0 auto;padding:30px 22px 60px}
-.shead{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
-.shead h2{margin:0;font-size:20px;letter-spacing:-.3px}
-.search{border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 14px;font:14px Inter,'Noto Sans Thai';min-width:230px;outline:none}
+body{margin:0;background:#f6f7fb;color:var(--ink);font-family:Inter,'Noto Sans Thai',sans-serif}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{max-width:1160px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px}
+.mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:grid;place-items:center;color:#fff}
+.gbtn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 15px;font:600 13px inherit;cursor:pointer}
+.gbtn:hover{border-color:#a5b4fc;background:#f5f7ff}
+.hero{max-width:1160px;margin:26px auto 0;padding:54px 46px;border-radius:28px;color:#fff;
+ background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.18),transparent 40%),
+ linear-gradient(125deg,#3730a3,#6d28d9 55%,#a21caf);box-shadow:0 24px 60px rgba(79,70,229,.25)}
+.hero h1{margin:0;font-size:38px;letter-spacing:-1px;line-height:1.3;max-width:720px}
+.hero p{margin:16px 0 0;max-width:700px;line-height:1.9;color:rgba(255,255,255,.92);font-size:15px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.stats span{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:7px 14px;font-size:12px}
+.sec{max-width:1160px;margin:auto;padding:34px 22px 70px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.head h2{margin:0;font-size:22px}
+.search{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 15px;font:14px inherit;min-width:240px;outline:none}
 .search:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px #eef2ff}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:16px}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;min-height:196px;transition:.18s;box-shadow:0 2px 10px rgba(17,24,39,.03)}
-.card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(17,24,39,.09);border-color:#dbe2ff}
-.card-top{display:flex;justify-content:space-between;align-items:center}
-.num{font:700 12px Inter;color:#a5b4fc;letter-spacing:1px}
-.tag{font-size:11px;color:var(--blue);background:#eef2ff;border-radius:99px;padding:3px 9px}
-.ic{font-size:26px;color:var(--violet);margin:12px 0 2px}
-.card h3{margin:4px 0 8px;font-size:15.5px;font-weight:600;line-height:1.5}
-.desc{margin:0;color:var(--mut);font-size:12.5px;line-height:1.65;flex:1}
-.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.price{font:700 18px Inter;color:var(--blue)}
-.buy{border:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:10px;padding:9px 15px;font:600 13px Inter,'Noto Sans Thai';cursor:pointer;box-shadow:0 6px 14px rgba(79,70,229,.22)}
-.buy:hover{filter:brightness(1.07)}
-.ov{display:none;position:fixed;inset:0;background:rgba(17,24,39,.52);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:30;padding:18px}
-.box{background:#fff;border-radius:22px;padding:26px;max-width:430px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.3)}
-.box h2{margin:0 0 4px;font-size:20px}
-.box .sub{color:var(--mut);font-size:13px;margin:0 0 14px}
-.qrwrap{text-align:center;background:#f8f9ff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
-.qrwrap img{width:186px;height:186px;background:#fff;border-radius:10px}
-.qrnum{font-size:11px;color:#6b7280;margin-top:10px;letter-spacing:.3px}
-.note{font-size:12.5px;line-height:1.7;color:#374151;background:#f9fafb;border-radius:12px;padding:12px 14px}
-.fine{font-size:11.5px;line-height:1.65;color:#9a6a13;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px 12px;margin-top:10px}
-.amt{font:700 22px Inter;color:var(--blue);margin:12px 0 4px}
-input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font:14px Inter,'Noto Sans Thai';margin-top:8px;outline:none}
-input:focus{border-color:#a5b4fc;box-shadow:0 0 0 3px #eef2ff}
-.btn{width:100%;border:0;border-radius:11px;padding:12px;font:600 14px Inter,'Noto Sans Thai';cursor:pointer;margin-top:10px}
-.primary{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
-.ghost{background:#f3f4f6;color:#374151}
-.pill{display:inline-block;background:#fef3c7;color:#92400e;border-radius:99px;padding:5px 11px;font-size:11.5px;margin-top:8px}
-.code{font:600 13px Inter;background:#f1f5f9;border-radius:8px;padding:8px 10px;word-break:break-all;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
+.book{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:.2s;box-shadow:0 3px 14px rgba(17,24,39,.04)}
+.book:hover{transform:translateY(-5px);box-shadow:0 20px 40px rgba(17,24,39,.12);border-color:#dbe2ff}
+.cover{height:280px;background:#eef2ff;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.info{padding:16px}
+.badge{font-size:11px;background:#eef2ff;color:var(--ind);border-radius:99px;padding:4px 10px}
+.info h3{font-size:15px;line-height:1.5;margin:10px 0 6px;min-height:44px}
+.why{border:0;background:none;color:var(--mut);font-size:11.5px;cursor:pointer;padding:0;text-decoration:underline}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.price{font:700 19px Inter;color:var(--ind)}
+.buy{border:0;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:9px 14px;font:600 12.5px inherit;cursor:pointer}
+.buy:hover{filter:brightness(1.08)}
+.my{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:40px}
+.ov{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);backdrop-filter:blur(5px);align-items:center;justify-content:center;z-index:30;padding:16px}
+.box{background:#fff;border-radius:22px;padding:26px;max-width:440px;width:100%;max-height:92vh;overflow:auto}
+.box h2{margin:0 0 6px;font-size:20px}
+.sub{color:var(--mut);font-size:13px;line-height:1.7}
+img.qr{width:186px;height:186px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.center{text-align:center;background:#f8f9ff;border-radius:14px;padding:14px;margin:14px 0}
+.num{font-size:11px;color:var(--mut);margin-top:8px}
+.note{font-size:12.5px;line-height:1.8;background:#f9fafb;border-radius:12px;padding:12px}
+.fine{font-size:11.5px;line-height:1.7;color:#9a6a13;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px;margin-top:10px}
+input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font:14px inherit;margin-top:8px}
+.btn{width:100%;border:0;border-radius:11px;padding:12px;font:600 14px inherit;cursor:pointer;margin-top:10px}
+.go{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
+.no{background:#f3f4f6;color:#374151}
 .dl{display:block;text-align:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-decoration:none;border-radius:11px;padding:12px;margin-top:12px;font-weight:600}
-.my{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:8px}
-.myrow{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0;flex-wrap:wrap}
-.myrow:last-child{border-bottom:0}
-.st{font-size:11.5px;border-radius:99px;padding:4px 10px}
-.st-wait{background:#fef3c7;color:#92400e}.st-ok{background:#dcfce7;color:#166534}.st-rej{background:#fee2e2;color:#991b1b}
-.mini{font-size:12px;color:var(--mut)}
-footer{text-align:center;color:var(--mut);font-size:12px;padding:26px 16px 40px;border-top:1px solid var(--line)}
-@media(max-width:600px){.hero{padding:28px 22px}.hero h1{font-size:25px}.search{width:100%}}
+.pill{display:inline-block;background:#fef3c7;color:#92400e;border-radius:99px;padding:5px 11px;font-size:12px}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:30px 16px 44px;border-top:1px solid var(--line)}
+@media(max-width:600px){.hero{padding:34px 22px}.hero h1{font-size:27px}.cover{height:240px}}
 </style></head><body>
-<nav><div class="navin"><div class="logo"><span class="mark">✦</span><span>Zyphere <span style="color:#6b7280;font-weight:500">Store</span></span></div>
+<nav class="top"><div class="nav"><div class="logo"><span class="mark">✦</span> Zyphere <span style="color:#6b7280;font-weight:500">Books</span></div>
 <button class="gbtn" id="gLogin" onclick="googleLogin()">เข้าสู่ระบบด้วย Google</button></div></nav>
-
-<div class="hero">
-  <h1>ผลงานความรู้จากคณะวิชา ส่งมอบถึงมือคุณ</h1>
-  <p>ไซเฟอร์จัดทำเอกสารความรู้ครอบคลุม 46 คณะวิชา เลือกหัวข้อที่ต้องการ จากนั้นชำระเงินผ่านพรีมเพย์ ระบบจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้ครับ</p>
-  <div class="chips"><span class="chip">46 คณะวิชา</span><span class="chip">PromptPay 0941939686</span><span class="chip">ส่งไฟล์จริง</span></div>
-</div>
-
-<section>
-  <div class="shead"><h2>ผลงานทั้งหมด <span class="mini">(46)</span></h2>
-    <input class="search" id="q" placeholder="ค้นหาหัวข้อ…" oninput="filter()"></div>
-  <div class="grid" id="grid">
-    <article class="card" data-title="ฟิสิกส์ควอนตัม" data-price="210">
-      <div class="card-top"><span class="num">01</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ฟิสิกส์ควอนตัม</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: กลศาสตร์ควอนตัมพื้นฐาน, ควอนตัมเอนแทงเกิลเมนต์. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ฟิสิกส์คลาสสิก" data-price="210">
-      <div class="card-top"><span class="num">02</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ฟิสิกส์คลาสสิก</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา กลศาสตร์นิวตัน. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ดาราศาสตร์-จักรวาล" data-price="80">
-      <div class="card-top"><span class="num">03</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ดาราศาสตร์-จักรวาล</h3>
-      <p class="desc">สรุปแนวคิดหลักของ ดาราศาสตร์สังเกตการณ์ และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="คณิตศาสตร์บริสุทธิ์" data-price="210">
-      <div class="card-top"><span class="num">04</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>คณิตศาสตร์บริสุทธิ์</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา พีชคณิตนามธรรม ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="คณิตศาสตร์ประยุกต์" data-price="210">
-      <div class="card-top"><span class="num">05</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>คณิตศาสตร์ประยุกต์</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: สมการเชิงอนุพันธ์, การเพิ่มประสิทธิภาพ. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ตรรกะและทฤษฎีข้อมูล" data-price="230">
-      <div class="card-top"><span class="num">06</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ตรรกะและทฤษฎีข้อมูล</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา ตรรกะเชิงสัญลักษณ์. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿230</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="พันธุกรรม-ชีวโมเลกุล" data-price="80">
-      <div class="card-top"><span class="num">07</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>พันธุกรรม-ชีวโมเลกุล</h3>
-      <p class="desc">สรุปแนวคิดหลักของ พันธุกรรมคลาสสิก และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="เซลล์และเนื้อเยื่อ" data-price="80">
-      <div class="card-top"><span class="num">08</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>เซลล์และเนื้อเยื่อ</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา โครงสร้างเซลล์ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ภูมิคุ้มกัน-โรค" data-price="80">
-      <div class="card-top"><span class="num">09</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ภูมิคุ้มกัน-โรค</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: ภูมิคุ้มกันโดยกำเนิด, ภูมิคุ้มกันแบบปรับตัว. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="สมอง-ประสาทวิทยา" data-price="80">
-      <div class="card-top"><span class="num">10</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>สมอง-ประสาทวิทยา</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา โครงสร้างสมอง. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="สรีระและเภสัช" data-price="80">
-      <div class="card-top"><span class="num">11</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>สรีระและเภสัช</h3>
-      <p class="desc">สรุปแนวคิดหลักของ สรีรวิทยาของระบบ และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การแพทย์คลินิก" data-price="260">
-      <div class="card-top"><span class="num">12</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การแพทย์คลินิก</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา การวินิจฉัย ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿260</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="จิตวิทยา" data-price="210">
-      <div class="card-top"><span class="num">13</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>จิตวิทยา</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: จิตวิทยาพัฒนาการ, จิตวิทยาสังคม. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ปัญญาประดิษฐ์" data-price="300">
-      <div class="card-top"><span class="num">14</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ปัญญาประดิษฐ์</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา การเรียนรู้ของเครื่อง. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿300</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="อัลกอริทึม-โครงสร้างข้อมูล" data-price="230">
-      <div class="card-top"><span class="num">15</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>อัลกอริทึม-โครงสร้างข้อมูล</h3>
-      <p class="desc">สรุปแนวคิดหลักของ โครงสร้างข้อมูลพื้นฐาน และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿230</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วิศวกรรมซอฟต์แวร์" data-price="210">
-      <div class="card-top"><span class="num">16</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วิศวกรรมซอฟต์แวร์</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา การออกแบบซอฟต์แวร์ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ความมั่นคงไซเบอร์" data-price="280">
-      <div class="card-top"><span class="num">17</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ความมั่นคงไซเบอร์</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: การป้องกันระบบ, การวิเคราะห์ช่องโหว่. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿280</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ฐานข้อมูล-ข้อมูลขนาดใหญ่" data-price="230">
-      <div class="card-top"><span class="num">18</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ฐานข้อมูล-ข้อมูลขนาดใหญ่</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา ออกแบบฐานข้อมูล. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿230</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="คอมพิวเตอร์วิทัศน์-เสียง" data-price="210">
-      <div class="card-top"><span class="num">19</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>คอมพิวเตอร์วิทัศน์-เสียง</h3>
-      <p class="desc">สรุปแนวคิดหลักของ การประมวลผลภาพ และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="หุ่นยนต์-ระบบอัตโนมัติ" data-price="280">
-      <div class="card-top"><span class="num">20</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>หุ่นยนต์-ระบบอัตโนมัติ</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา หุ่นยนต์เคลื่อนที่ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿280</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์" data-price="210">
-      <div class="card-top"><span class="num">21</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วิศวกรรมไฟฟ้า-อิเล็กทรอนิกส์</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: วงจรไฟฟ้า, อิเล็กทรอนิกส์. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วิศวกรรมเครื่องกล" data-price="210">
-      <div class="card-top"><span class="num">22</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วิศวกรรมเครื่องกล</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา กลศาสตร์วิศวกรรม. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วิศวกรรมโยธา-โครงสร้าง" data-price="210">
-      <div class="card-top"><span class="num">23</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วิศวกรรมโยธา-โครงสร้าง</h3>
-      <p class="desc">สรุปแนวคิดหลักของ โครงสร้าง และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วิศวกรรมเคมี-วัสดุ" data-price="320">
-      <div class="card-top"><span class="num">24</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วิศวกรรมเคมี-วัสดุ</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา กระบวนการเคมี ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿320</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="สถาปัตยกรรม-การออกแบบ" data-price="360">
-      <div class="card-top"><span class="num">25</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>สถาปัตยกรรม-การออกแบบ</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: การออกแบบอาคาร, ประวัติศาสตร์สถาปัตยกรรม. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿360</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="เศรษฐกิจมหภาค-การเงิน" data-price="480">
-      <div class="card-top"><span class="num">26</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>เศรษฐกิจมหภาค-การเงิน</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา เศรษฐกิจมหภาค. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿480</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การเงิน-การลงทุน" data-price="280">
-      <div class="card-top"><span class="num">27</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การเงิน-การลงทุน</h3>
-      <p class="desc">สรุปแนวคิดหลักของ การวิเคราะห์การลงทุน และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿280</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การบัญชี-ตรวจสอบ" data-price="80">
-      <div class="card-top"><span class="num">28</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การบัญชี-ตรวจสอบ</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา บัญชีการเงิน ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การตลาด-ธุรกิจ" data-price="480">
-      <div class="card-top"><span class="num">29</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การตลาด-ธุรกิจ</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: การวิจัยตลาด, กลยุทธ์การตลาด. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿480</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การจัดการ-ภาวะผู้นำ" data-price="80">
-      <div class="card-top"><span class="num">30</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การจัดการ-ภาวะผู้นำ</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา การบริหาร organização. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="กฎหมาย-สิทธิมนุษยชน" data-price="210">
-      <div class="card-top"><span class="num">31</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>กฎหมาย-สิทธิมนุษยชน</h3>
-      <p class="desc">สรุปแนวคิดหลักของ กฎหมายแพ่ง และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="จริยธรรม-ปรัชญา" data-price="80">
-      <div class="card-top"><span class="num">32</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>จริยธรรม-ปรัชญา</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา จริยธรรมประยุกต์ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ประวัติศาสตร์-อารยธรรม" data-price="140">
-      <div class="card-top"><span class="num">33</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ประวัติศาสตร์-อารยธรรม</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: ประวัติศาสตร์โลก, อารยธรรมเอเชีย. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿140</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="สังคมวิทยา-มานุษยวิทยา" data-price="80">
-      <div class="card-top"><span class="num">34</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>สังคมวิทยา-มานุษยวิทยา</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา โครงสร้างสังคม. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ" data-price="80">
-      <div class="card-top"><span class="num">35</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ</h3>
-      <p class="desc">สรุปแนวคิดหลักของ ทฤษฎีการเมือง และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿80</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ภาษาศาสตร์-การแปล" data-price="190">
-      <div class="card-top"><span class="num">36</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ภาษาศาสตร์-การแปล</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา สัทศาสตร์ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿190</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="วรรณกรรม-การเขียน" data-price="210">
-      <div class="card-top"><span class="num">37</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>วรรณกรรม-การเขียน</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: การวิเคราะห์วรรณกรรม, การเขียนสร้างสรรค์. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿210</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การสอน-การศึกษา" data-price="300">
-      <div class="card-top"><span class="num">38</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การสอน-การศึกษา</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา ทฤษฎีการเรียนรู้. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿300</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ดนตรี-เสียง" data-price="320">
-      <div class="card-top"><span class="num">39</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ดนตรี-เสียง</h3>
-      <p class="desc">สรุปแนวคิดหลักของ ทฤษฎีดนตรี และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿320</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ภาพยนตร์-สื่อ-กราฟฟิก" data-price="360">
-      <div class="card-top"><span class="num">40</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ภาพยนตร์-สื่อ-กราฟฟิก</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา ภาษาภาพยนตร์ ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿360</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="ภูมิอากาศ-สิ่งแวดล้อม" data-price="320">
-      <div class="card-top"><span class="num">41</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>ภูมิอากาศ-สิ่งแวดล้อม</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: วิทยาศาสตร์ภูมิอากาศ, การเปลี่ยนแปลงสภาพภูมิอากาศ. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿320</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="เกษตร-อาหาร" data-price="300">
-      <div class="card-top"><span class="num">42</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>เกษตร-อาหาร</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา การผลิตพืช. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿300</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="น้ำ-ทรัพยากร" data-price="170">
-      <div class="card-top"><span class="num">43</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>น้ำ-ทรัพยากร</h3>
-      <p class="desc">สรุปแนวคิดหลักของ อุทกวิทยา และสาขาที่เกี่ยวข้อง อ่านจบแล้วมีกรอบความคิดที่ชัดเจน.</p>
-      <div class="card-foot"><span class="price">฿170</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="พลังงาน-นิวเคลียร์" data-price="360">
-      <div class="card-top"><span class="num">44</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>พลังงาน-นิวเคลียร์</h3>
-      <p class="desc">เอกสารสำหรับเรียนรู้สาขา พลังงานหมุนเวียน ตั้งแต่พื้นฐานไปจนถึงแนวทางการนำไปใช้งาน.</p>
-      <div class="card-foot"><span class="price">฿360</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="อวกาศ-การสำรวจ" data-price="230">
-      <div class="card-top"><span class="num">45</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>อวกาศ-การสำรวจ</h3>
-      <p class="desc">สาขาย่อยที่ครอบคลุม: กลไกการบินอวกาศ, เทคโนโลยีอวกาศ. เนื้อหาเรียบเรียงให้เข้าใจง่าย อ่านแล้วนำไปต่อยอดได้จริง.</p>
-      <div class="card-foot"><span class="price">฿230</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article>
-    <article class="card" data-title="การเอาชีวิตรอด-ความปลอดภัย" data-price="360">
-      <div class="card-top"><span class="num">46</span><span class="tag">ดิจิทัล</span></div>
-      <div class="ic">✦</div>
-      <h3>การเอาชีวิตรอด-ความปลอดภัย</h3>
-      <p class="desc">ครอบคลุมประเด็นสำคัญของสาขา ปฐมพยาบาล. เหมาะกับผู้ที่ต้องการเริ่มต้นอย่างเป็นระบบ.</p>
-      <div class="card-foot"><span class="price">฿360</span><button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
-    </article></div>
-  <p id="nores" style="display:none;color:var(--mut)">ไม่พบหัวข้อที่ค้นหา กรุณาลองคำอื่น</p>
-
-  <div class="shead" style="margin-top:38px"><h2>คำสั่งซื้อของฉัน</h2></div>
-  <div class="my" id="my"><p class="mini" id="myMsg">ยังไม่มีคำสั่งซื้อ กรุณาเข้าสู่ระบบด้วย Google เพื่อดูคำสั่งซื้อของคุณ</p><p class="mini" id="myStats" style="display:none"></p><div id="myList"></div></div>
-
-  <div class="my" id="ownerBox" style="display:none;border-color:#c7d2fe;background:#f5f7ff;margin-top:18px">
-    <h3 style="margin:0 0 6px;font-size:16px">🔐 โหมดเจ้าของระบบ</h3>
-    <p class="mini" style="margin:0">คุณเข้าสู่ระบบในฐานะเจ้าของระบบ สามารถดาวน์โหลดไฟล์เพื่อตรวจสอบได้โดยไม่ต้องชำระเงิน</p>
-    <button class="gbtn" style="margin-top:12px" onclick="ownerDownload()">ดาวน์โหลดเพื่อตรวจสอบ</button>
-  </div>
+<div class="hero"><h1>หนังสือความรู้จากคณะวิชา 46 สาขา</h1>
+<p>แต่ละเล่มจัดทำจากสาขาวิชาที่มีอยู่จริงทั่วโลก มีหลายสิบบท พร้อมแบบฝึกหัดท้ายบท ปกออกแบบเฉพาะ และจัดหน้าแบบหนังสืออ่านได้จริง</p>
+<div class="stats"><span>41 เล่ม</span><span>PromptPay 0941939686</span><span>อัพเดทโดยทีมงานอัตโนมัติ</span></div></div>
+<section class="sec"><div class="head"><h2>หนังสือทั้งหมด (41)</h2>
+<input class="search" id="q" placeholder="ค้นหาหัวข้อ..." oninput="filter()"></div>
+<div class="grid">
+<article class="book" data-title="ฟิสิกส์ควอนตัม" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/01_ฟิสิกส์ควอนตัม/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ฟิสิกส์ควอนตัม แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/01_ฟิสิกส์ควอนตัม/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/01_ฟิสิกส์ควอนตัม/cover.png" alt="ปก ฟิสิกส์ควอนตัม" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ฟิสิกส์ควอนตัม</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ฟิสิกส์คลาสสิก" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/02_ฟิสิกส์คลาสสิก/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ฟิสิกส์คลาสสิก แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/02_ฟิสิกส์คลาสสิก/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/02_ฟิสิกส์คลาสสิก/cover.png" alt="ปก ฟิสิกส์คลาสสิก" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ฟิสิกส์คลาสสิก</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ดาราศาสตร์-จักรวาล" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/03_ดาราศาสตร์-จักรวาล/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ดาราศาสตร์-จักรวาล แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/03_ดาราศาสตร์-จักรวาล/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/03_ดาราศาสตร์-จักรวาล/cover.png" alt="ปก ดาราศาสตร์-จักรวาล" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ดาราศาสตร์-จักรวาล</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="คณิตศาสตร์ประยุกต์" data-price="250" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/04_คณิตศาสตร์ประยุกต์/cover.png"
+  data-why="เล่มนี้มี 26 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา คณิตศาสตร์ประยุกต์ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿250 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="26" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/04_คณิตศาสตร์ประยุกต์/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/04_คณิตศาสตร์ประยุกต์/cover.png" alt="ปก คณิตศาสตร์ประยุกต์" loading="lazy"></div>
+ <div class="info"><span class="badge">26 บท</span>
+  <h3>คณิตศาสตร์ประยุกต์</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿250</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="พันธุกรรม-ชีวโมเลกุล" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/05_พันธุกรรม-ชีวโมเลกุล/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา พันธุกรรม-ชีวโมเลกุล แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/05_พันธุกรรม-ชีวโมเลกุล/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/05_พันธุกรรม-ชีวโมเลกุล/cover.png" alt="ปก พันธุกรรม-ชีวโมเลกุล" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>พันธุกรรม-ชีวโมเลกุล</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="เซลล์และเนื้อเยื่อ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/06_เซลล์และเนื้อเยื่อ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา เซลล์และเนื้อเยื่อ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/06_เซลล์และเนื้อเยื่อ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/06_เซลล์และเนื้อเยื่อ/cover.png" alt="ปก เซลล์และเนื้อเยื่อ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>เซลล์และเนื้อเยื่อ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ภูมิคุ้มกัน-โรค" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/07_ภูมิคุ้มกัน-โรค/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ภูมิคุ้มกัน-โรค แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/07_ภูมิคุ้มกัน-โรค/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/07_ภูมิคุ้มกัน-โรค/cover.png" alt="ปก ภูมิคุ้มกัน-โรค" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ภูมิคุ้มกัน-โรค</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="สรีระและเภสัช" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/08_สรีระและเภสัช/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา สรีระและเภสัช แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/08_สรีระและเภสัช/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/08_สรีระและเภสัช/cover.png" alt="ปก สรีระและเภสัช" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>สรีระและเภสัช</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การแพทย์คลินิก" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/09_การแพทย์คลินิก/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การแพทย์คลินิก แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/09_การแพทย์คลินิก/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/09_การแพทย์คลินิก/cover.png" alt="ปก การแพทย์คลินิก" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>การแพทย์คลินิก</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="จิตวิทยา" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/10_จิตวิทยา/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา จิตวิทยา แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/10_จิตวิทยา/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/10_จิตวิทยา/cover.png" alt="ปก จิตวิทยา" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>จิตวิทยา</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ปัญญาประดิษฐ์" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/11_ปัญญาประดิษฐ์/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ปัญญาประดิษฐ์ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/11_ปัญญาประดิษฐ์/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/11_ปัญญาประดิษฐ์/cover.png" alt="ปก ปัญญาประดิษฐ์" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ปัญญาประดิษฐ์</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="อัลกอริทึม-โครงสร้างข้อมูล" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/12_อัลกอริทึม-โครงสร้างข้อมูล/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา อัลกอริทึม-โครงสร้างข้อมูล แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/12_อัลกอริทึม-โครงสร้างข้อมูล/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/12_อัลกอริทึม-โครงสร้างข้อมูล/cover.png" alt="ปก อัลกอริทึม-โครงสร้างข้อมูล" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>อัลกอริทึม-โครงสร้างข้อมูล</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="วิศวกรรมซอฟต์แวร์" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/13_วิศวกรรมซอฟต์แวร์/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา วิศวกรรมซอฟต์แวร์ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/13_วิศวกรรมซอฟต์แวร์/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/13_วิศวกรรมซอฟต์แวร์/cover.png" alt="ปก วิศวกรรมซอฟต์แวร์" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>วิศวกรรมซอฟต์แวร์</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ความมั่นคงไซเบอร์" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/14_ความมั่นคงไซเบอร์/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ความมั่นคงไซเบอร์ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/14_ความมั่นคงไซเบอร์/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/14_ความมั่นคงไซเบอร์/cover.png" alt="ปก ความมั่นคงไซเบอร์" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ความมั่นคงไซเบอร์</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ฐานข้อมูล-ข้อมูลขนาดใหญ่" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/15_ฐานข้อมูล-ข้อมูลขนาดใหญ่/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ฐานข้อมูล-ข้อมูลขนาดใหญ่ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/15_ฐานข้อมูล-ข้อมูลขนาดใหญ่/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/15_ฐานข้อมูล-ข้อมูลขนาดใหญ่/cover.png" alt="ปก ฐานข้อมูล-ข้อมูลขนาดใหญ่" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ฐานข้อมูล-ข้อมูลขนาดใหญ่</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="คอมพิวเตอร์วิทัศน์-เสียง" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/16_คอมพิวเตอร์วิทัศน์-เสียง/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา คอมพิวเตอร์วิทัศน์-เสียง แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/16_คอมพิวเตอร์วิทัศน์-เสียง/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/16_คอมพิวเตอร์วิทัศน์-เสียง/cover.png" alt="ปก คอมพิวเตอร์วิทัศน์-เสียง" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>คอมพิวเตอร์วิทัศน์-เสียง</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="หุ่นยนต์-ระบบอัตโนมัติ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/17_หุ่นยนต์-ระบบอัตโนมัติ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา หุ่นยนต์-ระบบอัตโนมัติ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/17_หุ่นยนต์-ระบบอัตโนมัติ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/17_หุ่นยนต์-ระบบอัตโนมัติ/cover.png" alt="ปก หุ่นยนต์-ระบบอัตโนมัติ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>หุ่นยนต์-ระบบอัตโนมัติ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="วิศวกรรมเครื่องกล" data-price="280" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/18_วิศวกรรมเครื่องกล/cover.png"
+  data-why="เล่มนี้มี 33 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา วิศวกรรมเครื่องกล แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿280 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="33" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/18_วิศวกรรมเครื่องกล/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/18_วิศวกรรมเครื่องกล/cover.png" alt="ปก วิศวกรรมเครื่องกล" loading="lazy"></div>
+ <div class="info"><span class="badge">33 บท</span>
+  <h3>วิศวกรรมเครื่องกล</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿280</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="วิศวกรรมเคมี-วัสดุ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/19_วิศวกรรมเคมี-วัสดุ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา วิศวกรรมเคมี-วัสดุ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/19_วิศวกรรมเคมี-วัสดุ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/19_วิศวกรรมเคมี-วัสดุ/cover.png" alt="ปก วิศวกรรมเคมี-วัสดุ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>วิศวกรรมเคมี-วัสดุ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="สถาปัตยกรรม-การออกแบบ" data-price="360" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/20_สถาปัตยกรรม-การออกแบบ/cover.png"
+  data-why="เล่มนี้มี 52 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา สถาปัตยกรรม-การออกแบบ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿360 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="52" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/20_สถาปัตยกรรม-การออกแบบ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/20_สถาปัตยกรรม-การออกแบบ/cover.png" alt="ปก สถาปัตยกรรม-การออกแบบ" loading="lazy"></div>
+ <div class="info"><span class="badge">52 บท</span>
+  <h3>สถาปัตยกรรม-การออกแบบ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿360</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="เศรษฐกิจมหภาค-การเงิน" data-price="390" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/21_เศรษฐกิจมหภาค-การเงิน/cover.png"
+  data-why="เล่มนี้มี 61 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา เศรษฐกิจมหภาค-การเงิน แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿390 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="61" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/21_เศรษฐกิจมหภาค-การเงิน/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/21_เศรษฐกิจมหภาค-การเงิน/cover.png" alt="ปก เศรษฐกิจมหภาค-การเงิน" loading="lazy"></div>
+ <div class="info"><span class="badge">61 บท</span>
+  <h3>เศรษฐกิจมหภาค-การเงิน</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿390</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การเงิน-การลงทุน" data-price="390" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/22_การเงิน-การลงทุน/cover.png"
+  data-why="เล่มนี้มี 61 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การเงิน-การลงทุน แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿390 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="61" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/22_การเงิน-การลงทุน/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/22_การเงิน-การลงทุน/cover.png" alt="ปก การเงิน-การลงทุน" loading="lazy"></div>
+ <div class="info"><span class="badge">61 บท</span>
+  <h3>การเงิน-การลงทุน</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿390</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การบัญชี-ตรวจสอบ" data-price="270" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/23_การบัญชี-ตรวจสอบ/cover.png"
+  data-why="เล่มนี้มี 30 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การบัญชี-ตรวจสอบ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿270 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="30" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/23_การบัญชี-ตรวจสอบ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/23_การบัญชี-ตรวจสอบ/cover.png" alt="ปก การบัญชี-ตรวจสอบ" loading="lazy"></div>
+ <div class="info"><span class="badge">30 บท</span>
+  <h3>การบัญชี-ตรวจสอบ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿270</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การตลาด-ธุรกิจ" data-price="420" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/24_การตลาด-ธุรกิจ/cover.png"
+  data-why="เล่มนี้มี 69 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การตลาด-ธุรกิจ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿420 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="69" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/24_การตลาด-ธุรกิจ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/24_การตลาด-ธุรกิจ/cover.png" alt="ปก การตลาด-ธุรกิจ" loading="lazy"></div>
+ <div class="info"><span class="badge">69 บท</span>
+  <h3>การตลาด-ธุรกิจ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿420</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การจัดการ-ภาวะผู้นำ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/25_การจัดการ-ภาวะผู้นำ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การจัดการ-ภาวะผู้นำ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/25_การจัดการ-ภาวะผู้นำ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/25_การจัดการ-ภาวะผู้นำ/cover.png" alt="ปก การจัดการ-ภาวะผู้นำ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>การจัดการ-ภาวะผู้นำ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="กฎหมาย-สิทธิมนุษยชน" data-price="300" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/26_กฎหมาย-สิทธิมนุษยชน/cover.png"
+  data-why="เล่มนี้มี 39 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา กฎหมาย-สิทธิมนุษยชน แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿300 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="39" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/26_กฎหมาย-สิทธิมนุษยชน/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/26_กฎหมาย-สิทธิมนุษยชน/cover.png" alt="ปก กฎหมาย-สิทธิมนุษยชน" loading="lazy"></div>
+ <div class="info"><span class="badge">39 บท</span>
+  <h3>กฎหมาย-สิทธิมนุษยชน</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿300</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="จริยธรรม-ปรัชญา" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/27_จริยธรรม-ปรัชญา/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา จริยธรรม-ปรัชญา แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/27_จริยธรรม-ปรัชญา/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/27_จริยธรรม-ปรัชญา/cover.png" alt="ปก จริยธรรม-ปรัชญา" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>จริยธรรม-ปรัชญา</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ประวัติศาสตร์-อารยธรรม" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/28_ประวัติศาสตร์-อารยธรรม/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ประวัติศาสตร์-อารยธรรม แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/28_ประวัติศาสตร์-อารยธรรม/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/28_ประวัติศาสตร์-อารยธรรม/cover.png" alt="ปก ประวัติศาสตร์-อารยธรรม" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ประวัติศาสตร์-อารยธรรม</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="สังคมวิทยา-มานุษยวิทยา" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/29_สังคมวิทยา-มานุษยวิทยา/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา สังคมวิทยา-มานุษยวิทยา แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/29_สังคมวิทยา-มานุษยวิทยา/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/29_สังคมวิทยา-มานุษยวิทยา/cover.png" alt="ปก สังคมวิทยา-มานุษยวิทยา" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>สังคมวิทยา-มานุษยวิทยา</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/30_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/30_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/30_รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ/cover.png" alt="ปก รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>รัฐศาสตร์-ความสัมพันธ์ระหว่างประเทศ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ภาษาศาสตร์-การแปล" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/31_ภาษาศาสตร์-การแปล/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ภาษาศาสตร์-การแปล แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/31_ภาษาศาสตร์-การแปล/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/31_ภาษาศาสตร์-การแปล/cover.png" alt="ปก ภาษาศาสตร์-การแปล" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ภาษาศาสตร์-การแปล</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="วรรณกรรม-การเขียน" data-price="320" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/32_วรรณกรรม-การเขียน/cover.png"
+  data-why="เล่มนี้มี 44 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา วรรณกรรม-การเขียน แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿320 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="44" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/32_วรรณกรรม-การเขียน/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/32_วรรณกรรม-การเขียน/cover.png" alt="ปก วรรณกรรม-การเขียน" loading="lazy"></div>
+ <div class="info"><span class="badge">44 บท</span>
+  <h3>วรรณกรรม-การเขียน</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿320</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การสอน-การศึกษา" data-price="320" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/33_การสอน-การศึกษา/cover.png"
+  data-why="เล่มนี้มี 43 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การสอน-การศึกษา แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿320 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="43" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/33_การสอน-การศึกษา/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/33_การสอน-การศึกษา/cover.png" alt="ปก การสอน-การศึกษา" loading="lazy"></div>
+ <div class="info"><span class="badge">43 บท</span>
+  <h3>การสอน-การศึกษา</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿320</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ดนตรี-เสียง" data-price="270" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/34_ดนตรี-เสียง/cover.png"
+  data-why="เล่มนี้มี 30 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ดนตรี-เสียง แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿270 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="30" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/34_ดนตรี-เสียง/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/34_ดนตรี-เสียง/cover.png" alt="ปก ดนตรี-เสียง" loading="lazy"></div>
+ <div class="info"><span class="badge">30 บท</span>
+  <h3>ดนตรี-เสียง</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿270</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ภาพยนตร์-สื่อ-กราฟฟิก" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/35_ภาพยนตร์-สื่อ-กราฟฟิก/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ภาพยนตร์-สื่อ-กราฟฟิก แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/35_ภาพยนตร์-สื่อ-กราฟฟิก/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/35_ภาพยนตร์-สื่อ-กราฟฟิก/cover.png" alt="ปก ภาพยนตร์-สื่อ-กราฟฟิก" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ภาพยนตร์-สื่อ-กราฟฟิก</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="ภูมิอากาศ-สิ่งแวดล้อม" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/36_ภูมิอากาศ-สิ่งแวดล้อม/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา ภูมิอากาศ-สิ่งแวดล้อม แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/36_ภูมิอากาศ-สิ่งแวดล้อม/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/36_ภูมิอากาศ-สิ่งแวดล้อม/cover.png" alt="ปก ภูมิอากาศ-สิ่งแวดล้อม" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>ภูมิอากาศ-สิ่งแวดล้อม</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="เกษตร-อาหาร" data-price="290" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/37_เกษตร-อาหาร/cover.png"
+  data-why="เล่มนี้มี 35 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา เกษตร-อาหาร แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿290 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="35" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/37_เกษตร-อาหาร/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/37_เกษตร-อาหาร/cover.png" alt="ปก เกษตร-อาหาร" loading="lazy"></div>
+ <div class="info"><span class="badge">35 บท</span>
+  <h3>เกษตร-อาหาร</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿290</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="น้ำ-ทรัพยากร" data-price="310" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/38_น้ำ-ทรัพยากร/cover.png"
+  data-why="เล่มนี้มี 40 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา น้ำ-ทรัพยากร แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿310 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="40" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/38_น้ำ-ทรัพยากร/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/38_น้ำ-ทรัพยากร/cover.png" alt="ปก น้ำ-ทรัพยากร" loading="lazy"></div>
+ <div class="info"><span class="badge">40 บท</span>
+  <h3>น้ำ-ทรัพยากร</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿310</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="พลังงาน-นิวเคลียร์" data-price="340" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/39_พลังงาน-นิวเคลียร์/cover.png"
+  data-why="เล่มนี้มี 48 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา พลังงาน-นิวเคลียร์ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿340 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="48" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/39_พลังงาน-นิวเคลียร์/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/39_พลังงาน-นิวเคลียร์/cover.png" alt="ปก พลังงาน-นิวเคลียร์" loading="lazy"></div>
+ <div class="info"><span class="badge">48 บท</span>
+  <h3>พลังงาน-นิวเคลียร์</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿340</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="อวกาศ-การสำรวจ" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/40_อวกาศ-การสำรวจ/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา อวกาศ-การสำรวจ แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/40_อวกาศ-การสำรวจ/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/40_อวกาศ-การสำรวจ/cover.png" alt="ปก อวกาศ-การสำรวจ" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>อวกาศ-การสำรวจ</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article>
+<article class="book" data-title="การเอาชีวิตรอด-ความปลอดภัย" data-price="430" data-cover="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/41_การเอาชีวิตรอด-ความปลอดภัย/cover.png"
+  data-why="เล่มนี้มี 70 บท ซึ่งคัดจากสาขาวิชาที่มีอยู่จริงทั่วโลกในสาขา การเอาชีวิตรอด-ความปลอดภัย แต่ละบทมีคำอธิบาย ตัวอย่างการนำไปใช้ และแบบฝึกหัด 3 ข้อ รวมถึงปกที่ออกแบบเฉพาะไฟล์ และจัดหน้าแบบหนังสืออ่านได้จริง จึงคิดราคา ฿430 เพื่อให้คุ้มกับเนื้อหาที่ได้รับ" data-chapters="70" data-book="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/41_การเอาชีวิตรอด-ความปลอดภัย/book.html">
+ <div class="cover"><img src="https://raw.githubusercontent.com/Vorakan-yakham/zyphere-scholar-product-pack/main/books/41_การเอาชีวิตรอด-ความปลอดภัย/cover.png" alt="ปก การเอาชีวิตรอด-ความปลอดภัย" loading="lazy"></div>
+ <div class="info"><span class="badge">70 บท</span>
+  <h3>การเอาชีวิตรอด-ความปลอดภัย</h3>
+  <button class="why" onclick="showWhy(this)">ทำไมราคานี้?</button>
+  <div class="foot"><span class="price">฿430</span>
+   <button class="buy" onclick="buy(this)">เลือกซื้อ</button></div>
+ </div>
+</article></div>
+<div class="my" style="margin-top:38px"><h3 style="margin:0 0 6px">คำสั่งซื้อของฉัน</h3>
+<p class="sub" id="myMsg">เข้าสู่ระบบด้วย Google เพื่อดูประวัติการซื้อ</p>
+<p class="sub" id="myStats" style="display:none"></p><div id="myList"></div></div>
+<div class="my" id="ownerBox" style="display:none;border-color:#c7d2fe;background:#f5f7ff">
+<h3 style="margin:0 0 6px">โหมดเจ้าของระบบ</h3>
+<p class="sub">ดาวน์โหลดหนังสือเพื่อตรวจสอบได้โดยไม่ต้องชำระเงิน</p>
+<button class="gbtn" style="margin-top:12px" onclick="ownerDownload()">ดาวน์โหลดเพื่อตรวจสอบ</button></div>
 </section>
-
 <div class="ov" id="ov"><div class="box">
-  <div id="vPay"><h2>ชำระเงินสำหรับสินค้า</h2><p class="sub" id="pTitle"></p>
-    <div class="qrwrap"><img id="pQR" alt="PromptPay QR" src=""><div class="qrnum">PromptPay 0941939686</div></div>
-    <p class="note">สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์ให้เมื่อยืนยันการชำระเรียบร้อยแล้ว</p>
-    <div class="amt" id="pPrice"></div>
-    <input id="pRef" placeholder="หมายเลขอ้างอิงการโอน หรือตัวเลข 4 ตัวสุดท้าย">
-    <button class="btn primary" onclick="submitPay()">แจ้งชำระเงิน</button>
-    <button class="btn ghost" onclick="closeM()">ยกเลิก</button>
-  </div>
-  <div id="vWait" style="display:none"><h2>กำลังตรวจสอบรายการชำระ</h2><p class="sub">รับหลักฐานการชำระของคุณแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้ และกลับมาตรวจสถานะได้ทุกเมื่อ</p>
-    <div class="code" id="pOrder"></div><span class="pill">กำลังรอการตรวจสอบ</span>
-    <button class="btn primary" onclick="checkStatus()">ตรวจสถานะคำสั่งซื้อ</button>
-    <button class="btn ghost" onclick="closeM()">ปิด</button>
-  </div>
-  <div id="vDone" style="display:none"><h2>ชำระเงินเรียบร้อย</h2><p class="sub">ทีมงานยืนยันและอนุมัติไฟล์ให้แล้ว ขอบคุณที่สนับสนุนครับ</p>
-    <a class="dl" id="dl" href="#" download>ดาวน์โหลดแพ็กเกจผลงาน</a>
-    <button class="btn ghost" onclick="closeM()">ปิด</button>
-  </div>
+ <div id="vPay"><h2>ชำระเงินสำหรับสินค้า</h2><p class="sub" id="pTitle"></p>
+  <div class="center"><img class="qr" id="pQR" src="" alt="PromptPay QR"><div class="num">PromptPay 0941939686</div></div>
+  <p class="note">สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์ให้เมื่อยืนยันการชำระเรียบร้อยแล้ว</p>
+  <div class="price" id="pPrice"></div><input id="pRef" placeholder="หมายเลขอ้างอิงการโอน หรือตัวเลข 4 ตัวสุดท้าย">
+  <button class="btn go" onclick="submitPay()">แจ้งชำระเงิน</button><button class="btn no" onclick="closeM()">ยกเลิก</button></div>
+ <div id="vWait" style="display:none"><h2>กำลังตรวจสอบรายการชำระ</h2>
+  <p class="sub">รับหลักฐานการชำระของคุณแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้</p>
+  <div class="note" id="pOrder"></div><span class="pill">กำลังรอการตรวจสอบ</span>
+  <button class="btn go" onclick="checkStatus()">ตรวจสถานะคำสั่งซื้อ</button><button class="btn no" onclick="closeM()">ปิด</button></div>
+ <div id="vDone" style="display:none"><h2>ชำระเงินเรียบร้อย</h2><p class="sub">ทีมงานยืนยันและอนุมัติไฟล์ให้แล้ว ขอบคุณที่สนับสนุนครับ</p>
+  <a class="dl" id="dl" href="#" download>ดาวน์โหลดแพ็กเกจหนังสือ</a><button class="btn no" onclick="closeM()">ปิด</button></div>
+ <div id="vWhy" style="display:none"><h2>ทำไมราคานี้</h2><p class="note" id="whyText"></p>
+  <button class="btn no" onclick="closeM()">ปิด</button></div>
 </div></div>
-
 <footer>PromptPay 0941939686 · ชำระปลอดภัย ตรวจสอบโดยทีมงาน และส่งไฟล์จริง</footer>
 <script>
-const API='https://zyphere-ai-agent.onrender.com';
-const TXT={"brand": "ร้านค้า Zyphere", "hero_h": "ผลงานความรู้จากคณะวิชา ส่งมอบถึงมือคุณ", "hero_p": "ไซเฟอร์จัดทำเอกสารความรู้ครอบคลุม 46 คณะวิชา เลือกหัวข้อที่ต้องการ จากนั้นชำระเงินผ่านพรีมเพย์ ระบบจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้ครับ", "all": "ผลงานทั้งหมด", "search": "ค้นหาหัวข้อ…", "orders": "คำสั่งซื้อของฉัน", "login": "เข้าสู่ระบบด้วย Google", "pay_title": "ชำระเงินสำหรับสินค้า", "ref_label": "หมายเลขอ้างอิงการโอน หรือตัวเลข 4 ตัวสุดท้าย", "submit": "แจ้งชำระเงิน", "note": "สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์ให้เมื่อยืนยันการชำระเรียบร้อยแล้ว", "fine": "หมายเหตุ: การกดปุ่มอย่างเดียวไม่อาจดาวน์โหลดไฟล์ได้ ระบบต้องยืนยันการชำระผ่านประตูเงิน หรือให้ทีมงานตรวจรายการโอนก่อนครับ", "pending_h": "กำลังตรวจสอบรายการชำระ", "pending_p": "รับหลักฐานการชำระของคุณแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้ และกลับมาตรวจสถานะได้ทุกเมื่อ", "check": "ตรวจสถานะคำสั่งซื้อ", "done_h": "ชำระเงินเรียบร้อย", "done_p": "ทีมงานยืนยันและอนุมัติไฟล์ให้แล้ว ขอบคุณที่สนับสนุนครับ", "dl": "ดาวน์โหลดแพ็กเกจผลงาน", "empty": "ยังไม่มีคำสั่งซื้อ กรุณาเข้าสู่ระบบด้วย Google เพื่อดูคำสั่งซื้อของคุณ", "cancel": "ยกเลิก", "close": "ปิด", "noresult": "ไม่พบหัวข้อที่ค้นหา กรุณาลองคำอื่น", "secure": "ชำระปลอดภัย ตรวจสอบโดยทีมงาน และส่งไฟล์จริง", "owner_h": "โหมดเจ้าของระบบ", "owner_p": "คุณเข้าสู่ระบบในฐานะเจ้าของระบบ สามารถดาวน์โหลดไฟล์เพื่อตรวจสอบได้โดยไม่ต้องชำระเงิน", "owner_btn": "ดาวน์โหลดเพื่อตรวจสอบ"};
-let cur={},oid='',tk='';
-const $=id=>document.getElementById(id);
+const API='https://zyphere-ai-agent.onrender.com';let cur={},oid='',tk='';const $=id=>document.getElementById(id);
 function filter(){const q=$('q').value.trim().toLowerCase();let n=0;
- document.querySelectorAll('.card').forEach(c=>{const ok=c.dataset.title.toLowerCase().includes(q);c.style.display=ok?'':'none';if(ok)n++;});
- $('nores').style.display=n?'none':'block';}
-function view(id){['vPay','vWait','vDone'].forEach(x=>$(x).style.display=(x===id?'block':'none'));$('ov').style.display='flex';}
+ document.querySelectorAll('.book').forEach(c=>{const ok=c.dataset.title.toLowerCase().includes(q);c.style.display=ok?'':'none';if(ok)n++;});}
+function showWhy(b){const c=b.closest('.book');$('whyText').textContent=c.dataset.why;show('vWhy');}
+function show(id){['vPay','vWait','vDone','vWhy'].forEach(x=>$(x).style.display=(x===id?'block':'none'));$('ov').style.display='flex';}
 function closeM(){$('ov').style.display='none';}
-function buy(b){const c=b.closest('.card');cur={title:c.dataset.title,price:c.dataset.price};fetch(API+'/api/store/click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:cur.title,user_token:utoken()})}).catch(()=>{});
- $('pTitle').textContent=cur.title;$('pPrice').textContent='฿'+Number(cur.price).toLocaleString('th-TH');
- $('pQR').src=API+'/api/store/qr?amount='+encodeURIComponent(cur.price)+'&t='+Date.now();view('vPay');}
 function utoken(){return localStorage.getItem('zy_token')||'';}
-function googleLogin(){const back=encodeURIComponent(location.href.split('#')[0]);
- location.href=API+'/api/auth/google?next='+back;}
+function googleLogin(){location.href=API+'/api/auth/google?next='+encodeURIComponent(location.href.split('#')[0]);}
+function buy(b){const c=b.closest('.book');cur={title:c.dataset.title,price:c.dataset.price};
+ $('pTitle').textContent=cur.title;$('pPrice').textContent='฿'+Number(cur.price).toLocaleString('th-TH');
+ $('pQR').src=API+'/api/store/qr?amount='+encodeURIComponent(cur.price)+'&t='+Date.now();show('vPay');}
 async function submitPay(){
  try{const cfg=await(await fetch(API+'/api/store/config')).json();
   const o=await(await fetch(API+'/api/store/order',{method:'POST',headers:{'Content-Type':'application/json'},
    body:JSON.stringify({product:cur.title,amount:cur.price,user_token:utoken()})})).json();
-  if(!o.ok)throw new Error(o.error||'order failed');oid=o.id;tk=o.token;
-  if(cfg.omise_enabled){
-   const p=await(await fetch(API+'/api/store/pay/omise',{method:'POST',headers:{'Content-Type':'application/json'},
+  if(!o.ok)throw new Error(o.error);oid=o.id;tk=o.token;
+  if(cfg.omise_enabled){const p=await(await fetch(API+'/api/store/pay/omise',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({order_id:oid,token:tk})})).json();
-   if(!p.ok)throw new Error(p.error||'payment failed');
-   if(p.authorize_uri){location.href=p.authorize_uri;return}
-   if(p.qr){$('pQR').src=p.qr;alert('สแกน QR จากประตูชำระเงินเพื่อชำระครับ');return}
-  }
+   if(!p.ok)throw new Error(p.error);if(p.authorize_uri){location.href=p.authorize_uri;return}
+   if(p.qr){$('pQR').src=p.qr;alert('สแกน QR จากประตูชำระเงินครับ');return}}
   const s=await(await fetch(API+'/api/store/submit',{method:'POST',headers:{'Content-Type':'application/json'},
    body:JSON.stringify({order_id:oid,token:tk,ref:$('pRef').value})})).json();
-  if(!s.ok)throw new Error(s.error||'submit failed');
-  $('pOrder').textContent=oid;view('vWait');loadMy();}
+  if(!s.ok)throw new Error(s.error);$('pOrder').textContent=oid;show('vWait');loadMy();}
  catch(e){alert('ชำระเงินไม่ได้: '+e.message)}
 }
-async function checkStatus(){
- try{const j=await(await fetch(API+'/api/store/download?order_id='+encodeURIComponent(oid)+'&token='+encodeURIComponent(tk))).json();
-  if(j.ok){$('dl').href=j.url;$('dl').download=j.filename||'zyphere-product-pack.zip';view('vDone');}
-  else alert('ยังไม่ได้รับการอนุมัติ: '+(j.error||j.status||'pending'));}
- catch(e){alert('ตรวจสถานะไม่ได้: '+e.message)}
-}
-async function loadMy(){
- const t=utoken();if(!t)return;
+async function checkStatus(){const j=await(await fetch(API+'/api/store/download?order_id='+encodeURIComponent(oid)+'&token='+encodeURIComponent(tk))).json();
+ if(j.ok){$('dl').href=j.url;$('dl').download=j.filename||'zyphere-product-pack.zip';show('vDone');}
+ else alert('ยังไม่ได้รับการอนุมัติ');}
+async function loadMy(){const t=utoken();if(!t)return;
  try{const st=await(await fetch(API+'/api/store/my/stats?token='+encodeURIComponent(t))).json();
-  if(st.ok){$('myStats').style.display='block';
-   $('myStats').textContent='ซื้อไปแล้ว '+st.books+' เล่ม · รวม '+Number(st.spent).toLocaleString('th-TH')+' บาท · คลิกสินค้า '+st.clicks+' ครั้ง';}}catch(e){}
- try{const j=await(await fetch(API+'/api/store/my-orders?token='+encodeURIComponent(t))).json();
-  if(!j.ok)throw new Error(j.error||'failed');
-  const os=j.orders||[];
-  $('myMsg').style.display=os.length?'none':'block';
-  $('myList').innerHTML=os.map(o=>{
-   const st=o.status,cls=st==='approved'?'st-ok':(st==='rejected'?'st-rej':'st-wait');
-   const dl=st==='approved'?'<button class="gbtn" onclick="getLink(\''+o.id+'\',\''+o.token+'\')">'+TXT.dl+'</button>':'';
-   return '<div class="myrow"><div><b>'+esc(o.product)+'</b><br><span class="mini">฿'+Number(o.amount).toLocaleString('th-TH')+' · '+
-     new Date(o.t*1000).toLocaleDateString('th-TH')+'</span></div><div><span class="st '+cls+'">'+esc(st)+'</span> '+dl+'</div></div>';
-  }).join('');}
- catch(e){$('myMsg').textContent=e.message}
-}
-async function getLink(id,tk2){
- try{const j=await(await fetch(API+'/api/store/download?order_id='+encodeURIComponent(id)+'&token='+encodeURIComponent(tk2))).json();
-  if(j.ok){$('dl').href=j.url;$('dl').download=j.filename||'zyphere-product-pack.zip';view('vDone');}
-  else alert('ยังไม่ได้รับการอนุมัติ');}
- catch(e){alert(e.message)}
-}
+  if(st.ok){$('myStats').style.display='block';$('myStats').textContent='ซื้อไปแล้ว '+st.books+' เล่ม · รวม '+Number(st.spent).toLocaleString('th-TH')+' บาท';}
+  const j=await(await fetch(API+'/api/store/my-orders?token='+encodeURIComponent(t))).json();
+  $('myMsg').style.display=(j.orders||[]).length?'none':'block';
+  $('myList').innerHTML=(j.orders||[]).map(o=>'<div style="padding:8px 0;border-bottom:1px solid #eef0f5">'+esc(o.product)+
+   ' — <b>฿'+Number(o.amount).toLocaleString('th-TH')+'</b> · '+esc(o.status)+'</div>').join('');}
+ catch(e){}}
+async function ownerDownload(){const j=await(await fetch(API+'/api/store/owner/download',{method:'POST',headers:{'Content-Type':'application/json'},
+ body:JSON.stringify({token:utoken()})})).json();
+ if(j.ok){$('dl').href=j.url;$('dl').download=j.filename;show('vDone');}else alert(j.error||'failed');}
 function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
-async function ownerDownload(){
- try{const j=await(await fetch(API+'/api/store/owner/download',{method:'POST',headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({token:utoken()})})).json();
-  if(!j.ok)throw new Error(j.error||'failed');
-  $('dl').href=j.url;$('dl').download=j.filename||'zyphere-product-pack.zip';view('vDone');}
- catch(e){alert('โหลดไม่ได้: '+e.message)}
-}
-(async function(){
- const h=location.hash.match(/oauth=([^&]+)/);
+(async function(){const h=location.hash.match(/oauth=([^&]+)/);
  if(h){try{const p=new URLSearchParams(decodeURIComponent(h[1]));localStorage.setItem('zy_token',p.get('token')||'');
-   history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+  history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
  if(utoken()){try{const me=await(await fetch(API+'/api/store/me?token='+encodeURIComponent(utoken()))).json();
-   if(me.ok){$('gLogin').textContent=me.name||me.email;$('gLogin').onclick=loadMy;if(me.me && me.me.is_owner) $('ownerBox').style.display='block';}}catch(e){}loadMy();}
+  if(me.ok){$('gLogin').textContent=me.name||me.email;if(me.me&&me.me.is_owner)$('ownerBox').style.display='block';}}catch(e){}loadMy();}
 })();
 </script></body></html>
