@@ -570,11 +570,11 @@ body.is-empty .box{max-width:760px!important}
   <div class="am-sep"></div>
   <button class="am" id="amMusic">🎵 สร้างเพลง</button>
   <button class="am" id="amVideo">🎬 สร้างวิดีโอ</button>
-  <button class="am" id="amIncome">💰 รายได้ / งานวิจัย</button>
+  <button class="am" id="amIncome" class="owner-only">💰 รายได้ / งานวิจัย</button>
   <button class="am" id="amBrief">📋 สรุปความเคลื่อนไหว</button>
   <div class="am-sep"></div>
-  <button class="am" id="amGoogle">🌐 ล็อกอินด้วย Google</button>
-  <button class="am" id="amLogout">⏻ ออกจากระบบ</button>
+  <button class="am" id="amGoogle" class="guest-only">🌐 ล็อกอินด้วย Google</button>
+  <button class="am" id="amLogout" class="user-only">⏻ ออกจากระบบ</button>
   <div class="am-foot">Zyphere · ผลงานจริง · ความเป็นส่วนตัว</div>
  </div>
  <div class="side-foot"><button class="acct" id="acctBtn"><span class="avatar">VY</span><span class="acct-name">vorakan_yakham</span></button><button class="bell" id="bellBtn" title="แจ้งเตือน"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button></div>
@@ -1941,4 +1941,16 @@ if(!window.__acctMenuWired){
   if(p&&b&&!p.contains(e.target)&&!b.contains(e.target))p.classList.remove('show')});
 }
 
+
+if(!window.__popupVis){
+ window.__popupVis=true;
+ function applyPopupVis(){
+  const t=(localStorage.getItem('zy_token')||'');
+  document.querySelectorAll('.acct-menu .guest-only').forEach(e=>e.style.display=t?'none':'flex');
+  document.querySelectorAll('.acct-menu .user-only').forEach(e=>e.style.display=t?'flex':'none');
+  document.querySelectorAll('.acct-menu .owner-only').forEach(e=>e.style.display=(window.zyRole==='admin')?'flex':'none');
+ }
+ setTimeout(applyPopupVis,600);
+ setInterval(applyPopupVis,10000);
+}
 </script></body></html>
