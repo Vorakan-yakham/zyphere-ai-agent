@@ -193,6 +193,17 @@ def tts_save(text, lang, path):
         return False
 
 
+def json_safe(o):
+    """Convert non-JSON values (e.g. BytesIO from the synth) to strings."""
+    if isinstance(o, dict):
+        return {str(k): json_safe(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [json_safe(v) for v in o]
+    if isinstance(o, (str, int, float, bool)) or o is None:
+        return o
+    return str(o)[:200]
+
+
 def srt_time(t):
     h = int(t//3600); m = int((t%3600)//60); s = int(t%60); ms = int((t%1)*1000)
     return "%02d:%02d:%02d,%03d" % (h, m, s, ms)
@@ -283,8 +294,8 @@ def run(brief, seconds=18, lang="th", apply=True):
         from music_studio import create as music_create
         mres = music_create("calm", 90, 4, mp3=True)
         if isinstance(mres, dict):
-            manifest["music"] = (mres.get("path") or mres.get("file") or
-                                 mres.get("mp3") or mres.get("url"))
+            _mv = (mres.get("path") or mres.get("file") or mres.get("url"))
+            manifest["music"] = _mv if isinstance(_mv, str) else None
             manifest["music_result"] = str(mres)[:300]
     except Exception:
         pass
@@ -331,7 +342,8 @@ def run(brief, seconds=18, lang="th", apply=True):
             except Exception:
                 pass
     mp = os.path.join(out, "manifest.json")
-    json.dump(manifest, open(mp, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    json.dump(json_safe(manifest), open(mp, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
     return {"ok": bool(manifest.get("video")), "job": job,
             "video": manifest.get("video"), "frames": frames,
             "overlays": overlays, "srt": srtp, "music": manifest.get("music"),
