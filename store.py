@@ -70,14 +70,27 @@ class Store:
             if o.get("status") not in ("awaiting_payment", "awaiting_verification"):
                 return {"ok": False, "error": "order already resolved", "status": o.get("status")}
             o["ref"] = str(ref or "")[:120]
-            # Owner decision: once the buyer confirms payment, unlock immediately.
-            # (No bank API — the confirmation is the buyer's declaration; records
-            # are kept so the owner can audit/revoke afterwards.)
-            o["status"] = "paid"
+            # A button click is NOT proof of payment. Money is verified only by
+            # the Omise webhook (or an explicit admin action) - see mark_paid().
+            o["status"] = "awaiting_verification"
             o["submitted_t"] = int(time.time())
         self.save()
-        return {"ok": True, "id": o["id"], "status": "paid",
-                "message": "ยืนยันการชำระเรียบร้อย ดาวน์โหลดได้ทันทีครับ"}
+        return {"ok": True, "id": o["id"], "status": o["status"],
+                "message": "รับรายแล้ว รอระบบตรวจยืนยันการชำระครับ"}
+
+    def mark_paid(self, order_id="", via="omise", charge_id=""):
+        """Set paid ONLY after a real payment event (Omise webhook / admin)."""
+        with self.lock:
+            o = next((x for x in self.orders if x.get("id") == order_id), None)
+            if not o:
+                return {"ok": False, "error": "order not found"}
+            o["status"] = "paid"
+            o["paid_via"] = str(via)[:40]
+            if charge_id:
+                o["charge_id"] = str(charge_id)[:80]
+            o["paid_t"] = int(time.time())
+        self.save()
+        return {"ok": True, "id": o["id"], "status": "paid"}
 
     def approve(self, order_id="", by="admin"):
         with self.lock:
@@ -86,7 +99,8 @@ class Store:
                 return {"ok": False, "error": "order not found"}
             if o.get("status") == "approved":
                 return {"ok": True, "status": "approved", "already": True}
-            o["status"] = "approved"
+            o["status"] = "paid"
+            o["paid_via"] = "admin:" + str(by)[:30]
             o["approved_by"] = str(by)[:60]
             o["approved_t"] = int(time.time())
         self.save()
@@ -127,7 +141,7 @@ class Store:
 
     def pending(self):
         with self.lock:
-            return [dict(o) for o in self.orders if o.get("status") == "awaiting_verification"]
+            return [dict(o) for o in self.orders if o.get("status") in ("awaiting_verification", "awaiting_payment")]
 
     def all_orders(self):
         with self.lock:
@@ -180,9 +194,9 @@ class Store:
             "login": th("เข้าสู่ระบบด้วย Google"),
             "pay_title": th("ชำระเงิน"),
             "ref_label": th("หมายเลขอ้างอิงการโอน (หรือตัวเลข 4 ตัวสุดท้าย)"),
-            "submit": th("จ่ายแล้ว ดาวน์โหลดเลย"),
-            "note": th("สแกนคิวอาร์โค้ดเพื่อโอนเงินตามยอดที่แสดง แล้วกดยืนยันเพื่อดาวน์โหลดได้ทันที"),
-            "fine": th("หมายเหตุ: ระบบไม่ได้เชื่อมต่อกับธนาคารโดยตรง การกดยืนยันถือเป็นการแจ้งชำระจากผู้ซื้อ และทางทีมงานเก็บหลักฐานไว้ตรวจย้อนหลังได้"),
+            "submit": th("ชำระเงิน / แจ้งชำระ"),
+            "note": th("สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์เมื่อยืนยันการชำระสำเร็จ"),
+            "fine": th("หมายเหตุ: การกดปุ่มเพียงอย่างเดียวไม่อาจดาวน์โหลดไฟล์ได้ ระบบจะยืนยันผ่านประตูชำระเงิน หรือให้แอดมินตรวจรายการโอนก่อนอนุมัติ"),
             "pending_h": th("อยู่ระหว่างการตรวจสอบ"),
             "pending_p": th("ส่งหลักฐานการชำระเรียบร้อยแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้ แล้วกลับมาตรวจสถานะได้ทุกเมื่อ"),
             "check": th("ตรวจสถานะคำสั่งซื้อ"),
@@ -319,14 +333,22 @@ function utoken(){{return localStorage.getItem('zy_token')||'';}}
 function googleLogin(){{const back=encodeURIComponent(location.href.split('#')[0]);
  location.href=API+'/api/auth/google?next='+back;}}
 async function submitPay(){{
- try{{const o=await(await fetch(API+'/api/store/order',{{method:'POST',headers:{{'Content-Type':'application/json'}},
-  body:JSON.stringify({{product:cur.title,amount:cur.price,user_token:utoken()}})}})).json();
+ try{{const cfg=await(await fetch(API+'/api/store/config')).json();
+  const o=await(await fetch(API+'/api/store/order',{{method:'POST',headers:{{'Content-Type':'application/json'}},
+   body:JSON.stringify({{product:cur.title,amount:cur.price,user_token:utoken()}})}})).json();
   if(!o.ok)throw new Error(o.error||'order failed');oid=o.id;tk=o.token;
+  if(cfg.omise_enabled){{
+   const p=await(await fetch(API+'/api/store/pay/omise',{{method:'POST',headers:{{'Content-Type':'application/json'}},
+    body:JSON.stringify({{order_id:oid,token:tk}})}})).json();
+   if(!p.ok)throw new Error(p.error||'payment failed');
+   if(p.authorize_uri){{location.href=p.authorize_uri;return}}
+   if(p.qr){{$('pQR').src=p.qr;alert('สแกน QR จากประตูชำระเงินเพื่อชำระครับ');return}}
+  }}
   const s=await(await fetch(API+'/api/store/submit',{{method:'POST',headers:{{'Content-Type':'application/json'}},
    body:JSON.stringify({{order_id:oid,token:tk,ref:$('pRef').value}})}})).json();
   if(!s.ok)throw new Error(s.error||'submit failed');
-  $('pOrder').textContent=oid;checkStatus();loadMy();}}
- catch(e){{alert('ส่งหลักฐานไม่ได้: '+e.message)}}
+  $('pOrder').textContent=oid;view('vWait');loadMy();}}
+ catch(e){{alert('ชำระเงินไม่ได้: '+e.message)}}
 }}
 async function checkStatus(){{
  try{{const j=await(await fetch(API+'/api/store/download?order_id='+encodeURIComponent(oid)+'&token='+encodeURIComponent(tk))).json();

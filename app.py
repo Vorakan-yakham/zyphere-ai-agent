@@ -101,6 +101,9 @@ GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "").strip()
 GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI", "").strip() or (
     "https://zyphere-ai-agent.onrender.com/api/auth/google/callback")
 GOOGLE_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+OMISE_PKEY = os.environ.get("OMISE_PUBLIC_KEY", "").strip()
+OMISE_SKEY = os.environ.get("OMISE_SECRET_KEY", "").strip()
+OMISE_ENABLED = bool(OMISE_PKEY and OMISE_SKEY)
 try:
     from platforms import Platforms
     PLATFORMS = Platforms(os.path.join(DATA_DIR, "platforms.json"))
@@ -414,6 +417,11 @@ try:
     STORE = Store(MEDIA_DIR)
 except Exception:
     STORE = None
+try:
+    from role_registry import RoleRegistry
+    ROLES = RoleRegistry(os.path.join(DATA_DIR, "roles.json"))
+except Exception:
+    ROLES = None
 
 try:
     from packbuilder import PackBuilder
@@ -3848,6 +3856,16 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/departments":
+            self._send_json(200, ROLES.list() if ROLES else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/store/config":
+            self._send_json(200, {"ok": True, "promptpay": "0941939686",
+                                  "omise_enabled": OMISE_ENABLED,
+                                  "mode": "gateway" if OMISE_ENABLED else "manual",
+                                  "note": ("ชำระผ่าน Omise PromptPay ระบบยืนยันอัตโนมัติ" if OMISE_ENABLED
+                                           else "ยังไม่ได้ตั้งค่า Omise — ต้องให้แอดมินตรวจรายการโอน")})
+            return
         if u.path == "/api/store/status":
             self._send_json(200, {"ok": True, "promptpay": "0941939686",
                                   "orders": len(STORE.orders) if STORE else 0,
@@ -4995,10 +5013,76 @@ class Handler(SimpleHTTPRequestHandler):
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
+        if u.path == "/api/departments/ensure":
+            role = str(body.get("role") or "")
+            res = ROLES.ensure(role) if ROLES else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and res.get("created") and ROLES:
+                res["push"] = ROLES.push()
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/store/pay/omise":
+            # Create a real Omise PromptPay charge. Money confirmation comes
+            # from Omise webhook, never from a browser button click.
+            if not OMISE_ENABLED:
+                self._send_json(400, {"ok": False, "error": "Omise not configured"})
+                return
+            oid = str(body.get("order_id") or "")
+            o = next((x for x in (STORE.all_orders() if STORE else []) if x.get("id") == oid), None)
+            if not o:
+                self._send_json(404, {"ok": False, "error": "order not found"})
+                return
+            try:
+                import base64 as _b64o
+                auth = "Basic " + base64.b64encode((OMISE_SKEY + ":").encode()).decode()
+                r = requests.post("https://api.omise.co/charges",
+                    headers={"Authorization": auth},
+                    data={"amount": int(o.get("amount", 0)) * 100,
+                          "currency": "thb", "source[type]": "promptpay",
+                          "description": "Zyphere " + str(o.get("product", ""))[:80],
+                          "metadata[order_id]": oid},
+                    timeout=30)
+                j = r.json()
+                if not r.ok or not j.get("id"):
+                    raise RuntimeError(str(j.get("message", r.text))[:160])
+                with STORE.lock:
+                    for x in STORE.orders:
+                        if x.get("id") == oid:
+                            x["charge_id"] = j["id"]
+                STORE.save()
+                self._send_json(200, {"ok": True, "charge_id": j.get("id"),
+                                      "status": j.get("status"),
+                                      "authorize_uri": j.get("authorize_uri", ""),
+                                      "qr": (j.get("source") or {}).get("scannable_code", {}).get("image", {}).get("download_uri", "")})
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": _clip(str(e), 180)})
+            return
+        if u.path == "/api/pay/omise/webhook":
+            # Public webhook: verify event with Omise, then mark the order paid.
+            try:
+                ev = body.get("data") or body
+                eid = ev.get("id", "")
+                if not OMISE_SKEY or not eid:
+                    raise RuntimeError("bad event")
+                auth = "Basic " + base64.b64encode((OMISE_SKEY + ":").encode()).decode()
+                r = requests.get("https://api.omise.co/events/" + eid,
+                                 headers={"Authorization": auth}, timeout=20)
+                ej = r.json()
+                if not r.ok:
+                    raise RuntimeError("event verify failed")
+                data = ej.get("data") or {}
+                key = data.get("key") or ""
+                obj = data.get("object") or {}
+                oid = str((obj.get("metadata") or {}).get("order_id", ""))
+                if key == "charge.complete" and obj.get("paid") and oid:
+                    STORE.mark_paid(oid, via="omise", charge_id=obj.get("id", ""))
+                self._send_json(200, {"ok": True, "event": key, "order": oid})
+            except Exception as e:
+                self._send_json(200, {"ok": True, "ignored": _clip(str(e), 120)})
+            return
         if u.path in ("/api/store/approve", "/api/store/reject"):
             # ADMIN ONLY — verify the PromptPay transfer then unlock download
             tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            if not admin_token_ok(tok):
+            if not store_admin_ok(tok):
                 self._send_json(403, {"ok": False, "error": "forbidden — admin token required"})
                 return
             oid = str(body.get("order_id") or "")
@@ -5550,6 +5634,23 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(msgs, list) or len(msgs) > 40:
                 self._send_json(400, {"ok": False, "error": "invalid messages"})
                 return
+            # Auto-register any department the owner mentions in chat.
+            if ROLES:
+                try:
+                    import re as _rr
+                    text = " ".join(str(m.get("content", "")) for m in msgs[-4:]
+                                    if isinstance(m, dict))[:4000]
+                    found = _rr.findall(r"(?:ฝ่าย|ทีม|แผนก|นัก)([ก-๙A-Za-z][ก-๙A-Za-z ]{1,24})", text)
+                    seen = set()
+                    for f in found[:4]:
+                        name = _rr.sub(r"\s+", " ", f).strip()
+                        if name and name not in seen and len(name) >= 2:
+                            seen.add(name)
+                            r = ROLES.ensure(name)
+                            if r.get("created"):
+                                ROLES.push()
+                except Exception:
+                    pass
             clean = []
             for m in msgs[-20:]:
                 if not isinstance(m, dict):
