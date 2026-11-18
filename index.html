@@ -1918,7 +1918,7 @@ $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
 $('agentBtn').onclick=()=>{agentOn=!agentOn;setK('zy_agent',agentOn?'1':'0');$('agentBtn').classList.toggle('on',agentOn);$('agentMode').value=agentOn?'on':'off';toast(agentOn?'เปิดโหมด Agent แล้ว (ค้นเว็บ/ใช้เครื่องมือ/จำข้อมูลเอง)':'ปิดโหมด Agent แล้ว'); if(agentOn)loadMemory()};
-$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};$('search').oninput=renderList;$('reopenRail').onclick=()=>{const sd=$('side');sd.classList.remove('hide');sd.classList.remove('open');sd.classList.add('expanded');sd.classList.remove('rail')};
+$('newBtn').onclick=()=>{cur=null;view();$('side').classList.remove('open')};var _se=document.getElementById('search');if(_se)_se.oninput=renderList;
 $('menu').onclick=()=>{const sd=$('side');sd.classList.toggle('hide');sd.classList.toggle('open');};
 function paintK(id){const el=$('k-'+id),k=key(id),n=P[id].n;el.value='';el.placeholder=k?n+' ✓ บันทึกแล้ว ('+maskK(k)+')':n;$('kx-'+id).style.display=k?'':'none'}
 function commitK(id){const el=$('k-'+id),v=el.value.trim();if(!v)return false;setK('zyphere_'+id+'_key',v);paintK(id);return true}
