@@ -3917,6 +3917,26 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, RP.list() if RP
                             else {"ok": False, "error": "unavailable"})
             return
+        if u.path == "/api/governance/sync-stats":
+            try:
+                import engine_stats as _es
+                rs = RESEARCH.stats() if RESEARCH else {}
+                live = {"research_documents": int(rs.get("documents", 0) or 0),
+                        "by_reliability": rs.get("by_reliability", {}),
+                        "knowledge_items": len(load_knowledge().get("items") or []),
+                        "shop_orders": SHOP.stats().get("orders", 0) if SHOP else 0,
+                        "learning_sessions": len(CO.log) if CO else 0,
+                        "learning_departments": len({r.get("dept") for r in CO.log
+                                                     if r.get("dept")}) if CO else 0,
+                        "doctor_lessons": sum(len(r.get("lessons", [])) for r in CO.log
+                                              if r.get("level") == "doctor") if CO else 0,
+                        "cross_lessons": sum(len(r.get("lessons", [])) for r in CO.log
+                                             if r.get("level") == "cross-disciplinary") if CO else 0}
+                ok, code = _es.publish_live(live)
+                self._send_json(200 if ok else 400, {"ok": ok, "code": code, "stats": live})
+            except Exception as e:
+                self._send_json(400, {"ok": False, "error": str(e)[:160]})
+            return
         if u.path == "/api/engines/status":
             self._send_json(200, FE.status() if FE
                             else {"ok": False, "error": "unavailable"})

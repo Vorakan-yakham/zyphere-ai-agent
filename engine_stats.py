@@ -66,5 +66,27 @@ def main():
     print("published", r.status_code, stats)
 
 
+def publish_live(live):
+    """Publish stats gathered from the LIVE process (KV-backed modules)."""
+    h = {"Authorization": "Bearer " + token(), "Accept": "application/vnd.github+json"}
+    url = BASE + "engine_stats.json"
+    sha = None
+    try:
+        g = requests.get(url, headers=h, timeout=15)
+        if g.ok:
+            sha = (g.json() or {}).get("sha")
+    except Exception:
+        pass
+    data = {"t": int(time.time()), "live": True, "note": "aggregate counts only"}
+    data.update(live)
+    p = {"message": "Live engine stats " + str(int(time.time())),
+         "content": base64.b64encode(json.dumps(data, ensure_ascii=False).encode()).decode(),
+         "branch": "main"}
+    if sha:
+        p["sha"] = sha
+    r = requests.put(url, headers=h, json=p, timeout=30)
+    return r.ok, r.status_code
+
+
 if __name__ == "__main__":
     main()
