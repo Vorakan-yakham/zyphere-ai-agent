@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-18T17:43:53.265383Z
+เวลา: 2026-11-18T17:47:34.711100Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 30 นาที)
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -11,11 +11,11 @@
 | devices | {"ok": false, "summary": {}} |
 | knowledge | {"ok": true, "summary": {}} |
 | disciplines | {"ok": true, "summary": {"count": 6}} |
-| books | {"ok": false, "summary": {}} |
+| books | {"ok": true, "summary": {}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
-| media | {"ok": false, "error": "Object of type BytesIO is not JSON serializable"} |
+| media | {"ok": false, "error": "'(' was never closed (media_twin_track.py, line 54)"} |
 | nudge | {"ok": true, "summary": {"idle": []}} |
-| qa | {"ok": true, "summary": {"keep": 17, "fix": 1}} |
+| qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
