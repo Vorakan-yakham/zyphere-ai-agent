@@ -145,6 +145,14 @@ class Store:
         return {"ok": True, "url": ZIPBALL, "filename": "zyphere-product-pack.zip",
                 "product": o.get("product", ""), "status": "approved"}
 
+    def reset_demo(self):
+        """Admin: clear test orders/clicks so dashboard starts clean."""
+        with self.lock:
+            self.orders = []
+            self.clicks = []
+        self.save()
+        return {"ok": True, "cleared": True}
+
     def click(self, product="", email=""):
         with self.lock:
             self.clicks.append({"product": str(product)[:160], "email": str(email or "")[:120],

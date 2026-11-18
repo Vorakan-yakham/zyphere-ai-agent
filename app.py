@@ -5042,6 +5042,14 @@ class Handler(SimpleHTTPRequestHandler):
                 res["push"] = ROLES.push()
             self._send_json(200 if res.get("ok") else 400, res)
             return
+        if u.path == "/api/store/reset":
+            tok = str(body.get("token") or "")
+            if not store_admin_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            self._send_json(200, STORE.reset_demo() if STORE
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/store/click":
             ut = str(body.get("user_token") or "")
             me = USERS.me(ut) if (USERS and ut) else None

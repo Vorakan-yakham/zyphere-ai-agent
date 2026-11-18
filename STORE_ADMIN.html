@@ -34,6 +34,7 @@ code{background:#f1f5f9;border-radius:6px;padding:2px 6px;font-size:11px}
  <div class="cards" id="kpis"></div>
  <div class="panel"><h2>สินค้าที่ถูกคลิกมากที่สุด</h2><div id="top"></div></div>
  <div class="panel"><h2>ออเดอร์ทั้งหมด</h2><div id="list"></div></div>
+ <button class="no" style="width:100%" onclick="resetDemo()">ล้างข้อมูลทดสอบ</button>
 </div>
 </div>
 <script>
@@ -66,6 +67,14 @@ async function load(){
      '</td><td>'+esc(x.ref||'-')+'</td><td><span class="st '+cls+'">'+esc(st)+'</span></td><td>'+act+'</td></tr>';
    }).join('')+'</table>':'ยังไม่มีออเดอร์';
  }catch(e){alert('โหลดไม่ได้: '+e.message)}
+}
+async function resetDemo(){
+ if(!confirm('ล้างออเดอร์และข้อมูลคลิกทั้งหมดใช่ไหม?'))return;
+ const t=document.getElementById('tok').value.trim();
+ try{const r=await(await fetch(API+'/api/store/reset',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({token:t})})).json();
+  if(!r.ok)throw new Error(r.error||'failed');alert('ล้างข้อมูลทดสอบแล้ว');load();}
+ catch(e){alert(e.message)}
 }
 async function act(a,id){
  const t=document.getElementById('tok').value.trim();
