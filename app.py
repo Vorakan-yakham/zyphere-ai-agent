@@ -4040,6 +4040,14 @@ class Handler(SimpleHTTPRequestHandler):
             out.update(extra)
             self._send_json(200, out)
             return
+        if u.path == "/api/conversation/status":
+            try:
+                from conversation_learning import CL
+                _cl = CL.status()
+            except Exception:
+                _cl = {"ok": False, "error": "unavailable"}
+            self._send_json(200, _cl)
+            return
         if u.path == "/api/hr/status":
             try:
                 from hr_head import HR
@@ -5542,6 +5550,15 @@ class Handler(SimpleHTTPRequestHandler):
             res = CD.debate(str(body.get("issue") or "") or None) if CD \
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/conversation/learn":
+            try:
+                from conversation_learning import CL
+                _r = CL.store_chat(body.get("user") or body.get("text"),
+                                   body.get("assistant") or "")
+            except Exception as e:
+                _r = {"ok": False, "error": str(e)[:120]}
+            self._send_json(200, _r)
             return
         if u.path == "/api/council/autonomous":
             threading.Thread(target=_run_autonomous_council, args=(True,), daemon=True).start()

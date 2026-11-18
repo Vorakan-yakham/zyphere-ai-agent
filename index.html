@@ -1530,6 +1530,8 @@ async function send(voice){
  catch(e){ok=false;reply=e.name==='AbortError'?(reply||'(หยุดแล้ว)'):'เกิดข้อผิดพลาด:\n'+redact(e.message)}
  if(ok&&!local&&knowCtx&&reply.length<8000&&getK('zy_critique')==='1')reply=await critiqueAnswer(t,reply,knowCtx);
   setBusy(false);c.m.push({r:'assistant',c:reply,q:t});save();view();
+  // Zyphere learns from this real conversation turn (local backend only).
+  try{fetch(localBase()+'/api/conversation/learn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:t,assistant:reply})}).catch(()=>{})}catch(e){}
  if(ok&&(voice||voiceOn)){const b=$('col').lastChild.querySelector('.spk');if(voice)orb('speak');if(streamSpoke)flushStreamSpeak();else speak(reply,b)}
   if(ok){try{await api('/api/brain/auto',{method:'POST',body:JSON.stringify({q:t,a:reply,voice:!!voice,lang:lastLang})})}catch(e){}}
  if(ok) await maybeAutoRemember(t,reply);

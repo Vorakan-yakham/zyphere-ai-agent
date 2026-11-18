@@ -304,6 +304,19 @@ def debate(findings):
         if not tried:
             positions.append({"dept": d["th"], "provider": name, "text": "ไม่ได้รับคำตอบจากโมเดล"})
     digest = "\n\n".join("### %s (%s)\n%s" % (p["dept"], p["provider"], p["text"]) for p in positions)
+    try:
+        from conversation_learning import CL
+        cl = CL.status()
+        if cl.get("corrections"):
+            digest += "\n\n### คำแก้ไขจากผู้ใช้ (ต้องปฏิบัติ ไม่ใช่แค่จำ)\n"
+            digest += "จำนวนบทสนทนาที่ผู้ใช้แก้ไข: %d\n" % cl.get("corrections")
+            for x in reversed(CL.log):
+                if x.get("rule"):
+                    digest += "- " + str(x.get("user", ""))[:150] + " → " + str(x.get("rule", ""))[:130] + "\n"
+                if digest.count("→") > 12:
+                    break
+    except Exception:
+        pass
     mem = findings.get("recall") or {}
     if mem.get("previous") or mem.get("lessons"):
         digest += "\n\n### ความจำจากรอบก่อน (ต้องใช้ ไม่ใช่เขียนทิ้ง)\n"
