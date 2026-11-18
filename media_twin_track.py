@@ -53,7 +53,7 @@ def run(brief="Zyphere สายลมสร้างสรรค์", apply=Tru
     t1.start(); t2.start(); t1.join(); t2.join()
     result = _clean({"t": int(time.time()), "brief": brief, "graphics": g, "video": v,
               "parallel": True,
-              "status": "both" if g.get("file") and v.get("ok") else "partial"}
+              "status": "both" if g.get("file") and v.get("ok") else "partial"})
     os.makedirs(os.path.dirname(DATA), exist_ok=True)
     json.dump(result, open(DATA, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     md = ["# พัฒนากราฟฟิกและวิดีโอคู่ขนาน", "",
