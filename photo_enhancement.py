@@ -41,14 +41,41 @@ def e01_fetch(query):
     """
     import own_image_lab as LAB
     seed = int(hashlib.md5(query.encode()).hexdigest()[:8], 16)
-    pal = LAB.palette("warm" if any(k in query for k in ("warm","golden","sunset","อบอุ่น")) else "cool", seed)
-    im = LAB.mesh(W := 1200, H := 1500, pal)
-    im = LAB.texture(im, seed)
-    im = LAB.depth(im, pal)
-    im = LAB.silhouette(im, pal)
-    im = LAB.ornaments(im, pal)
-    return im, {"source": "in-house algorithm (own_image_lab)", "license": "Zyphere own",
-                "query": query}
+    padef generate_image_from_query(query: str, seed: int) -> Tuple[Image.Image, Dict[str, str]]:
+    """
+    Generate a stylized image based on a textual query.
+
+    Parameters
+    ----------
+    query : str
+        Text describing the desired style (e.g. "warm", "golden", "sunset", "อบอุ่น").
+    seed : int
+        Random seed for reproducible palette and texture generation.
+
+    Returns
+    -------
+    Tuple[Image.Image, Dict[str, str]]
+        The generated image and a metadata dictionary.
+    """
+    # Determine palette type from query keywords
+    palette_type = "warm" if any(k in query.lower() for k in ("warm", "golden", "sunset", "อบอุ่น")) else "cool"
+
+    # Create base image with specified dimensions
+    width, height = 1200, 1500
+    im = LAB.mesh(width=width, height=height, palette=palette_type, seed=seed)
+
+    # Apply successive stylization steps
+    im = LAB.texture(im, seed=seed)
+    im = LAB.depth(im, palette=palette_type)
+    im = LAB.silhouette(im, palette=palette_type)
+    im = LAB.ornaments(im, palette=palette_type)
+
+    metadata = {
+        "source": "in-house algorithm (own_image_lab)",
+        "license": "Zyphere own",
+        "query": query
+    }
+    return im, metadata
 
 
 def e02_crop(im, w=1200, h=1500):
