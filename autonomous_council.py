@@ -46,6 +46,11 @@ DEPARTMENTS = {
         "sources": ["PRODUCTS.md", "ZY_TEMPLATE.html"],
         "job": "ตรวจว่าลูกค้าเห็นราคาจริง คำอธิบายคุณค่า และลิงก์ดาวน์โหลดที่ใช้งานได้หรือไม่",
     },
+    "income": {
+        "th": "ฝ่ายรายได้ (คิดเองจากข้อมูลจริง)",
+        "sources": ["PROMO.md", "book_pricing.json", "PRODUCTS.md"],
+        "job": "คิดวิธีสร้างรายได้จากสินค้าที่มีอยู่จริง โดยไม่รอคำสั่ง และห้ามอ้างยอดขายที่ไม่มี",
+    },
 }
 
 
@@ -170,7 +175,101 @@ def observe(tree, raw):
         "no_asset": sum(1 for p in products if not p.get("asset_url")),
         "template_bytes": tree.get("ZY_TEMPLATE.html", 0),
         "source": "PRODUCTS.md + ZY_TEMPLATE.html"}
+    promo = raw.get("PROMO.md") or ""
+    try:
+        bpricing = json.loads(raw.get("book_pricing.json") or "{}").get("rows", [])
+    except Exception:
+        bpricing = []
+    findings["income"] = {
+        "promo_sections": promo.count("## "),
+        "book_pricing_rows": len(bpricing),
+        "sellable_assets": sum(1 for p in products if p.get("asset_url")),
+        "store_items": len(products),
+        "priced_items": sum(1 for p in products if p.get("price")),
+        "source": "PROMO.md + book_pricing.json + PRODUCTS.md"}
     return findings, products, pricing, books
+
+
+def rank_departments(findings):
+    """Real competition: score each department from what it MEASURED, not
+    from opinions. Winner's method is taught to losers with fresh evidence."""
+    def score(x):
+        return max(0, min(100, int(x)))
+    prod = findings.get("production", {})
+    design = findings.get("design", {})
+    market = findings.get("market", {})
+    qa = findings.get("qa", {})
+    sales = findings.get("sales", {})
+    total = max(1, prod.get("books", 0))
+    good = total - len(prod.get("below_3000_words", []))
+    rows = [
+        {"code": "production", "dept": "ฝ่ายผลิตหนังสือ",
+         "score": score(100 * good / total),
+         "metric": "เล่มเนื้อหา >=3000 คำ %d/%d" % (good, total)},
+        {"code": "design", "dept": "ฝ่ายออกแบบผลิตภัณฑ์",
+         "score": score(100 if design.get("html", 0) >= 46 and design.get("covers", 0) >= 46 else 60),
+         "metric": "book.html %d / cover %d / มาตรฐาน %s" % (
+             design.get("html", 0), design.get("covers", 0), design.get("standard"))},
+        {"code": "market", "dept": "ฝ่ายการตลาดและราคา",
+         "score": score(100 - 4 * market.get("price_mismatches", 0) - 2 * market.get("empty_assets", 0)),
+         "metric": "ราคาไม่ตรง %d / ไม่มีลิงก์ %d / desc สั้น %d" % (
+             market.get("price_mismatches", 0), market.get("empty_assets", 0),
+             market.get("weak_desc", 0))},
+        {"code": "qa", "dept": "ฝ่ายทดสอบและคุณภาพ",
+         "score": score(100 - 15 * len(qa.get("below_target", [])) + (10 if qa.get("gate") else 0)),
+         "metric": "ตัวชี้วัดต่ำเป้า %d" % len(qa.get("below_target", []))},
+        {"code": "sales", "dept": "ฝ่ายขายและหน้าร้าน",
+         "score": score(100 - 5 * sales.get("no_asset", 0)),
+         "metric": "สินค้าไม่มีไฟล์ %d / live %d" % (
+             sales.get("no_asset", 0), sales.get("live", 0))},
+        {"code": "income", "dept": "ฝ่ายรายได้",
+         "score": score(min(100, 3 * findings.get("income", {}).get("sellable_assets", 0)
+                            + findings.get("income", {}).get("promo_sections", 0))),
+         "metric": "สินค้ามีไฟล์ %d / ราคา %d / โปรโม %d" % (
+             findings.get("income", {}).get("sellable_assets", 0),
+             findings.get("income", {}).get("priced_items", 0),
+             findings.get("income", {}).get("promo_sections", 0))},
+    ]
+    rows.sort(key=lambda r: r["score"], reverse=True)
+    for i, r in enumerate(rows, 1):
+        r["rank"] = i
+    winner = rows[0]
+    # The losers learn the winner's measurable method — with NEW evidence,
+    # not a copy of last round's lesson.
+    for r in rows[1:]:
+        _teach(r["code"],
+               "รอบการแข่งขัน: ฝ่าย%s ชนะด้วย %s (%d คะแนน) — วิธีที่ต้องนำไปปรับคือ %s "
+               "ของฝ่ายคุณตอนนี้คือ %s" % (winner["dept"], winner["metric"], winner["score"],
+                                        winner["dept"], r["metric"]))
+    return {"winner": winner["dept"], "winner_score": winner["score"],
+            "board": rows,
+            "rule": "คะแนนมาจากตัววัดจริงของแต่ละฝ่ายเท่านั้น — ฝ่ายที่แพ้ต้องเรียนวิธีของฝ่ายชนะ"}
+
+
+def recall_prior():
+    """Remember: reload last round's decision and each department's own
+    lessons BEFORE debating. Without this the system is a goldfish — it writes
+    files but never uses what it learned."""
+    out = {"previous": None, "lessons": []}
+    try:
+        prev = json.load(open(DATA, encoding="utf-8"))
+        comp = (prev.get("findings") or {}).get("competition") or {}
+        out["previous"] = {
+            "t": prev.get("t"),
+            "winner": comp.get("winner"),
+            "products": prev.get("products_rebuilt"),
+            "consensus": (prev.get("debate") or {}).get("consensus", "")[:700],
+        }
+    except Exception:
+        pass
+    for code, d in DEPARTMENTS.items():
+        try:
+            j = json.load(open(os.path.join(DEPT_BRAIN, code + ".json"), encoding="utf-8"))
+            for e in (j.get("episodes") or [])[-2:]:
+                out["lessons"].append({"dept": d["th"], "text": str(e.get("text", ""))[:260]})
+        except Exception:
+            pass
+    return out
 
 
 def debate(findings):
@@ -205,10 +304,32 @@ def debate(findings):
         if not tried:
             positions.append({"dept": d["th"], "provider": name, "text": "ไม่ได้รับคำตอบจากโมเดล"})
     digest = "\n\n".join("### %s (%s)\n%s" % (p["dept"], p["provider"], p["text"]) for p in positions)
+    mem = findings.get("recall") or {}
+    if mem.get("previous") or mem.get("lessons"):
+        digest += "\n\n### ความจำจากรอบก่อน (ต้องใช้ ไม่ใช่เขียนทิ้ง)\n"
+        if mem.get("previous"):
+            digest += "คำตัดสินก่อนหน้า: " + json.dumps(mem["previous"], ensure_ascii=False) + "\n"
+        for x in mem.get("lessons", []):
+            digest += "- %s เคยเรียนรู้: %s\n" % (x["dept"], x["text"])
+        digest += "ถ้าจะพูดเรื่องเดิม ให้ระบุว่าปรับปรุงจากสิ่งที่จำได้อย่างไร\n"
+    comp = findings.get("competition") or {}
+    if comp.get("board"):
+        digest += "\n\n### ตารางแข่งขันฝ่าย (คะแนนจริง)\n" + "\n".join(
+            "%d. %s — %d คะแนน (%s)" % (r["rank"], r["dept"], r["score"], r["metric"])
+            for r in comp["board"]) + "\nผู้ชนะ: " + str(comp.get("winner"))
+    heads = (findings.get("supervisors") or {}).get("heads") or []
+    if heads:
+        digest += "\n\n### คำถามจากหัวหน้าฝ่าย 10 คน (ต้องตอบให้ครบ ไม่ใช่ข้าม)\n" + "\n".join(
+            "- %s ถาม: %s | วัดได้: %s | ซ้ำ: %s" % (
+                h["dept"], h["question"], h["detail"], h.get("repeated"))
+            for h in heads)
     syn = BE.ensemble([
-        {"role": "system", "content": "คุณเป็นประธานสภาหลายแผนก รวมข้อเสนอที่ขัดกันเป็นคำตัดสินที่นำไปทำได้จริง "
-         "เพื่อให้หนังสือขายได้ด้วยคุณภาพจริง ระบุ 'สิ่งที่ต้องแก้ใน PRODUCTS.md' ให้ชัด "
-         "ห้ามสร้างยอดขายปลอม ตอบภาษาไทย กระชับ"},
+        {"role": "system", "content": "คุณเป็นประธานสภาหลายแผนกที่คิดเองได้จากหลักฐาน "
+         "รวมข้อเสนอที่ขัดกันเป็นคำตัดสินที่นำไปทำได้จริง "
+         "ต้องเสนอ 'สิ่งที่แต่ละฝ่ายควรพัฒนาให้ดีกว่าฝ่ายอื่น' (differentiated capability) "
+         "เป็นข้อเฉพาะของแต่ละฝ่าย พร้อมวิธีวัดผลที่เป็นตัวเลขได้ "
+         "และตอบคำถามของหัวหน้าฝ่ายทุกคนด้วยหลักฐานใหม่ ไม่ใช่ความรู้เดิมซ้ำ "
+         "ระบุสิ่งที่ต้องแก้ใน PRODUCTS.md ให้ชัด ห้ามสร้างยอดขายปลอม ตอบภาษาไทย กระชับ"},
         {"role": "user", "content": digest},
     ], want_synthesis=True)
     return {"ok": True, "positions": positions,
@@ -278,6 +399,43 @@ def rebuild_products(pricing, books, findings, raw=None):
     return rows
 
 
+def build_income_plan(findings, products, debate):
+    """Income department reasons from real metrics. No invented revenue."""
+    inc = findings.get("income", {})
+    qa = findings.get("qa", {})
+    comp = findings.get("competition") or {}
+    return """# แผนสร้างรายได้ที่สภาคิดเอง (อัปเดตอัตโนมัติ)
+
+รอบ: %s · ฝ่ายชนะการแข่งขัน: %s (%s คะแนน)
+
+## หลักฐานที่มีจริงตอนนี้
+- สินค้าใน manifest: %d รายการ / มีลิงก์ไฟล์จริง: %d / มีราคา: %d
+- ส่วนโปรโมใน PROMO.md: %d / book_pricing.json: %d แถว
+- QA gate: %s → สถานะสินค้า: %s (ห้ามขายถ้า review)
+
+## สิ่งที่ทำได้ทันทีโดยไม่ต้องรอคำสั่ง
+1. **ปิดจุดอ่อนก่อนขาย**: %s — ต้องทำให้ gate ผ่านก่อนปล่อย live
+2. **ของจริงที่ขายได้**: ใช้ลิงก์ raw.githubusercontent ที่มีอยู่จริง + ราคาจาก market_price + คำอธิบายจากหัวข้อเนื้อหา (ไม่แต่ง)
+3. **หน้าร้าน**: ใช้ ZY_TEMPLATE ที่ต้องแก้ nav ให้เข้ากับ theme ก่อนโปรโมท
+4. **ช่องทางฟรี**: GitHub README/Pages + QR PromptPay (0941939686) + โพสต์จาก PROMO.md ที่มีอยู่
+5. **วัดผลจริง**: /api/store/stats (orders), /api/store/config — ห้ามสร้างยอดขายหรือรีวิวปลอม
+
+## ที่ยังต้องเจ้าของ (ไม่แกล้งทำ)
+- Omise keys สำหรับ webhook ยืนยันจ่ายอัตโนมัติ (ตอนนี้ manual verification)
+- token autopost สำหรับโพสต์อัตโนมัติจริง
+
+## สิ่งที่สภาตัดสินรอบนี้
+%s
+""" % (time.strftime("%Y-%m-%d %H:%M", time.localtime()),
+       comp.get("winner", "—"), comp.get("winner_score", 0),
+       len(products), inc.get("sellable_assets", 0), inc.get("priced_items", 0),
+       inc.get("promo_sections", 0), inc.get("book_pricing_rows", 0),
+       findings.get("qa", {}).get("below_target", []),
+       products[0].get("status") if products else "none",
+       "; ".join(str(x[0]) + ":" + str(x[2]) for x in qa.get("below_target", [])) or "ไม่มีข้อมูล",
+       (debate.get("consensus") or "")[:1400])
+
+
 def _teach(code, text):
     try:
         from local_brain import LocalBrain
@@ -297,16 +455,58 @@ def run(apply=True):
            ["PRODUCTS.md", "pricing.json", "QUALITY_REPORT.md", "REVIEW.md",
             "BOOK_DESIGN_STANDARD.md", "PROMO.md", "ZY_TEMPLATE.html"] + book_paths}
     findings, products, pricing, books = observe(tree, raw)
+    # Ten department heads question and escalate in their own right — the
+    # council must debate WITH them, not replace them.
+    try:
+        from supervisors import SUP
+        sv = SUP.nag_all({"price_mismatch": findings["market"]["price_mismatches"],
+                          "gate_ok": False, "workflow_fail": 0})
+        findings["supervisors"] = {"round": sv.get("round"),
+                                   "working": sv.get("working"),
+                                   "repeated": sv.get("repeated"),
+                                   "heads": [{"dept": r["dept"], "question": r["question"],
+                                              "detail": r["detail"], "action": r["action"],
+                                              "repeated": r.get("repeated")}
+                                             for r in sv.get("results", [])]}
+    except Exception:
+        findings["supervisors"] = {"error": "supervisors unavailable"}
+    findings["competition"] = rank_departments(findings)
+    findings["recall"] = recall_prior()
     deb = debate(findings)
     new_products = rebuild_products(pricing, books, findings, raw)
     applied = {"ok": False, "status": None}
+    plan_write = {"ok": False, "status": None}
     if apply and new_products:
         applied = gh_put("PRODUCTS.md",
                          json.dumps(new_products, ensure_ascii=False, indent=2) + "\n",
                          "Autonomous council: align store prices, real download links and value descriptions")
+        plan_write = gh_put("INCOME_PLAN.md", build_income_plan(findings, new_products, deb),
+                            "Council: income strategy derived from real metrics (no fake sales)")
+    # Zyphere improves its own code using what the council just learned —
+    # guarded by self_coder (compile -> regression -> push -> revert on failure).
+    selfcode = {"ok": False, "error": "not run"}
+    try:
+        from self_coder import SelfCoder
+        # Focus the self-coder on the department the council found failing —
+        # it improves the code responsible for the real gap, not random files.
+        if findings.get("qa", {}).get("below_target"):
+            focus = "quality_ops.py"
+        elif (findings.get("supervisors") or {}).get("repeated"):
+            focus = "supervisors.py"
+        else:
+            focus = "autonomous_council.py"
+        selfcode = SelfCoder().cycle(dry=not apply, focus=focus)
+        selfcode["focus"] = focus
+    except Exception as e:
+        selfcode = {"ok": False, "error": str(e)[:160]}
+    mem = findings.get("recall") or {}
+    cons = deb.get("consensus") or ""
+    recall_used = bool(mem.get("previous")) and any(
+        k in cons for k in ("รอบก่อน", "จำได้", "เรียนรู้", "ปรับปรุง", "ซ้ำ"))
     result = {"ok": True, "t": int(time.time()), "findings": findings,
               "debate": deb, "products_rebuilt": len(new_products),
-              "applied": applied}
+              "applied": applied, "income_plan": plan_write,
+              "selfcode": selfcode, "recall_used": recall_used}
     with LOCK:
         os.makedirs(os.path.dirname(OUT), exist_ok=True)
         md = ["# สภาอัตโนมัติข้ามแผนก (Autonomous Council)", "",
@@ -316,6 +516,23 @@ def run(apply=True):
             md += ["## " + d["th"], "- แหล่ง: " + ", ".join(d["sources"]),
                    "- วัดได้: " + json.dumps(findings[code], ensure_ascii=False)[:900], ""]
             _teach(code, d["th"] + ": " + json.dumps(findings[code], ensure_ascii=False))
+        comp = result.get("findings", {}).get("competition") or {}
+        if comp.get("board"):
+            md += ["## การแข่งขันฝ่าย (real metrics)", "",
+                   "ผู้ชนะรอบนี้: **%s** (%d คะแนน)" % (
+                       comp.get("winner"), comp.get("winner_score", 0)), "",
+                   "| อันดับ | ฝ่าย | คะแนน | ตัววัดจริง |", "|---|---|---|---|"]
+            for r in comp["board"]:
+                md += ["| %d | %s | %d | %s |" % (
+                    r["rank"], r["dept"], r["score"], r["metric"])]
+            md += ["", "ฝ่ายที่แพ้ถูกสอนวิธีของฝ่ายชนะด้วยหลักฐานใหม่ผ่าน dept_brains/", ""]
+        sv = result.get("findings", {}).get("supervisors") or {}
+        if sv.get("heads"):
+            md += ["## คำถามจากหัวหน้าฝ่าย 10 คน", ""]
+            for h in sv["heads"]:
+                md += ["- **%s** ถาม: %s | วัดได้: %s | ซ้ำ: %s" % (
+                    h["dept"], h["question"], h["detail"], h.get("repeated"))]
+            md += [""]
         md += ["## การถกเถียง", ""]
         for p in deb.get("positions", []):
             md += ["### " + p["dept"] + " (" + p["provider"] + ")", p["text"], ""]
@@ -326,7 +543,15 @@ def run(apply=True):
                    bool(new_products and new_products[0].get("gate_ok")),
                    new_products[0].get("status") if new_products else "none"),
                "- ราคาจาก council_review.market_price · ลิงก์ซอร์สจริง · คำอธิบายจากหัวข้อเนื้อหาจริง",
-               "- GitHub write: " + json.dumps(applied, ensure_ascii=False), ""]
+               "- GitHub write: " + json.dumps(applied, ensure_ascii=False), "",
+               "## ความจำที่ถูกนำไปใช้จริง", "",
+               "recall_used = %s — อ่านคำตัดสิน/บทเรียนรอบก่อนก่อนถก ไม่ใช่เขียนแล้วลืม" % result.get("recall_used"), "",
+               "## แผนรายได้ที่คิดเอง", "",
+               "- INCOME_PLAN.md: " + json.dumps(result.get("income_plan"), ensure_ascii=False),
+               "- วัดจากไฟล์/ราคา/โปรโมจริง ห้ามอ้างยอดขายปลอม", "",
+               "## Zyphere พัฒนาตัวเอง", "",
+               "- self_coder (guard → compile → regression → push → revert ถ้าพัง): " +
+               json.dumps(result.get("selfcode"), ensure_ascii=False)[:600], ""]
         open(OUT, "w", encoding="utf-8").write("\n".join(md))
         json.dump(result, open(DATA, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     return result

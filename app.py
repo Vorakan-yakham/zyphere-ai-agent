@@ -4004,10 +4004,21 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, CHIEF.status() if CHIEF else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/council/autonomous/status":
-            self._send_json(200, {"ok": True, "busy": _council_busy,
-                                  "last": _council_last,
-                                  "departments": 5,
-                                  "note": "แต่ละแผนกเรียนต่างแหล่ง แล้วถกกันก่อนแก้ repo จริง"})
+            extra = {}
+            try:
+                import autonomous_council as _AC
+                _j = json.load(open(_AC.DATA, encoding="utf-8"))
+                extra = {"competition": (_j.get("findings") or {}).get("competition"),
+                         "recall_used": _j.get("recall_used"),
+                         "income_plan": _j.get("income_plan"),
+                         "selfcode": _j.get("selfcode")}
+            except Exception:
+                pass
+            out = {"ok": True, "busy": _council_busy, "last": _council_last,
+                   "departments": 6,
+                   "note": "แต่ละแผนกเรียนต่างแหล่ง แข่งขัน จำได้ และพัฒนาตัวเอง"}
+            out.update(extra)
+            self._send_json(200, out)
             return
         if u.path == "/api/chief/identity":
             self._send_json(200, CHIEF.identity() if CHIEF else {"ok": False, "error": "unavailable"})

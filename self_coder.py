@@ -28,6 +28,7 @@ ALLOWED = {
     "image_studio.py": ["def generate", "def critique"],
     "systems_analyst.py": ["def analyze", "def design_review"],
     "role_profiles.py": ["def add", "P = {}"],
+    "autonomous_council.py": ["def run(", "DEPARTMENTS =", "def debate("],
 }
 
 BAN = ("gsk_", "rnd_", "gho_", "sk-or-v1-", "hf_", "APP_PASSWORD", "PRIVATE KEY",
@@ -73,10 +74,15 @@ class SelfCoder:
             json.dump({"log": self.log[-200:]}, open(DATA, "w", encoding="utf-8"),
                       ensure_ascii=False, indent=2)
 
-    def _pick(self, filename=None):
-        files = [filename] if filename in ALLOWED else list(ALLOWED)
-        import random
-        f = random.choice(files)
+    def _pick(self, filename=None, focus=None):
+        # Choose the file the council actually found a problem in, not a random
+        # one. This is the difference between "writing code" and learning.
+        target = focus or filename
+        if target in ALLOWED:
+            f = target
+        else:
+            import random
+            f = random.choice(list(ALLOWED))
         s = open(os.path.join(ROOT, f), encoding="utf-8").read()
         start = random.randint(0, max(0, len(s) - 2000))
         blocks = [b.strip() for b in re.split(r"\n\s*\n", s[start:start + 1800])
@@ -138,8 +144,8 @@ class SelfCoder:
                 return False, (r.stderr or r.stdout)[-180:]
         return True, ""
 
-    def cycle(self, filename=None, dry=False):
-        f, blocks = self._pick(filename)
+    def cycle(self, filename=None, dry=False, focus=None):
+        f, blocks = self._pick(filename, focus)
         p, src = self._ask(f, blocks)
         if not p:
             rec = {"ok": False, "file": f, "reason": "no valid proposal", "t": int(time.time())}
