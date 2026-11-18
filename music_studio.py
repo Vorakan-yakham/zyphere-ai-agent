@@ -45,13 +45,15 @@ def _drum(dur, sr, kind="kick"):
     n = int(sr * dur)
     out = []
     for i in range(n):
-        t = i / sr
-        env = max(0.0, 1.0 - t / dur)
+        t = i / s        env = max(0.0, 1.0 - (t / dur))
         if kind == "kick":
-            v = math.sin(2 * math.pi * (110 - 70 * t / dur) * t)
+            freq = 110.0 - (70.0 * (t / dur))
+            v = math.sin(2.0 * math.pi * freq * t)
+            amplitude_scale = 16000.0
         else:
-            v = math.sin(2 * math.pi * 1800 * t) * env
-        out.append(int(16000 * env * v))
+            v = math.sin(2.0 * math.pi * 1800.0 * t) * env
+            amplitude_scale = 16000.0
+        out.append(int(amplitude_scale * env * v))
     return out
 
 
