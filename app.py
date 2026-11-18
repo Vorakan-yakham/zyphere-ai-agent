@@ -385,6 +385,11 @@ try:
 except Exception:
     RACE = None
 try:
+    from autopost import AutoPost
+    AUTOPOST = AutoPost(os.path.join(DATA_DIR, "autopost.json"))
+except Exception:
+    AUTOPOST = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -3696,6 +3701,12 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/autopost/status":
+            self._send_json(200, AUTOPOST.configured() if AUTOPOST else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/autopost/history":
+            self._send_json(200, {"ok": True, "history": AUTOPOST.history() if AUTOPOST else []})
+            return
         if u.path == "/api/race/leaderboard":
             self._send_json(200, RACE.leaderboard() if RACE else {"ok": False, "error": "unavailable"})
             return
@@ -4566,6 +4577,12 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/autopost/publish":
+            res = AUTOPOST.publish(str(body.get("platform") or ""), str(body.get("title") or ""),
+                                   str(body.get("body") or ""), str(body.get("url") or ""),
+                                   int(body.get("price") or 0)) if AUTOPOST else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/race/start":
             scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
             res = RACE.start(scholars) if RACE else {"ok": False, "error": "unavailable"}
