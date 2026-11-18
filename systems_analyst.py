@@ -83,6 +83,28 @@ def analyze():
     findings.append(check("Language faculty applied", lang_ok,
                           "ภาษาถูกตรวจทุกบรรทัด" if lang_ok else "ยังไม่ได้ใช้ฝ่ายภาษา", "medium"))
 
+    # 9) analytics: owner dashboard + customer history exist
+    dash = ("/api/store/stats" in app and "/api/store/my/stats" in app and
+            "def stats(self)" in store and "def customer_stats(" in store)
+    findings.append(check("Analytics & dashboards", dash,
+                          "มี admin stats + ประวัติลูกค้า" if dash else "ขาดระบบวิเคราะห์ยอดขาย", "medium"))
+
+    # 10) language rules must not corrupt valid words (root cause of 'คว่าม')
+    import language as _lang
+    bad_rules = []
+    for good, bads in _lang.CONFUSABLES.items():
+        for bad in bads:
+            if bad and (bad in "ความ" or bad in "พร้อม" or bad in "การงาน"):
+                bad_rules.append(bad + "->" + good)
+    findings.append(check("Safe Thai correction rules", not bad_rules,
+                          "ไม่มีกฎที่ทำลายคำถูกต้อง" if not bad_rules else
+                          "กฎอันตราย: " + ", ".join(bad_rules), "critical"))
+
+    # 11) owner inspection download is gated to owner emails only
+    own = "OWNER_EMAILS" in app and "/api/store/owner/download" in app
+    findings.append(check("Owner inspection gate", own,
+                          "เจ้าของโหลดตรวจได้โดยไม่จ่าย (เฉพาะ owner)" if own else "ยังไม่มีช่องเจ้าของ"))
+
     return findings
 
 

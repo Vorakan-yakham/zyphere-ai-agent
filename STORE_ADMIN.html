@@ -1,62 +1,77 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zyphere Store — Admin ตรวจชำระ</title>
+<title>Zyphere Store — หลังบ้าน (Admin)</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:#f8fafc;color:#1f2430}
-header{background:linear-gradient(135deg,#0f172a,#334155);color:#fff;padding:22px;text-align:center}
-header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.8;font-size:13px}
-.wrap{max-width:900px;margin:0 auto;padding:20px}
-.bar{display:flex;gap:8px;margin-bottom:16px}
-input,button{padding:10px;border-radius:10px;border:1px solid #cbd5e1;font-size:14px}
-input{flex:1;min-width:0}button{border:0;background:#2563eb;color:#fff;cursor:pointer;font-weight:600}
-.card{background:#fff;border:1px solid #e5e8ef;border-radius:14px;padding:16px;margin-bottom:10px}
-.card h3{margin:0 0 6px;font-size:15px}.m{color:#64748b;font-size:13px;line-height:1.7}
-.st{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600}
-.await{background:#fef3c7;color:#92400e}.appr{background:#dcfce7;color:#166534}.rej{background:#fee2e2;color:#991b1b}
-.row{display:flex;gap:8px;margin-top:10px}.ok{background:#16a34a}.no{background:#dc2626}
+*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',Inter,system-ui,sans-serif;background:#f7f8fc;color:#1b1f2a}
+header{background:linear-gradient(120deg,#4338ca,#7c3aed);color:#fff;padding:24px;text-align:center}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.wrap{max-width:1000px;margin:0 auto;padding:20px}
 .note{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;color:#92400e;font-size:13px;margin-bottom:16px}
-code{background:#f1f5f9;padding:2px 6px;border-radius:6px;font-size:12px}
+.bar{display:flex;gap:8px;margin-bottom:16px}
+input,button{padding:10px;border-radius:10px;border:1px solid #e2e8f0;font-size:14px}
+input{flex:1;min-width:0}button{border:0;background:#4f46e5;color:#fff;cursor:pointer;font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid #e8eaf1;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(17,24,39,.04)}
+.kpi b{display:block;font:700 26px Inter;color:#4f46e5;margin-top:6px}
+.kpi span{font-size:12px;color:#6b7280}
+.panel{background:#fff;border:1px solid #e8eaf1;border-radius:16px;padding:18px;margin-bottom:16px}
+.panel h2{margin:0 0 12px;font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #eef0f5}
+th{color:#6b7280;font-weight:600}
+.st{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px}
+.st-wait{background:#fef3c7;color:#92400e}.st-paid{background:#dcfce7;color:#166534}.st-rej{background:#fee2e2;color:#991b1b}
+.row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.ok{background:#16a34a}.no{background:#dc2626}
+code{background:#f1f5f9;border-radius:6px;padding:2px 6px;font-size:11px}
 </style></head><body>
-<header><h1>🔐 Zyphere — ตรวจสอบการชำระ (Admin)</h1><p>ตรวจรายการโอน PromptPay 0941939686 แล้วอนุมัติการดาวน์โหลด</p></header>
+<header><h1>🔐 หลังบ้าน Zyphere Store</h1><p>ติดตามการคลิก ยอดขาย ลูกค้า และตรวจสอบออเดอร์</p></header>
 <div class="wrap">
-<div class="note">ใส่ <b>Admin token</b> (ได้จากหน้า Admin → login) แล้วกดโหลดคำสั่ง — ระบบจะไม่มีทางอนุมัติถ้า token ไม่ถูกต้อง</div>
-<div class="bar"><input id="tok" type="password" placeholder="วาง admin token ที่นี่..."><button onclick="load()">โหลดคำสั่ง</button></div>
-<div id="list"></div>
+<div class="note">ใส่ <b>Admin token</b> (จากหน้า Admin → login) แล้วกดโหลดข้อมูล ข้อมูลทั้งหมดมาจากระบบจริง ไม่ได้ประมาณการ</div>
+<div class="bar"><input id="tok" type="password" placeholder="วาง admin token..."><button onclick="load()">โหลดข้อมูล</button></div>
+
+<div id="dash" style="display:none">
+ <div class="cards" id="kpis"></div>
+ <div class="panel"><h2>สินค้าที่ถูกคลิกมากที่สุด</h2><div id="top"></div></div>
+ <div class="panel"><h2>ออเดอร์ทั้งหมด</h2><div id="list"></div></div>
+</div>
 </div>
 <script>
 const API='https://zyphere-ai-agent.onrender.com';
 function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function money(n){return '฿'+Number(n||0).toLocaleString('th-TH')}
 async function load(){
  const t=document.getElementById('tok').value.trim();
  if(!t){alert('ใส่ admin token ก่อนครับ');return}
  try{
-  const r=await fetch(API+'/api/store/orders?token='+encodeURIComponent(t));
-  const j=await r.json();
-  if(!j.ok)throw new Error(j.error||'HTTP '+r.status);
-  const all=j.orders||[];const pend=j.pending||[];
-  document.getElementById('list').innerHTML=
-   '<p class="m">ทั้งหมด '+all.length+' ออเดอร์ · รอตรวจ '+pend.length+' รายการ</p>'+
-   (all.length?all.map(o=>{
-     const cls=o.status==='approved'?'appr':(o.status==='rejected'?'rej':'await');
-     const th=(o.status==='awaiting_verification'||o.status==='awaiting_payment')?
-       '<div class="row"><button class="ok" onclick="act(\'approve\',\''+o.id+'\')">✅ อนุมัติ</button>'+
-       '<button class="no" onclick="act(\'reject\',\''+o.id+'\')">✕ ปฏิเสธ</button></div>':'';
-     return '<div class="card"><h3>'+esc(o.product)+' — ฿'+esc(o.amount)+'</h3>'+
-      '<div class="m">Order: <code>'+esc(o.id)+'</code><br>ผู้ซื้อ: '+esc(o.buyer||'-')+
-      '<br>หลักฐานโอน: '+esc(o.ref||'ยังไม่ส่ง')+'<br>เวลา: '+new Date(o.t*1000).toLocaleString('th-TH')+'</div>'+
-      '<span class="st '+cls+'">'+esc(o.status)+'</span>'+th+'</div>';
-   }).join(''):'<p class="m">ยังไม่มีออเดอร์</p>');
- }catch(e){document.getElementById('list').innerHTML='<p class="m" style="color:#dc2626">โหลดไม่ได้: '+esc(e.message)+'</p>'}
+  const s=await(await fetch(API+'/api/store/stats?token='+encodeURIComponent(t))).json();
+  const o=await(await fetch(API+'/api/store/orders?token='+encodeURIComponent(t))).json();
+  if(!s.ok||!o.ok)throw new Error((s.error||o.error)||'HTTP error');
+  document.getElementById('dash').style.display='block';
+  document.getElementById('kpis').innerHTML=[
+   ['คลิกซื้อทั้งหมด',s.clicks],['ออเดอร์',s.orders],['จ่ายแล้ว',s.paid],
+   ['รอตรวจ',s.pending],['ยอดขาย',money(s.revenue)],['ลูกค้า',s.customers]
+  ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
+  document.getElementById('top').innerHTML=(s.top_clicked||[]).length?
+   '<table><tr><th>สินค้า</th><th>คลิก</th></tr>'+s.top_clicked.map(x=>
+   '<tr><td>'+esc(x.product)+'</td><td>'+x.clicks+'</td></tr>').join('')+'</table>':'ยังไม่มีข้อมูลการคลิก';
+  document.getElementById('list').innerHTML=(o.orders||[]).length?
+   '<table><tr><th>สินค้า</th><th>ยอด</th><th>ลูกค้า</th><th>หลักฐาน</th><th>สถานะ</th><th>จัดการ</th></tr>'+
+   o.orders.map(x=>{
+    const st=x.status,cls=st==='paid'?'st-paid':(st==='rejected'?'st-rej':'st-wait');
+    const act=(st==='awaiting_verification'||st==='awaiting_payment')?
+     '<div class="row"><button class="ok" onclick="act(\'approve\',\''+x.id+'\')">อนุมัติ</button>'+
+     '<button class="no" onclick="act(\'reject\',\''+x.id+'\')">ปฏิเสธ</button></div>':'-';
+    return '<tr><td>'+esc(x.product)+'</td><td>'+money(x.amount)+'</td><td>'+esc(x.buyer||x.email||'-')+
+     '</td><td>'+esc(x.ref||'-')+'</td><td><span class="st '+cls+'">'+esc(st)+'</span></td><td>'+act+'</td></tr>';
+   }).join('')+'</table>':'ยังไม่มีออเดอร์';
+ }catch(e){alert('โหลดไม่ได้: '+e.message)}
 }
-async function act(action,id){
+async function act(a,id){
  const t=document.getElementById('tok').value.trim();
- try{
-  const r=await fetch(API+'/api/store/'+action,{method:'POST',headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({token:t,order_id:id})});
-  const j=await r.json();
-  if(!j.ok)throw new Error(j.error||'failed');
-  alert(action==='approve'?'อนุมัติแล้ว — ผู้ซื้อสามารถดาวน์โหลดได้':'ปฏิเสธแล้ว');
-  load();
- }catch(e){alert('ทำรายการไม่ได้: '+e.message)}
+ try{const r=await(await fetch(API+'/api/store/'+a,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({token:t,order_id:id})})).json();
+  if(!r.ok)throw new Error(r.error||'failed');alert(a==='approve'?'อนุมัติแล้ว':'ปฏิเสธแล้ว');load();}
+ catch(e){alert(e.message)}
 }
 </script></body></html>

@@ -14,7 +14,7 @@ HONEST:
   deliverable repo private later for a hard paywall.)
 - No gambling / illegal / spoofing / account or OTP automation.
 """
-import os, json, time, html, threading, secrets
+import os, json, time, html, threading, secrets, re
 
 PROMPTPAY = "0941939686"
 ZIPBALL = ("https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/"
@@ -26,12 +26,15 @@ class Store:
         self.out_dir = out_dir
         self.lock = threading.RLock()
         self.orders = []
+        self.clicks = []
         self._load()
 
     def _load(self):
         try:
             self.orders = json.load(open(os.path.join(self.out_dir, "orders.json"),
                                          encoding="utf-8")).get("orders", [])
+            self.clicks = json.load(open(os.path.join(self.out_dir, "clicks.json"),
+                                         encoding="utf-8")).get("clicks", [])
         except Exception:
             pass
 
@@ -41,6 +44,9 @@ class Store:
                 os.makedirs(self.out_dir, exist_ok=True)
                 json.dump({"orders": self.orders[-1000:]},
                           open(os.path.join(self.out_dir, "orders.json"), "w", encoding="utf-8"),
+                          ensure_ascii=False, indent=2)
+                json.dump({"clicks": self.clicks[-5000:]},
+                          open(os.path.join(self.out_dir, "clicks.json"), "w", encoding="utf-8"),
                           ensure_ascii=False, indent=2)
             except Exception:
                 pass
@@ -139,6 +145,42 @@ class Store:
         return {"ok": True, "url": ZIPBALL, "filename": "zyphere-product-pack.zip",
                 "product": o.get("product", ""), "status": "approved"}
 
+    def click(self, product="", email=""):
+        with self.lock:
+            self.clicks.append({"product": str(product)[:160], "email": str(email or "")[:120],
+                                "t": int(time.time())})
+        self.save()
+        return {"ok": True}
+
+    def stats(self):
+        with self.lock:
+            orders = list(self.orders)
+            clicks = list(self.clicks)
+        paid = [o for o in orders if o.get("status") in ("paid", "approved")]
+        by_product = {}
+        for c in clicks:
+            k = c.get("product", "-")
+            by_product[k] = by_product.get(k, 0) + 1
+        top = sorted(by_product.items(), key=lambda x: -x[1])[:10]
+        return {"ok": True,
+                "clicks": len(clicks), "orders": len(orders),
+                "paid": len(paid), "pending": len([o for o in orders if o.get("status") == "awaiting_verification"]),
+                "revenue": sum(int(o.get("amount", 0) or 0) for o in paid),
+                "customers": len({o.get("email", "") for o in orders if o.get("email")}),
+                "top_clicked": [{"product": k, "clicks": v} for k, v in top]}
+
+    def customer_stats(self, email=""):
+        with self.lock:
+            mine = [o for o in self.orders if o.get("email") == email]
+            clicks = [c for c in self.clicks if c.get("email") == email]
+        paid = [o for o in mine if o.get("status") in ("paid", "approved")]
+        return {"ok": True, "email": email,
+                "orders": len(mine), "paid": len(paid),
+                "books": len(paid), "spent": sum(int(o.get("amount", 0) or 0) for o in paid),
+                "clicks": len(clicks),
+                "history": [{"product": o.get("product", ""), "amount": o.get("amount", 0),
+                             "status": o.get("status", ""), "t": o.get("t", 0)} for o in mine[-50:]]}
+
     def pending(self):
         with self.lock:
             return [dict(o) for o in self.orders if o.get("status") in ("awaiting_verification", "awaiting_payment")]
@@ -160,15 +202,19 @@ class Store:
         Language: Thai copy checked with LanguageMastery (see REVIEW.md).
         """
         products = products or []
-        # Language department: apply the real Thai corrector to every line of copy.
-        try:
-            from language import LanguageMastery
-            _lm = LanguageMastery()
-            def th(s):
-                return _lm.correct(str(s))["text"]
-        except Exception:
-            def th(s):
-                return str(s)
+        # Language faculty review: fix common misspellings + strip foreign
+        # characters, but PRESERVE the punctuation and phrase breaks written
+        # below (the old corrector removed them and made the copy run on).
+        from language import CONFUSABLES
+        def th(s):
+            t = str(s or "")
+            for good, bads in CONFUSABLES.items():
+                for bad in bads:
+                    if bad:
+                        t = t.replace(bad, good)
+            t = re.sub(r"[\u4e00-\u9fff\u3000-\u303f]", "", t)
+            t = re.sub(r"[ \t]+", " ", t).strip()
+            return t
 
         cards = []
         for i, p in enumerate(products[:60], 1):
@@ -186,27 +232,30 @@ class Store:
 
         copy = {
             "brand": th("ร้านค้า Zyphere"),
-            "hero_h": th("ผลงานจากคณะวิชา ส่งมอบให้คุณ"),
-            "hero_p": th("เอกสารความรู้ที่ไซเฟอร์จัดทำขึ้นจากคณะวิชาทั้ง 46 สาขา เลือกหัวข้อที่ต้องการ แล้วชำระผ่านพรีมเพย์ ทีมงานจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้"),
+            "hero_h": th("ผลงานความรู้จากคณะวิชา ส่งมอบถึงมือคุณ"),
+            "hero_p": th("ไซเฟอร์จัดทำเอกสารความรู้จากคณะวิชาทั้ง 46 สาขา เลือกหัวข้อที่ต้องการ จากนั้นชำระเงินผ่านพรีมเพย์ ระบบจะตรวจสอบรายการโอนและปลดล็อกไฟล์ให้ครับ"),
             "all": th("ผลงานทั้งหมด"),
-            "search": th("ค้นหาหัวข้อ..."),
+            "search": th("ค้นหาหัวข้อ…"),
             "orders": th("คำสั่งซื้อของฉัน"),
             "login": th("เข้าสู่ระบบด้วย Google"),
-            "pay_title": th("ชำระเงิน"),
-            "ref_label": th("หมายเลขอ้างอิงการโอน (หรือตัวเลข 4 ตัวสุดท้าย)"),
-            "submit": th("ชำระเงิน / แจ้งชำระ"),
-            "note": th("สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์เมื่อยืนยันการชำระสำเร็จ"),
-            "fine": th("หมายเหตุ: การกดปุ่มเพียงอย่างเดียวไม่อาจดาวน์โหลดไฟล์ได้ ระบบจะยืนยันผ่านประตูชำระเงิน หรือให้แอดมินตรวจรายการโอนก่อนอนุมัติ"),
-            "pending_h": th("อยู่ระหว่างการตรวจสอบ"),
-            "pending_p": th("ส่งหลักฐานการชำระเรียบร้อยแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้ แล้วกลับมาตรวจสถานะได้ทุกเมื่อ"),
+            "pay_title": th("ชำระเงินสำหรับสินค้า"),
+            "ref_label": th("หมายเลขอ้างอิงการโอน หรือตัวเลข 4 ตัวสุดท้าย"),
+            "submit": th("แจ้งชำระเงิน"),
+            "note": th("สแกนคิวอาร์โค้ดเพื่อชำระตามยอดที่แสดง ระบบจะปลดล็อกไฟล์ให้เมื่อยืนยันการชำระเรียบร้อยแล้ว"),
+            "fine": th("หมายเหตุ: การกดปุ่มอย่างเดียวไม่อาจดาวน์โหลดไฟล์ได้ ระบบต้องยืนยันการชำระผ่านประตูเงิน หรือให้ทีมงานตรวจรายการโอนก่อนครับ"),
+            "pending_h": th("กำลังตรวจสอบรายการชำระ"),
+            "pending_p": th("รับหลักฐานการชำระของคุณแล้ว กรุณาเก็บหมายเลขคำสั่งซื้อไว้ และกลับมาตรวจสถานะได้ทุกเมื่อ"),
             "check": th("ตรวจสถานะคำสั่งซื้อ"),
             "done_h": th("ชำระเงินเรียบร้อย"),
-            "done_p": th("ทีมงานอนุมัติแล้ว ขอบคุณที่สนับสนุนครับ"),
+            "done_p": th("ทีมงานยืนยันและอนุมัติไฟล์ให้แล้ว ขอบคุณที่สนับสนุนครับ"),
             "dl": th("ดาวน์โหลดแพ็กเกจผลงาน"),
-            "empty": th("ยังไม่มีคำสั่งซื้อ เข้าสู่ระบบด้วย Google เพื่อดูคำสั่งซื้อของคุณ"),
+            "empty": th("ยังไม่มีคำสั่งซื้อ กรุณาเข้าสู่ระบบด้วย Google เพื่อดูคำสั่งซื้อของคุณ"),
             "cancel": th("ยกเลิก"), "close": th("ปิด"),
-            "noresult": th("ไม่พบหัวข้อที่ค้นหา"),
-            "secure": th("ชำระปลอดภัย · ตรวจสอบโดยทีมงาน · ส่งไฟล์จริง"),
+            "noresult": th("ไม่พบหัวข้อที่ค้นหา กรุณาลองคำอื่น"),
+            "secure": th("ชำระปลอดภัย ตรวจสอบโดยทีมงาน และส่งไฟล์จริง"),
+            "owner_h": th("โหมดเจ้าของระบบ"),
+            "owner_p": th("คุณเข้าสู่ระบบในฐานะเจ้าของระบบ สามารถดาวน์โหลดไฟล์เพื่อตรวจสอบได้โดยไม่ต้องชำระเงิน"),
+            "owner_btn": th("ดาวน์โหลดเพื่อตรวจสอบ"),
         }
         copy_json = json.dumps(copy, ensure_ascii=False)
 
@@ -292,7 +341,13 @@ footer{{text-align:center;color:var(--mut);font-size:12px;padding:26px 16px 40px
   <p id="nores" style="display:none;color:var(--mut)">{copy['noresult']}</p>
 
   <div class="shead" style="margin-top:38px"><h2>{copy['orders']}</h2></div>
-  <div class="my" id="my"><p class="mini" id="myMsg">{copy['empty']}</p><div id="myList"></div></div>
+  <div class="my" id="my"><p class="mini" id="myMsg">{copy['empty']}</p><p class="mini" id="myStats" style="display:none"></p><div id="myList"></div></div>
+
+  <div class="my" id="ownerBox" style="display:none;border-color:#c7d2fe;background:#f5f7ff;margin-top:18px">
+    <h3 style="margin:0 0 6px;font-size:16px">🔐 {copy['owner_h']}</h3>
+    <p class="mini" style="margin:0">{copy['owner_p']}</p>
+    <button class="gbtn" style="margin-top:12px" onclick="ownerDownload()">{copy['owner_btn']}</button>
+  </div>
 </section>
 
 <div class="ov" id="ov"><div class="box">
@@ -326,7 +381,7 @@ function filter(){{const q=$('q').value.trim().toLowerCase();let n=0;
  $('nores').style.display=n?'none':'block';}}
 function view(id){{['vPay','vWait','vDone'].forEach(x=>$(x).style.display=(x===id?'block':'none'));$('ov').style.display='flex';}}
 function closeM(){{$('ov').style.display='none';}}
-function buy(b){{const c=b.closest('.card');cur={{title:c.dataset.title,price:c.dataset.price}};
+function buy(b){{const c=b.closest('.card');cur={{title:c.dataset.title,price:c.dataset.price}};fetch(API+'/api/store/click',{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{product:cur.title,user_token:utoken()}})}}).catch(()=>{{}});
  $('pTitle').textContent=cur.title;$('pPrice').textContent='฿'+Number(cur.price).toLocaleString('th-TH');
  $('pQR').src=API+'/api/store/qr?amount='+encodeURIComponent(cur.price)+'&t='+Date.now();view('vPay');}}
 function utoken(){{return localStorage.getItem('zy_token')||'';}}
@@ -358,6 +413,9 @@ async function checkStatus(){{
 }}
 async function loadMy(){{
  const t=utoken();if(!t)return;
+ try{{const st=await(await fetch(API+'/api/store/my/stats?token='+encodeURIComponent(t))).json();
+  if(st.ok){{$('myStats').style.display='block';
+   $('myStats').textContent='ซื้อไปแล้ว '+st.books+' เล่ม · รวม '+Number(st.spent).toLocaleString('th-TH')+' บาท · คลิกสินค้า '+st.clicks+' ครั้ง';}}}}catch(e){{}}
  try{{const j=await(await fetch(API+'/api/store/my-orders?token='+encodeURIComponent(t))).json();
   if(!j.ok)throw new Error(j.error||'failed');
   const os=j.orders||[];
@@ -377,12 +435,19 @@ async function getLink(id,tk2){{
  catch(e){{alert(e.message)}}
 }}
 function esc(s){{return String(s||'').replace(/[&<>]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;'}}[c]))}}
+async function ownerDownload(){{
+ try{{const j=await(await fetch(API+'/api/store/owner/download',{{method:'POST',headers:{{'Content-Type':'application/json'}},
+   body:JSON.stringify({{token:utoken()}})}})).json();
+  if(!j.ok)throw new Error(j.error||'failed');
+  $('dl').href=j.url;$('dl').download=j.filename||'zyphere-product-pack.zip';view('vDone');}}
+ catch(e){{alert('โหลดไม่ได้: '+e.message)}}
+}}
 (async function(){{
  const h=location.hash.match(/oauth=([^&]+)/);
  if(h){{try{{const p=new URLSearchParams(decodeURIComponent(h[1]));localStorage.setItem('zy_token',p.get('token')||'');
    history.replaceState(null,'',location.pathname+location.search);}}catch(e){{}}}}
  if(utoken()){{try{{const me=await(await fetch(API+'/api/store/me?token='+encodeURIComponent(utoken()))).json();
-   if(me.ok){{$('gLogin').textContent=me.name||me.email;$('gLogin').onclick=loadMy;}}}}catch(e){{}}loadMy();}}
+   if(me.ok){{$('gLogin').textContent=me.name||me.email;$('gLogin').onclick=loadMy;if(me.me && me.me.is_owner) $('ownerBox').style.display='block';}}}}catch(e){{}}loadMy();}}
 }})();
 </script></body></html>'''
         fp = os.path.join(self.out_dir, "STORE.html")

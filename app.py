@@ -104,6 +104,9 @@ GOOGLE_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 OMISE_PKEY = os.environ.get("OMISE_PUBLIC_KEY", "").strip()
 OMISE_SKEY = os.environ.get("OMISE_SECRET_KEY", "").strip()
 OMISE_ENABLED = bool(OMISE_PKEY and OMISE_SKEY)
+OWNER_EMAILS = {"vorayakham@gmail.com", "vorakanmu@gmail.com", "vorakan@gmail.com"}
+ZIPBALL_OWNER = ("https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/"
+                 "archive/refs/heads/main.zip")
 try:
     from platforms import Platforms
     PLATFORMS = Platforms(os.path.join(DATA_DIR, "platforms.json"))
@@ -3859,6 +3862,22 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/departments":
             self._send_json(200, ROLES.list() if ROLES else {"ok": False, "error": "unavailable"})
             return
+        if u.path == "/api/store/stats":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            if not store_admin_ok(tok):
+                self._send_json(403, {"ok": False, "error": "forbidden"})
+                return
+            self._send_json(200, STORE.stats() if STORE else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/store/my/stats":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            self._send_json(200, STORE.customer_stats(me.get("email", "")) if STORE
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/store/config":
             self._send_json(200, {"ok": True, "promptpay": "0941939686",
                                   "omise_enabled": OMISE_ENABLED,
@@ -3908,6 +3927,9 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/store/me":
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             me = USERS.me(tok) if USERS else None
+            if me:
+                em = str(me.get("email", "")).lower()
+                me["is_owner"] = (em in OWNER_EMAILS or me.get("role") == "admin")
             self._send_json(200, {"ok": bool(me), "me": me} if me else
                             {"ok": False, "error": "not logged in"})
             return
@@ -5019,6 +5041,27 @@ class Handler(SimpleHTTPRequestHandler):
             if res.get("ok") and res.get("created") and ROLES:
                 res["push"] = ROLES.push()
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/store/click":
+            ut = str(body.get("user_token") or "")
+            me = USERS.me(ut) if (USERS and ut) else None
+            res = STORE.click(str(body.get("product") or ""),
+                              me.get("email", "") if me else "") if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/store/owner/download":
+            ut = str(body.get("token") or "")
+            me = USERS.me(ut) if (USERS and ut) else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            em = str(me.get("email", "")).lower()
+            if em not in OWNER_EMAILS and me.get("role") != "admin":
+                self._send_json(403, {"ok": False, "error": "forbidden — owner only"})
+                return
+            self._send_json(200, {"ok": True, "url": ZIPBALL_OWNER,
+                                  "filename": "zyphere-product-pack.zip",
+                                  "note": "ดาวน์โหลดเพื่อตรวจสอบโดยเจ้าของระบบ"})
             return
         if u.path == "/api/store/pay/omise":
             # Create a real Omise PromptPay charge. Money confirmation comes
