@@ -50,4 +50,5 @@ jobs:
           git config user.email "zyphere@users.noreply.github.com"
           git add -f media data/cinema_latest.json
           git commit -m "Cinema: real photo film with sound, captions and edit assets" || true
+          git pull --rebase origin main || true
           git push

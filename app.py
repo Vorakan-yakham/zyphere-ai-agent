@@ -5669,7 +5669,8 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception as e:
                     self._send_json(200, {"ok": False, "error": str(e)[:150]})
                     return
-            if re.search(r"เสียง|sound|fx|whoosh|ฝน|ลม|ฟ้าผ่า|สุนัข|แมว|รถยนต์|ไซเรน|กระดิ่ง|วูบ", text, re.I):
+            if (not re.search(r"วิดีโอ|คลิป|video|film|ภาพยนตร์", text, re.I) and
+                    re.search(r"เสียง|sound|fx|whoosh|ฝน|ลม|ฟ้าผ่า|สุนัข|แมว|รถยนต์|ไซเรน|กระดิ่ง|วูบ", text, re.I)):
                 try:
                     import sound_forge as SF
                     fx = SF.forge(text, 4.0, apply=True)
