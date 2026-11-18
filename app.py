@@ -395,6 +395,11 @@ try:
 except Exception:
     DEMAND = None
 try:
+    from github_backup import GitHubBackup
+    GH_BACKUP = GitHubBackup(os.path.join(DATA_DIR, "gh_backup.json"))
+except Exception:
+    GH_BACKUP = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -3711,6 +3716,9 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/backup/github/status":
+            self._send_json(200, GH_BACKUP.status() if GH_BACKUP else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/ebook/catalog":
             self._send_json(200, {"ok": True, "books": EBOOK.catalog() if EBOOK else []})
             return
@@ -4593,6 +4601,11 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/backup/github/run":
+            files = body.get("files") or []
+            res = GH_BACKUP.backup(files) if GH_BACKUP else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/ebook/create":
             chapters = body.get("chapters") or [{"title": "หลักการสำคัญ", "body": " study และสรุปจากแหล่งสาธารณะด้วยตนเอง"},
                                                 {"title": "วิธีนำไปใช้", "body": "ลองทำจริง วัดผล ปรับปรุง"},
