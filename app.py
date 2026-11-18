@@ -447,6 +447,14 @@ try:
 except Exception:
     CC = None
 try:
+    from self_coder import SC
+except Exception:
+    SC = None
+try:
+    from engineering_council import EC
+except Exception:
+    EC = None
+try:
     from it_org import IT
 except Exception:
     IT = None
@@ -4041,6 +4049,14 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/engineering/status":
+            self._send_json(200, EC.status() if EC
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/selfcoder/status":
+            self._send_json(200, SC.status() if SC
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/capabilities/status":
             self._send_json(200, CC.status() if CC
                             else {"ok": False, "error": "unavailable"})
@@ -5421,6 +5437,21 @@ class Handler(SimpleHTTPRequestHandler):
             res = CD.debate(str(body.get("issue") or "") or None) if CD \
                 else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/engineering/run":
+            res = EC.session() if EC else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/selfcoder/run":
+            def _sc():
+                try:
+                    SC.cycle(str(body.get("file") or "") or None,
+                             bool(body.get("dry")))
+                except Exception:
+                    pass
+            threading.Thread(target=_sc, daemon=True).start()
+            self._send_json(200, {"ok": True, "started": True,
+                                  "dry": bool(body.get("dry"))})
             return
         if u.path == "/api/dialogue/run":
             res = DD.round(str(body.get("dept") or "") or None) if DD \
