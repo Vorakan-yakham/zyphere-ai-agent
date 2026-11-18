@@ -374,6 +374,11 @@ try:
 except Exception:
     ACADEMY = None
 try:
+    from chief import Chief
+    CHIEF = Chief(os.path.join(DATA_DIR, "chief.json"))
+except Exception:
+    CHIEF = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -464,6 +469,7 @@ REMOTE_KEYS = {
     "scholar_income": "zyphere:scholar_income",
     "launchpad": "zyphere:launchpad",
     "academy": "zyphere:academy",
+    "chief": "zyphere:chief",
 }
 REMOTE_STATE = {"last_push": 0, "last_pull": 0, "last_ok": 0, "last_error": ""}
 REMOTE_LOCK = threading.RLock()
@@ -575,7 +581,7 @@ def remote_push_all():
     if not remote_enabled():
         return {"ok": False, "error": "remote storage is not configured"}
     sent = []
-    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars", "scholar_income", "launchpad", "academy"):
+    for name in ("memory", "knowledge", "learning", "watch", "goals", "platforms", "dev_brain", "notebook", "research", "identity", "creative", "works", "voice", "feedback_loop", "safety", "eval", "intent", "selfcorrect", "behavior", "audit", "jarvis", "privacy", "guard", "delivery", "moneyfield", "income", "help", "autofill", "codeforge", "otpassist", "expert", "market", "shop", "agents", "scholars", "scholar_income", "launchpad", "academy", "chief"):
         try:
             data = {
                 "memory": load_mem,
@@ -614,6 +620,7 @@ def remote_push_all():
                 "scholar_income": (SCHOLAR_INCOME.snapshot() if SCHOLAR_INCOME else None),
                 "launchpad": (LAUNCHPAD.snapshot() if LAUNCHPAD else None),
                 "academy": (ACADEMY.snapshot() if ACADEMY else None),
+                "chief": (CHIEF.snapshot() if CHIEF else None),
             }[name]()
         except Exception:
             continue
@@ -659,6 +666,7 @@ def remote_pull_all():
         "scholar_income": os.path.join(DATA_DIR, "scholar_income.json"),
         "launchpad": os.path.join(DATA_DIR, "launchpad.json"),
         "academy": os.path.join(DATA_DIR, "academy.json"),
+        "chief": os.path.join(DATA_DIR, "chief.json"),
     }
     for name, path in paths.items():
         data = remote_get_json(name)
@@ -701,7 +709,7 @@ def remote_pull_all():
                    "help": HELP, "autofill": AUTOFILL, "codeforge": CODEFORGE,
                    "otpassist": OTPASSIST, "shop": SHOP, "agents": ORG,
                    "scholars": SCHOLARS, "scholar_income": SCHOLAR_INCOME,
-                   "launchpad": LAUNCHPAD, "academy": ACADEMY}[name]
+                   "launchpad": LAUNCHPAD, "academy": ACADEMY, "chief": CHIEF}[name]
             if obj and obj.restore(data):
                 restored.append(name)
             else:
@@ -2776,6 +2784,7 @@ def learn_tick():
 
 
 def learn_scheduler():
+    chief_ticks = 0
     while True:
         try:
             cfg = load_learning()
@@ -2789,6 +2798,20 @@ def learn_scheduler():
                         create_learn_job(rotate=True, count=int(cfg.get("learn_count") or 3), reason="auto")
         except Exception:
             pass
+        # Chief of Staff self-tick every ~10 min (light: decide + record only)
+        chief_ticks += 1
+        if CHIEF and chief_ticks % 10 == 0:
+            try:
+                st = {"products": SCHOLAR_INCOME.stats().get("products", 0) if SCHOLAR_INCOME else 0,
+                      "graduates": ACADEMY.stats().get("graduated", 0) if ACADEMY else 0,
+                      "launches": LAUNCHPAD.stats().get("kits", 0) if LAUNCHPAD else 0,
+                      "orders": SHOP.stats().get("orders", 0) if SHOP else 0,
+                      "remote": remote_enabled()}
+                CHIEF.run_cycle(st, None)  # decide + record, no heavy dispatch here
+                if remote_enabled():
+                    remote_push("chief", CHIEF.snapshot())
+            except Exception:
+                pass
         time.sleep(60)
 
 
@@ -3635,6 +3658,24 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/chief/status":
+            self._send_json(200, CHIEF.status() if CHIEF else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/chief/identity":
+            self._send_json(200, CHIEF.identity() if CHIEF else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/chief/history":
+            self._send_json(200, {"ok": True, "history": CHIEF.history() if CHIEF else []})
+            return
+        if u.path == "/api/chief/decide":
+            st = {"knowledge": len(load_knowledge().get("items") or []),
+                  "products": SCHOLAR_INCOME.stats().get("products", 0) if SCHOLAR_INCOME else 0,
+                  "graduates": ACADEMY.stats().get("graduated", 0) if ACADEMY else 0,
+                  "launches": LAUNCHPAD.stats().get("kits", 0) if LAUNCHPAD else 0,
+                  "orders": SHOP.stats().get("orders", 0) if SHOP else 0,
+                  "remote": remote_enabled()}
+            self._send_json(200, CHIEF.decide(st) if CHIEF else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/academy/curriculum":
             self._send_json(200, ACADEMY.curriculum() if ACADEMY else {"ok": False, "error": "unavailable"})
             return
@@ -4474,6 +4515,26 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/chief/run":
+            st = {"knowledge": len(load_knowledge().get("items") or []),
+                  "products": SCHOLAR_INCOME.stats().get("products", 0) if SCHOLAR_INCOME else 0,
+                  "graduates": ACADEMY.stats().get("graduated", 0) if ACADEMY else 0,
+                  "launches": LAUNCHPAD.stats().get("kits", 0) if LAUNCHPAD else 0,
+                  "orders": SHOP.stats().get("orders", 0) if SHOP else 0,
+                  "remote": remote_enabled()}
+            def _dispatch(action, state):
+                if action == "study_scholars" and SCHOLAR_INCOME:
+                    return SCHOLAR_INCOME.study_all(None)
+                if action == "enroll_academy" and ACADEMY and SCHOLAR_INCOME:
+                    return ACADEMY.enroll(SCHOLAR_INCOME.list_catalog(), LAUNCHPAD)
+                if action == "launch_marketplace" and LAUNCHPAD and SCHOLAR_INCOME:
+                    return LAUNCHPAD.scholar_launch(SCHOLAR_INCOME.list_catalog()[:46], OTPASSIST)
+                return {"ok": False, "error": "no handler"}
+            res = CHIEF.run_cycle(st, _dispatch) if CHIEF else {"ok": False, "error": "unavailable"}
+            if CHIEF and remote_enabled():
+                remote_push("chief", CHIEF.snapshot())
+            self._send_json(200, res)
+            return
         if u.path == "/api/academy/enroll":
             scholars = SCHOLAR_INCOME.list_catalog()[:46] if SCHOLAR_INCOME else []
             res = ACADEMY.enroll(scholars, LAUNCHPAD) if ACADEMY else {"ok": False, "error": "unavailable"}
