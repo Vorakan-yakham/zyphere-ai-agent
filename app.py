@@ -390,6 +390,16 @@ try:
 except Exception:
     AUTOPOST = None
 try:
+    from demand import Demand
+    DEMAND = Demand(os.path.join(DATA_DIR, "demand.json"))
+except Exception:
+    DEMAND = None
+try:
+    from ebook import EbookStudio
+    EBOOK = EbookStudio(os.path.join(DATA_DIR, "ebooks"))
+except Exception:
+    EBOOK = None
+try:
     import gmail_oauth as GMAIL_OAUTH
 except Exception:
     GMAIL_OAUTH = None
@@ -3701,6 +3711,12 @@ class Handler(SimpleHTTPRequestHandler):
             res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
             return
+        if u.path == "/api/ebook/catalog":
+            self._send_json(200, {"ok": True, "books": EBOOK.catalog() if EBOOK else []})
+            return
+        if u.path == "/api/demand/latest":
+            self._send_json(200, {"ok": True, "reports": DEMAND.latest() if DEMAND else []})
+            return
         if u.path == "/api/autopost/status":
             self._send_json(200, AUTOPOST.configured() if AUTOPOST else {"ok": False, "error": "unavailable"})
             return
@@ -4577,6 +4593,15 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/ebook/create":
+            chapters = body.get("chapters") or [{"title": "หลักการสำคัญ", "body": " study และสรุปจากแหล่งสาธารณะด้วยตนเอง"},
+                                                {"title": "วิธีนำไปใช้", "body": "ลองทำจริง วัดผล ปรับปรุง"},
+                                                {"title": "ข้อควรระวัง", "body": "ตรวจแหล่งต้นฉบับก่อนเชื่อถือ"}]
+            res = EBOOK.create(str(body.get("title") or ""), chapters,
+                               int(body.get("price") or 199), str(body.get("category") or "Self-Help"),
+                               int(body.get("demand_score") or 0)) if EBOOK else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/autopost/publish":
             res = AUTOPOST.publish(str(body.get("platform") or ""), str(body.get("title") or ""),
                                    str(body.get("body") or ""), str(body.get("url") or ""),
