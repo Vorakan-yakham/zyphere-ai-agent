@@ -4003,7 +4003,7 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/chief/status":
             self._send_json(200, CHIEF.status() if CHIEF else {"ok": False, "error": "unavailable"})
             return
-        if u.path == "/api/council/status":
+        if u.path == "/api/council/autonomous/status":
             self._send_json(200, {"ok": True, "busy": _council_busy,
                                   "last": _council_last,
                                   "departments": 5,
@@ -5498,7 +5498,7 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/council/autonomous":
             threading.Thread(target=_run_autonomous_council, args=(True,), daemon=True).start()
             self._send_json(200, {"ok": True, "started": True,
-                                  "note": "สภาทำงานต่อเบื้องหลัง ดูผลที่ /api/council/status"})
+                                  "note": "สภาทำงานต่อเบื้องหลัง ดูผลที่ /api/council/autonomous/status"})
             return
         if u.path == "/api/template/create":
             res = TD.create(str(body.get("title") or "Zyphere Elite"),
