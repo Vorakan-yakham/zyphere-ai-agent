@@ -49,36 +49,57 @@ DEPARTMENTS = {
 }
 
 
+def _token():
+    """Token only when the owner has configured it — never printed or stored."""
+    for k in ("GH_TOKEN", "GITHUB_TOKEN"):
+        v = os.environ.get(k, "").strip()
+        if v:
+            return v
+    try:
+        p = subprocess.run(["gh", "auth", "token"], capture_output=True,
+                           text=True, timeout=10)
+        if p.returncode == 0:
+            return p.stdout.strip()
+    except FileNotFoundError:
+        pass  # Render has no gh CLI — read still works through raw.githubusercontent
+    return None
+
+
 def gh_raw(path):
-    # Unicode folder names (Thai) must be percent-encoded for the GitHub API.
-    url = "repos/%s/contents/%s" % (REPO, urllib.parse.quote(path))
-    p = subprocess.run(["gh", "api", url, "-H", "Accept: application/vnd.github.raw"],
-                       capture_output=True, text=True, timeout=40)
-    return p.stdout if p.returncode == 0 else None
+    # raw.githubusercontent needs no token and is not rate-limited like the API.
+    try:
+        import requests
+        url = "https://raw.githubusercontent.com/%s/%s/%s" % (
+            REPO, BRANCH, urllib.parse.quote(path))
+        r = requests.get(url, timeout=30)
+        return r.text if r.ok else None
+    except Exception:
+        return None
 
 
 def gh_tree():
-    p = subprocess.run(["gh", "api", "repos/%s/git/trees/%s?recursive=1" % (REPO, BRANCH),
-                        "--jq", ".tree[] | [.path,.size] | @tsv"],
-                       capture_output=True, text=True, timeout=40)
-    out = {}
-    if p.returncode == 0:
-        for line in p.stdout.splitlines():
-            parts = line.split("\t")
-            if len(parts) >= 2 and parts[1].strip().isdigit():
-                out[parts[0]] = int(parts[1])
-    return out
+    try:
+        import requests
+        h = {"Accept": "application/vnd.github+json"}
+        tok = _token()
+        if tok:
+            h["Authorization"] = "Bearer " + tok
+        url = "https://api.github.com/repos/%s/git/trees/%s?recursive=1" % (REPO, BRANCH)
+        r = requests.get(url, headers=h, timeout=30)
+        if not r.ok:
+            return {}
+        return {x["path"]: int(x.get("size") or 0)
+                for x in r.json().get("tree", []) if x.get("type") == "blob"}
+    except Exception:
+        return {}
 
 
 def gh_put(path, content, message):
     """Write a UTF-8 file to the product repo through the GitHub API."""
     import base64
-    token = None
-    t = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, timeout=15)
-    if t.returncode == 0:
-        token = t.stdout.strip()
+    token = _token()
     if not token:
-        return {"ok": False, "error": "no gh token"}
+        return {"ok": False, "error": "no repo token configured (read-only mode)"}
     import requests
     h = {"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json"}
     url = "https://api.github.com/repos/%s/contents/%s" % (REPO, path)
