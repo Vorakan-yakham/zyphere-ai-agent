@@ -3592,6 +3592,22 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
+        if u.path == "/api/listing/refresh":
+            res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/rss/marketing":
+            q = urllib.parse.parse_qs(u.query)
+            res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
+            self._send_json(200, res)
+            return
+        if u.path == "/api/org/team":
+            self._send_json(200, ORG.team() if ORG else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/org/missions":
+            self._send_json(200, {"ok": True, "missions": ORG.list_missions() if ORG else [],
+                                  "stats": ORG.stats() if ORG else {}})
+            return
         if u.path == "/api/mail/auth":
             self._send_json(200, GMAIL_OAUTH.auth_url() if GMAIL_OAUTH else {"ok": False, "error": "unavailable"})
             return
@@ -3702,40 +3718,6 @@ class Handler(SimpleHTTPRequestHandler):
                      "lessons": (DEV_BRAIN.lessons if DEV_BRAIN else [])}
             res = RAG_ENGINE.retrieve(q, state) if RAG_ENGINE else {"ok": False, "error": "unavailable"}
             self._send_json(200, res)
-            return
-        if u.path == "/api/org/plan":
-            res = ORG.plan(str(body.get("mission") or "")) if ORG else {"ok": False, "error": "unavailable"}
-            if res.get("ok") and remote_enabled():
-                remote_push("agents", ORG.snapshot())
-            self._send_json(200 if res.get("ok") else 400, res)
-            return
-        if u.path == "/api/org/run":
-            state = {"research": lambda t: (INCOME.channels() if False else
-                       (str(RESEARCH.library())[:400] if RESEARCH else "no data")),
-                     "concept": lambda t: (CONCEPT.explore(str(t).replace("ตีความ/สรุป/ขยายแขนง ", "")) if CONCEPT else {}),
-                     "work": lambda t: (WORKS.produce(str(t)[:160]) if WORKS else {}),
-                     "review": lambda t: (SAFETY.evaluate(str(t)) if SAFETY else {}),
-                     "market": lambda t: (MARKET.analyze(str(t).replace("หาตลาด+เขียน listing ", "")) if MARKET else {})}
-            res = ORG.run(str(body.get("id") or ""), state) if ORG else {"ok": False, "error": "unavailable"}
-            if res.get("ok") and remote_enabled():
-                remote_push("agents", ORG.snapshot())
-            self._send_json(200 if res.get("ok") else 400, res)
-            return
-        if u.path == "/api/listing/refresh":
-            res = LISTING.refresh(SHOP.catalog().get("products", [])) if LISTING and SHOP else {"ok": False, "error": "unavailable"}
-            self._send_json(200, res)
-            return
-        if u.path == "/api/rss/marketing":
-            q = urllib.parse.parse_qs(u.query)
-            res = RSS.fetch(q.get("source", [""])[0] or None) if RSS else {"ok": False, "error": "unavailable"}
-            self._send_json(200, res)
-            return
-        if u.path == "/api/org/team":
-            self._send_json(200, ORG.team() if ORG else {"ok": False, "error": "unavailable"})
-            return
-        if u.path == "/api/org/missions":
-            self._send_json(200, {"ok": True, "missions": ORG.list_missions() if ORG else [],
-                                  "stats": ORG.stats() if ORG else {}})
             return
         if u.path == "/api/tools/list":
             self._send_json(200, TOOLS.list() if TOOLS else {"ok": False, "error": "unavailable"})
@@ -4431,6 +4413,24 @@ class Handler(SimpleHTTPRequestHandler):
             body = {}
         if not isinstance(body, dict):
             body = {}
+        if u.path == "/api/org/plan":
+            res = ORG.plan(str(body.get("mission") or "")) if ORG else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("agents", ORG.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/org/run":
+            state = {"research": lambda t: (INCOME.channels() if False else
+                       (str(RESEARCH.library())[:400] if RESEARCH else "no data")),
+                     "concept": lambda t: (CONCEPT.explore(str(t).replace("ตีความ/สรุป/ขยายแขนง ", "")) if CONCEPT else {}),
+                     "work": lambda t: (WORKS.produce(str(t)[:160]) if WORKS else {}),
+                     "review": lambda t: (SAFETY.evaluate(str(t)) if SAFETY else {}),
+                     "market": lambda t: (MARKET.analyze(str(t).replace("หาตลาด+เขียน listing ", "")) if MARKET else {})}
+            res = ORG.run(str(body.get("id") or ""), state) if ORG else {"ok": False, "error": "unavailable"}
+            if res.get("ok") and remote_enabled():
+                remote_push("agents", ORG.snapshot())
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
         if u.path == "/api/transcribe":
             key = os.environ.get("GROQ_API_KEY", "").strip() or str(body.get("key") or "").strip()
             if not key:
