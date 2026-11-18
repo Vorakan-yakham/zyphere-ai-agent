@@ -459,6 +459,14 @@ try:
 except Exception:
     SI = None
 try:
+    from dev_companion import DC
+except Exception:
+    DC = None
+try:
+    from method_transfer import MT
+except Exception:
+    MT = None
+try:
     from research_projects import RP
 except Exception:
     RP = None
@@ -3980,6 +3988,14 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
             return
+        if u.path == "/api/method/transfer":
+            res = MT.apply() if MT else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/companion/status":
+            self._send_json(200, DC.status() if DC
+                            else {"ok": False, "error": "unavailable"})
+            return
         if u.path == "/api/improve/config":
             if u.command == "POST":
                 payload = body if isinstance(body, dict) else {}
@@ -5318,6 +5334,13 @@ class Handler(SimpleHTTPRequestHandler):
             res = RP.create(body) if RP else {"ok": False, "error": "unavailable"}
             if res.get("ok") and RP:
                 res["publish"] = RP.publish()
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/companion/record":
+            res = DC.record(str(body.get("action") or ""), str(body.get("tool") or ""),
+                            str(body.get("detail") or ""), str(body.get("outcome") or ""),
+                            body.get("files") or [], str(body.get("lesson") or "")) if DC \
+                else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/improve/run":
