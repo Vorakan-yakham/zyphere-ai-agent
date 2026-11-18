@@ -1108,6 +1108,22 @@ function bubble(m,live){const col=$('col');let d;
   if(!live){const mk=(n,f)=>{const b=document.createElement('button');b.className='spk';b.textContent=n;b.onclick=()=>f(b);bd.appendChild(b)};
    mk('ฟัง',b=>{if(b.dataset.on==='1'){stopSpeak();b.dataset.on='0';b.textContent='ฟัง';return}b.dataset.on='1';b.textContent='หยุด';lastLang=resolveLang(m.c);speak(m.c,b).then(()=>{b.dataset.on='0';b.textContent='ฟัง'}).catch(()=>{b.dataset.on='0';b.textContent='ฟัง'})});mk('คัดลอก',b=>{navigator.clipboard&&navigator.clipboard.writeText(m.c);b.textContent='คัดลอกแล้ว'});mk('ถูกใจ',b=>giveFeedback(m,1,b));mk('ปรับปรุง',b=>giveFeedback(m,0,b))}}
  col.appendChild(d);$('chat').scrollTop=1e9;return d}
+
+function imagineLocal(t){
+ var subject=/ผู้หญิง|หญิง|woman|girl|portrait|ใบหน้า/i.test(t)?'portrait':
+   /ทะเล|น้ำ|ocean|sea/i.test(t)?'water':
+   /ภูเขา|mountain/i.test(t)?'mountain':
+   /ดาว|จักรวาล|space|galaxy/i.test(t)?'cosmos':
+   /เสียง|คลื่น|wave|audio/i.test(t)?'wave':'abstract';
+ var mood=/อบอุ่น|แดด|เย็น|golden|sunset|พระอาทิตย์ตก/i.test(t)?'warm':
+   /สงบ|ทะเล|calm|ocean/i.test(t)?'calm':
+   /มืด|กลางคืน|night|dark/i.test(t)?'mystic':'bold';
+ var cam=/ใกล้|close|macro/i.test(t)?'close-up':
+   /กว้าง|wide|วิว/i.test(t)?'wide':
+   /สูง|drone|aerial/i.test(t)?'aerial':'medium';
+ return subject+' · '+mood+' · '+cam;
+}
+
 const SUG=['ค้นหา','ถามอะไรก็ได้','สร้างเนื้อหา','สร้างรูปภาพ'];
 function view(){const col=$('col');col.innerHTML='';document.body.classList.remove('is-empty');const c=chats.find(x=>x.id===cur);
  if(!c||!c.m.length){col.innerHTML='<div class="empty"><h1>เราควรเริ่มจากตรงไหนดี</h1><div class="sug"></div></div>';document.body.classList.add('is-empty');SUG.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{$('q').value=s;send()};col.querySelector('.sug').appendChild(b)})}
@@ -1494,7 +1510,7 @@ async function send(voice){
     const mr=await api('/api/media/chat',{method:'POST',body:JSON.stringify({text:t})});
     if(mr.ok&&mr.type==='image'&&mr.url){
      var dr=mr.direction||{};
-     var concept=[dr.subject,dr.mood,dr.camera].filter(Boolean).join(' · ');
+     var concept=[dr.subject,dr.mood,dr.camera].filter(Boolean).join(' · ')||imagineLocal(t);
      c.m.push({r:'assistant',c:'สร้างภาพให้แล้วครับ'+(concept?' — จินตนาการ: '+concept:' — ออกแบบจากคำสั่งของคุณ'),pic:localBase()+mr.url,q:t});
      save();view();setBusy(false);lastLang='th';speak('สร้างภาพให้แล้วครับ','th');return
     }
