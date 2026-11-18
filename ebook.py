@@ -44,18 +44,20 @@ class EbookStudio:
             from PIL import Image, ImageDraw, ImageFont
         except Exception:
             return {"ok": False, "error": "Pillow unavailable"}
-        W, H = 1600, 2560  # KDP recommended ratio
+        W, H = 1000, 1600  # lighter, same 5:8 ratio (KDP accepts >=1000px)
         im = Image.new("RGB", (W, H), (18, 22, 34))
         d = ImageDraw.Draw(im)
-        # elegant diagonal gradient bands
+        # efficient gradient: 40 bands instead of 1600 lines
         (r0, g0, b0) = (palette or ((37, 99, 235), (124, 58, 237), (236, 72, 153)))[0]
-        for y in range(H):
+        band = max(1, H // 40)
+        for y in range(0, H, band):
             t = y / H
             r = int(b0 + (r0 - b0) * t)
             g = int(g0 + (20 - g0) * t)
             b = int(b0 * (1 - t) + 40 * t)
-            d.line([(0, y), (W, y)], fill=(max(0, min(255, r)), max(0, min(255, g)), max(0, min(255, b))))
-        d.rounded_rectangle([90, 90, W - 90, H - 90], radius=40, outline=(255, 255, 255), width=4)
+            d.rectangle([0, y, W, min(H, y + band)],
+                        fill=(max(0, min(255, r)), max(0, min(255, g)), max(0, min(255, b))))
+        d.rounded_rectangle([56, 56, W - 56, H - 56], radius=28, outline=(255, 255, 255), width=3)
         def font(sz, bold=False):
             for f in (("C:/Windows/Fonts/NotoSansThai-Bold.ttf" if bold else "C:/Windows/Fonts/NotoSansThai-Regular.ttf"),
                       "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf"):
@@ -74,14 +76,14 @@ class EbookStudio:
                 cur = (cur + " " + w).strip()
         if cur:
             lines.append(cur)
-        f_title = font(96, True)
-        y = 700
+        f_title = font(60, True)
+        y = 440
         for ln in lines[:6]:
-            d.text((140, y), ln, font=f_title, fill=(255, 255, 255))
-            y += 130
-        d.line([(140, y + 40), (W - 140, y + 40)], fill=(255, 255, 255), width=3)
-        d.text((140, H - 400), str(author), font=font(64), fill=(240, 240, 245))
-        d.text((140, H - 300), "zyphere.ai · ผลิตโดย AI", font=font(42), fill=(210, 215, 225))
+            d.text((90, y), ln, font=f_title, fill=(255, 255, 255))
+            y += 82
+        d.line([(90, y + 28), (W - 90, y + 28)], fill=(255, 255, 255), width=2)
+        d.text((90, H - 250), str(author), font=font(42), fill=(240, 240, 245))
+        d.text((90, H - 180), "zyphere.ai · ผลิตโดย AI", font=font(30), fill=(210, 215, 225))
         p = path or os.path.join(self.out_dir, "cover_" + str(int(time.time())) + ".png")
         im.save(p, "PNG")
         return {"ok": True, "path": p, "size": os.path.getsize(p), "w": W, "h": H}
