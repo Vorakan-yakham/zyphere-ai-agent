@@ -3801,6 +3801,25 @@ class Handler(SimpleHTTPRequestHandler):
                     products += SHOP.catalog().get("products", []) or []
             except Exception:
                 pass
+            # Fallback: build from the durable GitHub repo (92 real product files)
+            # so the store is never empty after a Render restart.
+            if not products:
+                try:
+                    import requests as _rq
+                    api = ("https://api.github.com/repos/Vorakan-yakham/"
+                           "zyphere-scholar-product-pack/contents/products")
+                    g = _rq.get(api, timeout=20)
+                    if g.ok:
+                        base = ("https://github.com/Vorakan-yakham/"
+                                "zyphere-scholar-product-pack/blob/main/products/")
+                        for it in g.json():
+                            nm = it.get("name", "")
+                            if nm.endswith(".md"):
+                                products.append({"title": nm[:-3].replace("_", " "),
+                                                 "price": 99, "desc": "ผลงานนักวิชาการ Zyphere",
+                                                 "asset_url": base + nm, "id": nm})
+                except Exception:
+                    pass
             if STORE:
                 res = STORE.build(products)
                 fp = res.get("path")

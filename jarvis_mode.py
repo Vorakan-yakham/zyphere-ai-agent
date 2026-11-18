@@ -53,11 +53,11 @@ class JarvisMode:
         if 5 <= h < 11:
             head = "อรุณสวัสดิ์ครับ ผมคือ Zyphere"
         elif 11 <= h < 17:
-            head = "สวัสดีตอนบ่ายครับ"
+            head = "สวัสดีตอนบ่ายครับ ผมคือ Zyphere"
         elif 17 <= h < 22:
-            head = "สวัสดีตอนเย็นครับ"
+            head = "สวัสดีตอนเย็นครับ ผมคือ Zyphere"
         else:
-            head = "ดึกแล้วครับ ผมจะดูแลระบบให้เอง"
+            head = "ดึกแล้วครับ ผมคือ Zyphere จะดูแลระบบให้เอง"
         body = ("สถานะของผม: ขั้น %s · ความรู้ %d ข้อ · เอกสารวิจัย %d ฉบับ · ผลงาน %d ชิ้น" %
                 (rank, facts, docs, works))
         rec = {"ok": True, "ts": int(time.time()), "head": head, "body": body,
