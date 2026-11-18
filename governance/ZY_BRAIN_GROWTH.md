@@ -4,12 +4,12 @@
 
 ## QA ยังมีจุดไม่ผ่าน
 - ทำ: แก้ FIX ให้เป็น KEEP ด้วยหลักฐานใหม่
-- ผล: ran {'keep': 18, 'fix': 0, 't': 1795024045}
+- ผล: ran {'keep': 18, 'fix': 0, 't': 1795024346}
 
 ## ภาพยังพัฒนาได้อีก
 - ทำ: รัน image_quality_loop วัด gain ใหม่
-- ผล: ran {'t': 1795024051}
+- ผล: ran {'t': 1795024355}
 
 ## วิดีโอยังพัฒนาได้อีก
 - ทำ: รัน media_twin_track คู่ขนาน
-- ผล: error:'(' was never closed (media_twin_track.py, line 54) 
+- ผล: ran {'status': 'both', 't': 1795024376}

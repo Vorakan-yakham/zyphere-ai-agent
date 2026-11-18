@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-18T17:47:34.711100Z
+เวลา: 2026-11-18T17:53:22.949991Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 30 นาที)
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -14,8 +14,9 @@
 | books | {"ok": true, "summary": {}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
-| media | {"ok": false, "error": "'(' was never closed (media_twin_track.py, line 54)"} |
+| media | {"ok": true, "summary": {"status": "both"}} |
 | nudge | {"ok": true, "summary": {"idle": []}} |
+| commerce | {"ok": true, "summary": {}} |
 | qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
