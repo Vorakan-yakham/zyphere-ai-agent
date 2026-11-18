@@ -5039,7 +5039,11 @@ class Handler(SimpleHTTPRequestHandler):
                     data={"amount": int(o.get("amount", 0)) * 100,
                           "currency": "thb", "source[type]": "promptpay",
                           "description": "Zyphere " + str(o.get("product", ""))[:80],
-                          "metadata[order_id]": oid},
+                          "metadata[order_id]": oid,
+                          "return_uri": os.environ.get(
+                              "FRONTEND_URL",
+                              "https://vorakan-yakham.github.io/zyphere-ai-agent/")
+                          .rstrip("/") + "/STORE.html"},
                     timeout=30)
                 j = r.json()
                 if not r.ok or not j.get("id"):
