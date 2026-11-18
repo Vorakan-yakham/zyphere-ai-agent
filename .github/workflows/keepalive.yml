@@ -1,4 +1,4 @@
-name: Zyphere Keepalive + Auto-Learn
+name: Zyphere Keepalive + Continuous Self-Improvement
 
 on:
   schedule:
@@ -6,10 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  wake:
+  wake-and-improve:
     runs-on: ubuntu-latest
     steps:
       - name: Ping health (wake Render)
         run: curl -sSf --max-time 45 https://zyphere-ai-agent.onrender.com/api/health || true
       - name: Trigger one learning round
         run: curl -sSf --max-time 90 "https://zyphere-ai-agent.onrender.com/api/learn/tick" || true
+      - name: Chief runs a cycle (nags every department to improve)
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/chief/run || true
+      - name: Direct self-improvement cycle (keep improving even if chief skips)
+        run: curl -sSf --max-time 120 -X POST -H 'Content-Type: application/json' -d '{}' https://zyphere-ai-agent.onrender.com/api/improve/run || true

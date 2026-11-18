@@ -2894,6 +2894,32 @@ def learn_tick():
     return {"ok": True, "id": job["id"], "status": job["status"], "topic": job["topics"][0], "source": source}
 
 
+IMPROVE_CFG = {"enabled": True, "interval_minutes": 15}
+_improve_busy = False
+
+
+def self_improve_scheduler():
+    """Continuously improve every department, independent of external cron.
+    Render free sleeps, but whenever the process is alive this loop keeps
+    running; the GitHub cron also wakes it and calls /api/improve/run.
+    """
+    global _improve_busy
+    while True:
+        try:
+            if IMPROVE_CFG.get("enabled") and not _improve_busy:
+                _improve_busy = True
+                try:
+                    if SI:
+                        SI.cycle()
+                        if remote_enabled():
+                            remote_push("self_improvement", {"log": SI.log[-50:]})
+                finally:
+                    _improve_busy = False
+        except Exception:
+            pass
+        time.sleep(max(1, int(IMPROVE_CFG.get("interval_minutes", 15))) * 60)
+
+
 def learn_scheduler():
     chief_ticks = 0
     while True:
@@ -3953,6 +3979,15 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/improve/config":
+            if u.command == "POST":
+                for k in ("enabled", "interval_minutes"):
+                    if k in body:
+                        IMPROVE_CFG[k] = body[k]
+                return self._send_json(200, {"ok": True, "config": IMPROVE_CFG})
+            self._send_json(200, {"ok": True, "config": IMPROVE_CFG,
+                                  "busy": _improve_busy})
             return
         if u.path == "/api/improve/status":
             self._send_json(200, SI.status() if SI
@@ -6380,6 +6415,13 @@ if __name__ == "__main__":
     except Exception as e:
         print("Child bootstrap failed:", str(e)[:120])
     threading.Thread(target=learn_scheduler, daemon=True).start()
+    threading.Thread(target=self_improve_scheduler, daemon=True).start()
+    # First improvement round immediately on every process start.
+    try:
+        if SI:
+            SI.cycle()
+    except Exception:
+        pass
     with Server(("", PORT), Handler) as s:
         print(f"Zyphere COMPLETE21: http://localhost:{PORT}")
         print("Autonomous learning: every %.0f h (configurable in the Knowledge panel)" % (load_learning().get("interval_hours") or 6))
