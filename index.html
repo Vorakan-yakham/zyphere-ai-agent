@@ -1099,7 +1099,7 @@ const md=t=>String(t||'').split('```').map((p,i)=>i%2?'<div class="cb"><button c
 const plain=t=>String(t||'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{1F900}-\u{1F9FF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu,'').replace(/^[\s>*\-_=~`#|•·]+/gm,'').replace(/[-_=*~`#|<>\\\/]{2,}/g,' ').replace(/[*_#`~>|]/g,'').replace(/\s*\n+\s*/g,'\n').replace(/[ \t]{2,}/g,' ').trim();
 function toast(t){const d=document.createElement('div');d.textContent=redact(t);d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1f2430;color:#fff;padding:10px 18px;border-radius:18px;font-size:14px;z-index:99;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),7000)}
 function bubble(m,live){const col=$('col');let d;
- if(m.r==='user'){d=document.createElement('div');d.className='u';(m.imgs&&m.imgs.length?m.imgs:(m.img?[m.img]:[])).forEach(u=>{const i=document.createElement('img');i.src=u;d.appendChild(i)});d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
+ if(m.r==='user'){d=document.createElement('div');d.className='u';(m.vids||[]).forEach(u=>{const v=document.createElement('video');v.controls=true;v.src=u;v.style.cssText='width:100%;max-width:420px;border-radius:12px;margin-bottom:6px';d.appendChild(v)});(m.imgs&&m.imgs.length?m.imgs:(m.img?[m.img]:[])).forEach(u=>{const i=document.createElement('img');i.src=u;d.appendChild(i)});d.appendChild(document.createTextNode(m.c+(m.f&&m.f.length?'\n📎 '+m.f.join(', '):'')))}
  else{d=document.createElement('div');d.className='a'+(live?' busy':'');d.innerHTML='<div class="av">'+lg()+'</div><div class="bd"><div class="t"></div></div>';const t=d.querySelector('.t'),bd=d.querySelector('.bd');
   if(live&&m.c==='...')t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';else t.innerHTML=md(m.c);
   if(m.pic){const p=document.createElement('div');p.className='pic';const im=document.createElement('img');im.src=m.pic;p.appendChild(im);bd.appendChild(p)}
@@ -1146,6 +1146,7 @@ function showDeleteChat(id,title){
 
 // files (lightweight: text + images)
 const IMGX=/\.(png|jpe?g|gif|webp|bmp|avif)$/i;
+const VIDX=/\.(mp4|webm|mov|m4v|avi|mkv|ogg)$/i;
 function shrink(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{let w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,1600/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.85))};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('เปิดรูปไม่ได้'))};im.src=u})}
 const FILE_MAX=200000;
 async function pdfText(f){
@@ -1199,15 +1200,23 @@ async function extractFile(f){
 }
 async function transcribeFile(f){const b=new Uint8Array(await f.arrayBuffer());let s='';for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));const j=await api('/api/transcribe',{method:'POST',body:JSON.stringify({name:f.name||'audio.mp3',data:btoa(s),key:getK('zyphere_groq_key')||''})});return j.text}
 async function addFiles(list){const fs=[...(list||[])];for(const f of fs){if(pend.items.length>=8){toast('แนบได้ไม่เกิน 8 ไฟล์ต่อข้อความ');break}
- const it={name:f.name||'ไฟล์'};try{if((f.type||'').startsWith('audio/')||/\.(mp3|wav|m4a|ogg|webm|aac)$/i.test(f.name)){it.text='\n\n[ไฟล์เสียง '+f.name+']:\n'+(await transcribeFile(f))}else if((f.type||'').startsWith('image/')||IMGX.test(f.name)){it.imgs=[await shrink(f)]}else{
-  const raw=String(await extractFile(f)||'').replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
-  if(!raw){toast('ไม่พบข้อความใน '+(f.name||'ไฟล์'));continue}
-  it.text='\n\n[ไฟล์ '+f.name+' | '+raw.length.toLocaleString()+' ตัวอักษร]:\n'+raw.slice(0,FILE_MAX);
-  it.len=raw.length;it.cut=raw.length>FILE_MAX;
-  if(/\.pdf$/i.test(f.name)&&raw.length<200)toast('PDF นี้อาจเป็นไฟล์สแกน อ่านข้อความไม่ได้');
- }}catch(e){toast('อ่าน '+(f.name||'ไฟล์')+' ไม่ได้: '+String(e.message||e));continue}
- pend.items.push(it)}chips()}
-function chips(){const b=$('chips');b.innerHTML='';pend.items.forEach(it=>{const s=document.createElement('span');s.className='chip';s.textContent=(it.imgs?'🖼 ':'📎 ')+it.name+' ✕';s.onclick=()=>{pend.items=pend.items.filter(x=>x!==it);chips()};b.appendChild(s)})}
+  const it={name:f.name||'ไฟล์',size:f.size||0,type:f.type||'application/octet-stream'};
+  try{
+   if((f.type||'').startsWith('video/')||VIDX.test(f.name)){
+    it.vids=[URL.createObjectURL(f)];it.text='\n\n[ไฟล์วิดีโอ '+f.name+' ('+Math.round(f.size/1024)+' KB) — แนบให้ Zyphere ดู/ตัดต่อได้]';
+   }else if((f.type||'').startsWith('audio/')||/\.(mp3|wav|m4a|aac)$/i.test(f.name)){
+    it.text='\n\n[ไฟล์เสียง '+f.name+']:\n'+(await transcribeFile(f));
+   }else if((f.type||'').startsWith('image/')||IMGX.test(f.name)){
+    it.imgs=[await shrink(f)];
+   }else{
+    const raw=String(await extractFile(f)||'').replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+    it.text=raw?('\n\n[ไฟล์ '+f.name+' | '+raw.length.toLocaleString()+' ตัวอักษร]:\n'+raw.slice(0,FILE_MAX))
+               :('\n\n[แนบไฟล์ '+f.name+' ('+Math.round(f.size/1024)+' KB, '+(f.type||'ไม่ระบุประเภท')+') — Zyphere รับทราบไฟล์นี้แล้ว]');
+    it.len=raw.length;it.cut=raw.length>FILE_MAX;
+   }
+  }catch(e){it.text='\n\n[แนบไฟล์ '+f.name+' — ระบบอ่านเนื้อหาไม่ได้ แต่เก็บไฟล์ไว้ให้แล้ว]'}
+  pend.items.push(it)}chips()}
+function chips(){const b=$('chips');b.innerHTML='';pend.items.forEach(it=>{const s=document.createElement('span');s.className='chip';s.textContent=(it.vids?'🎬 ':(it.imgs?'🖼 ':'📎 '))+it.name+' ✕';s.onclick=()=>{pend.items=pend.items.filter(x=>x!==it);chips()};b.appendChild(s)})}
 $('plusBtn').onclick=()=>$('fileIn').click();$('fileIn').onchange=function(){addFiles(this.files);this.value=''};
 $('chat').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.cpy');if(!b)return;const c=b.parentElement.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(c.textContent);b.textContent='คัดลอกแล้ว';setTimeout(()=>{b.textContent='คัดลอกโค้ด'},1500)});
 
@@ -1500,7 +1509,7 @@ async function send(voice){
  }
  if(!t&&!pend.items.length)return;
  let c=chats.find(x=>x.id===cur);if(!c){c={id:Date.now(),t:(t||pend.items[0].name||'แชทใหม่').slice(0,32),m:[]};chats.unshift(c);cur=c.id}
- const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[])};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
+ const um={r:'user',c:t||'(แนบไฟล์)',x:pend.items.map(i=>i.text||'').join(''),f:pend.items.map(i=>i.name),imgs:pend.items.flatMap(i=>i.imgs||[]),vids:pend.items.flatMap(i=>i.vids||[]),files:pend.items.map(i=>({name:i.name,size:i.size,type:i.type}))};um.img=um.imgs[um.imgs.length-1]||null;c.m.push(um);pend={items:[]};chips();$('q').value='';$('q').style.height='';
  view();lastLang=resolveLang(t);resetStreamSpeak();claimVoice();const ab=bubble({r:'assistant',c:'...'},true),body=ab.querySelector('.t');
   // User ordered media creation straight from chat — build it, show it here.
   if(/^\s*(ช่วย|กรุณา|โปรด)?\s*(สร้าง|ทำ|วาด|ออกแบบ|generate|create|render)/i.test(t)&&
