@@ -451,9 +451,9 @@ try:
 except Exception:
     GO = None
 try:
-    from role_profiles import RP
+    from role_profiles import RP as ROLEP
 except Exception:
-    RP = None
+    ROLEP = None
 try:
     from research_projects import RP
 except Exception:
@@ -3944,12 +3944,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/roles/profile":
             name = urllib.parse.parse_qs(u.query).get("name", [""])[0]
-            self._send_json(200, RP.get(name) if RP
+            self._send_json(200, ROLEP.get(name) if ROLEP
                             else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/roles/search":
             q = urllib.parse.parse_qs(u.query).get("q", [""])[0]
-            self._send_json(200, RP.search(q) if RP
+            self._send_json(200, ROLEP.search(q) if ROLEP
                             else {"ok": False, "error": "unavailable"})
             return
         if u.path == "/api/growth/search":
