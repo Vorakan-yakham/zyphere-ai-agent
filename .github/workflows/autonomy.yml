@@ -24,6 +24,7 @@ jobs:
           import json, traceback
           import time as _t
           steps = [
+            ("selfnudge", "self_nudge", "run"),
             ("league", "improvement_league", "run"),
             ("wish", "wish_cycle", "run"),
             ("revenue_auto", "revenue_autopilot", "run"),
@@ -71,7 +72,8 @@ jobs:
           # Owner wants ~1-minute pulses. GitHub cron minimum is 5 min, so
           # run five sub-cycles inside this job (~every 60 seconds).
           for cycle in range(5):
-              for name, mod, fn in [("league", "improvement_league", "run"),
+              for name, mod, fn in [("selfnudge", "self_nudge", "run"),
+                                    ("league", "improvement_league", "run"),
                                     ("wish", "wish_cycle", "run"),
                                     ("revenue_auto", "revenue_autopilot", "run"),
                                     ("cross", "cross_ask", "run"),
