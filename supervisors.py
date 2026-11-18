@@ -32,11 +32,11 @@ QUESTIONS = {
 }
 
 
-def _count_tree_suffix(suffix):
+def _count_tree_suffix(suffix: str) -> int:
     try:
-        import autonomous_council as AC
-        return sum(1 for p in AC.gh_tree() if p.endswith(suffix))
-    except Exception:
+        from autonomous_council import gh_tree
+        return sum(1 for p in gh_tree() if isinstance(p, str) and p.endswith(suffix))
+    except (ImportError, Exception):
         return 0
 
 
