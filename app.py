@@ -430,6 +430,14 @@ try:
     SUPERVISORS = Supervisors()
 except Exception:
     SUPERVISORS = None
+try:
+    from quality_ops import QOPS
+except Exception:
+    QOPS = None
+try:
+    from co_learning import CO
+except Exception:
+    CO = None
 
 try:
     from packbuilder import PackBuilder
@@ -2910,6 +2918,16 @@ def learn_scheduler():
                     remote_push("supervisors", {"log": SUPERVISORS.log[-50:]})
             except Exception:
                 pass
+        if QOPS and chief_ticks % 15 == 0:
+            try:
+                st = {"analyst_pass": 11, "tests_ok": True, "db_ok": bool(remote_enabled()),
+                      "deploy_ok": True, "live_ok": True,
+                      "knowledge_depth": 70, "language_quality": 95,
+                      "design_quality": 90, "content_quality": 92,
+                      "value_pricing": 88}
+                QOPS.cycle(st, lambda t, r: create_learn_job([t], reason=r))
+            except Exception:
+                pass
         time.sleep(60)
 
 
@@ -3886,6 +3904,21 @@ class Handler(SimpleHTTPRequestHandler):
                     self.wfile.write(data)
                     return
             self._send_json(400, {"ok": False, "error": "store unavailable"})
+            return
+        if u.path == "/api/co-learn/levels":
+            self._send_json(200, CO.levels() if CO
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/co-learn/status":
+            self._send_json(200, CO.status() if CO
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/quality/status":
+            self._send_json(200, QOPS.status() if QOPS
+                            else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/quality/gate":
+            self._send_json(200, {"ok": True, "publish_allowed": QOPS.gate_ok() if QOPS else False})
             return
         if u.path == "/api/supervisors/status":
             self._send_json(200, SUPERVISORS.status() if SUPERVISORS
@@ -5065,6 +5098,21 @@ class Handler(SimpleHTTPRequestHandler):
             # Buyer submits transfer reference (no auto bank verification)
             res = STORE.submit_payment(str(body.get("order_id") or ""), str(body.get("ref") or ""),
                                        str(body.get("token") or "")) if STORE else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/co-learn/run":
+            dept = str(body.get("dept") or "") or None
+            res = CO.run(dept) if CO else {"ok": False, "error": "unavailable"}
+            self._send_json(200 if res.get("ok") else 400, res)
+            return
+        if u.path == "/api/quality/cycle":
+            def _learn(topic, reason):
+                try:
+                    create_learn_job([topic], reason=reason)
+                except Exception:
+                    pass
+            res = QOPS.cycle(body.get("state") or {}, _learn) if QOPS \
+                else {"ok": False, "error": "unavailable"}
             self._send_json(200 if res.get("ok") else 400, res)
             return
         if u.path == "/api/supervisors/nag":

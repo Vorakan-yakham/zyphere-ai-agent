@@ -1,0 +1,69 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zyphere — ระดับการเรียนรู้ทุกแผนก (เรียลไทม์)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#1b1f2a;font-family:'Noto Sans Thai',sans-serif}
+header{background:linear-gradient(120deg,#312e81,#6d28d9);color:#fff;padding:26px 20px;text-align:center}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.9;font-size:13px}
+.wrap{max-width:1000px;margin:0 auto;padding:22px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e8eaf1;border-radius:16px;padding:16px}
+.kpi span{font-size:12px;color:#6b7280}.kpi b{display:block;font-size:25px;color:#4f46e5;margin-top:6px}
+.dept{background:#fff;border:1px solid #e8eaf1;border-radius:18px;padding:18px;margin-bottom:12px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dept h3{margin:0;font-size:16px}
+.lv{font-size:11px;border-radius:99px;padding:5px 12px;font-weight:600}
+.lv-doctor{background:#dcfce7;color:#166534}.lv-foundation{background:#fef3c7;color:#92400e}.lv-none{background:#f3f4f6;color:#6b7280}
+.bar{height:8px;background:#eef0f5;border-radius:99px;margin:14px 0 10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#4f46e5,#7c3aed);border-radius:99px;transition:.4s}
+.mini{font-size:12px;color:#6b7280;line-height:1.7}
+.lessons{font-size:12.5px;color:#374151;line-height:1.8;margin:8px 0 0;padding-left:18px}
+.foot{text-align:center;color:#9ca3af;font-size:12px;margin:24px 0 40px}
+button{border:0;background:#4f46e5;color:#fff;border-radius:10px;padding:9px 14px;font:600 13px inherit;cursor:pointer}
+</style></head><body>
+<header><h1>📚 ระดับการเรียนรู้ทุกแผนก Zyphere</h1>
+<p>อัพเดทอัตโนมัติทุก 10 วินาที · ทุกฝ่ายถูกจี้ให้เรียนรู้และยกระดับเป็น Doctor</p></header>
+<div class="wrap">
+<div class="kpis" id="kpis"></div>
+<div style="display:flex;gap:8px;margin-bottom:16px">
+ <button onclick="run()">จี้ให้เรียนรู้ตอนนี้ (Doctor)</button>
+ <span class="mini" id="statusLine">กำลังโหลด…</span></div>
+<div id="list"></div>
+<div class="foot">ข้อมูลจริงจาก Zyphere · ไม่มีการอ้างตัวเลขที่ไม่มีอยู่</div>
+</div>
+<script>
+const API='https://zyphere-ai-agent.onrender.com';
+function esc(s){return String(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+async function load(){
+ try{
+  const r=await(await fetch(API+'/api/co-learn/levels')).json();
+  if(!r.ok)throw new Error(r.error||'failed');
+  document.getElementById('kpis').innerHTML=[
+   ['แผนกทั้งหมด',r.departments],['ระดับ Doctor',r.doctor_departments],
+   ['อัพเดท',new Date(r.t*1000).toLocaleTimeString('th-TH')]
+  ].map(x=>'<div class="kpi"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
+  const lv=r.levels||{};
+  document.getElementById('list').innerHTML=Object.entries(lv).map(([d,v])=>{
+   const pct=v.level==='doctor'?100:(v.level==='foundation'?50:0);
+   const cls=v.level==='doctor'?'lv-doctor':(v.level==='foundation'?'lv-foundation':'lv-none');
+   const last=v.last_studied?new Date(v.last_studied*1000).toLocaleString('th-TH'):'ยังไม่เคยเรียน';
+   const ls=(v.latest_lessons||[]).map(x=>'<li>'+esc(x)+'</li>').join('');
+   return '<div class="dept"><div class="top"><h3>'+esc(d)+'</h3>'+
+    '<span class="lv '+cls+'">'+esc(v.level).toUpperCase()+'</span></div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+    '<div class="mini">บทเรียน '+v.lessons+' · ระดับ Doctor '+v.doctor_lessons+' · session '+v.sessions+' · เรียนล่าสุด '+last+
+    ' · แหล่ง: '+esc((v.sources||[]).join(', '))+'</div>'+
+    (ls?'<ul class="lessons">'+ls+'</ul>':'')+'</div>';
+  }).join('');
+  document.getElementById('statusLine').textContent='อัพเดทล่าสุด '+new Date().toLocaleTimeString('th-TH');
+ }catch(e){document.getElementById('statusLine').textContent='โหลดไม่ได้: '+e.message}
+}
+async function run(){
+ document.getElementById('statusLine').textContent='กำลังจี้ให้ทุกแผนกเรียนรู้…';
+ try{const r=await(await fetch(API+'/api/co-learn/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dept:null})})).json();
+  document.getElementById('statusLine').textContent='จี้แล้ว '+ (r.departments||0) +' แผนก';load();}
+ catch(e){document.getElementById('statusLine').textContent=e.message}
+}
+load();setInterval(load,10000);
+</script></body></html>
