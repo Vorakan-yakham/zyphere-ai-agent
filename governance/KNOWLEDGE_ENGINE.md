@@ -1,15 +1,15 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
 ก่อน: 26 หัวข้อ / 132 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 294 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 290 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| Maxwell equations | OpenAlex, arXiv | 6 |
-| fields | OpenAlex, arXiv | 6 |
+| Maxwell equations | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| fields | OpenAlex, Wikipedia, arXiv | 8 |
 | waves | OpenAlex, arXiv | 6 |
-| refraction | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
-| interference | OpenAlex, Wikidata, Wikipedia, arXiv | 12 |
+| refraction | OpenAlex, arXiv | 6 |
+| interference | OpenAlex, arXiv | 6 |
 | diffraction | OpenAlex, arXiv | 6 |
 | telescope | OpenAlex, arXiv | 6 |
 | spectroscopy | OpenAlex, arXiv | 6 |
