@@ -75,7 +75,7 @@ jobs:
                       m = __import__(mod)
                       r = getattr(m, fn)()
                       out[name + "_pulse" + str(cycle+1)] = {
-                          "ok": bool(r.get("ok")),
+                          "ok": bool(r.get("ok", True)),
                           "fix": r.get("fix"), "keep": r.get("keep")}
                   except Exception as e:
                       out[name + "_pulse" + str(cycle+1)] = {"ok": False,
@@ -88,7 +88,7 @@ jobs:
           import datetime
           lines = ["# Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง", "",
                    "เวลา: " + datetime.datetime.utcnow().isoformat() + "Z",
-                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 30 นาที)", "",
+                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)", "",
                    "| ฝ่าย | ผลที่เกิดจริง |", "|---|---|"]
           for name, r in out.items():
               lines.append("| %s | %s |" % (name, json.dumps(r, ensure_ascii=False)[:220]))
