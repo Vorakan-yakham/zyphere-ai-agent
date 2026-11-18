@@ -1289,7 +1289,7 @@ function ttsNorm(t){let s=String(t||'')
       return raw.split('').map(c=>THD[+c]).join(' ');   // phone / account number
     const p=raw.split('.');
     let out=thaiNumWords(Number(p[0]));
-    if(p[1]) out+=' จุด '+p[1].split('').map(c=>THD[+c]).join('');
+    if(p[1]) out+=' จุด '+p[1].split('').map(c=>THD[+c]).join(' ');
     return out;
   });
   return s.trim()}
