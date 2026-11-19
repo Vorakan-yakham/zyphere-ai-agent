@@ -5683,6 +5683,23 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if u.path == "/api/media/chat":
             text = str(body.get("text") or "").strip()
+            if re.search(r"ปกหนังสือ|ออกแบบปก|cover", text, re.I):
+                try:
+                    import cover_designer as CD
+                    r = CD.run(apply=True)
+                    files = r.get("files") or []
+                    if files:
+                        dst = os.path.join(DATA_DIR, os.path.basename(files[0]))
+                        import shutil
+                        shutil.copy(files[0], dst)
+                        self._send_json(200, {"ok": True, "type": "image",
+                                              "url": "/media/" + os.path.basename(dst),
+                                              "covers": r.get("covers"),
+                                              "engine": "Cover Designer (graphic team)"})
+                        return
+                except Exception as e:
+                    self._send_json(200, {"ok": False, "error": str(e)[:140]})
+                    return
             if re.search(r"แต่งเพลง|เขียนเพลง|compose|ทำเพลง|music.*text|เพลงจากข้อความ", text, re.I):
                 try:
                     import music_composer as MC

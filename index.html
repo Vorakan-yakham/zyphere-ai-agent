@@ -692,6 +692,7 @@ body.busy .logo .lg .blades,body.busy .a.busy .lg .blades{
   background:#202124!important;color:#fff!important;opacity:1!important}
 #sendBtn.go:hover{background:#000!important}
 
+#directMedia .chip{cursor:pointer;transition:.18s}#directMedia .chip:hover{background:#0e7490;color:#fff;transform:translateY(-2px)}
 </style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="zg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".55" stop-color="#22d3ee"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient><radialGradient id="zs" cx=".32" cy=".28" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs></svg>
 <aside class="side expanded" id="side">
  <div class="side-head"><div class="logo" id="logo"></div>
@@ -728,7 +729,12 @@ body.busy .logo .lg .blades,body.busy .a.busy .lg .blades{
 <div class="main"><div class="top compact-top"><button class="ib" id="menu" title="เมนู"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <button class="jv" id="jvBtn" title="ปลุกด้วยคำว่า ไซเฟอร์">ZYPHERE</button><button class="jv" id="gTop" title="ล็อกอินด้วย Google">Google</button><button class="jv" id="logoutBtn" title="ออกจากระบบ" style="display:none">Logout</button><button class="ib" id="adminBtn" title="Admin"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></button><button class="ib" id="shopBtn" title="Pro / สนับสนุน"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg></button><button class="ib" id="storeBtn" title="ร้านค้า — ซื้อผลงาน 46 นักวิชาการ"><svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6"/></svg><span style="font-size:10px">ร้านค้า</span></button><button class="ib" id="seeBtn" title="ให้ไซเฟอร์ดูหน้าจอ"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="shareBtn" title="แชร์/สนับสนุน"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ib" id="voiceBtn" title="เปิด/ปิดเสียงตอบ"></button></div>
 <div class="chat" id="chat"><div class="brief" id="brief"></div><div class="col" id="col"></div></div>
-<div class="dock"><div class="chips" id="chips"></div><div class="box">
+<div class="dock"><div class="chips" id="chips"></div><div class="chips" id="directMedia" style="margin:0 0 8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+<button class="chip" onclick="zyDirect('image')">🎨 สร้างภาพ</button>
+<button class="chip" onclick="zyDirect('video')">🎬 สร้างวิดีโอ</button>
+<button class="chip" onclick="zyDirect('cover')">📖 ออกแบบปกหนังสือ</button>
+<button class="chip" onclick="zyDirect('song')">🎵 แต่งเพลง</button>
+</div><div class="box">
 <button class="ib" id="plusBtn" title="แนบไฟล์"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button><input type="file" id="fileIn" multiple hidden>
 <textarea id="q" rows="1" placeholder="ถาม Zyphere..."></textarea>
 <button class="ib" id="videoBtn" title="สร้างวิดีโอจากภาพ+ข้อความ+เสียง"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg></button>
@@ -2254,6 +2260,15 @@ if(document.getElementById('amOwnerDl'))document.getElementById('amOwnerDl').onc
   else toast('เฉพาะบัญชีเจ้าของครับ')
  }catch(e){toast('owner download ไม่ได้: '+redact(e.message))}
 };
+
+async function zyDirect(kind){
+ const text={image:'สร้างภาพจากจินตนาการของ Zyphere',
+             video:'สร้างวิดีโอสั้นจากจินตนาการของ Zyphere',
+             cover:'ออกแบบปกหนังสือใหม่ ใช้ motif ตามเนื้อหา ไม่ใช้ภาพเก่า',
+             song:'แต่งเพลงจากข้อความ这一天'}[kind]||'สร้างภาพ';
+ const q=document.getElementById('q');if(q){q.value=text;q.dispatchEvent(new Event('input',{bubbles:true}));}
+ if(typeof send==='function')send();
+}
 </script><div class="del-ov" id="delChatModal"><div class="del-box">
  <button class="del-x" id="delChatX" title="ปิด">✕</button>
  <h3>ลบแชทใช่ไหม</h3>
