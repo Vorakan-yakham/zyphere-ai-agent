@@ -6091,7 +6091,13 @@ class Handler(SimpleHTTPRequestHandler):
                 tok = str(body.get("token") or
                           urllib.parse.parse_qs(u.query).get("token", [""])[0])
                 me = USERS.me(tok) if (USERS and tok) else None
-                email = str((me or {}).get("email") or "")
+                email = str((me or {}).get("email") or "").lower()
+                # Admin/OWNER must not place customer orders. Enforced here too
+                # so hiding the UI button alone can never be bypassed.
+                if email in OWNER_EMAILS or (me or {}).get("role") == "admin":
+                    self._send_json(403, {"ok": False,
+                        "error": "Admin ไม่สามารถสั่งซื้อได้ — ใช้สิทธิดูแลระบบแทน"})
+                    return
                 order = SV.new_order(price, book, email)
                 # PERSIST — otherwise /api/pay/declare can never find the order
                 dbp = SV.DATA

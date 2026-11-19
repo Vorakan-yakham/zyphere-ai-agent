@@ -85,6 +85,10 @@ def static_checks():
         out.append(check("catalogue has exactly 46 unique books", ok46, evidence))
     except Exception as e:
         out.append(check("catalogue has exactly 46 unique books", False, str(e)[:120]))
+    out.append(check("admin cannot order (UI + backend)",
+                     "zyApplyBuyVisibility" in store and
+                     "Admin ไม่สามารถสั่งซื้อได้" in app,
+                     "buy hidden for owner + 403 at API"))
     out.append(check("store uses 46 real photographic covers",
                      store.count("public_covers/cover_") >= 46 and
                      "<svg" not in store,

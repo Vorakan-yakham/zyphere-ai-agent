@@ -66,6 +66,17 @@ function zyFilter(n){document.querySelectorAll('.card').forEach(function(c){
 
 const BK='https://zyphere-ai-agent.onrender.com';
 function zyToken(){try{return localStorage.getItem('zy_token')||''}catch(e){return ''}}
+function zyApplyBuyVisibility(){
+ var admin=!!window.zyIsOwner;
+ document.querySelectorAll('.card .row').forEach(function(row){
+  var b=row.querySelector('button');if(!b)return;
+  b.style.display=admin?'none':'';
+  var tag=row.querySelector('.admin-note');
+  if(admin&&!tag){tag=document.createElement('small');tag.className='admin-note';
+   tag.style.cssText='color:#5d7380;font-size:11px';tag.textContent='Admin — ไม่ต้องสั่งซื้อ';row.appendChild(tag)}
+  if(!admin&&tag)tag.remove();
+ });
+}
 async function zyLoadAccount(){
  const bar=document.getElementById('acctbar');const tk=zyToken();
  if(!tk){bar.innerHTML='<a href="./">เข้าสู่ระบบ →</a>';return}
