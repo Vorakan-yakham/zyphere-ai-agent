@@ -7,8 +7,8 @@
 
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.07)
-- เครื่องมือที่เลือก: **wish_cycle** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["wish_cycle", 0.437], ["revenue_autopilot", 0.402], ["poster_studio", 0.363], ["image_quality_loop", 0.315], ["department_scouts", 0.277]]
+- เครื่องมือที่เลือก: **poster_studio** (จากคะแนนความเชื่อ + exploration)
+- การให้คะแนน: [["poster_studio", 0.545], ["cover_designer", 0.44], ["department_scouts", 0.422], ["wish_cycle", 0.409], ["qa_supreme", 0.363]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**
