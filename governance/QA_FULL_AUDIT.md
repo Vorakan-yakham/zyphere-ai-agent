@@ -14,7 +14,7 @@ KEEP=17 · FIX=1 · UNKNOWN=0
 | TTS ตัวเลขไทย | KEEP | PASS Thai TTS numbers - 23 cardinal fixtures + context cases
  | นักตรวจสอบภาษา |
 | UI สร้างภาพ/วิดีโอในแชท | KEEP | download button=True, old modal=False | นักตรวจสอบประสบการณ์ผู้ใช้ |
-| วิดีโอ + เสียง | KEEP | bytes=5454647 audio=True | นักตรวจสอบสื่อ |
+| วิดีโอ + เสียง | KEEP | bytes=5830964 audio=True | นักตรวจสอบสื่อ |
 | grafpic lab own_image_lab.py | KEEP | found | นักตรวจสอบสื่อ |
 | grafpic lab photo_enhancement.py | KEEP | found | นักตรวจสอบสื่อ |
 | grafpic lab media_twin_track.py | KEEP | found | นักตรวจสอบสื่อ |

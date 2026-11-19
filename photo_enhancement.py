@@ -58,7 +58,7 @@ def e02_crop(im, w=2160, h=3840):
     return ImageOps.fit(im, (w, h), method=Image.LANCZOS, centering=(0.5, 0.35))
 
 
-# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน — Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
 def e03_dehaze(im):
     """v2: multi-scale local tone recovery (in-house, Pillow only)."""
     blur = im.filter(ImageFilter.GaussianBlur(26))
