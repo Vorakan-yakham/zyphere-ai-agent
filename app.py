@@ -4188,7 +4188,7 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
                       "/GROWTH.html", "/ZY_TEMPLATE.html",
                       "/PROGRESS.html", "/ACCOUNT.html", "/STUDIO.html",
-                      "/CATEGORIES.html"):
+                      "/CATEGORIES.html", "/STAFF_LIVE.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()
@@ -5309,6 +5309,17 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, {"ok": True, "revenue": BILLING.stats() if BILLING else {},
                                   "users": USERS.stats() if USERS else {},
                                   "brain": BRAIN.stats() if BRAIN else {}})
+            return
+        if u.path == "/api/admin/staff/live":
+            # ADMIN ONLY — real-time staff activity from actual pulse artefacts
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            owner = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
+            if not (admin_token_ok(tok) or owner):
+                self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
+                return
+            import admin_live as AL
+            self._send_json(200, AL.snapshot())
             return
         if u.path == "/api/billing/status":
             email = urllib.parse.parse_qs(u.query).get("email", [""])[0]

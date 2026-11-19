@@ -719,6 +719,7 @@ body.busy .logo .lg .blades,body.busy .a.busy .lg .blades{
    <div class="am-sep"></div>
    <button class="am" id="amMusic"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12M9 9l10-2"/></svg><span>สร้างเพลง</span></button>
    <button class="am" id="amVideo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg><span>สร้างวิดีโอ</span></button>
+   <button class="am owner-only" id="amStaffLive"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>ดูพนักงานแบบ realtime (Admin)</span></button>
    <button class="am owner-only" id="amIncome"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9c-1-1-5-1-6 1s3 2 4 3-2 2-4 1"/></svg><span>รายได้ / งานวิจัย</span></button>
    <button class="am" id="amBrief"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span>สรุปความเคลื่อนไหว</span></button>
    <div class="am-sep"></div>
@@ -2241,7 +2242,7 @@ if(!window.__acctMenuWired){
  am('amStore',()=>{window.open('https://vorakan-yakham.github.io/zyphere-ai-agent/STORE.html','_blank','noopener')});
  am('amMusic',()=>{window.open('STUDIO.html','_blank','noopener')});
  am('amVideo',()=>{if(typeof openVideo==='function')openVideo()});
- am('amIncome',()=>{window.open('GROWTH.html','_blank','noopener')});
+ am('amStaffLive',()=>{window.open('STAFF_LIVE.html','_blank','noopener')}); am('amIncome',()=>{window.open('GROWTH.html','_blank','noopener')});
  am('amBrief',()=>{window.open('PROGRESS.html','_blank','noopener')});
  am('amGoogle',()=>{const b=$('gTop');if(b)b.click()});
  am('amLogout',()=>{zyDoLogout()});
