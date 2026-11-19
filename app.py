@@ -5315,7 +5315,7 @@ class Handler(SimpleHTTPRequestHandler):
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
             me = USERS.me(tok) if USERS else None
             owner = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
-            if not (admin_token_ok(tok) or owner):
+            if not (store_admin_ok(tok) or owner):
                 self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
                 return
             import admin_live as AL
