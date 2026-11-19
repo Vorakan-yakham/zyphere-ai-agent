@@ -2246,6 +2246,14 @@ if(!window.__logoExpand){
  if(!document.getElementById('search')){/* nothing */}
 }
 
+
+if(document.getElementById('amOwnerDl'))document.getElementById('amOwnerDl').onclick=async()=>{
+ try{
+  const r=await api('/api/store/owner/download',{method:'POST',body:JSON.stringify({})});
+  if(r&&r.ok&&r.url){window.open(r.url,'_blank');toast('owner download ready')}
+  else toast('เฉพาะบัญชีเจ้าของครับ')
+ }catch(e){toast('owner download ไม่ได้: '+redact(e.message))}
+};
 </script><div class="del-ov" id="delChatModal"><div class="del-box">
  <button class="del-x" id="delChatX" title="ปิด">✕</button>
  <h3>ลบแชทใช่ไหม</h3>
