@@ -711,7 +711,7 @@ body.busy .logo .lg .blades,body.busy .a.busy .lg .blades{
  <div class="side-sec">ประวัติ</div>
  <div class="list" id="list"></div>
   <div class="acct-menu" id="acctMenu">
-   <button class="am" id="amProfile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span id="amProfileName">เข้าสู่ระบบ</span></button>
+   <button class="am user-only" id="amProfile"><img id="amProfilePic" src="" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover"><span id="amProfileName">บัญชีของฉัน</span></button>
    <button class="am" id="amShop"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 12H5L4 8zM9 9V6a3 3 0 0 1 6 0v3"/></svg><span>ร้านค้าผลงาน</span></button>
    <button class="am" id="amGrow"><svg viewBox="0 0 24 24"><path d="M4 18l6-6 4 4 6-8M16 8h4v4"/></svg><span>โปรโมท / Growth</span></button>
    <button class="am" id="amLearn"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4zM7 10v5c0 2 5 4 10 0v-5"/></svg><span>เรียนรู้ / 5 Engines</span></button>
@@ -2044,17 +2044,26 @@ async function applyRoles(){
  zyApplyIdentity();
 }
 async function zyApplyIdentity(){
- var name='เข้าสู่ระบบ', av='↗';
+ var name='เข้าสู่ระบบ', initials='↗', pic='';
  const tok=getK('zy_token')||'';
  if(tok){
   try{
    const r=await fetch(RENDER_URL+'/api/store/me?token='+encodeURIComponent(tok));
    const j=await r.json();
-   if(j.ok&&j.me){name=String(j.me.email||j.me.name||'สมาชิก').split('@')[0];av=name.slice(0,2).toUpperCase()}
+   if(j.ok&&j.me){
+    name=String(j.me.email||j.me.name||'สมาชิก').split('@')[0];
+    pic=String(j.me.picture||'');
+    initials=name.slice(0,2).toUpperCase();
+   }
   }catch(e){}
  }
  ['acctName','amProfileName'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=name});
- var a=document.getElementById('acctAvatar');if(a)a.textContent=av;
+ var ip=document.getElementById('amProfilePic'); if(ip&&pic)ip.src=pic;
+ var av=document.getElementById('acctAvatar');
+ if(av){
+  if(pic) av.innerHTML='<img src="'+pic+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+  else av.textContent=initials;
+ }
 }
 // local quick answers
 const WX=/(?:อากาศ|พยากรณ์|weather)\s*(?:ที่|ใน|ของ|at|in|for)?\s*([^\s?!.,]*)/i;

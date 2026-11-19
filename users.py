@@ -87,7 +87,7 @@ class Users:
             self.save()
             return {"ok": True, "token": tok, "email": email, "name": u.get("name", "")}
 
-    def oauth_login(self, email, name="", provider="google"):
+    def oauth_login(self, email, name="", provider="google", picture=""):
         """Login/register a user authenticated by a trusted OAuth provider.
         No password is stored; the provider verified the email for us.
         """
@@ -105,12 +105,14 @@ class Users:
                      "pw": "", "created": int(time.time()), "plan": "free",
                      "role": "admin" if email == "vorayakham@gmail.com" else "user",
                      "code": code, "ref": "", "invites": 0,
-                     "oauth": provider}
+                     "oauth": provider, "picture": str(picture or "")[:400]}
                 self.users[email] = u
             else:
                 if name and not u.get("name"):
                     u["name"] = str(name)[:80]
                 u["oauth"] = provider
+                if picture:
+                    u["picture"] = str(picture)[:400]
             tok = secrets.token_urlsafe(24)
             self.sessions[tok] = {"email": email, "t": int(time.time())}
             self.save()
@@ -144,7 +146,7 @@ class Users:
         return {"email": s["email"], "name": u.get("name", ""),
                 "code": u.get("code", ""), "role": u.get("role", "user"),
                 "invites": int(u.get("invites") or 0),
-                "ref": u.get("ref", "")}
+                "ref": u.get("ref", ""), "picture": u.get("picture", "")}
 
     def role(self, token):
         sess = self.session(token)

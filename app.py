@@ -5157,7 +5157,8 @@ class Handler(SimpleHTTPRequestHandler):
                     raise RuntimeError("email not verified by Google")
                 if not USERS:
                     raise RuntimeError("user store unavailable")
-                res = USERS.oauth_login(email, payload.get("name", ""), "google")
+                res = USERS.oauth_login(email, payload.get("name", ""), "google",
+                                      payload.get("picture", ""))
                 if not res.get("ok"):
                     raise RuntimeError(res.get("error", "login failed"))
                 # Redirect back to the frontend with the session token in the fragment.
