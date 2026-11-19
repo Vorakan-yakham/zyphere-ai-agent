@@ -7,7 +7,7 @@ KEEP=17 · FIX=1 · UNKNOWN=0
 | backend /api/health | KEEP | HTTP 200 {"ok": true, "name": "zyphere", "version": 22, "features": ["search", "fetch", " | นักตรวจสอบระบบ |
 | backend /api/brain/status | KEEP | HTTP 200 {"ok": true, "providers": ["groq", "openrouter", "gemini", "hf"], "enabled": tru | นักตรวจสอบระบบ |
 | backend /api/council/autonomous/status | KEEP | HTTP 200 {"ok": true, "busy": false, "last": null, "departments": 6, "note": "แต่ละแผนกเร | นักตรวจสอบระบบ |
-| backend /api/supervisors/status | KEEP | HTTP 200 {"ok": true, "count": 10, "rounds": 1, "last": [{"dept": "นักวิเคราะห์ระบบ", "kp | นักตรวจสอบระบบ |
+| backend /api/supervisors/status | KEEP | HTTP 200 {"ok": true, "count": 10, "rounds": 4, "last": [{"dept": "นักวิเคราะห์ระบบ", "kp | นักตรวจสอบระบบ |
 | backend /api/conversation/status | KEEP | HTTP 200 {"ok": true, "lessons": 13, "corrections": 13, "recent": [{"t": 1795006257, "use | นักตรวจสอบระบบ |
 | backend /api/media/capabilities | KEEP | HTTP 200 {"ok": true, "capabilities": {"mp3_tts": true, "mp4_video": true, "metadata": tr | นักตรวจสอบระบบ |
 | backend /api/auto-grow/status | KEEP | HTTP 200 {"ok": true, "gaps": [{"id": "storefront_theme", "severity": "high", "evidence": | นักตรวจสอบระบบ |

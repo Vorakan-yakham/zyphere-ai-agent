@@ -18,7 +18,9 @@ def fair_price(r):
     if not r.get("ok"):
         return 20
     eff = r["thai_chars"] * (1 - DUP_PENALTY * r["dup_ratio"])
-    p = int(round(eff / CHARS_PER_BAHT / 10.0) * 10)
+    # 5-baht steps give honest, fine-grained tiers from measured content
+    # (10-baht steps collapsed every book into only four repeated prices).
+    p = int(round(eff / CHARS_PER_BAHT / 5.0) * 5)
     return max(20, min(480, p))
 
 
