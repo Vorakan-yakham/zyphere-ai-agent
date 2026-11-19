@@ -1,6 +1,6 @@
 # ตรวจสอบงานทุกด้านโดยทีม QA อิสระ
 
-KEEP=17 · FIX=1 · UNKNOWN=0
+KEEP=18 · FIX=0 · UNKNOWN=0
 
 | ด้าน | ผล | หลักฐาน | ผู้ตรวจ |
 |---|---|---|---|
@@ -18,7 +18,7 @@ KEEP=17 · FIX=1 · UNKNOWN=0
 | grafpic lab own_image_lab.py | KEEP | found | นักตรวจสอบสื่อ |
 | grafpic lab photo_enhancement.py | KEEP | found | นักตรวจสอบสื่อ |
 | grafpic lab media_twin_track.py | KEEP | found | นักตรวจสอบสื่อ |
-| หนังสือ + บรรณาธิการ | FIX | {"ok": false, "results": [{"book": "books/01_%E0%B8%9F%E0%B8%B4%E0%B8%AA%E0%B8%B4%E0%B8%81%E0%B8%AA%E0%B9%8C%E0%B8%84%E0%B8%A7%E0%B8%AD%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A1/book_v2. | นักตรวจสอบหนังสือ |
+| หนังสือ + บรรณาธิการ | KEEP | {"ok": true, "results": [{"book": "books/01_%E0%B8%9F%E0%B8%B4%E0%B8%AA%E0%B8%B4%E0%B8%81%E0%B8%AA%E0%B9%8C%E0%B8%84%E0%B8%A7%E0%B8%AD%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A1/book_v2.h | นักตรวจสอบหนังสือ |
 | มาตรฐานหนังสือ human_editor.py | KEEP | found | นักตรวจสอบหนังสือ |
 | มาตรฐานหนังสือ content_visual.py | KEEP | found | นักตรวจสอบหนังสือ |
 | ความปลอดภัย secret | KEEP | found | นักตรวจสอบความปลอดภัย |

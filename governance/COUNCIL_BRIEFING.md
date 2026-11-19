@@ -13,27 +13,27 @@
 
 ### นักวิเคราะห์ความรู้ (local-evidence)
 
-นักวิเคราะห์ความรู้: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → ต้องขยาย world topics และอ่าน BOOK_DESIGN_STANDARD ก่อนตัดสิน
+นักวิเคราะห์ความรู้: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → ต้องขยาย world topics และอ่าน BOOK_DESIGN_STANDARD ก่อนตัดสิน
 
 ### นักออกแบบกราฟิก (local-evidence)
 
-นักออกแบบกราฟิก: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → ปกต้องสื่อเนื้อหา + typography ใหม่ ใช้ own_image_lab ไม่ใช้ภาพซ้ำ
+นักออกแบบกราฟิก: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → ปกต้องสื่อเนื้อหา + typography ใหม่ ใช้ own_image_lab ไม่ใช้ภาพซ้ำ
 
 ### นักเศรษฐศาสตร์/ราคา (local-evidence)
 
-นักเศรษฐศาสตร์/ราคา: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → ราคาจาก market_price + ความยาวจริง + เตรียม 6 ช่องทางฟรี
+นักเศรษฐศาสตร์/ราคา: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → ราคาจาก market_price + ความยาวจริง + เตรียม 6 ช่องทางฟรี
 
 ### โปรแกรมเมอร์ (local-evidence)
 
-โปรแกรมเมอร์: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → เขียน STORE_V2.html, commerce.json, ปกใหม่ แล้ว commit อัตโนมัติ
+โปรแกรมเมอร์: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → เขียน STORE_V2.html, commerce.json, ปกใหม่ แล้ว commit อัตโนมัติ
 
 ### หัวหน้าฐานข้อมูล (local-evidence)
 
-หัวหน้าฐานข้อมูล: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → เก็บ products/channels/qa/metrics ใน data/commerce.json ให้ทุกฝ่ายอ่าน
+หัวหน้าฐานข้อมูล: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → เก็บ products/channels/qa/metrics ใน data/commerce.json ให้ทุกฝ่ายอ่าน
 
 ### QA (local-evidence)
 
-QA: ใช้ข้อมูลจริง {"products": 0, "channels": 6, "qa_keep": 17, "qa_fix": 1, "world_topics": 0} → ตรวจ file จริง + ราคา + ภาษา + ไม่มีคำอ้างยอดขาย ไม่ผ่านให้ HOLD
+QA: ใช้ข้อมูลจริง {"products": 46, "channels": 6, "qa_keep": 18, "qa_fix": 0, "world_topics": 0} → ตรวจ file จริง + ราคา + ภาษา + ไม่มีคำอ้างยอดขาย ไม่ผ่านให้ HOLD
 
 ## มติที่ต้องปฏิบัติ (work orders)
 
