@@ -111,6 +111,8 @@ def e09_vignette(im):
     d.ellipse((int(-w*.12), int(-h*.12), int(w*1.12), int(h*1.12)), fill=235)
     return Image.composite(im, Image.new("RGB", (w, h), (3, 10, 16)),
                            ov.filter(ImageFilter.GaussianBlur(int(min(w,h)*.09))))
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+
 
 
 def e10_caption(im, title, credit):
