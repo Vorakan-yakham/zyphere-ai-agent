@@ -8,7 +8,7 @@
 - Graphic communication
 - Graphic design
 - Poster
-- Peter Saville (graphic designer)
+- Typography
 - A Generic Fundus Image Enhancement Network Boosted by Frequency Self-supervised Representation Learning
 - Long-Horizon Analog Design Bench: Benchmarking Agents on Hours-Long Analog and Mixed-Signal Circuit Design Tasks
 - BINet: a binary inpainting network for deep patch-based image compression
