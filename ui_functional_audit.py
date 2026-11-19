@@ -48,6 +48,16 @@ def run(apply=True):
     # 2) no stale hardcoded identity
     c("no hardcoded owner name", "vorakan_yakham" not in idx, "clean")
     c("identity loader exists", "zyApplyIdentity" in idx and 'id="acctName"' in idx)
+    c("logged-out label invites login",
+      'id="acctName">เข้าสู่ระบบ<' in idx and "Guest" not in idx,
+      "login prompt shown, no Guest")
+    # Regression: duplicate class attributes silently kill guest/user gating.
+    dupes = re.findall(r'<button[^>]*\bclass="[^"]*"[^>]*\bclass="', idx)
+    c("no duplicate class attributes on buttons", not dupes,
+      "duplicate=" + str(len(dupes)))
+    c("guest/user gating classes applied",
+      'class="am guest-only" id="amGoogle"' in idx and
+      'class="am user-only" id="amLogout"' in idx, "gating ok")
 
     # 3) the 5 thin chat-shortcut buttons must open REAL destinations
     real = {
