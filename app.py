@@ -5816,6 +5816,19 @@ class Handler(SimpleHTTPRequestHandler):
                     except Exception:
                         pass
                 try:
+                    import poster_studio as PS
+                    pic = PS.run(apply=True)
+                    if pic.get("ok") and pic.get("file"):
+                        import shutil
+                        dst = os.path.join(DATA_DIR, os.path.basename(pic["file"]))
+                        shutil.copy(pic["file"], dst)
+                        res = {"url": "/media/" + os.path.basename(dst),
+                               "direction": {"subject": "real photography",
+                                             "mood": pic.get("brief")},
+                               "engine": "Real CC photo + detail pipeline (no diffusion)"}
+                except Exception:
+                    pass
+                try:
                     import imagination_engine as IE
                     imagined = IE.create(text, "image", apply=True)
                     art = imagined.get("artefact") or {}

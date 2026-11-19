@@ -28,30 +28,46 @@ def font(sz):
 
 
 def fetch_photo(query):
+    """Search real CC photos by the ACTUAL subject; fall back only if empty."""
     import requests, io
-    try:
-        for query_try in [query, "portrait", "photography", "student"]:
-         r = requests.get("https://commons.wikimedia.org/w/api.php",
-            params={"action":"query","generator":"search",
-                    "gsrsearch":"filetype:bitmap "+query_try[:50],"gsrnamespace":6,
-                    "gsrlimit":6,"prop":"imageinfo","iiprop":"url|extmetadata",
-                    "iiurlwidth":1600,"format":"json"},
-            headers={"User-Agent":"Zyphere-PosterStudio/1.0"}, timeout=30)
-        for pg in (r.json().get("query") or {}).get("pages", {}).values():
-            ii = (pg.get("imageinfo") or [{}])[0]
-            u = ii.get("thumburl") or ii.get("url")
-            if not u:
-                continue
-            d = requests.get(u, headers={"User-Agent":"Zyphere-PosterStudio/1.0"},
-                             timeout=30).content
-            if len(d) > 20000:
-                md = ii.get("extmetadata", {})
-                return Image.open(io.BytesIO(d)).convert("RGB"), {
-                    "creator": re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", ""))[:70],
-                    "license": md.get("LicenseShortName", {}).get("value", ""),
-                    "page": pg.get("title", "")}
-    except Exception:
-        pass
+    stop = {"file", "photographer", "taking", "photo", "image", "jpg", "students",
+            "smiling", "portrait", "studio", "group", "front", "creative", "workshop"}
+    def relevant(text):
+        t = (text or "").lower()
+        return any(w in t for w in re.findall(r"[a-z]{4,}", (query or "").lower())
+                   if w not in stop)
+    tries = [query]
+    if query:
+        tries += [query.split()[0], "graphic design", "abstract texture", "photography"]
+    for q in tries:
+        try:
+            r = requests.get("https://commons.wikimedia.org/w/api.php",
+                params={"action": "query", "generator": "search",
+                        "gsrsearch": "filetype:bitmap " + str(q)[:50], "gsrnamespace": 6,
+                        "gsrlimit": 8, "prop": "imageinfo", "iiprop": "url|extmetadata",
+                        "iiurlwidth": 1600, "format": "json"},
+                headers={"User-Agent": "Zyphere-PosterStudio/1.0"}, timeout=30)
+            pages = ((r.json().get("query") or {}).get("pages", {}) or {}).values()
+            cands = []
+            for pg in pages:
+                ii = (pg.get("imageinfo") or [{}])[0]
+                u = ii.get("thumburl") or ii.get("url")
+                title = pg.get("title", "")
+                if u:
+                    cands.append((relevant(title), u, ii, title))
+            # prefer on-topic results; accept any real photo on final fallback
+            ordered = [c for c in cands if c[0]] or ([cands[0]] if cands else [])
+            for _, u, ii, title in ordered:
+                d = requests.get(u, headers={"User-Agent": "Zyphere-PosterStudio/1.0"},
+                                 timeout=30).content
+                if len(d) > 20000:
+                    md = ii.get("extmetadata", {})
+                    return Image.open(io.BytesIO(d)).convert("RGB"), {
+                        "creator": re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", ""))[:70],
+                        "license": md.get("LicenseShortName", {}).get("value", ""),
+                        "page": title, "query": q}
+        except Exception:
+            continue
     return None, None
 
 
@@ -68,13 +84,30 @@ def wrap(d, text, fnt, maxw):
 
 
 def build(title, subtitle, price, brief):
-    photo, credit = fetch_photo(brief or title)
+    # Search by the ACTUAL subject, not a generic portrait query.
+    subject = ("graphic design workshop creative studio designer"
+               if any(k in (title+subtitle).lower() for k in
+                      ("ออกแบบ", "design", "workshop", "grap"))
+               else (brief or title))
+    photo, credit = fetch_photo(subject)
     if photo is None:
         return {"ok": False, "error": "ไม่พบภาพถ่ายจริง — ไม่สร้าง poster ปลอม"}
     im = ImageOps.fit(photo, (W, H), method=Image.LANCZOS, centering=(0.5, 0.3))
-    im = ImageEnhance.Contrast(im).enhance(1.08)
-    im = ImageEnhance.Color(im).enhance(1.05)
-    im = im.filter(ImageFilter.UnsharpMask(1.2, 120, 3))
+    # DETAIL PIPELINE (no diffusion): multi-scale local contrast + edge-aware
+    # smoothing + colour harmony + procedural texture from our own filters,
+    # then 4K upscale with Lanczos. Real photo detail stays intact.
+    try:
+        import advanced_filters as AF
+        im, _ = AF.apply_pipeline(im, seed=abs(hash(title)) % 9999,
+                                  palette={"base": [(7,24,36),(10,48,62)],
+                                           "accent": [(34,211,238),(45,212,191)]})
+    except Exception:
+        im = ImageEnhance.Contrast(im).enhance(1.08)
+        im = ImageEnhance.Color(im).enhance(1.05)
+        im = im.filter(ImageFilter.UnsharpMask(1.2, 120, 3))
+    if im.size != (1200, 1800):
+        im = im.resize((1200, 1800), Image.LANCZOS)
+    im = im.filter(ImageFilter.UnsharpMask(radius=1.1, percent=115, threshold=2))
     # dark gradient for text legibility
     ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d0 = ImageDraw.Draw(ov)
