@@ -1,10 +1,18 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 10 หัวข้อ / 12 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 126 ข้อเท็จจริง
+ก่อน: 1 หัวข้อ / 2 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 116 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
+| สระไทย |  | 0 |
+| วรรณยุกต์ไทย |  | 0 |
+| การประสมคำ |  | 0 |
+| โครงสร้างประโยค |  | 0 |
+| ย่อหน้า |  | 0 |
+| บทความ |  | 0 |
+| wave function | arXiv | 3 |
+| operators | arXiv | 3 |
 | superposition | arXiv | 3 |
 | Bell state | arXiv | 3 |
 | nonlocality | arXiv | 3 |
@@ -22,16 +30,8 @@
 | heat engine | arXiv | 3 |
 | laws of thermodynamics | arXiv | 3 |
 | Maxwell equations | arXiv | 3 |
-| fields | arXiv | 3 |
-| waves | arXiv | 3 |
-| refraction | arXiv | 3 |
-| interference | arXiv | 3 |
-| diffraction | arXiv | 3 |
-| telescope |  | 0 |
-| spectroscopy |  | 0 |
-| photometry |  | 0 |
 
-ความรู้ในสมอง Zyphere: 33 รายการ · รอบเติบโตที่ 1
+ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
 
 - QA ยังมีจุดไม่ผ่าน → ran
 

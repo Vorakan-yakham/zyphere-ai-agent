@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T05:21:53.874542Z
+เวลา: 2026-11-19T05:30:04.521727Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -17,6 +17,7 @@
 | wish | {"ok": true, "summary": {"round": 1}} |
 | revenue_auto | {"ok": true, "summary": {}} |
 | samples | {"ok": true, "summary": {}} |
+| typeset | {"ok": true, "summary": {}} |
 | ebook_complete | {"ok": true, "summary": {"books": 6}} |
 | ebook | {"ok": true, "summary": {}} |
 | ebook_editor | {"ok": false, "summary": {}} |
@@ -27,7 +28,7 @@
 | solver | {"ok": true, "summary": {}} |
 | devices | {"ok": false, "summary": {}} |
 | knowledge | {"ok": true, "summary": {}} |
-| disciplines | {"ok": true, "summary": {"count": 4}} |
+| disciplines | {"ok": true, "summary": {"count": 0}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
 | media | {"ok": true, "summary": {"status": "both"}} |
@@ -47,6 +48,7 @@
 | revenue_auto_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse1 | {"ok": true, "fix": null, "keep": null} |
+| typeset_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse1 | {"ok": false, "fix": null, "keep": null} |
@@ -64,6 +66,7 @@
 | revenue_auto_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| typeset_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse2 | {"ok": false, "fix": null, "keep": null} |
@@ -81,8 +84,9 @@
 | revenue_auto_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| typeset_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse3 | {"ok": false, "fix": null, "keep": null} |
+| ebook_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse4 | {"ok": true, "fix": null, "keep": null} |
@@ -98,8 +102,9 @@
 | revenue_auto_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| typeset_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse4 | {"ok": false, "fix": null, "keep": null} |
+| ebook_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse5 | {"ok": true, "fix": null, "keep": null} |
@@ -115,10 +120,11 @@
 | revenue_auto_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| typeset_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนช |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["sound", "qa", "offline", "compete", "sales"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผน |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป

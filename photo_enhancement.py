@@ -83,6 +83,8 @@ def e06_sharpen(im):
 =135, threshold=2))
     mid = fine.filter(ImageFilter.UnsharpMask(radius=3.2, percent=70, threshold=4))
     return Image.blend(fine, mid, 0.55)
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+
 
 
 def e07_grade(im):
