@@ -7,8 +7,8 @@
 - Swiss Style (design)
 - Graphic communication
 - Graphic design
-- Peter Saville (graphic designer)
 - Typography
+- Peter Saville (graphic designer)
 - Long-Horizon Analog Design Bench: Benchmarking Agents on Hours-Long Analog and Mixed-Signal Circuit Design Tasks
 - A Generic Fundus Image Enhancement Network Boosted by Frequency Self-supervised Representation Learning
 - BINet: a binary inpainting network for deep patch-based image compression

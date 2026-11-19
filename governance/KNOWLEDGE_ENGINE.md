@@ -1,35 +1,35 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
 ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 201 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 130 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
 | พยัญชนะไทย | Wikidata, Wikipedia | 2 |
-| สระไทย | OpenAlex, Wikipedia | 4 |
-| วรรณยุกต์ไทย | OpenAlex | 1 |
-| การประสมคำ | OpenAlex | 3 |
-| โครงสร้างประโยค | OpenAlex | 3 |
-| ย่อหน้า | OpenAlex | 3 |
-| บทความ | OpenAlex | 3 |
+| สระไทย |  | 0 |
+| วรรณยุกต์ไทย |  | 0 |
+| การประสมคำ |  | 0 |
+| โครงสร้างประโยค |  | 0 |
+| ย่อหน้า |  | 0 |
+| บทความ |  | 0 |
 | wave function | arXiv | 3 |
-| operators | OpenAlex, arXiv | 6 |
-| superposition | OpenAlex, arXiv | 6 |
-| Bell state | OpenAlex, arXiv | 6 |
+| operators | arXiv | 3 |
+| superposition | arXiv | 3 |
+| Bell state | arXiv | 3 |
 | nonlocality | OpenAlex, arXiv | 6 |
-| teleportation | arXiv | 3 |
+| teleportation | Wikidata, Wikipedia, arXiv | 9 |
 | qubit | arXiv | 3 |
 | quantum gate | arXiv | 3 |
-| decoherence | OpenAlex, arXiv | 6 |
-| field quantization | arXiv | 3 |
-| Feynman diagram | OpenAlex, arXiv | 6 |
-| renormalization | OpenAlex, arXiv | 6 |
-| motion laws | OpenAlex, arXiv | 6 |
-| momentum | OpenAlex, arXiv | 6 |
+| decoherence | arXiv | 3 |
+| field quantization | OpenAlex, arXiv | 6 |
+| Feynman diagram | arXiv | 3 |
+| renormalization | arXiv | 3 |
+| motion laws | arXiv | 3 |
+| momentum | arXiv | 3 |
 | energy | arXiv | 3 |
 | entropy | arXiv | 3 |
-| heat engine | OpenAlex, arXiv | 6 |
-| laws of thermodynamics | OpenAlex, arXiv | 6 |
+| heat engine | arXiv | 3 |
+| laws of thermodynamics | arXiv | 3 |
 
 ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
 
