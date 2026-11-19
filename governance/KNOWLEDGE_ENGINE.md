@@ -1,7 +1,7 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
 ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 116 ข้อเท็จจริง
+หลัง: 50 หัวข้อ / 125 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
@@ -18,7 +18,7 @@
 | Bell state | arXiv | 3 |
 | nonlocality | arXiv | 3 |
 | teleportation | arXiv | 3 |
-| qubit | arXiv | 3 |
+| qubit | Wikidata, Wikipedia, arXiv | 9 |
 | quantum gate | arXiv | 3 |
 | decoherence | arXiv | 3 |
 | field quantization | arXiv | 3 |
