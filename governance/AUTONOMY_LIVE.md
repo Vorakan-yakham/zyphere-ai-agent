@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T01:13:59.211065Z
+เวลา: 2026-11-19T01:25:37.668581Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -38,8 +38,8 @@
 | wish_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | revenue_auto_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse2 | {"ok": false, "fix": null, "keep": null} |
+| editor_pulse2 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -54,16 +54,16 @@
 | wish_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | revenue_auto_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse4 | {"ok": false, "fix": null, "keep": null} |
+| editor_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | revenue_auto_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse5 | {"ok": false, "fix": null, "keep": null} |
+| editor_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
