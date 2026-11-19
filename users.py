@@ -32,8 +32,9 @@ class Users:
             self.users = d.get("users", {})
             self.feedback = d.get("feedback", [])
             self.sessions = d.get("sessions", {})
-            if "vorayakham@gmail.com" in self.users:
-                self.users["vorayakham@gmail.com"]["role"] = "admin"
+            for _oe in ("vorakangm@gmail.com", "vorayakham@gmail.com"):
+                if _oe in self.users:
+                    self.users[_oe]["role"] = "admin"
         except Exception:
             pass
 
@@ -103,7 +104,7 @@ class Users:
                     code = _s.token_urlsafe(6)
                 u = {"email": email, "name": str(name or "")[:80],
                      "pw": "", "created": int(time.time()), "plan": "free",
-                     "role": "admin" if email == "vorayakham@gmail.com" else "user",
+                     "role": "admin" if email in ("vorakangm@gmail.com", "vorayakham@gmail.com") else "user",
                      "code": code, "ref": "", "invites": 0,
                      "oauth": provider, "picture": str(picture or "")[:400]}
                 self.users[email] = u

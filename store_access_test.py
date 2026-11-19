@@ -33,8 +33,10 @@ def run(apply=True):
     t("paid status recognises approved", A.order_is_paid({"status": "paid"}) and
       A.order_is_paid({"status": "approved"}))
     t("unpaid stays locked", not A.order_is_paid({"status": "awaiting_payment_proof"}))
+    t("single owner email recognised everywhere",
+      "vorakangm@gmail.com" in A.OWNER_EMAILS)
     t("owner sees all orders", A.order_belongs({"email": "x@y.z"},
-      {"email": "vorakan@gmail.com", "role": "user"}))
+      {"email": "vorakangm@gmail.com", "role": "user"}))
     t("user sees only own", A.order_belongs({"email": "me@x.com"},
       {"email": "me@x.com"}) and not A.order_belongs({"email": "other@x.com"},
       {"email": "me@x.com"}))
