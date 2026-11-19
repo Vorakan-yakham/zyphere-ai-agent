@@ -1,6 +1,6 @@
 # IT Integration Review — ตรวจครบวงจรโดยวิศวกร IT
 
-ผ่าน **23/23** · ไม่ผ่าน **0**
+ผ่าน **24/24** · ไม่ผ่าน **0**
 
 | ตรวจ | ผล | หลักฐาน |
 |---|---|---|
@@ -18,6 +18,7 @@
 | fail-closed: no file on self declaration | PASS | payment proof gate |
 | owner download receives token | PASS | index.html owner download |
 | catalogue has exactly 46 unique books | PASS | rows=46 unique=46 |
+| 46 distinct cover photo subjects | PASS | queries=46 unique=46 |
 | admin cannot order (UI + backend) | PASS | buy hidden for owner + 403 at API |
 | store uses 46 real photographic covers | PASS | real images=46 |
 | progress dashboard has 12 departments | PASS | PROGRESS.html cards |

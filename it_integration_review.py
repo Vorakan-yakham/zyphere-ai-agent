@@ -88,9 +88,10 @@ def static_checks():
     try:
         import cover_queries as CQ
         vals = list(CQ.QUERIES.values())
-        out.append(check("46 distinct cover photo subjects",
-                         len(vals) >= 46 and len(set(vals)) == len(vals),
-                         "queries=%d unique=%d" % (len(vals), len(set(vals))))
+        uniq = len(set(vals))
+        evidence = "queries=%d unique=%d" % (len(vals), uniq)
+        ok_cover = len(vals) >= 46 and uniq == len(vals)
+        out.append(check("46 distinct cover photo subjects", ok_cover, evidence))
     except Exception as e:
         out.append(check("46 distinct cover photo subjects", False, str(e)[:120]))
     out.append(check("admin cannot order (UI + backend)",
