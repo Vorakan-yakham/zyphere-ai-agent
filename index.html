@@ -2124,9 +2124,17 @@ $('adLogin').onclick=async()=>{
 };
 $('shopBtn').onclick=openShop;
 $('storeBtn').onclick=()=>{window.open('https://vorakan-yakham.github.io/zyphere-ai-agent/STORE.html','_blank','noopener')};
-$('logoutBtn').onclick=async()=>{const t=getK('zy_token')||'';try{await fetch(RENDER_URL+'/api/auth/logout?token='+encodeURIComponent(t))}catch(e){}
- try{localStorage.removeItem('zy_token')}catch(e){}
- toast('ออกจากระบบแล้วครับ');location.reload()};
+function zyDoLogout(){
+ const t=(getK('zy_token')||'');
+ // clear LOCAL state FIRST — never block logout on a slow backend call
+ try{localStorage.removeItem('zy_token');sessionStorage.removeItem('zy_token')}catch(e){}
+ try{const lb=document.getElementById('logoutBtn');if(lb)lb.style.display='none'}catch(e){}
+ try{window.zyRole='guest'}catch(e){}
+ // backend invalidation is best-effort fire-and-forget
+ try{fetch(RENDER_URL+'/api/auth/logout?token='+encodeURIComponent(t),{keepalive:true}).catch(()=>{})}catch(e){}
+ toast('ออกจากระบบแล้วครับ');setTimeout(()=>location.reload(),250);
+}
+$('logoutBtn').onclick=()=>zyDoLogout();
 $('seeBtn').onclick=()=>seeScreen($('seeBtn'));
 $('shareBtn').onclick=async()=>{const msg='🚥 ลอง Zyphere (ไซเฟอร์) AI ส่วนตัว คุยไทยได้ จำได้ เรียนรู้เอง สร้างคลิป+เสียง ลองฟรี https://tinyurl.com/zyphere-ai — สนับสนุน PromptPay 0941939686';if(navigator.share){try{await navigator.share({title:'Zyphere',text:msg,url:'https://tinyurl.com/zyphere-ai'});return}catch(e){}}try{await navigator.clipboard.writeText(msg);toast('คัดลอกข้อความแชร์แล้ว — วางโพสต์ได้เลยครับ')}catch(e){prompt('คัดลอกข้อความนี้:',msg)}};
 $('voiceBtn').onclick=()=>{voiceOn=!voiceOn;setK('zy_voice',voiceOn?'1':'0');$('voiceBtn').innerHTML=voiceOn?IC.on:IC.off;if(!voiceOn)stopSpeak()};
@@ -2217,7 +2225,7 @@ if(!window.__acctMenuWired){
  am('amIncome',()=>send('สรุปช่องทางสร้างรายได้ที่ทำได้จริง'));
  am('amBrief',()=>send('สรุปความเคลื่อนไหวล่าสุดของ Zyphere'));
  am('amGoogle',()=>{const b=$('gTop');if(b)b.click()});
- am('amLogout',()=>{const b=$('logoutBtn');if(b&&b.style.display!=='none')b.click();else alert('ยังไม่ได้เข้าสู่ระบบครับ')});
+ am('amLogout',()=>{zyDoLogout()});
  document.addEventListener('click',function(e){const p=document.getElementById('acctMenu');const b=document.getElementById('acctBtn');
   if(p&&b&&!p.contains(e.target)&&!b.contains(e.target))p.classList.remove('show')});
 }

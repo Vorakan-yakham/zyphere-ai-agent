@@ -155,7 +155,8 @@ footer{background:var(--dark);color:#cfe7ee;padding:36px 22px;text-align:center;
 <button onclick="zyFilter(4)">ธุรกิจ</button><button onclick="zyFilter(5)">ทักษะชีวิต</button></div>
 <div class="grid">%s</div></main>
 <footer>โอน PromptPay 0941939686 แล้วแจ้งรหัส — ระบบส่งไฟล์เมื่อหลักฐานจ่ายได้รับการยืนยัน<br>
-<small>ไม่มีการอ้างยอดขาย — ทุกตัวเลขมาจากไฟล์จริง</small></footer>
+<small>ไม่มีการอ้างยอดขาย — ทุกตัวเลขมาจากไฟล์จริง</small><br>
+<a href="PROGRESS.html" style="color:#22d3ee">ดูความคืบหน้าของ 12 แผนก →</a></footer>
 <script>
 function zyFilter(n){document.querySelectorAll('.card').forEach(function(c){
  c.style.display=(n<0||c.dataset.cat==n)?'flex':'none'});
@@ -191,9 +192,11 @@ async function zyOwner(){
   body:JSON.stringify({token:zyToken()})});const j=await r.json();
  if(j.ok&&j.url){window.open(j.url,'_blank')}else{alert(j.error||'เฉพาะเจ้าของ')}
 }
-async function zyLogout(){
- const tk=zyToken();try{await fetch(BK+'/api/auth/logout?token='+encodeURIComponent(tk))}catch(e){}
- try{localStorage.removeItem('zy_token')}catch(e){}
+function zyLogout(){
+ const tk=zyToken();
+ // clear local session FIRST — never block logout on backend latency
+ try{localStorage.removeItem('zy_token');sessionStorage.removeItem('zy_token')}catch(e){}
+ try{fetch(BK+'/api/auth/logout?token='+encodeURIComponent(tk),{keepalive:true}).catch(()=>{})}catch(e){}
  location.reload();
 }
 zyLoadAccount();

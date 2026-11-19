@@ -55,6 +55,9 @@ jobs:
             ("commerce", "commerce_lab", "run"),
             ("value", "book_value_fixer", "run"),
             ("differentiation", "differentiation_lab", "run"),
+            ("progress", "department_progress", "run"),
+            ("design", "system_design", "run"),
+            ("it_review", "it_integration_review", "run"),
             ("qa", "qa_audit_team", "run"),
           ]
           from concurrent.futures import ThreadPoolExecutor
@@ -118,7 +121,10 @@ jobs:
                                     ("ebook", "ebook_design_team", "run"),
                                     ("editor", "ebook_editor_gate", "run"),
                                     ("diff", "differentiation_lab", "run"),
-                                     ("value", "book_value_fixer", "run")]:
+                                     ("value", "book_value_fixer", "run"),
+                                     ("progress", "department_progress", "run"),
+                                     ("design", "system_design", "run"),
+                                     ("it_review", "it_integration_review", "run")]:
                   try:
                       m = __import__(mod)
                       r = getattr(m, fn)()
