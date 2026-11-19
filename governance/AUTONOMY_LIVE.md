@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T10:02:02.073104Z
+เวลา: 2026-11-19T10:19:44.671617Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -11,6 +11,8 @@
 | outreach | {"ok": true, "summary": {"facts": ["STORE_FINAL.html", "cinema_studio.py", "poster_studio.py", "sound_forge.py", "qa_supreme.py"]}} |
 | selfnudge | {"ok": true, "summary": {}} |
 | league | {"ok": true, "summary": {}} |
+| freepool | {"ok": false, "summary": {}} |
+| difflab | {"ok": false, "summary": {}} |
 | covers | {"ok": true, "summary": {"covers": 46}} |
 | store_audit | {"ok": true, "summary": {"books": 46}} |
 | roadmap | {"ok": true, "summary": {}} |
@@ -28,7 +30,7 @@
 | solver | {"ok": true, "summary": {}} |
 | devices | {"ok": false, "summary": {}} |
 | knowledge | {"ok": true, "summary": {}} |
-| disciplines | {"ok": true, "summary": {"count": 5}} |
+| disciplines | {"ok": true, "summary": {"count": 1}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
 | media | {"ok": true, "summary": {"status": "both"}} |
@@ -66,7 +68,7 @@
 | design_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | it_review_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| reasoning_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| reasoning_pulse2 | {"ok": false, "fix": null, "keep": null} |
 | pagefix_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse2 | {"ok": true, "fix": null, "keep": null} |
@@ -114,7 +116,7 @@
 | design_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | it_review_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| reasoning_pulse4 | {"ok": false, "fix": null, "keep": null} |
+| reasoning_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse4 | {"ok": true, "fix": null, "keep": null} |

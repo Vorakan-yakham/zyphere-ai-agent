@@ -7,7 +7,7 @@
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
 ## ตา: contrast/balance ผ่าน — ผ่าน
-- {'contrast_ratio': 3.35, 'balance': 0.832, 'hue_buckets': 50, 'ok': True}
+- {'contrast_ratio': 3.33, 'balance': 0.834, 'hue_buckets': 53, 'ok': True}
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
 ## หู: เสียงมีจริง ไม่เงียบ — ผ่าน
