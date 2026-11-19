@@ -20,50 +20,50 @@
 ## สิ่งที่สร้างจริง
 
 - นักวิเคราะห์ความรู้ → {"round": 1, "actions": 3}
-- นักออกแบบกราฟิก → {"book": null, "ok": false}
-- การตลาดและรายได้ → {"channels": 6, "priced": 0}
+- นักออกแบบกราฟิก → {"book": "18_ฐานข้อมูล-ข้อมูลขนาดใหญ่", "ok": true}
+- การตลาดและรายได้ → {"channels": 6, "priced": 46}
 
 ## วัดผลก่อน/หลัง
 
-{"keep": {"before": 18, "after": 17}, "fix": {"before": 0, "after": 1}}
+{}
 
 ## สิ่งที่ทุกฝ่ายอยากได้รอบหน้า (รอปฏิบัติ)
 
 ### นักวิเคราะห์ความรู้ ถาม: เพิ่มความรู้ใหม่จากโลกให้มากขึ้น
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เพิ่มความรู้ใหม่จากโลกให้มากขึ้น (หลักฐาน: {"lessons": 37, "rounds": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เพิ่มความรู้ใหม่จากโลกให้มากขึ้น (หลักฐาน: {"lessons": 37, "rounds": 1})
 
 ### นักออกแบบกราฟิก ถาม: ปกใหม่ที่สื่อเนื้อหา ไม่ใช้ภาพเก่า
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ปกใหม่ที่สื่อเนื้อหา ไม่ใช้ภาพเก่า (หลักฐาน: {"book_metric": 0, "qa": 17})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ปกใหม่ที่สื่อเนื้อหา ไม่ใช้ภาพเก่า (หลักฐาน: {"book_metric": 46, "qa": 18})
 
 ### การตลาดและรายได้ ถาม: ช่องทางรายได้ใหม่ที่เตรียม asset ได้จริง
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ช่องทางรายได้ใหม่ที่เตรียม asset ได้จริง (หลักฐาน: {"channels": 6, "products": 0})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ช่องทางรายได้ใหม่ที่เตรียม asset ได้จริง (หลักฐาน: {"channels": 6, "products": 46})
 
 ### โปรแกรมเมอร์ ถาม: เขียนโค้ดตามคำสั่งสภาฯ ให้เสร็จ
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เขียนโค้ดตามคำสั่งสภาฯ ให้เสร็จ (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เขียนโค้ดตามคำสั่งสภาฯ ให้เสร็จ (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### ฐานข้อมูล ถาม: เก็บหลักฐานผลงานให้ทุกฝ่ายอ่านร่วมกัน
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เก็บหลักฐานผลงานให้ทุกฝ่ายอ่านร่วมกัน (หลักฐาน: {"channels": 6, "products": 0})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เก็บหลักฐานผลงานให้ทุกฝ่ายอ่านร่วมกัน (หลักฐาน: {"channels": 6, "products": 46})
 
 ### QA ถาม: ตรวจไฟล์จริง ไม่ให้ claims เกินจริง
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ตรวจไฟล์จริง ไม่ให้ claims เกินจริง (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ตรวจไฟล์จริง ไม่ให้ claims เกินจริง (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### หัวหน้าฝ่าย ถาม: กระตุ้นให้ทีมทำงานตรงเวลา
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ กระตุ้นให้ทีมทำงานตรงเวลา (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ กระตุ้นให้ทีมทำงานตรงเวลา (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### หัวหน้าแผนก ถาม: กดดันหัวหน้าฝ่ายให้ส่งงานจริง
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ กดดันหัวหน้าฝ่ายให้ส่งงานจริง (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ กดดันหัวหน้าฝ่ายให้ส่งงานจริง (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### สมอง Zyphere ถาม: เรียนรู้จากคำแก้ไขแล้วพัฒนาต่อ
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เรียนรู้จากคำแก้ไขแล้วพัฒนาต่อ (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ เรียนรู้จากคำแก้ไขแล้วพัฒนาต่อ (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### นักดนตรี ถาม: ทำนอง/เครื่องดนตรีที่ฟังแล้วเพราะขึ้น
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ทำนอง/เครื่องดนตรีที่ฟังแล้วเพราะขึ้น (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ ทำนอง/เครื่องดนตรีที่ฟังแล้วเพราะขึ้น (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### นักภาพยนตร์ ถาม: หนังที่ตัวละครหน้าเดิมแต่เปลี่ยนชุด
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ หนังที่ตัวละครหน้าเดิมแต่เปลี่ยนชุด (หลักฐาน: {"qa_keep": 17, "qa_fix": 1})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ หนังที่ตัวละครหน้าเดิมแต่เปลี่ยนชุด (หลักฐาน: {"qa_keep": 18, "qa_fix": 0})
 
 ### บรรณาธิการ ถาม: แก้ข้อความเก่าในหนังสือ
-- Zyphere ตอบ: จากผลรอบ 6: {"products": 0, "channels": 6, "keep": 17, "fix": 1, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ แก้ข้อความเก่าในหนังสือ (หลักฐาน: {"book_metric": 0, "qa": 17})
+- Zyphere ตอบ: จากผลรอบ 6: {"products": 46, "channels": 6, "keep": 18, "fix": 0, "decisions": 5, "weaknesses": 6, "lessons": 37, "rounds": 1} → งานต่อคือ แก้ข้อความเก่าในหนังสือ (หลักฐาน: {"book_metric": 46, "qa": 18})
 
 
 ## ทุกฝ่ายถามกันเอง (หลังงานเสร็จทุกครั้ง)

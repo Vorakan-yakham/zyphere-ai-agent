@@ -1,35 +1,35 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 26 หัวข้อ / 84 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 198 ข้อเท็จจริง
+ก่อน: 26 หัวข้อ / 81 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 193 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| Maxwell equations | Wikidata, Wikipedia | 6 |
-| fields | arXiv | 3 |
-| waves | arXiv | 3 |
+| Maxwell equations | Wikidata, Wikipedia, arXiv | 9 |
+| fields | Wikipedia, arXiv | 4 |
+| waves | OpenAlex, arXiv | 6 |
 | refraction | arXiv | 3 |
 | interference | arXiv | 3 |
 | diffraction | arXiv | 3 |
-| telescope | arXiv | 3 |
-| spectroscopy | OpenAlex, arXiv | 6 |
-| photometry | OpenAlex, arXiv | 6 |
+| telescope | OpenAlex, arXiv | 6 |
+| spectroscopy | arXiv | 3 |
+| photometry | arXiv | 3 |
 | stellar lifecycle | arXiv | 3 |
 | nuclear fusion | arXiv | 3 |
-| supernova | Wikidata, Wikipedia, arXiv | 9 |
-| Big Bang | Wikidata, Wikipedia | 6 |
+| supernova | arXiv | 3 |
+| Big Bang | arXiv | 3 |
 | dark matter | OpenAlex, arXiv | 6 |
 | expansion | arXiv | 3 |
 | planets | OpenAlex, arXiv | 6 |
-| orbits | arXiv | 3 |
-| comets | arXiv | 3 |
+| orbits | OpenAlex, arXiv | 6 |
+| comets | OpenAlex, arXiv | 6 |
 | group | arXiv | 3 |
-| ring | OpenAlex | 3 |
-| field | Wikidata, Wikipedia | 6 |
-| limit | OpenAlex, Wikidata, Wikipedia | 9 |
-| continuity | arXiv | 3 |
-| series | OpenAlex | 3 |
-| manifold | Wikidata, Wikipedia, arXiv | 9 |
+| ring | arXiv | 3 |
+| field | OpenAlex, arXiv | 6 |
+| limit | OpenAlex, arXiv | 6 |
+| continuity | OpenAlex, arXiv | 6 |
+| series | arXiv | 3 |
+| manifold | OpenAlex, arXiv | 6 |
 
 ความรู้ในสมอง Zyphere: 33 รายการ · รอบเติบโตที่ 1
 
