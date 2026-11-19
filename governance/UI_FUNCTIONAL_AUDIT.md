@@ -4,7 +4,7 @@
 
 | ตรวจ | ผล | หลักฐาน |
 |---|---|---|
-| all 72 buttons have handlers | PASS | dead=[] |
+| all 71 buttons have handlers | PASS | dead=[] |
 | no hardcoded owner name | PASS | clean |
 | identity loader exists | PASS |  |
 | voice control visible on empty chat | PASS | voice button never hidden |
