@@ -107,13 +107,14 @@ def build(rows):
         facts = ("%d บท · %s ตัวอักษรไทย" % (nchap, format(nchar, ","))
                  if nchar else "เนื้อหาจากต้นฉับจริง")
         cards.append(
-          '<article class="card" data-cat="%d"><div class="cover">%s'
+          '<article class="card" data-cat="%d"><div class="cover">'
+          '<img src="public_covers/cover_%02d.jpg" alt="%s" loading="lazy">'
           '<span class="no">%02d</span></div>'
           '<div class="body"><div class="tag">ZYPHERE ORIGINAL</div>'
           '<h3>%s</h3><p>%s · ฉบับ primer สั้น</p>'
           '<div class="row"><b>฿%d</b><button onclick="zyBuy(this.closest(\'.card\').querySelector(\'h3\').textContent,%d)">ซื้อเลย</button></div>'
           '<a class="sample" href="%s" target="_blank">อ่านตัวอย่างฟรี →</a>'
-          '</div></article>' % (i % 6, tiny_cover(title), i+1, title, facts,
+          '</div></article>' % (i % 6, i+1, title, i+1, title, facts,
                                 price, price, sample))
     return """<!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -138,6 +139,7 @@ main{max-width:1180px;margin:-34px auto 60px;padding:0 22px;position:relative;z-
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:.25s;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-6px);box-shadow:0 22px 46px rgba(8,32,46,.16)}
 .cover{height:146px;background:#0b2533;position:relative}.cover svg{width:100%%;height:100%%;display:block}
+.cover img{width:100%%;height:100%%;object-fit:cover;object-position:center 30%%;display:block}
 .no{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.16);color:#fff;border-radius:8px;padding:3px 9px;font-size:11px}
 .body{padding:16px 17px;display:flex;flex-direction:column;flex:1}
 .tag{font-size:10px;letter-spacing:1.6px;color:var(--acc);font-weight:800}
@@ -209,8 +211,8 @@ async function zyMyOrders(){
     ' · <span style="color:'+(zyPaid(o)?'#127a4b':'#a8322a')+'">'+(o.status||'-')+'</span>'+
     '<br><small style="color:#5d7380">order '+o.id+'</small>'+
     (zyPaid(o)?'<div style="margin-top:8px">'+
-      '<button onclick="zyRead(\''+o.id+'\')">อ่านออนไลน์</button> '+
-      '<button onclick="zyDownload(\''+o.id+'\')">ดาวน์โหลด</button></div>':
+      '<button onclick="zyRead(\\''+o.id+'\\')">อ่านออนไลน์</button> '+
+      '<button onclick="zyDownload(\\''+o.id+'\\')">ดาวน์โหลด</button></div>':
       '<p style="font-size:12px;color:#5d7380">รอระบบยืนยันการชำระ — ของคุณถูกเก็บถาวร ไม่มีวันลบ</p>')+
     '</div>').join(''):'<p>ยังไม่มีคำสั่งซื้อ</p>');
  }catch(e){p.innerHTML='<p>โหลดไม่ได้</p>'}
@@ -234,8 +236,8 @@ async function zyAdmin(){
     '<b>'+(o.book||o.title||o.product||'หนังสือ')+'</b> · ฿'+(o.amount||'-')+
     ' · '+o.status+' · '+(o.email||'guest')+'<br><small>'+o.id+'</small>'+
     (zyPaid(o)?'':'<div style="margin-top:8px">'+
-      '<button onclick="zyDecide(\''+o.id+'\',\'approve\')">อนุมัติ (จ่ายแล้ว)</button> '+
-      '<button onclick="zyDecide(\''+o.id+'\',\'reject\')">ปฏิเสธ</button></div>')+
+      '<button onclick="zyDecide(\\''+o.id+'\\',\\'approve\\')">อนุมัติ (จ่ายแล้ว)</button> '+
+      '<button onclick="zyDecide(\\''+o.id+'\\',\\'reject\\')">ปฏิเสธ</button></div>')+
     '</div>').join(''):'<p>ยังไม่มีคำสั่งซื้อ</p>')+
    '<p style="font-size:12px;color:#5d7380">ข้อมูลลูกค้าทุกรายการถูกเก็บถาวร — ห้ามลบ</p>';
  }catch(e){p.innerHTML='<p>โหลดไม่ได้</p>'}

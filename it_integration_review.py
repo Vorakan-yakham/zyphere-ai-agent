@@ -85,6 +85,10 @@ def static_checks():
         out.append(check("catalogue has exactly 46 unique books", ok46, evidence))
     except Exception as e:
         out.append(check("catalogue has exactly 46 unique books", False, str(e)[:120]))
+    out.append(check("store uses 46 real photographic covers",
+                     store.count("public_covers/cover_") >= 46 and
+                     "<svg" not in store,
+                     "real images=" + str(store.count("public_covers/cover_"))))
     out.append(check("progress dashboard has 12 departments",
                      read("PROGRESS.html").count('class="d"') >= 12,
                      "PROGRESS.html cards"))

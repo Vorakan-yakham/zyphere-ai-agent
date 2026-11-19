@@ -1,6 +1,6 @@
 # IT Integration Review — ตรวจครบวงจรโดยวิศวกร IT
 
-ผ่าน **21/21** · ไม่ผ่าน **0**
+ผ่าน **22/22** · ไม่ผ่าน **0**
 
 | ตรวจ | ผล | หลักฐาน |
 |---|---|---|
@@ -18,9 +18,10 @@
 | fail-closed: no file on self declaration | PASS | payment proof gate |
 | owner download receives token | PASS | index.html owner download |
 | catalogue has exactly 46 unique books | PASS | rows=46 unique=46 |
+| store uses 46 real photographic covers | PASS | real images=46 |
 | progress dashboard has 12 departments | PASS | PROGRESS.html cards |
 | all 46 sample files exist | PASS | samples/s_*.html count |
-| prices come from measured content (<=50) | PASS | price set [20] |
+| prices come from measured content (<=50) | PASS | price set [20, 30, 40, 50] |
 | live /api/store/me gate | PASS | 200 {"ok": false, "error": "not logged in"} |
 | live /api/store/my-orders 401 | PASS | 401 |
 | live /api/auth/logout reachable | PASS | 200 |
