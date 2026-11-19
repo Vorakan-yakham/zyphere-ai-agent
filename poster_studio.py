@@ -29,6 +29,15 @@ def font(sz):
 
 def fetch_photo(query):
     """Search real CC photos by the ACTUAL subject; fall back only if empty."""
+    # FIRST: aggregate Openverse + Wikimedia + NASA + Met (legal, no keys).
+    # This gives far more on-topic real photography than one API alone.
+    try:
+        import free_image_sources as FIS
+        im, credit = FIS.best(query, want_photo=True)
+        if im is not None:
+            return im, credit
+    except Exception:
+        pass
     import requests, io
     stop = {"file", "photographer", "taking", "photo", "image", "jpg", "students",
             "smiling", "portrait", "studio", "group", "front", "creative", "workshop"}
