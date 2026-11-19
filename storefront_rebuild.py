@@ -133,6 +133,10 @@ def run(apply=True):
            "note": "ของจริง ไม่ claims ยอดขาย"}
     if apply:
         open(OUT, "w", encoding="utf-8").write(html)
+        # THE PUBLIC PAGE is STORE.html on GitHub Pages — replace the old one too.
+        public = os.path.join(ROOT, "STORE.html")
+        open(public, "w", encoding="utf-8").write(html)
+        rec["public"] = "STORE.html"
         json.dump(rec, open(DATA, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
         open(REPORT, "w", encoding="utf-8").write(
             "# สร้างหน้าร้านใหม่แทนของเก่า\n\n" +
@@ -140,7 +144,7 @@ def run(apply=True):
             "- หลัง: " + ", ".join(rec["new_traits"]) + "\n" +
             "- จำนวนเล่ม: %d · ราคา %d–%d · ราคาไม่ซ้ำ %d แบบ\n" % (
                 rec["books"], rec["price_min"], rec["price_max"], rec["unique_prices"]) +
-            "- ไฟล์: " + OUT + "\n")
+            "- ไฟล์: " + OUT + "\n- หน้าสาธารณะที่แทนที่: STORE.html\n")
     return rec
 
 
