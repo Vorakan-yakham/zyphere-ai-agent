@@ -1,12 +1,12 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T07:53:11.754654Z
+เวลา: 2026-11-19T08:04:24.066760Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
 | next | {"ok": true, "summary": {}} |
-| reasoning | {"ok": true, "summary": {}} |
+| reasoning | {"ok": false, "summary": {}} |
 | pagefix | {"ok": true, "summary": {}} |
 | outreach | {"ok": true, "summary": {"facts": ["STORE_FINAL.html", "cinema_studio.py", "poster_studio.py", "sound_forge.py", "qa_supreme.py"]}} |
 | selfnudge | {"ok": true, "summary": {}} |
@@ -42,7 +42,7 @@
 | it_review | {"ok": false, "summary": {}} |
 | qa | {"ok": true, "summary": {"keep": 17, "fix": 1}} |
 | next_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| reasoning_pulse1 | {"ok": false, "fix": null, "keep": null} |
+| reasoning_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -161,6 +161,6 @@
 | progress_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | design_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | it_review_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 46, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["sound", "qa", "offline", "compete", "sales"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ้ |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
