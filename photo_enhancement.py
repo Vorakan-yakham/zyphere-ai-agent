@@ -58,8 +58,7 @@ def e02_crop(im, w=2160, h=3840):
 
 def e03_dehaze(im):
     """v2: multi-scale local tone recovery (in-house, Pillow only)."""
-    blur = im.filter(ImageFilter.GaussianBlur(26# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
-))
+    blur = im.filter(ImageFilter.GaussianBlur(26))
     detail = ImageEnhance.Contrast(im).enhance(1.10)
     return Image.blend(im, Image.blend(detail, blur, 0.18), 0.62)
 
@@ -92,7 +91,7 @@ def e08_skin_protect(im):
     r, g, b = im.split()
     r = r.point(lambda x: min(255, int(x*1.015)))
     return Image.merge("RGB", (r, g, b))
-# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน — Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
 
 
 
