@@ -4633,40 +4633,6 @@ class Handler(SimpleHTTPRequestHandler):
                                   "paid": sum(order_is_paid(o) for o in rows),
                                   "pending": sum(not order_is_paid(o) for o in rows)})
             return
-        if u.path == "/api/store/admin/decide":
-            # ADMIN approves only after real payment proof. Never deletes.
-            tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
-            me = USERS.me(tok) if USERS else None
-            owner_session = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
-            if not (store_admin_ok(tok) or owner_session):
-                self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
-                return
-            oid = str(body.get("order_id") or "")
-            decision = str(body.get("decision") or "").lower()
-            shared = [o for o in store_orders_all() if str(o.get("id")) == oid]
-            done = False
-            if shared:
-                o = shared[0]
-                if decision == "approve":
-                    o["status"] = "paid"
-                    o["paid_via"] = "admin:" + str((me or {}).get("email", "owner"))[:40]
-                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
-                    o["approved_t"] = int(time.time())
-                    orders_shared_save([o])
-                    done = True
-                elif decision == "reject":
-                    o["status"] = "rejected"
-                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
-                    orders_shared_save([o])
-                    done = True
-            elif STORE and str(oid).startswith("or_"):
-                res = (STORE.approve(oid, by="admin") if decision == "approve"
-                       else STORE.reject(oid, by="admin"))
-                done = bool(res.get("ok"))
-            self._send_json(200 if done else 400,
-                            {"ok": done, "order_id": oid, "decision": decision,
-                             "note": "record kept permanently — nothing deleted"})
-            return
         if u.path == "/api/store/read":
             # ONLINE READER — paid customers read the full book without download.
             tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
@@ -6317,6 +6283,40 @@ class Handler(SimpleHTTPRequestHandler):
                 self._send_json(200, {"ok": True, "event": key, "order": oid})
             except Exception as e:
                 self._send_json(200, {"ok": True, "ignored": _clip(str(e), 120)})
+            return
+        if u.path == "/api/store/admin/decide":
+            # ADMIN approves only after real payment proof. Never deletes.
+            tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
+            if not (store_admin_ok(tok) or owner_session):
+                self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
+                return
+            oid = str(body.get("order_id") or "")
+            decision = str(body.get("decision") or "").lower()
+            shared = [o for o in store_orders_all() if str(o.get("id")) == oid]
+            done = False
+            if shared:
+                o = shared[0]
+                if decision == "approve":
+                    o["status"] = "paid"
+                    o["paid_via"] = "admin:" + str((me or {}).get("email", "owner"))[:40]
+                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
+                    o["approved_t"] = int(time.time())
+                    orders_shared_save([o])
+                    done = True
+                elif decision == "reject":
+                    o["status"] = "rejected"
+                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
+                    orders_shared_save([o])
+                    done = True
+            elif STORE and str(oid).startswith("or_"):
+                res = (STORE.approve(oid, by="admin") if decision == "approve"
+                       else STORE.reject(oid, by="admin"))
+                done = bool(res.get("ok"))
+            self._send_json(200 if done else 400,
+                            {"ok": done, "order_id": oid, "decision": decision,
+                             "note": "record kept permanently — nothing deleted"})
             return
         if u.path in ("/api/store/approve", "/api/store/reject"):
             # ADMIN ONLY — verify the PromptPay transfer then unlock download
