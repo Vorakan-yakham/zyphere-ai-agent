@@ -131,6 +131,7 @@ def e10_caption(im, title, credit):
 
 
 
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
 def run(query="cinematic portrait golden hour", title="ภาพจากทีมวิศวกร Zyphere · พัฒนาความคมชัด", apply=True):
     im, credit = e01_fetch(query)
     if im is None:
