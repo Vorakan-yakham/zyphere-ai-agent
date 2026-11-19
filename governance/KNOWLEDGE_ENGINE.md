@@ -1,24 +1,16 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
-หลัง: 50 หัวข้อ / 125 ข้อเท็จจริง
+ก่อน: 9 หัวข้อ / 8 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 134 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| พยัญชนะไทย | Wikidata, Wikipedia | 2 |
-| สระไทย | Wikipedia | 3 |
-| วรรณยุกต์ไทย |  | 0 |
-| การประสมคำ |  | 0 |
-| โครงสร้างประโยค |  | 0 |
-| ย่อหน้า |  | 0 |
-| บทความ |  | 0 |
-| wave function | arXiv | 3 |
 | operators | arXiv | 3 |
 | superposition | arXiv | 3 |
 | Bell state | arXiv | 3 |
 | nonlocality | arXiv | 3 |
 | teleportation | arXiv | 3 |
-| qubit | Wikidata, Wikipedia, arXiv | 9 |
+| qubit | arXiv | 3 |
 | quantum gate | arXiv | 3 |
 | decoherence | arXiv | 3 |
 | field quantization | arXiv | 3 |
@@ -30,6 +22,14 @@
 | entropy | arXiv | 3 |
 | heat engine | arXiv | 3 |
 | laws of thermodynamics | arXiv | 3 |
+| Maxwell equations | arXiv | 3 |
+| fields | arXiv | 3 |
+| waves | arXiv | 3 |
+| refraction | arXiv | 3 |
+| interference | arXiv | 3 |
+| diffraction | arXiv | 3 |
+| telescope | arXiv | 3 |
+| spectroscopy | arXiv | 3 |
 
 ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
 
