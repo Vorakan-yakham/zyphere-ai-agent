@@ -75,7 +75,8 @@ def e05_denoise(im):
 
 def e06_sharpen(im):
     """v2: two-scale unsharp mask for fine edges and mid-frequency detail."""
-    fine = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=135, threshold=2))
+    fine = im.filter(ImageFilter.UnsharpMask(radius=1.2, percent# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+=135, threshold=2))
     mid = fine.filter(ImageFilter.UnsharpMask(radius=3.2, percent=70, threshold=4))
     return Image.blend(fine, mid, 0.55)
 
