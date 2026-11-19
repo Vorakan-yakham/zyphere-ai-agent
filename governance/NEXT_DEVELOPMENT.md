@@ -1,8 +1,8 @@
 # การพัฒนาต่อโดยไม่ต้องมีคำสั่ง
 
-- เป้าหมายจากแผนที่ระบบเขียนเอง: **qa**
-- เครื่องมือที่เลือก: `qa_supreme`
-- ผล: {"ok": true, "summary": {"failed": 0, "passed": true}}
+- เป้าหมายจากแผนที่ระบบเขียนเอง: **design**
+- เครื่องมือที่เลือก: `own_image_lab`
+- ผล: {"ok": false, "error": "module 'own_image_lab' has no attribute 'run'"}
 - ถามทุกฝ่ายแล้ว: 12 คำถาม
 - แผนรอบหน้า: film, sound, qa, offline, compete
 
