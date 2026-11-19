@@ -49,8 +49,25 @@ jobs:
             ("differentiation", "differentiation_lab", "run"),
             ("qa", "qa_audit_team", "run"),
           ]
+          from concurrent.futures import ThreadPoolExecutor
           out = {}
-          for name, mod, fn in steps:
+          def _run(item):
+              name, mod, fn = item
+              try:
+                m = __import__(mod)
+                r = getattr(m, fn)()
+                return name, r
+              except Exception as e:
+                return name, {"ok": False, "error": str(e)[:120]}
+          with ThreadPoolExecutor(max_workers=8) as pool:
+              for name, r in pool.map(_run, steps):
+                  try:
+                    json.dumps(r); safe = r
+                  except TypeError:
+                    safe = json.loads(json.dumps(r, default=str))
+                  out[name] = {"ok": bool(safe.get("ok", True)) if isinstance(safe, dict) else True,
+                               "summary": {k: safe.get(k) for k in ("topics","facts","count","round","status","keep","fix","idle","sources","books","priced","covers") if isinstance(safe, dict) and k in safe}}
+          for name, mod, fn in []:
             try:
               m = __import__(mod)
               r = getattr(m, fn)()
@@ -97,13 +114,27 @@ jobs:
                                                              "error": str(e)[:120]}
               if cycle < 4:
                   _t.sleep(12)
+          # ASSEMBLY: combine every department's output into ONE deliverable.
+          try:
+              import storefront_rebuild, cover_designer, future_roadmap
+              store = storefront_rebuild.run(apply=True)
+              covers = cover_designer.run(apply=True)
+              plan = future_roadmap.run(apply=True)
+              out["assembly"] = {"ok": True,
+                  "store": {k: store.get(k) for k in ("books","price_min","price_max","unique_prices")},
+                  "covers": covers.get("covers"),
+                  "next_plan": [t["id"] for t in plan.get("next_five", [])],
+                  "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ้นเดียว"}
+          except Exception as e:
+              out["assembly"] = {"ok": False, "error": str(e)[:160]}
           print(json.dumps(out, ensure_ascii=False, indent=2))
           open("data/autonomy_last.json", "w", encoding="utf-8").write(
               json.dumps(out, ensure_ascii=False, indent=2))
           import datetime
           lines = ["# Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง", "",
                    "เวลา: " + datetime.datetime.utcnow().isoformat() + "Z",
-                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)", "",
+                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)"
+                   "โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว", "",
                    "| ฝ่าย | ผลที่เกิดจริง |", "|---|---|"]
           for name, r in out.items():
               lines.append("| %s | %s |" % (name, json.dumps(r, ensure_ascii=False)[:220]))
