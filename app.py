@@ -4093,12 +4093,24 @@ def list_jobs():
 # TTS
 # ----------------------------------------------------------------------------
 async def synth_tts(text, voice, rate, pitch="+0Hz"):
-    com = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch or "+0Hz")
-    out = b""
-    async for c in com.stream():
-        if c["type"] == "audio":
-            out += c["data"]
-    return out
+    # edge-tts can transiently fail on a cold Render instance. Retry a small
+    # number of times so the client's voice never silently disappears.
+    last = None
+    for attempt in range(3):
+        try:
+            com = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch or "+0Hz")
+            out = b""
+            async for c in com.stream():
+                if c["type"] == "audio":
+                    out += c["data"]
+            if out:
+                return out
+            last = RuntimeError("empty TTS audio")
+        except Exception as e:
+            last = e
+        if attempt < 2:
+            await asyncio.sleep(0.4 * (attempt + 1))
+    raise last if last else RuntimeError("TTS failed")
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -5151,6 +5163,10 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     hz = 0
                 data = asyncio.run(synth_tts(text, voice, f"{pct:+d}%", ("%+dHz" % hz)))
+                if not data:
+                    # Let the browser fall back to speechSynthesis instead of
+                    # receiving a 200 with zero bytes (silent voice failure).
+                    raise RuntimeError("empty TTS audio after retries")
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/mpeg")
                 self.send_header("Content-Length", str(len(data)))
