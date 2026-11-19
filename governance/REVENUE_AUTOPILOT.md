@@ -2,7 +2,7 @@
 
 ห้ามหยุด — ทุก cycle ต้องหาช่องทางใหม่ สร้าง asset ถามทุกฝ่าย แล้วทำต่อ
 
-รอบที่ 6 · ช่องทางทั้งหมด 7 · ค้นพบใหม่รอบนี้ 1
+รอบที่ 6 · ช่องทางทั้งหมด 8 · ค้นพบใหม่รอบนี้ 2
 
 ## ช่องทางที่เตรียม asset จริง
 
@@ -12,6 +12,7 @@
 - [Dev.to article funnel](https://dev.to) — article draft from real code/docs
 - [YouTube Shorts](https://studio.youtube.com) — 4K clip + SRT from film editor
 - [GitHub Sponsors](https://github.com/sponsors) — sponsor blurb from real repo
+- [Print-on-demand cover](https://www.redbubble.com) — generated from harvested knowledge
 - [Mini-course from ebook](https://www.udemy.com) — generated from harvested knowledge
 
 ## คำถามถึงทุกฝ่ายหลังงานเสร็จ
