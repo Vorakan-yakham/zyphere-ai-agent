@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T05:13:24.998881Z
+เวลา: 2026-11-19T05:21:53.874542Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -27,7 +27,7 @@
 | solver | {"ok": true, "summary": {}} |
 | devices | {"ok": false, "summary": {}} |
 | knowledge | {"ok": true, "summary": {}} |
-| disciplines | {"ok": true, "summary": {"count": 0}} |
+| disciplines | {"ok": true, "summary": {"count": 4}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
 | media | {"ok": true, "summary": {"status": "both"}} |
@@ -48,7 +48,7 @@
 | cross_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse1 | {"ok": false, "fix": null, "keep": null} |
+| ebook_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse1 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse2 | {"ok": true, "fix": null, "keep": null} |
@@ -65,7 +65,7 @@
 | cross_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse2 | {"ok": false, "fix": null, "keep": null} |
+| ebook_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse2 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -82,7 +82,7 @@
 | cross_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | editor_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse4 | {"ok": true, "fix": null, "keep": null} |
@@ -99,7 +99,7 @@
 | cross_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | samples_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | editor_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse5 | {"ok": true, "fix": null, "keep": null} |
