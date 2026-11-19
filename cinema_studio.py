@@ -327,7 +327,7 @@ def run(brief, seconds=18, lang="th", apply=True):
             audios.append(ap)
         manifest["cuts"].append({"shot": i, "camera": sh["camera"], "start": round(t0,2),
                                  "end": round(t0+dur,2), "frame": fp, "overlay": op,
-                                 "transition": "crossfade" if i > 1 else "cut"})
+                                 "transition": "xfade(fade,0.6s)" if i > 1 else "cut"})
         srts.append("%d\n%s --> %s\n%s\n" % (i, srt_time(t0), srt_time(t0+dur), sh["title"]))
         t0 += dur
     srtp = os.path.join(out, "subtitles.srt")
@@ -358,10 +358,23 @@ def run(brief, seconds=18, lang="th", apply=True):
             filters.append(
                 "[%d:v]scale=4200:2360,zoompan=z='%s':d=125:s=3840x2160:fps=25,"
                 "trim=duration=5,setpts=PTS-STARTPTS[v%d]" % (i, zoom, i))
-        filters.append("".join("[v%d]" % i for i in range(n)) +
-                       "concat=n=%d:v=1:a=0[v]" % n)
+        # REAL crossfade (xfade) between shots — the manifest no longer lies.
+        # Each shot is 5s; overlaps 0.6s; offsets shift by (5 - 0.6).
+        XF = 0.6
+        if n == 1:
+            filters.append("[v0]null[v]")
+            out_label = "[v]"
+        else:
+            filters.append(
+                "[v0][v1]xfade=transition=fade:duration=%.2f:offset=%.2f[x1]" %
+                (XF, 5 - XF))
+            for i in range(2, n):
+                filters.append(
+                    "[x%d][v%d]xfade=transition=fade:duration=%.2f:offset=%.2f[x%d]" %
+                    (i - 1, i, XF, i * (5 - XF), i))
+            out_label = "[x%d]" % (n - 1)
         final = os.path.join(out, "cinema.mp4")
-        cmd += ["-filter_complex", ";".join(filters), "-map", "[v]"]
+        cmd += ["-filter_complex", ";".join(filters), "-map", out_label]
         if voice_all and os.path.exists(voice_all):
             cmd += ["-map", "%d:a" % n, "-c:a", "aac"]
         cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
