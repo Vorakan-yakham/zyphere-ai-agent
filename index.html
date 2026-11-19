@@ -724,6 +724,7 @@ body.busy .logo .lg .blades,body.busy .a.busy .lg .blades{
    <div class="am-sep"></div>
    <button class="am guest-only" id="amGoogle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span>เข้าสู่ระบบ</span></button>
    <button class="am owner-only" id="amOwnerDl"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span>ดาวน์โหลดผลงาน (เจ้าของ)</span></button>
+    <div class="am user-only" id="amUserRow" style="cursor:default"><span id="amProfileName" style="font-weight:600"></span></div>
    <button class="am user-only" id="amLogout"><svg viewBox="0 0 24 24"><path d="M12 3v9M6 6c-3 3-3 9 0 12h12c3-3 3-9 0-12"/></svg><span>ออกจากระบบ</span></button>
    <div class="am-foot">Zyphere · ผลงานจริง · ความเป็นส่วนตัว</div>
   </div>
@@ -2056,7 +2057,7 @@ async function zyApplyIdentity(){
    }
   }catch(e){}
  }
- var e=document.getElementById('acctName');if(e){e.textContent=name;e.style.display=name?'':'none'};
+ ['acctName','amProfileName'].forEach(function(id){var e=document.getElementById(id);if(e){e.textContent=name;e.style.display=name?'':'none'}});
  var av=document.getElementById('acctAvatar');
  if(av){
   if(pic) av.innerHTML='<img src="'+pic+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
@@ -2154,7 +2155,7 @@ function zyDoLogout(){
  // clear LOCAL state FIRST — never block logout on a slow backend call
  try{localStorage.removeItem('zy_token');sessionStorage.removeItem('zy_token')}catch(e){}
  try{const lb=document.getElementById('logoutBtn');if(lb)lb.style.display='none'}catch(e){}
- try{(function(){var e=document.getElementById('acctName');if(e){e.textContent='';e.style.display='none'}})();
+ try{['acctName','amProfileName'].forEach(function(id){var e=document.getElementById(id);if(e){e.textContent='';e.style.display='none'}});
   var a=document.getElementById('acctAvatar');if(a)a.textContent='↗'}catch(e){}
  try{window.zyRole='guest'}catch(e){}
  // backend invalidation is best-effort fire-and-forget
