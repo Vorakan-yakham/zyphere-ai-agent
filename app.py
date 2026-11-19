@@ -2971,7 +2971,7 @@ def autonomy_dispatch_loop():
         except Exception as e:
             _AUTONOMY_LAST = {"dispatched": 0, "t": int(time.time()),
                               "error": str(e)[:120]}
-        time.sleep(5 * 60)
+        time.sleep(60)  # owner wants ~1-minute pulses
 CINEMA_JOBS = {}
 
 

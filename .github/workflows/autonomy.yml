@@ -121,7 +121,7 @@ jobs:
                       out[name + "_pulse" + str(cycle+1)] = {"ok": False,
                                                              "error": str(e)[:120]}
               if cycle < 4:
-                  _t.sleep(12)
+                  _t.sleep(8)
           # ASSEMBLY: combine every department's output into ONE deliverable.
           try:
               import storefront_rebuild, cover_designer, future_roadmap
@@ -141,7 +141,7 @@ jobs:
           import datetime
           lines = ["# Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง", "",
                    "เวลา: " + datetime.datetime.utcnow().isoformat() + "Z",
-                   "รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)"
+                   "รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)"
                    "โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว", "",
                    "| ฝ่าย | ผลที่เกิดจริง |", "|---|---|"]
           for name, r in out.items():
