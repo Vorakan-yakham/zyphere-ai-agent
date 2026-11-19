@@ -3,16 +3,16 @@
 รอบ: 6
 
 ## สถานะก่อนคิด
-{"qa": 0, "covers": 46, "prices": 12, "visual": 0, "scouts": 0, "brain": 1, "revenue": 6, "quality": 17}
+{"qa": 0, "covers": 46, "prices": 12, "visual": 0, "scouts": 0, "brain": 1, "revenue": 5, "quality": 17}
 
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.00)
-- เครื่องมือที่เลือก: **cross_ask** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["cross_ask", 0.394], ["cover_designer", 0.386], ["qa_supreme", 0.362], ["image_quality_loop", 0.358], ["storefront_rebuild", 0.334]]
+- เครื่องมือที่เลือก: **cover_designer** (จากคะแนนความเชื่อ + exploration)
+- การให้คะแนน: [["cover_designer", 0.578], ["department_scouts", 0.558], ["own_brain", 0.508], ["poster_studio", 0.468], ["storefront_rebuild", 0.433]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**
 - ok: True
-- สถานะหลัง: {"qa": 0, "covers": 46, "prices": 12, "visual": 0, "scouts": 0, "brain": 1, "revenue": 6, "quality": 17}
+- สถานะหลัง: {"qa": 0, "covers": 46, "prices": 12, "visual": 0, "scouts": 0, "brain": 1, "revenue": 5, "quality": 17}
 
 เลือกเป้าหมายที่แย่ที่สุดเอง → เลือกเครื่องมือจากผลที่เคยได้จริง → วัดผล → ปรับน้ำหนักความเชื่อ
