@@ -54,9 +54,13 @@ def run(apply=True):
       "voice button never hidden")
     c("voice defaults on", "voiceOn=getK('zy_voice')!=='0'" in idx,
       "auto voice enabled")
-    c("logged-out label invites login",
-      'id="acctName">เข้าสู่ระบบ<' in idx and "Guest" not in idx,
-      "login prompt shown, no Guest")
+    c("single auth toggle (login/logout never together)",
+      '<span>เข้าสู่ระบบ</span></button>' in idx and
+      '<span>ออกจากระบบ</span></button>' in idx and
+      'class="am guest-only" id="amGoogle"' in idx and
+      'class="am user-only" id="amLogout"' in idx and
+      "Guest" not in idx,
+      "one login control, one logout control, mutually exclusive")
     # Regression: duplicate class attributes silently kill guest/user gating.
     dupes = re.findall(r'<button[^>]*\bclass="[^"]*"[^>]*\bclass="', idx)
     c("no duplicate class attributes on buttons", not dupes,
