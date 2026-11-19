@@ -682,6 +682,25 @@ def remote_get_json(name):
         return None
 
 
+def store_orders_all():
+    """Orders survive multiple Render instances via local file + remote KV."""
+    rows = []
+    try:
+        import slip_auto_verifier as SV
+        if os.path.exists(SV.DATA):
+            rows += json.load(open(SV.DATA, encoding="utf-8")).get("orders", [])
+    except Exception:
+        pass
+    try:
+        remote = remote_get_json("store_orders")
+        for o in ((remote or {}).get("orders", []) or []):
+            if not any(str(x.get("id")) == str(o.get("id")) for x in rows):
+                rows.append(o)
+    except Exception:
+        pass
+    return rows
+
+
 def _remote_drain():
     while True:
         time.sleep(1.2)
@@ -4540,14 +4559,8 @@ class Handler(SimpleHTTPRequestHandler):
                       if str(o.get("email", "")).lower() == em or
                          str(o.get("buyer", "")).lower() == em]
             # include the self-serve PromptPay orders tied to this login
-            try:
-                import slip_auto_verifier as SV
-                extra = json.load(open(SV.DATA, encoding="utf-8")).get("orders", []) \
-                    if os.path.exists(SV.DATA) else []
-                orders += [o for o in extra
-                           if str(o.get("email", "")).lower() == em]
-            except Exception:
-                pass
+            orders += [o for o in store_orders_all()
+                       if str(o.get("email", "")).lower() == em]
             self._send_json(200, {"ok": True, "orders": orders})
             return
         if u.path == "/api/scholars/faculty":
@@ -5884,6 +5897,7 @@ class Handler(SimpleHTTPRequestHandler):
                 os.makedirs(os.path.dirname(dbp), exist_ok=True)
                 json.dump({"orders": saved[-200:]}, open(dbp, "w", encoding="utf-8"),
                           ensure_ascii=False, indent=2)
+                remote_push("store_orders", {"orders": saved[-200:]})
                 self._send_json(200, {"ok": True, "order": order, "email": email,
                                       "promptpay": "0941939686"})
             except Exception as e:
@@ -5892,14 +5906,14 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/pay/declare":
             try:
                 import slip_auto_verifier as SV
-                dbp = SV.DATA  # single source of truth shared with /api/pay/order
-                orders = json.load(open(dbp, encoding="utf-8")).get("orders", []) if \
-                    os.path.exists(dbp) else []
+                dbp = SV.DATA
+                orders = store_orders_all()
                 res = SV.verify(orders, str(body.get("id") or ""),
                                 body.get("amount"), str(body.get("code") or ""))
                 if res.get("ok"):
                     json.dump({"orders": orders}, open(dbp, "w", encoding="utf-8"),
                               ensure_ascii=False, indent=2)
+                    remote_push("store_orders", {"orders": orders[-200:]})
                     # SECURITY: self-declaration is NOT payment proof.
                     # File is released only after a PSP webhook or owner slip check.
                     res["file"] = None
