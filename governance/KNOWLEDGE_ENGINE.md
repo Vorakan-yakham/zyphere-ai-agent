@@ -1,10 +1,13 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 4 หัวข้อ / 5 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 122 ข้อเท็จจริง
+ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 124 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
+| พยัญชนะไทย | Wikidata, Wikipedia | 2 |
+| สระไทย |  | 0 |
+| วรรณยุกต์ไทย |  | 0 |
 | การประสมคำ |  | 0 |
 | โครงสร้างประโยค |  | 0 |
 | ย่อหน้า |  | 0 |
@@ -22,16 +25,13 @@
 | Feynman diagram | arXiv | 3 |
 | renormalization | arXiv | 3 |
 | motion laws | arXiv | 3 |
-| momentum | arXiv | 3 |
-| energy | arXiv | 3 |
+| momentum | Wikidata, arXiv | 6 |
+| energy | Wikipedia, arXiv | 5 |
 | entropy | arXiv | 3 |
 | heat engine | arXiv | 3 |
 | laws of thermodynamics | arXiv | 3 |
-| Maxwell equations | arXiv | 3 |
-| fields | arXiv | 3 |
-| waves | arXiv | 3 |
 
-ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
+ความรู้ในสมอง Zyphere: 33 รายการ · รอบเติบโตที่ 1
 
 - QA ยังมีจุดไม่ผ่าน → ran
 

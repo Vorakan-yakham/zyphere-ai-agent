@@ -5,10 +5,10 @@
 ## สิ่งที่โลกำลังทำ (ตัวอย่างจริง)
 
 - Swiss Style (design)
-- Graphic design
 - Graphic communication
-- Poster
+- Graphic design
 - Typography
+- Poster
 - Visual Design Principles: An Empirical Study of Design Lore
 - Visual Design Principles for Usable Interfaces
 - The influence of the instruction of visual design principles on improving pre-service teachers’ visual literacy
