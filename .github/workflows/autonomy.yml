@@ -26,6 +26,7 @@ jobs:
           steps = [
             ("selfnudge", "self_nudge", "run"),
             ("league", "improvement_league", "run"),
+            ("store_audit", "storefront_rebuild", "run"),
             ("roadmap", "future_roadmap", "run"),
             ("wish", "wish_cycle", "run"),
             ("revenue_auto", "revenue_autopilot", "run"),
@@ -75,6 +76,7 @@ jobs:
           for cycle in range(5):
               for name, mod, fn in [("selfnudge", "self_nudge", "run"),
                                     ("league", "improvement_league", "run"),
+                                    ("store_audit", "storefront_rebuild", "run"),
                                     ("roadmap", "future_roadmap", "run"),
                                     ("wish", "wish_cycle", "run"),
                                     ("revenue_auto", "revenue_autopilot", "run"),

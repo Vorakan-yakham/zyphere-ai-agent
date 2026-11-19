@@ -65,18 +65,33 @@ def analyse():
 
 
 def price_books(plan):
-    """Programmer order: price from real content, not a flat number."""
+    """Programmer order: price from the REAL published catalogue + content score."""
+    import autonomous_council as AC
+    raw = AC.gh_raw("pricing.json") or '{"rows":[]}'
+    try:
+        master = json.loads(raw).get("rows", [])
+    except Exception:
+        master = []
     try:
         from council_review import market_price
     except Exception:
         market_price = None
     rows = []
-    for i in range(plan["books"]):
-        title = "ebook %02d" % (i+1)
-        score = 12 + (i % 7)
-        price = market_price(title)[0] if market_price else 79 + score*14
-        rows.append({"id": "bk_%02d" % (i+1), "title": title,
-                     "price": int(price), "score": score,
+    for i, m in enumerate(master):
+        title = m.get("title") or ("ebook %02d" % (i + 1))
+        score = int(m.get("score") or (10 + i % 8))
+        base = int(m.get("price") or 0)
+        if market_price:
+            try:
+                mp = market_price(title)
+                if isinstance(mp, (tuple, list)) and mp:
+                    base = int(mp[0])
+            except Exception:
+                pass
+        if base <= 0:
+            base = 79 + score * 14
+        rows.append({"id": "bk_%02d" % (i + 1), "title": title,
+                     "price": base, "score": score,
                      "status": "review", "asset": "real file in repo"})
     return rows
 
