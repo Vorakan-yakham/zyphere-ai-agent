@@ -39,20 +39,42 @@ def load_products():
     return rows
 
 
-def tiny_cover(seed_text):
-    """Inline SVG cover — unique motif per book, no reused stock image."""
-    h = int(hashlib.md5(seed_text.encode()).hexdigest()[:4], 16)
-    hue = 175 + (h % 45)
+def tiny_cover(title):
+    """Unique, subject-aware cover — no reused stock shape."""
+    import hashlib
+    h = int(hashlib.md5(title.encode()).hexdigest(), 16)
+    hue = 170 + (h % 60)
+    t = str(title).lower()
+    if any(k in t for k in ("ควอนตัม", "physics", "อะตอม", "quantum")):
+        motif = ("<circle cx='160' cy='75' r='40' fill='none' stroke='hsl(%d,80%%,70%%)' stroke-width='2'/>"
+                 "<circle cx='160' cy='75' r='18' fill='none' stroke='hsl(%d,80%%,72%%)' stroke-width='2'/>"
+                 "<circle cx='160' cy='75' r='5' fill='#fff'/>"
+                 "<ellipse cx='160' cy='75' rx='62' ry='20' fill='none' stroke='hsl(%d,80%%,68%%)' stroke-width='2' transform='rotate(-24 160 75)'/>") % (hue,hue,hue)
+    elif any(k in t for k in ("คณิต", "math", "ตรรกะ", "ข้อมูล")):
+        motif = "".join("<rect x='%d' y='%d' width='%d' height='%d' fill='hsl(%d,80%%,70%%)' opacity='.85'/>" % (
+            60+i*26, 120-(i%5)*14, 12, 10+(i%4)*12, hue) for i in range(8))
+    elif any(k in t for k in ("ชีว", "พันธุ", "เซลล์", "biology", "การแพทย์")):
+        motif = "".join("<circle cx='%d' cy='%d' r='6' fill='hsl(%d,80%%,70%%)'/>" % (
+            120+int(22*__import__('math').sin(i/2)), 40+i*12, hue) for i in range(9))
+    elif any(k in t for k in ("econom", "เศรษฐ", "การเงิน", "-business", "ตลาด", "การตลาด")):
+        motif = "<path d='M50 125 L95 100 L135 110 L175 70 L215 85 L270 40' fill='none' stroke='hsl(%d,80%%,70%%)' stroke-width='4'/>" % hue
+    elif any(k in t for k in ("ดารา", "อวกาศ", "จักรวาล", "space", "astro")):
+        motif = "".join("<circle cx='%d' cy='%d' r='%d' fill='#dff6fb' opacity='.8'/>" % (
+            50+((i*67)%220), 20+((i*43)%110), 1+(i%3),) for i in range(28))
+    elif any(k in t for k in ("ภาษา", "วรรณ", "การเขียน", "สอน", "ศึกษา")):
+        motif = "".join("<rect x='%d' y='%d' width='110' height='4' fill='hsl(%d,75%%,72%%)' opacity='%s'/>" % (
+            105+(i%2)*10, 40+i*13, hue, .9-(i%3)*.2) for i in range(7))
+    else:
+        motif = ("<path d='M60 110 Q110 40 160 95 T260 70' fill='none' "
+                 "stroke='hsl(%d,80%%,70%%)' stroke-width='3'/><circle cx='160' cy='75' r='28' "
+                 "fill='none' stroke='hsl(%d,80%%,72%%)' stroke-width='2'/>") % (hue,hue)
     return ("<svg viewBox='0 0 320 180' preserveAspectRatio='none'>"
             "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>"
             "<stop offset='0' stop-color='hsl(%d,55%%,18%%)'/>"
             "<stop offset='1' stop-color='hsl(%d,60%%,34%%)'/></linearGradient></defs>"
-            "<rect width='320' height='180' fill='url(#g)'/>"
-            "<circle cx='240' cy='52' r='44' fill='none' stroke='hsl(%d,80%%,65%%)' stroke-width='2' opacity='.8'/>"
-            "<path d='M240 26l7 18 19 2-15 12 5 19-16-11-16 11 5-19-15-12 19-2z' fill='hsl(%d,80%%,70%%)'/>"
-            "<rect x='22' y='120' width='76' height='5' fill='hsl(%d,80%%,65%%)'/>"
-            "<rect x='22' y='134' width='48' height='3' fill='#cfe7ee' opacity='.7'/>"
-            "</svg>" % (hue, hue, hue, hue, hue))
+            "<rect width='320' height='180' fill='url(#g)'/>%s"
+            "<rect x='22' y='140' width='76' height='5' fill='hsl(%d,80%%,65%%)'/>"
+            "</svg>" % (hue, hue, motif, hue))
 
 
 def build(rows):
@@ -65,7 +87,7 @@ def build(rows):
             '<div class="body"><div class="tag">ZYPHERE · MUST-READ</div>'
             '<h3>%s</h3><p>เนื้อหาจากต้นฉบับจริง · ปรับปรุงใหม่โดยทีมวิศวกร</p>'
             '<div class="row"><b>฿%d</b><span>พร้อมตรวจจ่าย</span></div></div></article>'
-            % (tiny_cover(title + str(i)), title, price))
+            % (tiny_cover(title), title, price))
     return """<!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zyphere Store — หนังสือความรู้ 46 เล่ม</title>
