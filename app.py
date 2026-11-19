@@ -701,6 +701,63 @@ def store_orders_all():
     return rows
 
 
+def orders_admin_all():
+    """Admin sees EVERY order from both the PromptPay flow and legacy store.
+
+    Read-only merge — never removes or rewrites a customer record.
+    """
+    rows = store_orders_all()
+    try:
+        if STORE:
+            for o in STORE.all_orders():
+                if not any(str(x.get("id")) == str(o.get("id")) for x in rows):
+                    rows.append(dict(o))
+    except Exception:
+        pass
+    return rows
+
+
+def orders_shared_save(rows):
+    """Append/update shared order state. Never drops historical records."""
+    import slip_auto_verifier as SV
+    current = store_orders_all()
+    by_id = {str(o.get("id")): o for o in current}
+    for o in rows:
+        by_id[str(o.get("id"))] = o
+    merged = list(by_id.values())
+    os.makedirs(os.path.dirname(SV.DATA), exist_ok=True)
+    json.dump({"orders": merged}, open(SV.DATA, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
+    remote_push("store_orders", {"orders": merged})
+    return merged
+
+
+def order_is_paid(o):
+    return str(o.get("status", "")).lower() in ("paid", "approved")
+
+
+def order_belongs(o, me):
+    if not me:
+        return False
+    if str((me.get("email") or "")).lower() in OWNER_EMAILS or me.get("role") == "admin":
+        return True
+    em = str(me.get("email") or "").lower()
+    return bool(em) and (str(o.get("email", "")).lower() == em or
+                         str(o.get("buyer", "")).lower() == em)
+
+
+def full_book_html(title):
+    """Real full book for ONLINE reading (no download required)."""
+    import book_typesetter as BT
+    import sample_publisher as SP
+    import autonomous_council as AC
+    folder = SP.source_map().get(str(title))
+    if not folder:
+        return None
+    md = AC.gh_raw("books/%s/content.md" % folder) or ""
+    return BT.typeset(md, sample=False) if len(md) > 1200 else None
+
+
 def _remote_drain():
     while True:
         time.sleep(1.2)
@@ -4562,6 +4619,119 @@ class Handler(SimpleHTTPRequestHandler):
             orders += [o for o in store_orders_all()
                        if str(o.get("email", "")).lower() == em]
             self._send_json(200, {"ok": True, "orders": orders})
+            return
+        if u.path == "/api/store/admin/orders":
+            # ADMIN ONLY — complete read-only view of EVERY customer order.
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
+            if not (store_admin_ok(tok) or owner_session):
+                self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
+                return
+            rows = orders_admin_all()
+            self._send_json(200, {"ok": True, "orders": rows, "total": len(rows),
+                                  "paid": sum(order_is_paid(o) for o in rows),
+                                  "pending": sum(not order_is_paid(o) for o in rows)})
+            return
+        if u.path == "/api/store/admin/decide":
+            # ADMIN approves only after real payment proof. Never deletes.
+            tok = str(body.get("token") or "") or urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            owner_session = bool(me and str(me.get("email", "")).lower() in OWNER_EMAILS)
+            if not (store_admin_ok(tok) or owner_session):
+                self._send_json(403, {"ok": False, "error": "forbidden — admin only"})
+                return
+            oid = str(body.get("order_id") or "")
+            decision = str(body.get("decision") or "").lower()
+            shared = [o for o in store_orders_all() if str(o.get("id")) == oid]
+            done = False
+            if shared:
+                o = shared[0]
+                if decision == "approve":
+                    o["status"] = "paid"
+                    o["paid_via"] = "admin:" + str((me or {}).get("email", "owner"))[:40]
+                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
+                    o["approved_t"] = int(time.time())
+                    orders_shared_save([o])
+                    done = True
+                elif decision == "reject":
+                    o["status"] = "rejected"
+                    o["approved_by"] = str((me or {}).get("email", "owner"))[:60]
+                    orders_shared_save([o])
+                    done = True
+            elif STORE and str(oid).startswith("or_"):
+                res = (STORE.approve(oid, by="admin") if decision == "approve"
+                       else STORE.reject(oid, by="admin"))
+                done = bool(res.get("ok"))
+            self._send_json(200 if done else 400,
+                            {"ok": done, "order_id": oid, "decision": decision,
+                             "note": "record kept permanently — nothing deleted"})
+            return
+        if u.path == "/api/store/read":
+            # ONLINE READER — paid customers read the full book without download.
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            oid = urllib.parse.parse_qs(u.query).get("order_id", [""])[0]
+            row = next((x for x in orders_admin_all() if str(x.get("id")) == oid), None)
+            if not row or not order_belongs(row, me) or not order_is_paid(row):
+                self._send_json(403, {"ok": False, "error": "ยังไม่มีสิทธิ์อ่าน — ต้องจ่ายและรออนุมัติ"})
+                return
+            html = full_book_html(row.get("book") or row.get("product") or row.get("title") or "")
+            if not html:
+                self._send_json(404, {"ok": False, "error": "ไม่พบต้นฉับหนังสือเล่มนี้"})
+                return
+            data = html.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        if u.path == "/api/pay/download":
+            # Only an APPROVED order may download its real ZIP.
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            oid = urllib.parse.parse_qs(u.query).get("order_id", [""])[0]
+            row = next((x for x in orders_admin_all() if str(x.get("id")) == oid), None)
+            if not row or not order_belongs(row, me) or not order_is_paid(row):
+                self._send_json(403, {"ok": False, "error": "ยังไม่ยืนยันการชำระ"})
+                return
+            url = None
+            try:
+                comp = json.load(open(os.path.join(DATA_DIR, "ebook_complete.json"),
+                                      encoding="utf-8"))
+                title = str(row.get("book") or row.get("product") or "")
+                for m in comp.get("made", []):
+                    if title and title in str(m.get("title", "")):
+                        url = m.get("zip_url")
+                        break
+                if not url and comp.get("made"):
+                    url = comp["made"][0].get("zip_url")
+            except Exception:
+                pass
+            self._send_json(200, {"ok": True, "url": url or ZIPBALL_OWNER,
+                                  "filename": "zyphere-ebook.zip",
+                                  "note": "อนุมัติการชำระแล้ว — ดาวน์โหลดได้"})
+            return
+        if u.path == "/api/store/customer":
+            tok = urllib.parse.parse_qs(u.query).get("token", [""])[0]
+            me = USERS.me(tok) if USERS else None
+            if not me:
+                self._send_json(401, {"ok": False, "error": "not logged in"})
+                return
+            em = str(me.get("email", "")).lower()
+            mine = [o for o in orders_admin_all()
+                    if str(o.get("email", "")).lower() == em]
+            self._send_json(200, {"ok": True, "email": em, "orders": len(mine),
+                                  "paid": sum(order_is_paid(o) for o in mine),
+                                  "history": mine})
             return
         if u.path == "/api/scholars/faculty":
             self._send_json(200, SCHOLARS.faculty() if SCHOLARS else {"ok": False, "error": "unavailable"})

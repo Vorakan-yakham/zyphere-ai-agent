@@ -42,6 +42,14 @@ def static_checks():
     out.append(check("chat popup logout wired",
                      "am('amLogout',()=>{zyDoLogout()})" in idx,
                      "amLogout -> zyDoLogout"))
+    # Regression: the owner found a stale alert because this exact wiring was
+    # missing. Never pass while an old error string remains in the shipped UI.
+    out.append(check("no stale logout alert shipped",
+                     "ยังไม่ได้เข้าสู่ระบบครับ" not in idx,
+                     "old alert string absent"))
+    out.append(check("logout button bound to handler",
+                     "$('logoutBtn').onclick=()=>zyDoLogout();" in idx,
+                     "logoutBtn onclick"))
     out.append(check("store account bar present",
                      "acctbar" in store and "/api/store/me" in store,
                      "STORE.html acctbar + /api/store/me"))
@@ -68,6 +76,9 @@ def static_checks():
     out.append(check("owner download receives token",
                      "body:JSON.stringify({token:tk})" in idx.replace("\n", ""),
                      "index.html owner download"))
+    out.append(check("progress dashboard has 12 departments",
+                     read("PROGRESS.html").count('class="d"') >= 12,
+                     "PROGRESS.html cards"))
     out.append(check("all 46 sample files exist",
                      sum(1 for f in os.listdir(os.path.join(ROOT, "samples"))
                          if f.startswith("s_") and f.endswith(".html")) >= 46,
@@ -104,6 +115,15 @@ def live_checks():
         out.append(check("live /api/auth/logout reachable", r.ok, str(r.status_code)))
     except Exception as e:
         out.append(check("live logout reachable", False, str(e)[:140]))
+    try:
+        pages = "https://vorakan-yakham.github.io/zyphere-ai-agent/"
+        r = requests.get(pages, timeout=30)
+        out.append(check("live UI ships instant logout",
+                         "zyDoLogout" in r.text and
+                         "ยังไม่ได้เข้าสู่ระบบครับ" not in r.text,
+                         "HTTP " + str(r.status_code)))
+    except Exception as e:
+        out.append(check("live UI ships instant logout", False, str(e)[:140]))
     return out
 
 

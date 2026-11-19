@@ -138,6 +138,8 @@ h3{font-size:16px;margin:9px 0 6px}p{font-size:12px;color:#5d7380;line-height:1.
 .acctbar a:hover,.acctbar button:hover{background:rgba(255,255,255,.26)}
 .acctbar .who{font:600 12px 'Noto Sans Thai';opacity:.92}
 #orderPanel{max-width:760px;margin:0 auto 28px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:16px}
+#orderPanel button{border:0;background:var(--acc);color:#fff;border-radius:999px;padding:8px 14px;font:600 12px 'Noto Sans Thai';cursor:pointer;margin-top:6px}
+#orderPanel button:hover{background:#075f75}
 #orderPanel h3{margin:0 0 8px;color:var(--acc)}#orderPanel ul{margin:6px 0;padding-left:20px}#orderPanel li{font:400 13px 'Noto Sans Thai';margin:5px 0}
 footer{background:var(--dark);color:#cfe7ee;padding:36px 22px;text-align:center;line-height:2}
 </style></head><body>
@@ -172,20 +174,64 @@ async function zyLoadAccount(){
   const r=await fetch(BK+'/api/store/me?token='+encodeURIComponent(tk));const j=await r.json();
   if(!j.ok){bar.innerHTML='<a href="./">เข้าสู่ระบบ →</a>';return}
   const me=j.me||{};const who=(me.email||me.name||'สมาชิก').split('@')[0];
-  bar.innerHTML='<span class="who">สวัสดี '+who+'</span>'+
+  window.zyIsOwner=!!me.is_owner;
+  bar.innerHTML='<span class="who">'+(me.is_owner?'Admin · ':'')+who+'</span>'+
    '<button onclick="zyMyOrders()">คำสั่งซื้อของฉัน</button>'+
+   (me.is_owner?'<button onclick="zyAdmin()">จัดการคำสั่งซื้อ (Admin)</button>':'')+
    (me.is_owner?'<button onclick="zyOwner()">ดาวน์โหลด (เจ้าของ)</button>':'')+
    '<button onclick="zyLogout()">ออกจากระบบ</button>';
  }catch(e){bar.innerHTML='<span class="who">ตรวจบัญชีไม่ได้ — ลองใหม่</span>'}
 }
+function zyPaid(o){return ['paid','approved'].indexOf(String(o.status||'').toLowerCase())>=0}
 async function zyMyOrders(){
  const p=document.getElementById('orderPanel');p.style.display='block';
  p.innerHTML='<h3>คำสั่งซื้อของฉัน</h3><p>กำลังโหลด…</p>';
  try{const r=await fetch(BK+'/api/store/my-orders?token='+encodeURIComponent(zyToken()));const j=await r.json();
   const os=j.orders||[];
   p.innerHTML='<h3>คำสั่งซื้อของฉัน ('+os.length+')</h3>'+
-   (os.length?'<ul>'+os.map(o=>'<li>'+(o.book||o.title||'หนังสือ')+' · ฿'+(o.amount||o.price||'-')+' · '+(o.status||'-')+' · '+o.id+'</li>').join('')+'</ul>':'<p>ยังไม่มีคำสั่งซื้อ</p>');
+   (os.length?os.map(o=>'<div style="border:1px solid #dcecf1;border-radius:12px;padding:12px;margin:8px 0">'+
+    '<b>'+(o.book||o.title||o.product||'หนังสือ')+'</b> · ฿'+(o.amount||o.price||'-')+
+    ' · <span style="color:'+(zyPaid(o)?'#127a4b':'#a8322a')+'">'+(o.status||'-')+'</span>'+
+    '<br><small style="color:#5d7380">order '+o.id+'</small>'+
+    (zyPaid(o)?'<div style="margin-top:8px">'+
+      '<button onclick="zyRead(\''+o.id+'\')">อ่านออนไลน์</button> '+
+      '<button onclick="zyDownload(\''+o.id+'\')">ดาวน์โหลด</button></div>':
+      '<p style="font-size:12px;color:#5d7380">รอระบบยืนยันการชำระ — ของคุณถูกเก็บถาวร ไม่มีวันลบ</p>')+
+    '</div>').join(''):'<p>ยังไม่มีคำสั่งซื้อ</p>');
  }catch(e){p.innerHTML='<p>โหลดไม่ได้</p>'}
+}
+async function zyRead(id){
+ window.open(BK+'/api/store/read?order_id='+encodeURIComponent(id)+
+  '&token='+encodeURIComponent(zyToken()),'_blank');
+}
+async function zyDownload(id){
+ const r=await fetch(BK+'/api/pay/download?order_id='+encodeURIComponent(id)+
+  '&token='+encodeURIComponent(zyToken()));const j=await r.json();
+ if(j.ok&&j.url){window.open(j.url,'_blank')}else{alert(j.error||'ดาวน์โหลดไม่ได้')}
+}
+async function zyAdmin(){
+ const p=document.getElementById('orderPanel');p.style.display='block';
+ p.innerHTML='<h3>คำสั่งซื้อทั้งหมด (Admin)</h3><p>กำลังโหลด…</p>';
+ try{const r=await fetch(BK+'/api/store/admin/orders?token='+encodeURIComponent(zyToken()));const j=await r.json();
+  const os=j.orders||[];
+  p.innerHTML='<h3>คำสั่งซื้อทั้งหมด ('+j.total+') · จ่ายแล้ว '+j.paid+' · รอตรวจ '+j.pending+'</h3>'+
+   (os.length?os.map(o=>'<div style="border:1px solid #dcecf1;border-radius:12px;padding:12px;margin:8px 0">'+
+    '<b>'+(o.book||o.title||o.product||'หนังสือ')+'</b> · ฿'+(o.amount||'-')+
+    ' · '+o.status+' · '+(o.email||'guest')+'<br><small>'+o.id+'</small>'+
+    (zyPaid(o)?'':'<div style="margin-top:8px">'+
+      '<button onclick="zyDecide(\''+o.id+'\',\'approve\')">อนุมัติ (จ่ายแล้ว)</button> '+
+      '<button onclick="zyDecide(\''+o.id+'\',\'reject\')">ปฏิเสธ</button></div>')+
+    '</div>').join(''):'<p>ยังไม่มีคำสั่งซื้อ</p>')+
+   '<p style="font-size:12px;color:#5d7380">ข้อมูลลูกค้าทุกรายการถูกเก็บถาวร — ห้ามลบ</p>';
+ }catch(e){p.innerHTML='<p>โหลดไม่ได้</p>'}
+}
+async function zyDecide(id,decision){
+ if(decision==='reject' && !confirm('ปฏิเสธคำสั่งนี้? บันทึกยังคงอยู่'))return;
+ const r=await fetch(BK+'/api/store/admin/decide',{method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({order_id:id,decision:decision,token:zyToken()})});const j=await r.json();
+ alert(j.ok?'บันทึกสถานะแล้ว (ข้อมูลลูกค้ายังคงอยู่)':(j.error||'ทำไม่ได้'));
+ zyAdmin();zyMyOrders();
 }
 async function zyOwner(){
  const r=await fetch(BK+'/api/store/owner/download',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -194,7 +240,6 @@ async function zyOwner(){
 }
 function zyLogout(){
  const tk=zyToken();
- // clear local session FIRST — never block logout on backend latency
  try{localStorage.removeItem('zy_token');sessionStorage.removeItem('zy_token')}catch(e){}
  try{fetch(BK+'/api/auth/logout?token='+encodeURIComponent(tk),{keepalive:true}).catch(()=>{})}catch(e){}
  location.reload();

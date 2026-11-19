@@ -42,10 +42,12 @@ class Store:
         with self.lock:
             try:
                 os.makedirs(self.out_dir, exist_ok=True)
-                json.dump({"orders": self.orders[-1000:]},
+                # HARD RULE: never truncate customer records. Keep ALL orders
+                # and clicks so a buyer can always reopen what they purchased.
+                json.dump({"orders": self.orders},
                           open(os.path.join(self.out_dir, "orders.json"), "w", encoding="utf-8"),
                           ensure_ascii=False, indent=2)
-                json.dump({"clicks": self.clicks[-5000:]},
+                json.dump({"clicks": self.clicks},
                           open(os.path.join(self.out_dir, "clicks.json"), "w", encoding="utf-8"),
                           ensure_ascii=False, indent=2)
             except Exception:
@@ -146,12 +148,14 @@ class Store:
                 "product": o.get("product", ""), "status": "approved"}
 
     def reset_demo(self):
-        """Admin: clear test orders/clicks so dashboard starts clean."""
-        with self.lock:
-            self.orders = []
-            self.clicks = []
-        self.save()
-        return {"ok": True, "cleared": True}
+        """DISABLED — customer records are permanent.
+
+        The owner's rule: never delete customer data, or the buyer cannot reopen
+        their products. This method is kept for backward compatibility only.
+        """
+        return {"ok": False,
+                "error": "ห้ามลบข้อมูลลูกค้า — ประวัติคำสั่งซื้อถูกเก็บถาวรเพื่อให้ลูกค้าเข้าดูสินค้าได้เสมอ",
+                "orders_kept": len(self.orders)}
 
     def click(self, product="", email=""):
         with self.lock:
