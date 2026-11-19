@@ -1,6 +1,6 @@
 # System Design — สัญญาสถาปัตยกรรมที่บังคับใช้ได้
 
-ตรวจ **15/15** invariant · ฝ่าฝืน **0**
+ตรวจ **14/15** invariant · ฝ่าฝืน **1**
 
 ## องค์ประกอบและเจ้าของ
 
@@ -29,7 +29,7 @@
 | frontend_chat | owner-only controls gated by role | PASS | applyPopupVis |
 | storefront | account bar wired to auth API | PASS | STORE.html |
 | storefront | 46 free samples render as HTML | PASS | samples/ |
-| storefront | price from measured content | PASS | card facts |
+| storefront | price from measured content | FAIL | card facts |
 | auth | anonymous cannot see orders | PASS | /api/store/my-orders |
 | auth | logout reachable | PASS | app.py |
 | ordering | order persisted on create | PASS | /api/pay/order |
