@@ -104,7 +104,7 @@ GOOGLE_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 OMISE_PKEY = os.environ.get("OMISE_PUBLIC_KEY", "").strip()
 OMISE_SKEY = os.environ.get("OMISE_SECRET_KEY", "").strip()
 OMISE_ENABLED = bool(OMISE_PKEY and OMISE_SKEY)
-OWNER_EMAILS = {"vorakangm@gmail.com", "vorayakham@gmail.com", "vorakanmu@gmail.com", "vorakan@gmail.com"}
+OWNER_EMAILS = {"vorakangm@gmail.com", "vorakanmu@gmail.com"}
 ZIPBALL_OWNER = ("https://github.com/Vorakan-yakham/zyphere-scholar-product-pack/"
                  "archive/refs/heads/main.zip")
 try:
