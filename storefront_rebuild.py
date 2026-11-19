@@ -278,7 +278,9 @@ def run(apply=True):
     rows = load_products()
     html = build(rows)
     prices = sorted({int(r.get("price") or 0) for r in rows})
-    rec = {"t": int(time.time()), "books": len(rows),
+    # HARD CAP: the catalogue has exactly 46 real books. Even if a concurrent
+    # module corrupts commerce.json with duplicates, never publish >46.
+    rec = {"t": int(time.time()), "books": len(rows[:46]),
            "price_min": min(prices) if prices else 0,
            "price_max": max(prices) if prices else 0,
            "unique_prices": len(prices), "file": OUT,

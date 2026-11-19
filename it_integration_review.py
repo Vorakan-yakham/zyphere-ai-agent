@@ -76,6 +76,15 @@ def static_checks():
     out.append(check("owner download receives token",
                      "body:JSON.stringify({token:tk})" in idx.replace("\n", ""),
                      "index.html owner download"))
+    try:
+        db = json.load(open(os.path.join(ROOT, "data", "commerce.json"),
+                            encoding="utf-8"))
+        titles = [str(p.get("title") or "") for p in db.get("products", [])]
+        evidence = "rows=%d unique=%d" % (len(titles), len(set(titles)))
+        ok46 = (len(titles) == 46 and len(set(titles)) == 46)
+        out.append(check("catalogue has exactly 46 unique books", ok46, evidence))
+    except Exception as e:
+        out.append(check("catalogue has exactly 46 unique books", False, str(e)[:120]))
     out.append(check("progress dashboard has 12 departments",
                      read("PROGRESS.html").count('class="d"') >= 12,
                      "PROGRESS.html cards"))
