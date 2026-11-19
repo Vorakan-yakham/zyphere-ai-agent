@@ -1,12 +1,12 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T10:57:24.424211Z
+เวลา: 2026-11-19T11:17:18.261623Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
 | next | {"ok": true, "summary": {}} |
-| reasoning | {"ok": false, "summary": {}} |
+| reasoning | {"ok": true, "summary": {}} |
 | pagefix | {"ok": true, "summary": {}} |
 | outreach | {"ok": true, "summary": {"facts": ["STORE_FINAL.html", "cinema_studio.py", "poster_studio.py", "sound_forge.py", "qa_supreme.py"]}} |
 | selfnudge | {"ok": true, "summary": {}} |
@@ -60,7 +60,7 @@
 | samples_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | typeset_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse1 | {"ok": false, "fix": null, "keep": null} |
+| ebook_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse1 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | value_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -112,12 +112,12 @@
 | samples_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | typeset_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | editor_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | value_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | uiaudit_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| storetest_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| storetest_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | progress_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | design_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | it_review_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -173,6 +173,6 @@
 | progress_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | design_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | it_review_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 92, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ้ |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["sound", "qa", "offline", "compete", "sales"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
