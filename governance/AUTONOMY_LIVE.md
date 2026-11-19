@@ -1,12 +1,13 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T02:34:57.224613Z
+เวลา: 2026-11-19T02:43:40.301040Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
 | selfnudge | {"ok": true, "summary": {}} |
 | league | {"ok": true, "summary": {}} |
+| covers | {"ok": true, "summary": {}} |
 | store_audit | {"ok": true, "summary": {}} |
 | roadmap | {"ok": true, "summary": {}} |
 | wish | {"ok": true, "summary": {"round": 1}} |
@@ -29,6 +30,7 @@
 | qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
 | selfnudge_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse1 | {"ok": true, "fix": null, "keep": null} |
+| covers_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -39,6 +41,7 @@
 | diff_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| covers_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse2 | {"ok": true, "fix": null, "keep": null} |
@@ -49,6 +52,7 @@
 | diff_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| covers_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -59,6 +63,7 @@
 | diff_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| covers_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse4 | {"ok": true, "fix": null, "keep": null} |
@@ -69,6 +74,7 @@
 | diff_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| covers_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | wish_pulse5 | {"ok": true, "fix": null, "keep": null} |
