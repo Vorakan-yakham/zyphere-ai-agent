@@ -117,7 +117,8 @@ jobs:
                                     ("ebook_complete", "ebook_complete", "run"),
                                     ("ebook", "ebook_design_team", "run"),
                                     ("editor", "ebook_editor_gate", "run"),
-                                    ("diff", "differentiation_lab", "run")]:
+                                    ("diff", "differentiation_lab", "run"),
+                                     ("value", "book_value_fixer", "run")]:
                   try:
                       m = __import__(mod)
                       r = getattr(m, fn)()
