@@ -1,35 +1,35 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 26 หัวข้อ / 99 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 225 ข้อเท็จจริง
+ก่อน: 26 หัวข้อ / 96 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 180 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| Maxwell equations | OpenAlex, arXiv | 6 |
-| fields | OpenAlex, arXiv | 6 |
+| Maxwell equations | arXiv | 3 |
+| fields | arXiv | 3 |
 | waves | arXiv | 3 |
-| refraction | arXiv | 3 |
-| interference | OpenAlex, arXiv | 6 |
+| refraction | OpenAlex, arXiv | 6 |
+| interference | arXiv | 3 |
 | diffraction | arXiv | 3 |
 | telescope | OpenAlex, arXiv | 6 |
 | spectroscopy | arXiv | 3 |
-| photometry | OpenAlex, arXiv | 6 |
+| photometry | arXiv | 3 |
 | stellar lifecycle | arXiv | 3 |
-| nuclear fusion | OpenAlex, arXiv | 6 |
-| supernova | OpenAlex, arXiv | 6 |
+| nuclear fusion | arXiv | 3 |
+| supernova | arXiv | 3 |
 | Big Bang | arXiv | 3 |
-| dark matter | OpenAlex, arXiv | 6 |
-| expansion | OpenAlex, arXiv | 6 |
+| dark matter | arXiv | 3 |
+| expansion | arXiv | 3 |
 | planets | OpenAlex, arXiv | 6 |
 | orbits | arXiv | 3 |
 | comets | arXiv | 3 |
-| group | OpenAlex, arXiv | 6 |
-| ring | OpenAlex, arXiv | 6 |
-| field | Wikidata, Wikipedia, arXiv | 9 |
-| limit | Wikidata, Wikipedia, arXiv | 9 |
+| group | arXiv | 3 |
+| ring | arXiv | 3 |
+| field | arXiv | 3 |
+| limit | arXiv | 3 |
 | continuity | arXiv | 3 |
 | series | arXiv | 3 |
-| manifold | OpenAlex, arXiv | 6 |
+| manifold | arXiv | 3 |
 
 ความรู้ในสมอง Zyphere: 33 รายการ · รอบเติบโตที่ 1
 
