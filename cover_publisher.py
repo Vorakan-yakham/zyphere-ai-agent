@@ -17,6 +17,16 @@ DATA = os.path.join(ROOT, "data", "cover_publisher.json")
 def run(apply=True):
     os.makedirs(DST, exist_ok=True)
     made, total = [], 0
+    # small palette PNG for embedding in the editorial-approved full book
+    # (GitHub Contents API refuses >1MB files)
+    src1 = os.path.join(SRC, "cover_01.png")
+    if os.path.exists(src1):
+        try:
+            embed = Image.open(src1).convert("P", palette=Image.ADAPTIVE, colors=128)
+            embed = embed.resize((400, 600), Image.Resampling.LANCZOS)
+            embed.save(os.path.join(DST, "cover_01_embed.png"), "PNG", optimize=True)
+        except Exception:
+            pass
     for i in range(1, 47):
         p = os.path.join(SRC, "cover_%02d.png" % i)
         if not os.path.exists(p):
