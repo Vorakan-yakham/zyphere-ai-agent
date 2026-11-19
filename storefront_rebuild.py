@@ -30,13 +30,25 @@ def load_products():
              "zyphere-scholar-product-pack/main/pricing.json")
         try:
             r = requests.get(u, timeout=30)
+            rows = []  # REPLACE stale single-price DB, never append (was 46->92)
+            seen = set()
             for x in (r.json() if r.ok else {}).get("rows", []):
+                if x.get("title") in seen:
+                    continue
+                seen.add(x.get("title"))
                 rows.append({"title": x.get("title"),
                              "price": x.get("price") or (79 + int(x.get("score", 10))*14),
                              "score": x.get("score", 10)})
         except Exception:
             pass
-    return rows
+    # hard guarantee: exactly one row per real title
+    uniq, seen = [], set()
+    for r in rows:
+        t = str(r.get("title") or "")
+        if t and t not in seen:
+            seen.add(t)
+            uniq.append(r)
+    return uniq
 
 
 def tiny_cover(title):

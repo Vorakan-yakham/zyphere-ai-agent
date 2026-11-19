@@ -78,7 +78,8 @@ def run(photo_path=None, apply=True):
         import free_image_sources as FIS
         im, credit = FIS.best("cinematic detailed landscape light", want_photo=True)
         if im is None:
-            return {"ok": False, "error": "no source photo"}
+            return {"ok": True, "skipped": True,
+                    "note": "transient image-source miss; retry next pulse"}
     else:
         im = Image.open(photo_path).convert("RGB")
         credit = {"page": os.path.basename(photo_path)}
