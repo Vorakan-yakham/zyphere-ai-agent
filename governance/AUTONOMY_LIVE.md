@@ -1,10 +1,11 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T03:22:16.387284Z
+เวลา: 2026-11-19T03:32:53.787944Z
 รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
+| next | {"ok": true, "summary": {}} |
 | reasoning | {"ok": true, "summary": {}} |
 | pagefix | {"ok": true, "summary": {}} |
 | outreach | {"ok": true, "summary": {"facts": ["STORE_FINAL.html", "cinema_studio.py", "poster_studio.py", "sound_forge.py", "qa_supreme.py"]}} |
@@ -16,7 +17,7 @@
 | wish | {"ok": true, "summary": {"round": 1}} |
 | revenue_auto | {"ok": true, "summary": {}} |
 | ebook | {"ok": true, "summary": {}} |
-| ebook_editor | {"ok": true, "summary": {}} |
+| ebook_editor | {"ok": false, "summary": {}} |
 | differentiation | {"ok": true, "summary": {}} |
 | council_briefing | {"ok": true, "summary": {}} |
 | thai_language | {"ok": true, "summary": {}} |
@@ -30,7 +31,8 @@
 | media | {"ok": true, "summary": {"status": "both"}} |
 | nudge | {"ok": true, "summary": {"idle": []}} |
 | commerce | {"ok": true, "summary": {"priced": 46}} |
-| qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
+| qa | {"ok": true, "summary": {"keep": 17, "fix": 1}} |
+| next_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | reasoning_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -43,9 +45,10 @@
 | revenue_auto_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse1 | {"ok": true, "fix": null, "keep": null} |
+| editor_pulse1 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| reasoning_pulse2 | {"ok": false, "fix": null, "keep": null} |
+| next_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| reasoning_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse2 | {"ok": true, "fix": null, "keep": null} |
@@ -57,8 +60,9 @@
 | revenue_auto_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| editor_pulse2 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse2 | {"ok": true, "fix": null, "keep": null} |
+| next_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | reasoning_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -71,8 +75,9 @@
 | revenue_auto_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| editor_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse3 | {"ok": true, "fix": null, "keep": null} |
+| next_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | reasoning_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse4 | {"ok": true, "fix": null, "keep": null} |
@@ -85,8 +90,9 @@
 | revenue_auto_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| editor_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| next_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | reasoning_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | pagefix_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse5 | {"ok": true, "fix": null, "keep": null} |
@@ -99,8 +105,8 @@
 | revenue_auto_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | cross_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| editor_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| editor_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["compete", "sales", "book", "design", "film"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผน |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนช |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
