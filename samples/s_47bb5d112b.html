@@ -1,25 +1,96 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>ตัวอย่าง: ตรรกะและทฤษฎีข้อมูล</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
-<style>body{font-family:'Noto Sans Thai',sans-serif;max-width:720px;margin:auto;padding:30px;
-color:#12222b;line-height:1.9}h2{color:#0e7490;border-bottom:2px solid #eef8fa;padding-bottom:8px}
-h3{color:#165b70}.banner{background:#0b2533;color:#fff;padding:40px;border-radius:18px}
-.cta{display:inline-block;background:#0e7490;color:#fff;padding:12px 24px;border-radius:999px;text-decoration:none}
-</style></head><body><div class="banner"><h1>ตรรกะและทฤษฎีข้อมูล</h1>
-<p>ตัวอย่างฟรีจากต้นฉบับจริง — อ่านตรวจทานได้ก่อนซื้อ</p>
-<a class="cta" href="STORE.html">กลับไปหน้าร้าน</a></div><p>ชุดผลงานความรู้ Zyphere · เล่ม ตรรกะและทฤษฎีข้อมูล</p>
-<h2>สารบัญ</h2>
-<p>1. ตรรกะเชิงสัญลักษณ์ 2. ทฤษฎีข้อมูล 3. ทฤษฎีการคำนวณ 4. การเข้ารหัส ---</p>
-<h2>บทที่ 1 ตรรกะเชิงสัญลักษณ์</h2>
-<h3>ภาพรวม</h3>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ตรรกะและทฤษฎีข้อมูล — Zyphere Knowledge Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fffdf8;--ink:#1c2b33;--acc:#0e7490;--line:#d8e6ea}
+*{box-sizing:border-box}body{margin:0;background:#e9eef0;color:var(--ink);
+ font-family:'Noto Serif Thai',serif;line-height:1.95}
+.page{max-width:760px;margin:26px auto;padding:64px 72px 70px;background:var(--paper);
+ box-shadow:0 10px 40px rgba(20,40,50,.13);min-height:980px;position:relative}
+.cover{background:linear-gradient(150deg,#08202e 0%,#0b3a4a 58%,#0e7490 100%);
+ color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:980px}
+.cover .top{display:flex;justify-content:space-between;align-items:center;
+ font:600 14px 'Noto Sans Thai',sans-serif;letter-spacing:3px;opacity:.85}
+.cover h1{font-size:58px;line-height:1.35;margin:0;font-weight:700}
+.cover .sub{font:400 20px 'Noto Sans Thai',sans-serif;opacity:.88;margin-top:18px}
+.cover .motif{height:250px;position:relative}
+.cover .motif i{position:absolute;border:1px solid rgba(255,255,255,.28);border-radius:50%}
+.cover .bottom{font:400 15px 'Noto Sans Thai',sans-serif;opacity:.9;line-height:2}
+.titlepage{text-align:center;display:flex;flex-direction:column;justify-content:center}
+.titlepage h1{font-size:42px;margin:0 0 10px}
+.titlepage .kicker{font:600 13px 'Noto Sans Thai',sans-serif;letter-spacing:4px;color:var(--acc)}
+.titlepage .meta{margin-top:60px;font:400 16px 'Noto Sans Thai',sans-serif;color:#5d7380;line-height:2.4}
+h2{font-size:30px;color:var(--acc);margin:0 0 6px}
+.rule{height:3px;width:72px;background:var(--acc);margin:16px 0 34px}
+h3{font-size:19px;color:#114b5e;margin:30px 0 10px;font-weight:700}
+p{margin:0 0 16px;text-align:justify}
+ul,ol{padding-left:26px;margin:0 0 18px}li{margin:7px 0}
+.toc h2{text-align:center;font-size:34px;margin-bottom:8px}
+.toc .intro{text-align:center;color:#5d7380;font:400 14px 'Noto Sans Thai',sans-serif;margin-bottom:34px}
+.toc ol{list-style:none;padding:0;margin:0}
+.toc li{display:flex;align-items:baseline;gap:10px;margin:11px 0;font-size:16px}
+.toc .n{color:var(--acc);font:700 13px 'Noto Sans Thai',sans-serif;min-width:26px}
+.toc .t{white-space:nowrap}
+.toc .dots{flex:1;border-bottom:1px dotted #9fb8c0;transform:translateY(-4px)}
+.toc .p{color:#5d7380;font:600 13px 'Noto Sans Thai',sans-serif;min-width:20px;text-align:right}
+.chapno{font:700 13px 'Noto Sans Thai',sans-serif;letter-spacing:3px;color:var(--acc)}
+.chapter h2{font-size:40px;margin-top:8px}
+.en-name{font:400 13px 'Noto Sans Thai',sans-serif;color:#8aa2ab;margin-top:4px}
+.foot{position:absolute;bottom:26px;left:72px;right:72px;border-top:1px solid var(--line);
+ padding-top:12px;text-align:center;font:400 11px 'Noto Sans Thai',sans-serif;color:#8aa2ab;letter-spacing:1px}
+.note{text-align:center;font:400 13px 'Noto Sans Thai',sans-serif;color:#5d7380;padding:18px}
+.note a{color:var(--acc)}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;page-break-after:always}}
+@media(max-width:640px){.page{padding:38px 26px}.cover h1{font-size:38px}.chapter h2{font-size:30px}}
+</style></head><body>
+<article class="page cover"><div class="top"><span>ZYPHERE</span><span>KNOWLEDGE LIBRARY</span></div>
+<div><div class="motif"><i style="width:260px;height:260px;left:120px;top:10px"></i>
+<i style="width:180px;height:180px;left:190px;top:50px"></i>
+<i style="width:90px;height:90px;left:235px;top:95px;background:rgba(34,211,238,.25)"></i></div>
+<h1>ตรรกะและทฤษฎีข้อมูล</h1><div class="sub">ตรรกะและทฤษฎีข้อมูล</div></div>
+<div class="bottom">ชุดหนังสือความรู้ Zyphere · 4 บท<br>
+เขียนและเรียบเรียงโดยทีมวิศวกร Zyphere · 2026<br>
+ตัวอย่างอ่านฟรี — อ่านตรวจทานก่อนซื้อ</div></article>
+<article class="page titlepage"><div class="kicker">ZYPHERE ORIGINAL</div>
+<h1>ตรรกะและทฤษฎีข้อมูล</h1><p style="color:#5d7380">ตรรกะและทฤษฎีข้อมูล</p>
+<div class="meta">ชุดหนังสือความรู้ Zyphere<br>ทีมวิศวกร Zyphere<br>2026</div>
+<div class="foot">ZYPHERE KNOWLEDGE LIBRARY</div></article>
+<article class="page toc"><h2>สารบัญ</h2><div class="intro">ตรรกะและทฤษฎีข้อมูล · 4 บท</div>
+<ol><li><span class="n">1</span><span class="t">ตรรกะเชิงสัญลักษณ์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">2</span><span class="t">ทฤษฎีข้อมูล</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">3</span><span class="t">ทฤษฎีการคำนวณ</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">4</span><span class="t">การเข้ารหัส</span><span class="dots"></span><span class="p">—</span></li></ol><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · สารบัญ</div></article>
+
+<article class="page chapter"><div class="chapno">บทที่ 1</div><h2>ตรรกะเชิงสัญลักษณ์</h2><div class="en-name">ตรรกะเชิงสัญลักษณ์</div><div class="rule"></div><h3>ภาพรวม</h3>
+<p>บทนี้พาคุณไปทำความเข้าใจ <strong>ตรรกะเชิงสัญลักษณ์</strong> ตั้งแต่แนวคิดพื้นฐาน ไปจนถึงวิธีนำไปใช้ได้จริง เมื่ออ่านจบ คุณจะสามารถอธิบายหัวข้อนี้ ให้ผู้อื่นฟังได้ และมีแนวทางเริ่มต้นลงมือทำด้วยตนเอง</p>
 <h3>แนวคิดหลัก</h3>
+<ul><li><strong>proposition</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>predicate</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>proof</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li></ul>
 <h3>ตัวอย่างการนำไปใช้</h3>
+<p>ลองเริ่มจากสถานการณ์จริงในงานของคุณ ระบุปัญหาที่เกี่ยวข้องกับ ตรรกะเชิงสัญลักษณ์ จากนั้นเลือกแนวคิดที่เหมาะสมที่สุด แล้วทดลองทำเป็นขั้นตอนเล็ก ๆ ก่อนขยายผล การลงมือทำจะช่วยให้เห็นจุดที่ต้องปรับปรุงได้ชัดเจนขึ้น</p>
 <h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>จงอธิบายความหมายของ ตรรกะเชิงสัญลักษณ์ ด้วยภาษาของตนเอง</li><li>ยกตัวอย่างสถานการณ์ที่สามารถนำ ตรรกะเชิงสัญลักษณ์ ไปใช้ได้จริง</li><li>ข้อควรระวังที่พบบ่อยที่สุดในหัวข้อนี้มีอะไรบ้าง</li></ol>
 <h3>สรุป</h3>
-<p>บทนี้พาคุณไปทำความเข้าใจ ตรรกะเชิงสัญลักษณ์ ตั้งแต่แนวคิดพื้นฐาน ไปจนถึงวิธีนำไปใช้ได้จริง เมื่ออ่านจบ คุณจะสามารถอธิบายหัวข้อนี้ ให้ผู้อื่นฟังได้ และมีแนวทางเริ่มต้นลงมือทำด้วยตนเอง - proposition — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน - predicate — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน - proof — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน ลองเริ่มจากสถานการณ์จริงในงานของคุณ ระบุปัญหาที่เกี่ยวข้องกับ ตรรกะเชิงสัญลักษณ์ จากนั้นเลือกแนวคิดที่เหมาะสมที่สุด แล้วทดลองทำเป็นขั้นตอนเล็ก ๆ ก่อนขยายผล การลงมือทำจะช่วยให้เห็นจุดที่ต้องปรับปรุงได้ชัดเจนขึ้น 1. จงอธิบายความหมายของ ตรรกะเชิงสัญลักษณ์ ด้วยภาษาของตนเอง 2. ยกตัวอย่างสถานการณ์ที่สามารถนำ ตรรกะเชิงสัญลักษณ์ ไปใช้ได้จริง 3. ข้อควรระวังที่พบบ่อยที่สุดในหัวข้อนี้มีอะไรบ้าง บทที่ 1 ได้วางรากฐานความเข้าใจเกี่ยวกับ ตรรกะเชิงสัญลักษณ์ ไว้แล้ว นำความรู้นี้ไปต่อยอดในบทถัดไปและใช้งานจริงได้เลย ---</p>
-<h2>บทที่ 2 ทฤษฎีข้อมูล</h2>
-<h3>ภาพรวม</h3>
+<p>บทที่ 1 ได้วางรากฐานความเข้าใจเกี่ยวกับ ตรรกะเชิงสัญลักษณ์ ไว้แล้ว นำความรู้นี้ไปต่อยอดในบทถัดไปและใช้งานจริงได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ตรรกะและทฤษฎีข้อมูล · หน้า 1</div></article>
+<article class="page chapter"><div class="chapno">บทที่ 2</div><h2>ทฤษฎีข้อมูล</h2><div class="en-name">ทฤษฎีข้อมูล</div><div class="rule"></div><h3>ภาพรวม</h3>
+<p>บทนี้พาคุณไปทำความเข้าใจ <strong>ทฤษฎีข้อมูล</strong> ตั้งแต่แนวคิดพื้นฐาน ไปจนถึงวิธีนำไปใช้ได้จริง เมื่ออ่านจบ คุณจะสามารถอธิบายหัวข้อนี้ ให้ผู้อื่นฟังได้ และมีแนวทางเริ่มต้นลงมือทำด้วยตนเอง</p>
 <h3>แนวคิดหลัก</h3>
-<p>บทนี้พาคุณไปทำความเข้าใจ ทฤษฎีข้อมูล ตั้งแต่แนวคิดพื้นฐาน ไปจนถึงวิธีนำไปใช้ได้จริง เมื่ออ่านจบ คุณจะสามารถอธิบายหัวข้อนี้ ให้ผู้อื่นฟังได้ และมีแนวทางเริ่มต้นลงมือทำด้วยตนเอง</p>
-<p style="color:#5d7380">นี่คือส่วนต้นของหนังสือเท่านั้น — ฉบับเต็มมีทั้งหมด 46 หัวข้อ</p>
+<ul><li><strong>entropy</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>channel capacity</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>coding</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li></ul>
+<h3>ตัวอย่างการนำไปใช้</h3>
+<p>ลองเริ่มจากสถานการณ์จริงในงานของคุณ ระบุปัญหาที่เกี่ยวข้องกับ ทฤษฎีข้อมูล จากนั้นเลือกแนวคิดที่เหมาะสมที่สุด แล้วทดลองทำเป็นขั้นตอนเล็ก ๆ ก่อนขยายผล การลงมือทำจะช่วยให้เห็นจุดที่ต้องปรับปรุงได้ชัดเจนขึ้น</p>
+<h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>จงอธิบายความหมายของ ทฤษฎีข้อมูล ด้วยภาษาของตนเอง</li><li>ยกตัวอย่างสถานการณ์ที่สามารถนำ ทฤษฎีข้อมูล ไปใช้ได้จริง</li><li>ข้อควรระวังที่พบบ่อยที่สุดในหัวข้อนี้มีอะไรบ้าง</li></ol>
+<h3>สรุป</h3>
+<p>บทที่ 2 ได้วางรากฐานความเข้าใจเกี่ยวกับ ทฤษฎีข้อมูล ไว้แล้ว นำความรู้นี้ไปต่อยอดในบทถัดไปและใช้งานจริงได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ตรรกะและทฤษฎีข้อมูล · หน้า 2</div></article>
+<article class="page chapter"><div class="chapno">บทที่ 3</div><h2>ทฤษฎีการคำนวณ</h2><div class="en-name">ทฤษฎีการคำนวณ</div><div class="rule"></div><h3>ภาพรวม</h3>
+<p>บทนี้พาคุณไปทำความเข้าใจ <strong>ทฤษฎีการคำนวณ</strong> ตั้งแต่แนวคิดพื้นฐาน ไปจนถึงวิธีนำไปใช้ได้จริง เมื่ออ่านจบ คุณจะสามารถอธิบายหัวข้อนี้ ให้ผู้อื่นฟังได้ และมีแนวทางเริ่มต้นลงมือทำด้วยตนเอง</p>
+<h3>แนวคิดหลัก</h3>
+<ul><li><strong>automata</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>Turing machine</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li><li><strong>complexity</strong> — องค์ประกอบสำคัญที่ควรทำความเข้าใจ ก่อนนำไปประยุกต์ใช้งาน</li></ul>
+<h3>ตัวอย่างการนำไปใช้</h3>
+<p>ลองเริ่มจากสถานการณ์จริงในงานของคุณ ระบุปัญหาที่เกี่ยวข้องกับ ทฤษฎีการคำนวณ จากนั้นเลือกแนวคิดที่เหมาะสมที่สุด แล้วทดลองทำเป็นขั้นตอนเล็ก ๆ ก่อนขยายผล การลงมือทำจะช่วยให้เห็นจุดที่ต้องปรับปรุงได้ชัดเจนขึ้น</p>
+<h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>จงอธิบายความหมายของ ทฤษฎีการคำนวณ ด้วยภาษาของตนเอง</li><li>ยกตัวอย่างสถานการณ์ที่สามารถนำ ทฤษฎีการคำนวณ ไปใช้ได้จริง</li><li>ข้อควรระวังที่พบบ่อยที่สุดในหัวข้อนี้มีอะไรบ้าง</li></ol>
+<h3>สรุป</h3>
+<p>บทที่ 3 ได้วางรากฐานความเข้าใจเกี่ยวกับ ทฤษฎีการคำนวณ ไว้แล้ว นำความรู้นี้ไปต่อยอดในบทถัดไปและใช้งานจริงได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ตรรกะและทฤษฎีข้อมูล · หน้า 3</div></article>
+<p class="note"><p class='note'>ตัวอย่างฟรี: สารบัญภาษาไทย + บทนำ + 3 บทแรก จากต้นฉับจริง — <a href='STORE.html'>ดูฉบับเต็มในหน้าร้าน</a></p></p>
 </body></html>

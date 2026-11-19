@@ -93,7 +93,7 @@ def e07_grade(im):
 
 
 def e08_skin_protect(im):
-    # Mild warmth lift that avoids blowing out highlights in portraits. — Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+    # Mild warmth lift that avoids blowing out highlights in portraits. — Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน — Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
     r, g, b = im.split()
     r = r.point(lambda x: min(255, int(x*1.015)))
     return Image.merge("RGB", (r, g, b))

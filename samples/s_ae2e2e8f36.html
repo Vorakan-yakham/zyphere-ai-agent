@@ -1,24 +1,108 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>ตัวอย่าง: ฟิสิกส์คลาสสิก</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
-<style>body{font-family:'Noto Sans Thai',sans-serif;max-width:720px;margin:auto;padding:30px;
-color:#12222b;line-height:1.9}h2{color:#0e7490;border-bottom:2px solid #eef8fa;padding-bottom:8px}
-h3{color:#165b70}.banner{background:#0b2533;color:#fff;padding:40px;border-radius:18px}
-.cta{display:inline-block;background:#0e7490;color:#fff;padding:12px 24px;border-radius:999px;text-decoration:none}
-</style></head><body><div class="banner"><h1>ฟิสิกส์คลาสสิก</h1>
-<p>ตัวอย่างฟรีจากต้นฉบับจริง — อ่านตรวจทานได้ก่อนซื้อ</p>
-<a class="cta" href="STORE.html">กลับไปหน้าร้าน</a></div><p>ชุดหนังสือความรู้ Zyphere · ฟิสิกส์คลาสสิก</p>
-<h2>สารบัญ</h2>
-<p>1. Acoustics 2. Quantum acoustics 3. Agrophysics 4. Aerodynamics 5. Applied physics 6. Accelerator physics 7. Communication physics 8. Astrophysics 9. Atmospheric physics 10. Atomic, molecular, and optical physics 11. Atomic physics 12. Biophysics 13. Neurophysics 14. Chemical physics 15. Classical physics 16. Computational physics 17. Condensed matter physics 18. Cryogenics 19. Digital physics 20. Dynamics 21. Analytical dynamics 22. Astrodynamics 23. Brownian dynamics 24. File dynamics 25. Flight dynamics 26. Fluid dynamics 27. Hydrodynamics 28. Fractional dynamics 29. Geodynamics 30. Molecular dynamics 31. Newtonian dynamics 32. Langevin dynamics 33. Quantum chromodynamics 34. Quantum electrodynamics 35. Relativistic dynamics 36. Stellar dynamics 37. System dynamics 38. Thermodynamics 39. Vehicle dynamics 40. Econophysics 41. Electricity 42. Electromagnetism 43. Electrostatic 44. Magnetism 45. Engineering physics 46. Elementary particle physics 47. Experimental physics 48. Geophysics 49. Biogeophysics 50. Geomagnetism 51. Kinematics 52. Fluid kinematics 53. Relativistic kinematics 54. Kinetics 55. Electrokinetics 56. Homeokinetics 57. Laser physics 58. Materials physics 59. Mathematical physics 60. Mechanics 61. Analytical mechanics 62. Applied mechanics 63. Ballistics 64. Biomechanics 65. Celestial mechanics 66. Classical mechanics 67. Continuum mechanics 68. Fluid mechanics 69. Fracture mechanics 70. Hamiltonian mechanics ---</p>
-<h2>บทนำ</h2>
-<p>หนังสือเล่มนี้รวบรวมสาขาวิชาที่มีอยู่จริงในระดับสากลของ ฟิสิกส์คลาสสิก จำนวน 70 สาขา แต่ละบทเขียนในรูปแบบเดียวกัน เพื่อให้คุณสามารถอ่านต่อเนื่องหรือเลือกอ่านเฉพาะหัวข้อที่สนใจได้ ---</p>
-<h2>บทที่ 1 Acoustics</h2>
-<h3>ความหมายโดยย่อ</h3>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ฟิสิกส์คลาสสิก — Zyphere Knowledge Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fffdf8;--ink:#1c2b33;--acc:#0e7490;--line:#d8e6ea}
+*{box-sizing:border-box}body{margin:0;background:#e9eef0;color:var(--ink);
+ font-family:'Noto Serif Thai',serif;line-height:1.95}
+.page{max-width:760px;margin:26px auto;padding:64px 72px 70px;background:var(--paper);
+ box-shadow:0 10px 40px rgba(20,40,50,.13);min-height:980px;position:relative}
+.cover{background:linear-gradient(150deg,#08202e 0%,#0b3a4a 58%,#0e7490 100%);
+ color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:980px}
+.cover .top{display:flex;justify-content:space-between;align-items:center;
+ font:600 14px 'Noto Sans Thai',sans-serif;letter-spacing:3px;opacity:.85}
+.cover h1{font-size:58px;line-height:1.35;margin:0;font-weight:700}
+.cover .sub{font:400 20px 'Noto Sans Thai',sans-serif;opacity:.88;margin-top:18px}
+.cover .motif{height:250px;position:relative}
+.cover .motif i{position:absolute;border:1px solid rgba(255,255,255,.28);border-radius:50%}
+.cover .bottom{font:400 15px 'Noto Sans Thai',sans-serif;opacity:.9;line-height:2}
+.titlepage{text-align:center;display:flex;flex-direction:column;justify-content:center}
+.titlepage h1{font-size:42px;margin:0 0 10px}
+.titlepage .kicker{font:600 13px 'Noto Sans Thai',sans-serif;letter-spacing:4px;color:var(--acc)}
+.titlepage .meta{margin-top:60px;font:400 16px 'Noto Sans Thai',sans-serif;color:#5d7380;line-height:2.4}
+h2{font-size:30px;color:var(--acc);margin:0 0 6px}
+.rule{height:3px;width:72px;background:var(--acc);margin:16px 0 34px}
+h3{font-size:19px;color:#114b5e;margin:30px 0 10px;font-weight:700}
+p{margin:0 0 16px;text-align:justify}
+ul,ol{padding-left:26px;margin:0 0 18px}li{margin:7px 0}
+.toc h2{text-align:center;font-size:34px;margin-bottom:8px}
+.toc .intro{text-align:center;color:#5d7380;font:400 14px 'Noto Sans Thai',sans-serif;margin-bottom:34px}
+.toc ol{list-style:none;padding:0;margin:0}
+.toc li{display:flex;align-items:baseline;gap:10px;margin:11px 0;font-size:16px}
+.toc .n{color:var(--acc);font:700 13px 'Noto Sans Thai',sans-serif;min-width:26px}
+.toc .t{white-space:nowrap}
+.toc .dots{flex:1;border-bottom:1px dotted #9fb8c0;transform:translateY(-4px)}
+.toc .p{color:#5d7380;font:600 13px 'Noto Sans Thai',sans-serif;min-width:20px;text-align:right}
+.chapno{font:700 13px 'Noto Sans Thai',sans-serif;letter-spacing:3px;color:var(--acc)}
+.chapter h2{font-size:40px;margin-top:8px}
+.en-name{font:400 13px 'Noto Sans Thai',sans-serif;color:#8aa2ab;margin-top:4px}
+.foot{position:absolute;bottom:26px;left:72px;right:72px;border-top:1px solid var(--line);
+ padding-top:12px;text-align:center;font:400 11px 'Noto Sans Thai',sans-serif;color:#8aa2ab;letter-spacing:1px}
+.note{text-align:center;font:400 13px 'Noto Sans Thai',sans-serif;color:#5d7380;padding:18px}
+.note a{color:var(--acc)}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;page-break-after:always}}
+@media(max-width:640px){.page{padding:38px 26px}.cover h1{font-size:38px}.chapter h2{font-size:30px}}
+</style></head><body>
+<article class="page cover"><div class="top"><span>ZYPHERE</span><span>KNOWLEDGE LIBRARY</span></div>
+<div><div class="motif"><i style="width:260px;height:260px;left:120px;top:10px"></i>
+<i style="width:180px;height:180px;left:190px;top:50px"></i>
+<i style="width:90px;height:90px;left:235px;top:95px;background:rgba(34,211,238,.25)"></i></div>
+<h1>ฟิสิกส์คลาสสิก</h1><div class="sub">ฟิสิกส์คลาสสิก</div></div>
+<div class="bottom">ชุดหนังสือความรู้ Zyphere · 70 บท<br>
+เขียนและเรียบเรียงโดยทีมวิศวกร Zyphere · 2026<br>
+ตัวอย่างอ่านฟรี — อ่านตรวจทานก่อนซื้อ</div></article>
+<article class="page titlepage"><div class="kicker">ZYPHERE ORIGINAL</div>
+<h1>ฟิสิกส์คลาสสิก</h1><p style="color:#5d7380">ฟิสิกส์คลาสสิก</p>
+<div class="meta">ชุดหนังสือความรู้ Zyphere<br>ทีมวิศวกร Zyphere<br>2026</div>
+<div class="foot">ZYPHERE KNOWLEDGE LIBRARY</div></article>
+<article class="page toc"><h2>สารบัญ</h2><div class="intro">ฟิสิกส์คลาสสิก · 70 บท</div>
+<ol><li><span class="n">1</span><span class="t">อะคูสติก</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">2</span><span class="t">อะคูสติกควอนตัม</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">3</span><span class="t">ฟิสิกส์การเกษตร</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">4</span><span class="t">อากาศพลศาสตร์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">5</span><span class="t">ฟิสิกส์ประยุกต์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">6</span><span class="t">ฟิสิกส์เครื่องเร่งอนุภาค</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">7</span><span class="t">ฟิสิกส์การสื่อสาร</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">8</span><span class="t">ฟิสิกส์ดาราศาสตร์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">9</span><span class="t">ฟิสิกส์บรรยากาศ</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">10</span><span class="t">ฟิสิกส์อะตอม โมเลกุล และแสง</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">11</span><span class="t">ฟิสิกส์อะตอม</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">12</span><span class="t">ชีวฟิสิกส์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">13</span><span class="t">ประสาทฟิสิกส์</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">14</span><span class="t">ฟิสิกส์เคมี</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">15</span><span class="t">ฟิสิกส์คลาสสิก</span><span class="dots"></span><span class="p">—</span></li>
+<li><span class="n">16</span><span class="t">ฟิสิกส์คำนวณ</span><span class="dots"></span><span class="p">—</span></li></ol><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · สารบัญ</div></article>
+<article class='page'><h2>บทนำ</h2><div class='rule'></div><p>หนังสือเล่มนี้รวบรวมสาขาวิชาที่มีอยู่จริงในระดับสากลของ <strong>ฟิสิกส์คลาสสิก</strong> จำนวน 70 สาขา แต่ละบทเขียนในรูปแบบเดียวกัน เพื่อให้คุณสามารถอ่านต่อเนื่องหรือเลือกอ่านเฉพาะหัวข้อที่สนใจได้</p><div class='foot'>ZYPHERE KNOWLEDGE LIBRARY · หน้า 1</div></article>
+<article class="page chapter"><div class="chapno">บทที่ 1</div><h2>อะคูสติก</h2><div class="en-name">Acoustics</div><div class="rule"></div><h3>ความหมายโดยย่อ</h3>
+<p><strong>Acoustics</strong> เป็นหนึ่งในสาขาย่อยของ ฟิสิกส์คลาสสิก ที่นักวิชาการทั่วโลกศึกษาและสอนในระดับอุดมศึกษา หัวข้อนี้ช่วยให้เข้าใจมุมมองเฉพาะทางและเชื่อมโยงกับสาขาอื่นได้</p>
 <h3>ประเด็นสำคัญ</h3>
+<ul><li>momentum: แนวคิดพื้นฐานที่ควรเข้าใจก่อนศึกษารายละเอียด</li><li>energy: แนวทางที่ใช้จริงในการทำงานและการวิจัย</li><li>entropy: จุดที่มักสับสน และวิธีตรวจสอบความเข้าใจ</li></ul>
 <h3>ตัวอย่างการนำไปใช้</h3>
+<p>ในงานจริง ให้เริ่มจากการระบุคำถามที่เกี่ยวข้องกับ Acoustics เลือกแนวคิดที่เหมาะสม แล้วทดลองใช้กับกรณีเล็ก ๆ ก่อนขยายผล การลงมือทำจะทำให้เห็นว่าส่วนใดใช้ได้ผลและส่วนใดต้องปรับ</p>
 <h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>อธิบาย Acoustics ด้วยภาษาของตนเองสั้น ๆ</li><li>ยกตัวอย่างงานที่ใช้ความรู้นี้ได้จริง</li><li>ข้อควรระวังหลักของหัวข้อนี้คืออะไร</li></ol>
 <h3>สรุป</h3>
-<p>Acoustics เป็นหนึ่งในสาขาย่อยของ ฟิสิกส์คลาสสิก ที่นักวิชาการทั่วโลกศึกษาและสอนในระดับอุดมศึกษา หัวข้อนี้ช่วยให้เข้าใจมุมมองเฉพาะทางและเชื่อมโยงกับสาขาอื่นได้ - momentum: แนวคิดพื้นฐานที่ควรเข้าใจก่อนศึกษารายละเอียด - energy: แนวทางที่ใช้จริงในการทำงานและการวิจัย - entropy: จุดที่มักสับสน และวิธีตรวจสอบความเข้าใจ ในงานจริง ให้เริ่มจากการระบุคำถามที่เกี่ยวข้องกับ Acoustics เลือกแนวคิดที่เหมาะสม แล้วทดลองใช้กับกรณีเล็ก ๆ ก่อนขยายผล การลงมือทำจะทำให้เห็นว่าส่วนใดใช้ได้ผลและส่วนใดต้องปรับ 1. อธิบาย Acoustics ด้วยภาษาของตนเองสั้น ๆ 2. ยกตัวอย่างงานที่ใช้ความรู้นี้ได้จริง 3. ข้อควรระวังหลักของหัวข้อนี้คืออะไร บทนี้แนะนำ Acoustics ไว้แล้ว นำความเข้าใจนี้ไปเชื่อมกับบทอื่นในเล่มได้เลย ---</p>
-<h2>บทที่ 2 Quantum acoustics</h2>
-<p style="color:#5d7380">นี่คือส่วนต้นของหนังสือเท่านั้น — ฉบับเต็มมีทั้งหมด 46 หัวข้อ</p>
+<p>บทนี้แนะนำ Acoustics ไว้แล้ว นำความเข้าใจนี้ไปเชื่อมกับบทอื่นในเล่มได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ฟิสิกส์คลาสสิก · หน้า 1</div></article>
+<article class="page chapter"><div class="chapno">บทที่ 2</div><h2>อะคูสติกควอนตัม</h2><div class="en-name">Quantum acoustics</div><div class="rule"></div><h3>ความหมายโดยย่อ</h3>
+<p><strong>Quantum acoustics</strong> เป็นหนึ่งในสาขาย่อยของ ฟิสิกส์คลาสสิก ที่นักวิชาการทั่วโลกศึกษาและสอนในระดับอุดมศึกษา หัวข้อนี้ช่วยให้เข้าใจมุมมองเฉพาะทางและเชื่อมโยงกับสาขาอื่นได้</p>
+<h3>ประเด็นสำคัญ</h3>
+<ul><li>energy: แนวคิดพื้นฐานที่ควรเข้าใจก่อนศึกษารายละเอียด</li><li>entropy: แนวทางที่ใช้จริงในการทำงานและการวิจัย</li><li>heat engine: จุดที่มักสับสน และวิธีตรวจสอบความเข้าใจ</li></ul>
+<h3>ตัวอย่างการนำไปใช้</h3>
+<p>ในงานจริง ให้เริ่มจากการระบุคำถามที่เกี่ยวข้องกับ Quantum acoustics เลือกแนวคิดที่เหมาะสม แล้วทดลองใช้กับกรณีเล็ก ๆ ก่อนขยายผล การลงมือทำจะทำให้เห็นว่าส่วนใดใช้ได้ผลและส่วนใดต้องปรับ</p>
+<h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>อธิบาย Quantum acoustics ด้วยภาษาของตนเองสั้น ๆ</li><li>ยกตัวอย่างงานที่ใช้ความรู้นี้ได้จริง</li><li>ข้อควรระวังหลักของหัวข้อนี้คืออะไร</li></ol>
+<h3>สรุป</h3>
+<p>บทนี้แนะนำ Quantum acoustics ไว้แล้ว นำความเข้าใจนี้ไปเชื่อมกับบทอื่นในเล่มได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ฟิสิกส์คลาสสิก · หน้า 2</div></article>
+<article class="page chapter"><div class="chapno">บทที่ 3</div><h2>ฟิสิกส์การเกษตร</h2><div class="en-name">Agrophysics</div><div class="rule"></div><h3>ความหมายโดยย่อ</h3>
+<p><strong>Agrophysics</strong> เป็นหนึ่งในสาขาย่อยของ ฟิสิกส์คลาสสิก ที่นักวิชาการทั่วโลกศึกษาและสอนในระดับอุดมศึกษา หัวข้อนี้ช่วยให้เข้าใจมุมมองเฉพาะทางและเชื่อมโยงกับสาขาอื่นได้</p>
+<h3>ประเด็นสำคัญ</h3>
+<ul><li>entropy: แนวคิดพื้นฐานที่ควรเข้าใจก่อนศึกษารายละเอียด</li><li>heat engine: แนวทางที่ใช้จริงในการทำงานและการวิจัย</li><li>laws of thermodynamics: จุดที่มักสับสน และวิธีตรวจสอบความเข้าใจ</li></ul>
+<h3>ตัวอย่างการนำไปใช้</h3>
+<p>ในงานจริง ให้เริ่มจากการระบุคำถามที่เกี่ยวข้องกับ Agrophysics เลือกแนวคิดที่เหมาะสม แล้วทดลองใช้กับกรณีเล็ก ๆ ก่อนขยายผล การลงมือทำจะทำให้เห็นว่าส่วนใดใช้ได้ผลและส่วนใดต้องปรับ</p>
+<h3>แบบฝึกหัดท้ายบท</h3>
+<ol><li>อธิบาย Agrophysics ด้วยภาษาของตนเองสั้น ๆ</li><li>ยกตัวอย่างงานที่ใช้ความรู้นี้ได้จริง</li><li>ข้อควรระวังหลักของหัวข้อนี้คืออะไร</li></ol>
+<h3>สรุป</h3>
+<p>บทนี้แนะนำ Agrophysics ไว้แล้ว นำความเข้าใจนี้ไปเชื่อมกับบทอื่นในเล่มได้เลย</p><div class="foot">ZYPHERE KNOWLEDGE LIBRARY · ฟิสิกส์คลาสสิก · หน้า 3</div></article>
+<p class="note"><p class='note'>ตัวอย่างฟรี: สารบัญภาษาไทย + บทนำ + 3 บทแรก จากต้นฉับจริง — <a href='STORE.html'>ดูฉบับเต็มในหน้าร้าน</a></p></p>
 </body></html>
