@@ -58,7 +58,8 @@ def e02_crop(im, w=2160, h=3840):
 
 def e03_dehaze(im):
     """v2: multi-scale local tone recovery (in-house, Pillow only)."""
-    blur = im.filter(ImageFilter.GaussianBlur(26))
+    blur = im.filter(ImageFilter.GaussianBlur(26# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+))
     detail = ImageEnhance.Contrast(im).enhance(1.10)
     return Image.blend(im, Image.blend(detail, blur, 0.18), 0.62)
 

@@ -7,11 +7,11 @@
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
 ## ตา: contrast/balance ผ่าน — ผ่าน
-- {'contrast_ratio': 5.2, 'balance': 0.952, 'hue_buckets': 12, 'ok': True}
+- {'contrast_ratio': 4.6, 'balance': 0.963, 'hue_buckets': 13, 'ok': True}
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
 ## หู: เสียงมีจริง ไม่เงียบ — ผ่าน
-- {'ok': True, 'peak': 22995, 'rms': 5180.1, 'silence': 0.008, 'streams': ['Stream #0:0: Audio: mp3 (mp3float), 24000 Hz, mono, fltp, 160 kb/s, start 0.046042']}
+- {'ok': True, 'peak': 22804, 'rms': 7157.5, 'silence': 0.014, 'streams': ['Stream #0:0: Audio: mp3 (mp3float), 22050 Hz, mono, fltp, 160 kb/s, start 0.050113']}
 - ผู้รับผิดชอบ: วิศวกรเสียง
 
 ## สมอง: คำกล่าวตรงกับไฟล์จริง — ผ่าน

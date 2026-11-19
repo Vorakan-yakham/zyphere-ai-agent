@@ -1,8 +1,8 @@
 # Outreach — วิ่งออกไปหาคนภายนอก
 
-บทความ: C:\Users\vornl\Documents\zyphere\governance\OUTREACH_ARTICLE.md
+บทความ: /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/governance/OUTREACH_ARTICLE.md
 
-เผยแพร่จริง: {"ok": true, "url": "https://github.com/Vorakan-yakham/zyphere-ai-agent/issues/1", "status": 201}
+เผยแพร่จริง: {"ok": false, "error": "no token"}
 
 ## หลักฐานที่ใช้ (จริง)
 

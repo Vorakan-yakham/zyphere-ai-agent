@@ -15,7 +15,7 @@
 - Privacy Preserving Image Registration
 - AR-RAG: Autoregressive Retrieval Augmentation for Image Generation
 - Gemini 4 Neon
-- AI Will Not Make You Rich (2025)
+- Unauthenticated remote code execution in Nginx
 
 ## คำสั่งพัฒนาที่ระบบตั้งขึ้นเอง
 
