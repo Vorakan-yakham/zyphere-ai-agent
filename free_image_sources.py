@@ -169,14 +169,19 @@ def best(query, want_photo=True):
 
 
 def run(apply=True):
-    """Pulse entry point: prove the free pool is reachable with a real search."""
-    im, cr = best("cinematic nature landscape light", want_photo=True)
-    return {"ok": True, "reachable": im is not None,
-            "size": None if im is None else list(im.size),
-            "credit": cr, "sources": [n for n, _ in PROVIDERS],
-            "note": "free no-key legal image sources aggregated; "
-                    "transient image miss is not a failure"}
+    """Pulse entry point: report the configured free pool WITHOUT network
+    calls, so a 1-minute autonomy pulse never blocks on external APIs.
 
+    Actual image searches still use search()/best() through poster_studio.
+    """
+    cached = 0
+    for d in (CACHE, os.path.join(ROOT, "media", "cover_photos"),
+              os.path.join(ROOT, "media", "cinema_photos")):
+        if os.path.isdir(d):
+            cached += sum(1 for f in os.listdir(d) if f.lower().endswith((".jpg", ".png")))
+    return {"ok": True, "sources": [n for n, _ in PROVIDERS],
+            "cached_images": cached,
+            "note": "no network in pulse — search()/best() on demand"}
 
 if __name__ == "__main__":
     im, cr = best("misty forest sunlight", want_photo=True)

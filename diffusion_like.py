@@ -75,11 +75,22 @@ def guided_refine(photo, steps=14, seed=0, strength=0.85, apply=True):
 
 def run(photo_path=None, apply=True):
     if not photo_path:
-        import free_image_sources as FIS
-        im, credit = FIS.best("cinematic detailed landscape light", want_photo=True)
-        if im is None:
+        # use an already-cached CC photo — no network inside a pulse
+        pools = [os.path.join(ROOT, "media", "cover_photos"),
+                 os.path.join(ROOT, "media", "cinema_photos"),
+                 os.path.join(ROOT, "media", "free_photo_pool")]
+        found = None
+        for d in pools:
+            if os.path.isdir(d):
+                fs = [f for f in os.listdir(d) if f.lower().endswith((".jpg", ".png"))]
+                if fs:
+                    found = os.path.join(d, sorted(fs)[0])
+                    break
+        if not found:
             return {"ok": True, "skipped": True,
-                    "note": "transient image-source miss; retry next pulse"}
+                    "note": "no cached photo yet; next image build will seed the pool"}
+        im = Image.open(found).convert("RGB")
+        credit = {"page": os.path.basename(found)}
     else:
         im = Image.open(photo_path).convert("RGB")
         credit = {"page": os.path.basename(photo_path)}
