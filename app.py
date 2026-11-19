@@ -4135,7 +4135,9 @@ class Handler(SimpleHTTPRequestHandler):
         u = urllib.parse.urlparse(self.path)
         # Dashboard pages — served from the repo so they work on Render too.
         if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
-                      "/GROWTH.html", "/ZY_TEMPLATE.html"):
+                      "/GROWTH.html", "/ZY_TEMPLATE.html",
+                      "/PROGRESS.html", "/ACCOUNT.html", "/STUDIO.html",
+                      "/CATEGORIES.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()

@@ -1,0 +1,37 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Zyphere Studio — สร้างเพลง</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#eef6f8;color:#12222b;font-family:'Noto Sans Thai',sans-serif}
+header{background:linear-gradient(120deg,#08202e,#0e7490);color:#fff;padding:46px 22px;text-align:center}
+header h1{margin:0;font-size:34px}header p{opacity:.85}
+main{max-width:760px;margin:-20px auto 50px;padding:0 20px;position:relative;z-index:2}
+.card{background:#fff;border:1px solid #dcecf1;border-radius:18px;padding:24px;box-shadow:0 8px 26px rgba(8,32,46,.08)}
+label{display:block;font-size:13px;font-weight:700;color:#0e7490;margin:14px 0 5px}
+select,input{width:100%;padding:10px;border:1px solid #dcecf1;border-radius:10px;font:400 14px 'Noto Sans Thai'}
+button{border:0;background:#0e7490;color:#fff;border-radius:999px;padding:12px 24px;font:700 14px 'Noto Sans Thai';cursor:pointer;margin-top:18px}
+button:hover{background:#075f75}#out{margin-top:18px}a{color:#0e7490}</style></head><body>
+<header><h1>🎵 Zyphere Studio</h1><p>สร้างเพลงจริงด้วยเครื่องมือของระบบ — ไม่ใช่แค่ข้อความในแชท</p></header>
+<main><div class="card"><label>แนวเพลง</label>
+<select id="style"><option value="calm">Calm — สงบ</option><option value="energy">Energy — มีพลัง</option><option value="focus">Focus — โฟกัส</option><option value="sleep">Sleep — นอนหลับ</option></select>
+<label>จังหวะ (BPM)</label><input id="bpm" type="number" value="90" min="50" max="180">
+<label>จำนวนห้อง (bars)</label><input id="bars" type="number" value="4" min="2" max="16">
+<button onclick="make()">สร้างเพลง</button>
+<div id="out"></div></div>
+<a href="STORE.html">← กลับหน้าร้าน</a></main>
+<script>
+const BK='https://zyphere-ai-agent.onrender.com';
+async function make(){
+ const o=document.getElementById('out');o.innerHTML='กำลังสร้าง…';
+ try{
+  const r=await fetch(BK+'/api/music/create',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({style:document.getElementById('style').value,
+    bpm:parseInt(document.getElementById('bpm').value)||90,
+    bars:parseInt(document.getElementById('bars').value)||4})});
+  const j=await r.json();
+  if(j.ok){
+   const u=j.url||j.file||(j.artefact&&j.artefact.url);
+   o.innerHTML='<h3>สร้างแล้ว ✅</h3>'+(u?'<audio controls src="'+u+'"></audio><br><a href="'+u+'" download>⬇ ดาวน์โหลด</a>':'<pre>'+JSON.stringify(j).slice(0,400)+'</pre>');
+  }else o.innerHTML='ไม่ได้: '+(j.error||'unknown');
+ }catch(e){o.innerHTML='เชื่อมต่อไม่ได้: '+e.message}
+}
+</script></body></html>

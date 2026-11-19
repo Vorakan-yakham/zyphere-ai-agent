@@ -1,0 +1,47 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Zyphere — บัญชีของฉัน</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#eef6f8;color:#12222b;font-family:'Noto Sans Thai',sans-serif}
+header{background:#08202e;color:#fff;padding:46px 22px;text-align:center}header h1{margin:0 0 6px;font-size:34px}
+main{max-width:900px;margin:-20px auto 50px;padding:0 20px;position:relative;z-index:2}
+.card{background:#fff;border:1px solid #dcecf1;border-radius:18px;padding:22px;box-shadow:0 8px 26px rgba(8,32,46,.08);margin-bottom:16px}
+.card h2{margin:0 0 12px;color:#0e7490;font-size:19px}
+.kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef4f6;font-size:14px}
+.kv b{color:#0e7490}.order{border:1px solid #dcecf1;border-radius:12px;padding:12px;margin:8px 0;font-size:13px}
+button{border:0;background:#0e7490;color:#fff;border-radius:999px;padding:8px 16px;font:600 12px 'Noto Sans Thai';cursor:pointer;margin:6px 4px 0 0}
+button:hover{background:#075f75}a{color:#0e7490}</style></head><body>
+<header><h1>บัญชีของฉัน</h1><p>ข้อมูลจริงจากระบบ — สินค้าที่ซื้อเก็บถาวรเข้าดูได้เสมอ</p></header>
+<main><div class="card"><h2>โปรไฟล์</h2><div id="profile">กำลังโหลด…</div></div>
+<div class="card"><h2>สินค้าของฉัน</h2><div id="orders">กำลังโหลด…</div></div>
+<a href="STORE.html">← กลับหน้าร้าน</a></main>
+<script>
+const BK='https://zyphere-ai-agent.onrender.com';
+function tk(){try{return localStorage.getItem('zy_token')||''}catch(e){return ''}}
+function paid(o){return ['paid','approved'].indexOf(String(o.status||'').toLowerCase())>=0}
+async function load(){
+ if(!tk()){document.getElementById('profile').innerHTML='<p>ยังไม่ได้ล็อกอิน — <a href="./">เข้าสู่ระบบ →</a></p>';
+  document.getElementById('orders').innerHTML='<p>เข้าสู่ระบบเพื่อดูสินค้าที่ซื้อ</p>';return}
+ try{
+  const m=await(await fetch(BK+'/api/store/me?token='+encodeURIComponent(tk()))).json();
+  const me=m.me||{};
+  document.getElementById('profile').innerHTML=
+   '<div class="kv"><span>อีเมล</span><b>'+(me.email||'-')+'</b></div>'+
+   '<div class="kv"><span>สิทธิ์</span><b>'+(me.is_owner?'Admin / เจ้าของ':'User')+'</b></div>'+
+   '<div class="kv"><span>สถานะ</span><b>ล็อกอินแล้ว</b></div>'+
+   '<button onclick="location.href=\'PROGRESS.html\'">ดูความคืบหน้าแผนก</button>';
+  const d=await(await fetch(BK+'/api/store/customer?token='+encodeURIComponent(tk()))).json();
+  const os=d.history||[];
+  document.getElementById('orders').innerHTML=
+   '<p>คำสั่งซื้อ '+d.orders+' รายการ · ชำระแล้ว '+d.paid+' รายการ</p>'+
+   (os.length?os.map(o=>'<div class="order"><b>'+(o.book||o.title||o.product||'หนังสือ')+'</b> · ฿'+(o.amount||'-')+
+     ' · '+(o.status||'-')+'<br><small>'+o.id+'</small>'+
+     (paid(o)?'<div><button onclick="read(\''+o.id+'\')">อ่านออนไลน์</button>'+
+       '<button onclick="dl(\''+o.id+'\')">ดาวน์โหลด</button></div>':
+       '<p style="color:#5d7380">รอยืนยันจ่าย — ข้อมูลของคุณถูกเก็บถาวร</p>')+'</div>').join(''):
+     '<p>ยังไม่มีคำสั่งซื้อ</p>');
+ }catch(e){document.getElementById('profile').innerHTML='โหลดไม่ได้: '+e.message}
+}
+function read(id){window.open(BK+'/api/store/read?order_id='+encodeURIComponent(id)+'&token='+encodeURIComponent(tk()),'_blank')}
+async function dl(id){const j=await(await fetch(BK+'/api/pay/download?order_id='+encodeURIComponent(id)+'&token='+encodeURIComponent(tk()))).json();if(j.ok&&j.url)window.open(j.url,'_blank');else alert(j.error)}
+load();
+</script></body></html>
