@@ -1,14 +1,14 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T02:51:45.437372Z
-รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)
+เวลา: 2026-11-19T02:57:40.468610Z
+รันโดย: GitHub Actions autonomy.yml (cron ทุก 5 นาที × 5 pulse ย่อย ≈ 1 นาที)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
 |---|---|
 | selfnudge | {"ok": true, "summary": {}} |
 | league | {"ok": true, "summary": {}} |
-| covers | {"ok": true, "summary": {}} |
-| store_audit | {"ok": true, "summary": {}} |
+| covers | {"ok": true, "summary": {"covers": 46}} |
+| store_audit | {"ok": true, "summary": {"books": 46}} |
 | roadmap | {"ok": true, "summary": {}} |
 | wish | {"ok": true, "summary": {"round": 1}} |
 | revenue_auto | {"ok": true, "summary": {}} |
@@ -21,12 +21,12 @@
 | solver | {"ok": true, "summary": {}} |
 | devices | {"ok": false, "summary": {}} |
 | knowledge | {"ok": true, "summary": {}} |
-| disciplines | {"ok": true, "summary": {"count": 6}} |
+| disciplines | {"ok": true, "summary": {"count": 0}} |
 | brain | {"ok": true, "summary": {"round": 1}} |
 | imagination | {"ok": true, "summary": {}} |
 | media | {"ok": true, "summary": {"status": "both"}} |
 | nudge | {"ok": true, "summary": {"idle": []}} |
-| commerce | {"ok": true, "summary": {}} |
+| commerce | {"ok": true, "summary": {"priced": 46}} |
 | qa | {"ok": true, "summary": {"keep": 18, "fix": 0}} |
 | selfnudge_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -83,5 +83,6 @@
 | ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["offline", "compete", "sales", "book", "design"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+ |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป

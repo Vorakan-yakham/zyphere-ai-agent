@@ -1,37 +1,37 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 26 หัวข้อ / 75 ข้อเท็จจริง
-หลัง: 51 หัวข้อ / 173 ข้อเท็จจริง
+ก่อน: 0 หัวข้อ / 0 ข้อเท็จจริง
+หลัง: 51 หัวข้อ / 155 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| Maxwell equations | Wikidata, Wikipedia, arXiv | 9 |
-| fields | Wikipedia, arXiv | 5 |
-| waves | arXiv | 3 |
-| refraction | OpenAlex, arXiv | 6 |
-| interference | arXiv | 3 |
-| diffraction | arXiv | 3 |
-| telescope | arXiv | 3 |
-| spectroscopy | OpenAlex, arXiv | 6 |
-| photometry | arXiv | 3 |
-| stellar lifecycle | arXiv | 3 |
-| nuclear fusion | OpenAlex, arXiv | 6 |
-| supernova | arXiv | 3 |
-| Big Bang | arXiv | 3 |
-| dark matter | arXiv | 3 |
-| expansion | arXiv | 3 |
-| planets | arXiv | 3 |
-| orbits | OpenAlex, arXiv | 6 |
-| comets | arXiv | 3 |
-| group | arXiv | 3 |
-| ring | arXiv | 3 |
-| field | arXiv | 3 |
-| limit | arXiv | 3 |
-| continuity | arXiv | 3 |
-| series | OpenAlex, arXiv | 6 |
-| manifold | arXiv | 3 |
+| พยัญชนะไทย | Wikidata, Wikipedia | 2 |
+| สระไทย | Wikipedia | 1 |
+| วรรณยุกต์ไทย | OpenAlex | 1 |
+| การประสมคำ | OpenAlex | 3 |
+| โครงสร้างประโยค |  | 0 |
+| ย่อหน้า | OpenAlex | 3 |
+| บทความ |  | 0 |
+| wave function | arXiv | 3 |
+| operators | arXiv | 3 |
+| superposition | arXiv | 3 |
+| Bell state | arXiv | 3 |
+| nonlocality | arXiv | 3 |
+| teleportation | arXiv | 3 |
+| qubit | OpenAlex, arXiv | 6 |
+| quantum gate | arXiv | 3 |
+| decoherence | arXiv | 3 |
+| field quantization | OpenAlex, arXiv | 6 |
+| Feynman diagram | arXiv | 3 |
+| renormalization | arXiv | 3 |
+| motion laws | OpenAlex, arXiv | 6 |
+| momentum | arXiv | 3 |
+| energy | arXiv | 3 |
+| entropy | arXiv | 3 |
+| heat engine | OpenAlex, arXiv | 6 |
+| laws of thermodynamics | OpenAlex, arXiv | 6 |
 
-ความรู้ในสมอง Zyphere: 33 รายการ · รอบเติบโตที่ 1
+ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
 
 - QA ยังมีจุดไม่ผ่าน → ran
 

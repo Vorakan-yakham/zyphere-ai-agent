@@ -11,7 +11,6 @@
 | 5 | 353.78 | 11.3% |
 | 6 | 353.78 | 11.3% |
 | 7 | 353.78 | 11.3% |
-| 8 | 353.78 | 11.3% |
 
 ## ทีมเรียนรู้เพิ่มเติม
 
@@ -23,4 +22,4 @@ no AI keys configured
 
 ## รายงาน self-coder
 
-{"ok": "False", "file": "photo_enhancement.py", "reason": "push failed, reverted: y.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <runner@runnervmccnms.xtsnar", "t": "1795056671", "sources": "['local-brain', 'own-brain']", "focus": "photo_enhancement.py"}
+{"ok": "False", "file": "photo_enhancement.py", "reason": "push failed, reverted: y.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <runner@runnervmccnms.paodp3", "t": "1795057032", "sources": "['local-brain', 'own-brain']", "focus": "photo_enhancement.py"}
