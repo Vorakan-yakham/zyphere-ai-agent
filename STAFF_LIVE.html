@@ -26,7 +26,7 @@ main{max-width:1400px;margin:auto;padding:20px}
 .err{background:#3a1414;color:#ffb4b4;padding:20px;border-radius:12px}
 a{color:var(--acc)}</style></head><body>
 <header><h1>🛰️ ZYPHERE · ADMIN — STAFF LIVE</h1>
-<div><span class="live" id="liveBadge">LIVE</span> <span id="clock" style="color:var(--mut);font-size:12px"></span></div></header>
+<div><span class="live" id="liveBadge">LIVE</span> <span id="who" style="color:var(--acc);font-size:12px;margin-right:10px"></span><span id="clock" style="color:var(--mut);font-size:12px"></span></div></header>
 <main>
 <div id="gate" class="err" style="display:none">เฉพาะ Admin — <a href="./">เข้าสู่ระบบ</a> ก่อนครับ</div>
 <div id="app">
@@ -41,6 +41,7 @@ async function load(){
  try{
   const me=await(await fetch(BK+'/api/store/me?token='+encodeURIComponent(TK()))).json();
   if(!me.ok||!me.me.is_owner){document.getElementById('app').style.display='none';document.getElementById('gate').style.display='block';return}
+  document.getElementById('who').textContent='บัญชี: '+(me.me.email||'-');
   const r=await fetch(BK+'/api/admin/staff/live?token='+encodeURIComponent(TK()));const d=await r.json();
   if(!d.ok)throw new Error(d.error||'forbidden');
   const K=d.kpis;
