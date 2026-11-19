@@ -8,7 +8,7 @@
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.07)
 - เครื่องมือที่เลือก: **storefront_rebuild** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["storefront_rebuild", 0.584], ["own_brain", 0.496], ["poster_studio", 0.402], ["department_scouts", 0.362], ["qa_supreme", 0.256]]
+- การให้คะแนน: [["storefront_rebuild", 0.553], ["cover_designer", 0.54], ["revenue_autopilot", 0.516], ["poster_studio", 0.507], ["autonomous_scout", 0.379]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**

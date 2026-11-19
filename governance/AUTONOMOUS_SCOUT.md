@@ -4,10 +4,10 @@
 
 ## สิ่งที่โลกำลังทำ (ตัวอย่างจริง)
 
-- Graphic communication
 - Swiss Style (design)
 - Graphic design
-- Peter Saville (graphic designer)
+- Graphic communication
+- Poster
 - Typography
 - Visual Design Principles: An Empirical Study of Design Lore
 - Visual Design Principles for Usable Interfaces
