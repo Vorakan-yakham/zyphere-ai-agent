@@ -82,9 +82,10 @@ def build(rows):
     for i, r in enumerate(rows[:46]):
         title = str(r.get("title") or ("เล่มที่ %d" % (i+1)))
         price = int(r.get("price") or (120 + (i % 6)*20))
-        sample = ("https://raw.githubusercontent.com/Vorakan-yakham/"
-                  "zyphere-scholar-product-pack/main/samples/" +
-                  title + ".html")
+        # GitHub Pages renders these as real HTML (raw only serves text/plain).
+        # Stable id from title so publisher + storefront always agree.
+        sample = ("samples/s_" +
+                  hashlib.md5(title.encode("utf-8")).hexdigest()[:10] + ".html")
         cards.append(
           '<article class="card" data-cat="%d"><div class="cover">%s'
           '<span class="no">%02d</span></div>'
