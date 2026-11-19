@@ -20,7 +20,7 @@
 | catalogue has exactly 46 unique books | PASS | rows=46 unique=46 |
 | progress dashboard has 12 departments | PASS | PROGRESS.html cards |
 | all 46 sample files exist | PASS | samples/s_*.html count |
-| prices come from measured content (<=50) | PASS | price set [20, 30, 40, 50] |
+| prices come from measured content (<=50) | PASS | price set [20] |
 | live /api/store/me gate | PASS | 200 {"ok": false, "error": "not logged in"} |
 | live /api/store/my-orders 401 | PASS | 401 |
 | live /api/auth/logout reachable | PASS | 200 |

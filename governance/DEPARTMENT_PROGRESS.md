@@ -8,13 +8,13 @@
 | วิศวกรAPI | endpoint จริงใน backend | 318 | 0 | IDLE |  Ordnungen/me/my-orders/order/declare/logout |
 | วิศวกรภาพ | โปสเตอร์/ปกจริง (ไฟล์) | 52 | +50 | UP | ภาพถ่าย CC + retouch + typography (ไม่มี diffusion) |
 | วิศวกรสื่อ | ไฟล์วิดีโอ/ภาพยนตร์ | 87 | +28 | UP | 4K จริง |
-| วิศวกรเพลง | ไฟล์เพลง | 56 | +28 | UP | text-to-song |
+| วิศวกรเพลง | ไฟล์เพลง | 54 | +26 | UP | text-to-song |
 | วิศวกรเสียง | ไฟล์เอฟเฟกต์เสียง | 0 | 0 | IDLE | nature/human/animal/machine/SFX |
 | วิศวกรหนังสือ | ตัวอย่างหนังสือจริง (ไฟล์) | 46 | 0 | IDLE | สารบัญไทย + โครงสร้างหนังสือ 7 หน้า |
 | วิศวกรร้านค้า | การ์ดสินค้าในร้าน | 46 | 0 | IDLE | ปุ่มซื้อ/ตัวอย่าง/แถบล็อกอิน/ราคาตามเนื้อหา |
-| วิศวกรฐานข้อมูล | ไฟล์ state จริง | 56 | +22 | UP | local file + Upstash KV |
+| วิศวกรฐานข้อมูล | ไฟล์ state จริง | 57 | +22 | UP | local file + Upstash KV |
 | วิศวกรสมอง | ไฟล์ความรู้/สมอง | 8 | +3 | UP | local-first learning |
-| วิศวกรQA | ด่านตรวจที่ผ่าน | 22 | +22 | UP | fail-closed + IT integration ตรวจครบวงจร |
+| วิศวกรQA | ด่านตรวจที่ผ่าน | 23 | +21 | UP | fail-closed + IT integration ตรวจครบวงจร |
 | วิศวกรอัตโนมัติ | โมดูลที่รันทุก pulse | 39 | 0 | IDLE | Render self-dispatch 60 วิ + 5 pulse ย่อย |
 
 วัดจากไฟล์/HTTP จริง — ไม่ใช้รายงาน ok:true เป็นความก้าวหน้า

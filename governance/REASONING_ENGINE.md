@@ -3,12 +3,12 @@
 รอบ: 6
 
 ## สถานะก่อนคิด
-{"qa": -1, "covers": 46, "prices": 4, "visual": 0, "scouts": 0, "brain": 1, "revenue": 6, "quality": 17}
+{"qa": -1, "covers": 46, "prices": 4, "visual": 0, "scouts": 0, "brain": 1, "revenue": 5, "quality": 17}
 
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.07)
-- เครื่องมือที่เลือก: **wish_cycle** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["wish_cycle", 0.548], ["future_roadmap", 0.472], ["qa_supreme", 0.437], ["own_brain", 0.327], ["cross_ask", 0.27]]
+- เครื่องมือที่เลือก: **revenue_autopilot** (จากคะแนนความเชื่อ + exploration)
+- การให้คะแนน: [["revenue_autopilot", 0.599], ["storefront_rebuild", 0.46], ["own_brain", 0.38], ["cover_designer", 0.378], ["autonomous_scout", 0.333]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**

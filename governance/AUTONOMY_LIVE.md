@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T11:17:18.261623Z
+เวลา: 2026-11-19T11:41:29.900999Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -12,7 +12,7 @@
 | selfnudge | {"ok": true, "summary": {}} |
 | league | {"ok": true, "summary": {}} |
 | freepool | {"ok": true, "summary": {"sources": ["openverse", "wikimedia", "nasa", "met"]}} |
-| difflab | {"ok": false, "summary": {}} |
+| difflab | {"ok": true, "summary": {}} |
 | covers | {"ok": true, "summary": {"covers": 46}} |
 | store_audit | {"ok": true, "summary": {"books": 46}} |
 | roadmap | {"ok": true, "summary": {}} |
@@ -50,7 +50,7 @@
 | selfnudge_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | freepool_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| difflab_pulse1 | {"ok": false, "error": "No module named 'numpy'"} |
+| difflab_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | covers_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -60,7 +60,7 @@
 | samples_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | typeset_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse1 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse1 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse1 | {"ok": false, "fix": null, "keep": null} |
 | editor_pulse1 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse1 | {"ok": true, "fix": null, "keep": null} |
 | value_pulse1 | {"ok": true, "fix": null, "keep": null} |
@@ -76,7 +76,7 @@
 | selfnudge_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | freepool_pulse2 | {"ok": true, "fix": null, "keep": null} |
-| difflab_pulse2 | {"ok": false, "error": "No module named 'numpy'"} |
+| difflab_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | covers_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse2 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse2 | {"ok": true, "fix": null, "keep": null} |
@@ -102,7 +102,7 @@
 | selfnudge_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | freepool_pulse3 | {"ok": true, "fix": null, "keep": null} |
-| difflab_pulse3 | {"ok": false, "error": "No module named 'numpy'"} |
+| difflab_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | covers_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse3 | {"ok": true, "fix": null, "keep": null} |
@@ -122,13 +122,13 @@
 | design_pulse3 | {"ok": false, "fix": null, "keep": null} |
 | it_review_pulse3 | {"ok": true, "fix": null, "keep": null} |
 | next_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| reasoning_pulse4 | {"ok": true, "fix": null, "keep": null} |
+| reasoning_pulse4 | {"ok": false, "fix": null, "keep": null} |
 | pagefix_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | outreach_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | selfnudge_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | freepool_pulse4 | {"ok": true, "fix": null, "keep": null} |
-| difflab_pulse4 | {"ok": false, "error": "No module named 'numpy'"} |
+| difflab_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | covers_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse4 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse4 | {"ok": true, "fix": null, "keep": null} |
@@ -154,7 +154,7 @@
 | selfnudge_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | league_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | freepool_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| difflab_pulse5 | {"ok": false, "error": "No module named 'numpy'"} |
+| difflab_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | covers_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | store_audit_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | roadmap_pulse5 | {"ok": true, "fix": null, "keep": null} |
@@ -164,15 +164,15 @@
 | samples_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | typeset_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | ebook_complete_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| ebook_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | editor_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | value_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | uiaudit_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| storetest_pulse5 | {"ok": true, "fix": null, "keep": null} |
+| storetest_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | progress_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | design_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | it_review_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 46, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["sound", "qa", "offline", "compete", "sales"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 20, "price_max": 50, "unique_prices": 4}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนชิ้ |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
