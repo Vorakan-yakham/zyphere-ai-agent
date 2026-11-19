@@ -7,8 +7,8 @@
 - Swiss Style (design)
 - Graphic communication
 - Graphic design
-- Typography
 - Peter Saville (graphic designer)
+- Poster
 - Visual Design Principles: An Empirical Study of Design Lore
 - Visual Design Principles for Usable Interfaces
 - The influence of the instruction of visual design principles on improving pre-service teachers’ visual literacy
