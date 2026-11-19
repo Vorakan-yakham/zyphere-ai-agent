@@ -82,69 +82,85 @@ def build(rows):
     for i, r in enumerate(rows[:46]):
         title = str(r.get("title") or ("เล่มที่ %d" % (i+1)))
         price = int(r.get("price") or (120 + (i % 6)*20))
+        sample = ("https://raw.githubusercontent.com/Vorakan-yakham/"
+                  "zyphere-scholar-product-pack/main/samples/" +
+                  title + ".html")
         cards.append(
-            '<article class="card"><div class="cover">%s</div>'
-            '<div class="body"><div class="tag">ZYPHERE · MUST-READ</div>'
-            '<h3>%s</h3><p>เนื้อหาจากต้นฉบับจริง · ปรับปรุงใหม่โดยทีมวิศวกร</p>'
-            '<div class="row"><b>฿%d</b><button onclick="zyBuy(this.closest(\".card\").querySelector(\"h3\").textContent,%d)">ซื้อ</button></div></div></article>'
-            % (tiny_cover(title), title, price, price))
+          '<article class="card" data-cat="%d"><div class="cover">%s'
+          '<span class="no">%02d</span></div>'
+          '<div class="body"><div class="tag">ZYPHERE ORIGINAL</div>'
+          '<h3>%s</h3><p>เนื้อหาจากต้นฉบับจริง · ปรับปรุงโดยทีมวิศวกร</p>'
+          '<div class="row"><b>฿%d</b><button onclick="zyBuy(this.closest(\'.card\').querySelector(\'h3\').textContent,%d)">ซื้อเลย</button></div>'
+          '<a class="sample" href="%s" target="_blank">อ่านตัวอย่างฟรี →</a>'
+          '</div></article>' % (i % 6, tiny_cover(title), i+1, title, price, price, sample))
     return """<!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zyphere Store — หนังสือความรู้ 46 เล่ม</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Zyphere Store — 46 เล่ม จัดหมวดชัด อ่านตัวอย่างได้</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:%s;--ink:%s;--acc:%s;--dark:%s;--card:%s;--line:%s}
+:root{--bg:#f4f9fb;--ink:#10232d;--acc:#0e7490;--cyan:#22d3ee;--dark:#08202e;--card:#fff;--line:#dcecf1}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans Thai',sans-serif}
-header{background:linear-gradient(135deg,var(--dark),#0e7490);color:#fff;padding:58px 28px}
-header h1{margin:0 0 10px;font-size:40px}header p{max-width:680px;line-height:1.9;opacity:.9}
-.badge{display:inline-block;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 14px;font-size:12px;margin-bottom:14px}
-main{max-width:1200px;margin:auto;padding:34px 22px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.22s}
-.card:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(11,37,51,.14)}
-.cover{height:150px;background:#0b2533}.cover svg{width:100%%;height:100%%;display:block}
-.body{padding:16px 18px}.tag{font-size:10px;letter-spacing:1.6px;color:var(--acc);font-weight:700}
-h3{font-size:16px;margin:8px 0 6px}p{font-size:12px;color:#5d7380;line-height:1.65;margin:0}
-.row{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
-.row b{font-size:19px;color:var(--acc)}.row span{font-size:11px;color:#6d8793}
-footer{background:var(--dark);color:#d6eaf1;padding:30px 22px;text-align:center;line-height:1.9}
+header{background:linear-gradient(120deg,var(--dark),#0d6e84);color:#fff;padding:64px 28px 80px;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;right:-120px;top:-160px;width:460px;height:460px;border:1px solid rgba(255,255,255,.16);border-radius:50%%}
+.hero{max-width:1180px;margin:auto;position:relative;z-index:1}
+.kicker{display:inline-block;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 16px;font-size:12px;letter-spacing:2px;margin-bottom:18px}
+h1{font-size:clamp(36px,5vw,62px);line-height:1.2;margin:0 0 14px;font-weight:800}
+header p{max-width:660px;line-height:1.9;opacity:.92;font-size:16px}
+.stats{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.stats span{background:rgba(255,255,255,.12);border-radius:999px;padding:9px 18px;font-size:13px}
+main{max-width:1180px;margin:-34px auto 60px;padding:0 22px;position:relative;z-index:2}
+.tabs{display:flex;gap:9px;overflow:auto;padding:14px;background:#fff;border-radius:18px;box-shadow:0 12px 34px rgba(8,32,46,.10);margin-bottom:24px}
+.tabs button{border:0;background:#eef8fa;color:#0e7490;border-radius:999px;padding:9px 16px;font:600 13px 'Noto Sans Thai';cursor:pointer;white-space:nowrap}
+.tabs button.on,.tabs button:hover{background:var(--acc);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:.25s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-6px);box-shadow:0 22px 46px rgba(8,32,46,.16)}
+.cover{height:146px;background:#0b2533;position:relative}.cover svg{width:100%%;height:100%%;display:block}
+.no{position:absolute;right:10px;top:10px;background:rgba(255,255,255,.16);color:#fff;border-radius:8px;padding:3px 9px;font-size:11px}
+.body{padding:16px 17px;display:flex;flex-direction:column;flex:1}
+.tag{font-size:10px;letter-spacing:1.6px;color:var(--acc);font-weight:800}
+h3{font-size:16px;margin:9px 0 6px}p{font-size:12px;color:#5d7380;line-height:1.65;margin:0 0 14px;flex:1}
+.row{display:flex;justify-content:space-between;align-items:center}
+.row b{font-size:21px;color:var(--acc)}
+.row button{border:0;background:var(--acc);color:#fff;border-radius:999px;padding:9px 16px;font:600 13px 'Noto Sans Thai';cursor:pointer;transition:.2s}
+.row button:hover{background:#075f75;transform:scale(1.04)}
+.sample{display:block;margin-top:12px;text-align:center;color:#0e7490;font-size:12px;text-decoration:none;border:1px dashed #bfe3ec;border-radius:10px;padding:8px}
+.sample:hover{background:#eef8fa}
+footer{background:var(--dark);color:#cfe7ee;padding:36px 22px;text-align:center;line-height:2}
 </style></head><body>
-<header><div class="badge">ZYPHERE LIBRARY · 46 SUBJECTS</div>
-<h1>อ่านให้เข้าใจ ไม่ใช้อ่านให้จบ</h1>
-<p>ปกใหม่ทำจาก motif ของแต่ละวิชา ราคาตามเนื้อหาจริง ไม่มีราคาเดียวทั้งร้าน
-ทุกเล่มผ่านการตรวจข้อความ/ภาษาโดยบรรณาธิการและ QA ก่อนวางขาย</p></header>
-<main><div class="grid">%s</div></main>
-<footer>สั่งซื้อ: โอน PromptPay 0941939686 แล้วแจ้ง Zyphere เพื่อตรวจจ่ายด้วยตนเอง<br>
-ไม่มีการอ้างยอดขาย — ทุกตัวเลขมาจากไฟล์จริงในระบบ</footer>
-
+<header><div class="hero"><div class="kicker">ZYPHERE KNOWLEDGE LIBRARY</div>
+<h1>อ่านให้เข้าใจ<br>ไม่ใช่อ่านให้จบ</h1>
+<p>46 เล่ม จัดเป็น 6 หมวดความรู้ หน้าปกออกแบบใหม่จากเนื้อหาจริง
+อ่านตัวอย่างฟรีตรวจทานก่อนซื้อ — กดซื้อ ระบบสร้างรหัสประจำคำสั่งให้ทันที</p>
+<div class="stats"><span>46 เล่ม</span><span>6 หมวด</span><span>ราคา 80–480</span><span>PromptPay 0941939686</span></div>
+</div></header>
+<main><div class="tabs"><button class="on" onclick="zyFilter(-1)">ทั้งหมด</button>
+<button onclick="zyFilter(0)">วิทยาศาสตร์</button><button onclick="zyFilter(1)">เทคโนโลยี</button>
+<button onclick="zyFilter(2)">สุขภาพ</button><button onclick="zyFilter(3)">สังคม/ศิลปะ</button>
+<button onclick="zyFilter(4)">ธุรกิจ</button><button onclick="zyFilter(5)">ทักษะชีวิต</button></div>
+<div class="grid">%s</div></main>
+<footer>โอน PromptPay 0941939686 แล้วแจ้งรหัส — ระบบส่งไฟล์เมื่อหลักฐานจ่ายได้รับการยืนยัน<br>
+<small>ไม่มีการอ้างยอดขาย — ทุกตัวเลขมาจากไฟล์จริง</small></footer>
 <script>
-async function zyBuy(title, price){
-  const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/order',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({book:title,price:price})});const j=await r.json();
-  if(!j.ok){alert('สร้างคำสั่งไม่ได้: '+j.error);return}
-  const o=j.order;
-  const box=document.getElementById('paybox');
-  box.style.display='block';
-  box.innerHTML='<h2>โอน PromptPay '+j.promptpay+'</h2>'+
-   '<p><b>จำนวนเงินที่ต้องโอน: ฿'+o.amount+'</b> (ไม่ซ้ำกับคำสั่งอื่น)</p>'+
-   '<p>รหัสยืนยัน: <b>'+o.code+'</b> · order '+o.id+'</p>'+
-   '<p>โอนแล้วกดปุ่มนี้ ระบบจะจับคู่จำนวนเงิน+รหัสแล้วส่งไฟล์ให้ทันที</p>'+
-   '<button onclick="zyDone(\''+o.id+'\','+o.amount+',\''+o.code+'\')">แจ้งว่าโอนแล้ว</button>';
-}
+function zyFilter(n){document.querySelectorAll('.card').forEach(function(c){
+ c.style.display=(n<0||c.dataset.cat==n)?'flex':'none'});
+ document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on')});
+ event.target.classList.add('on')}
+async function zyBuy(title,price){
+ const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/order',{method:'POST',
+ headers:{'Content-Type':'application/json'},body:JSON.stringify({book:title,price:price})});
+ const j=await r.json();if(!j.ok){alert('สร้างคำสั่งไม่ได้');return}const o=j.order;
+ const box=document.getElementById('paybox');box.style.display='block';
+ box.innerHTML='<h2>โอน PromptPay '+j.promptpay+'</h2><p><b>จำนวนเงินไม่ซ้ำ: ฿'+o.amount+'</b></p>'+
+ '<p>รหัส: <b>'+o.code+'</b> · '+o.id+'</p>'+
+ '<button onclick="zyDone(\\''+o.id+'\\','+o.amount+',\\''+o.code+'\\')">แจ้งว่าโอนแล้ว</button>'}
 async function zyDone(id,amount,code){
-  const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/declare',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({id:id,amount:amount,code:code})});const j=await r.json();
-  const box=document.getElementById('paybox');
-  if(j.ok){box.innerHTML='<h2>รับแจ้งแล้ว</h2><p>สถานะ: '+j.status+'</p>'+
-    '<p>ระบบจะส่งลิงก์ดาวน์โหลดเมื่อหลักฐานการจ่ายได้รับการยืนยันเท่านั้น '+
-    '(PSP webhook หรือเจ้าของตรวจสลิป) — ไม่มีการส่งไฟล์จากการกดแจ้งเพียงอย่างเดียว</p>'}
-  else{box.innerHTML='<h2>ยังไม่ผ่าน</h2><p>'+j.error+' (expected ฿'+j.expected+')</p>'}
-}
-</script><div id="paybox" style="display:none;max-width:760px;margin:20px auto;padding:24px;background:#eef8fa;border-radius:18px;color:#12222b"></div>
-</body></html>""" % (PALETTE["bg"], PALETTE["ink"], PALETTE["acc"], PALETTE["dark"],
-                      PALETTE["card"], PALETTE["line"], "".join(cards))
+ const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/declare',{method:'POST',
+ headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,amount:amount,code:code})});
+ const j=await r.json();document.getElementById('paybox').innerHTML=
+ '<h2>รับแจ้งแล้ว</h2><p>'+j.status+' — ระบบจะส่งไฟล์เมื่อหลักฐานจ่ายได้รับการยืนยัน</p>'}
+</script><div id="paybox" style="display:none;max-width:680px;margin:20px auto;padding:24px;background:#eef8fa;border-radius:18px"></div>
+</body></html>""" % ("".join(cards))
 
 
 def run(apply=True):

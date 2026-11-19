@@ -5835,7 +5835,8 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/pay/declare":
             try:
                 import slip_auto_verifier as SV
-                dbp = os.path.join(DATA_DIR, "slip_verifier.json")
+                import slip_auto_verifier as SV
+                dbp = SV.DATA  # single source of truth shared with /api/pay/order
                 orders = json.load(open(dbp, encoding="utf-8")).get("orders", []) if \
                     os.path.exists(dbp) else []
                 res = SV.verify(orders, str(body.get("id") or ""),
