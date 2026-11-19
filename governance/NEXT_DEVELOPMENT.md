@@ -1,9 +1,9 @@
 # การพัฒนาต่อโดยไม่ต้องมีคำสั่ง
 
-- เป้าหมายจากแผนที่ระบบเขียนเอง: **book**
-- เครื่องมือที่เลือก: `ebook_design_team`
-- ผล: {"ok": true, "summary": {}}
+- เป้าหมายจากแผนที่ระบบเขียนเอง: **design**
+- เครื่องมือที่เลือก: `own_image_lab`
+- ผล: {"ok": false, "error": "module 'own_image_lab' has no attribute 'run'"}
 - ถามทุกฝ่ายแล้ว: 12 คำถาม
-- แผนรอบหน้า: design, film, sound, qa, offline
+- แผนรอบหน้า: film, sound, qa, offline, compete
 
 - ระบบอ่านแผนที่ตัวเองเขียน → ลงมือ → ถามทุกฝ่าย → เขียนแผนใหม่ วนไม่หยุด
