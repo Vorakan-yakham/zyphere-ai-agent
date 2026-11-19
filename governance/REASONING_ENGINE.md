@@ -7,8 +7,8 @@
 
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.07)
-- เครื่องมือที่เลือก: **cross_ask** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["cross_ask", 0.408], ["poster_studio", 0.391], ["revenue_autopilot", 0.369], ["department_scouts", 0.278], ["future_roadmap", 0.16]]
+- เครื่องมือที่เลือก: **qa_supreme** (จากคะแนนความเชื่อ + exploration)
+- การให้คะแนน: [["qa_supreme", 0.552], ["autonomous_scout", 0.507], ["poster_studio", 0.415], ["future_roadmap", 0.142], ["wish_cycle", 0.131]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**

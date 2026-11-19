@@ -1,12 +1,10 @@
 # เครื่องยนต์ความรู้ — เรียนรู้เพิ่มทุก รอบ
 
-ก่อน: 9 หัวข้อ / 8 ข้อเท็จจริง
+ก่อน: 11 หัวข้อ / 14 ข้อเท็จจริง
 หลัง: 51 หัวข้อ / 134 ข้อเท็จจริง
 
 | หัวข้อที่เรียนรู้ใหม่ | แหล่ง | facts |
 |---|---|---|
-| operators | arXiv | 3 |
-| superposition | arXiv | 3 |
 | Bell state | arXiv | 3 |
 | nonlocality | arXiv | 3 |
 | teleportation | arXiv | 3 |
@@ -30,6 +28,8 @@
 | diffraction | arXiv | 3 |
 | telescope | arXiv | 3 |
 | spectroscopy | arXiv | 3 |
+| photometry | arXiv | 3 |
+| stellar lifecycle | arXiv | 3 |
 
 ความรู้ในสมอง Zyphere: 32 รายการ · รอบเติบโตที่ 1
 

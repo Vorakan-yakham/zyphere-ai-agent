@@ -11,14 +11,14 @@
 
 ## Operators + Feynman Diagram
 - แม่สาขา: operators, Feynman diagram
-- แหล่งจริง: http://arxiv.org/abs/1007.3932v2, http://arxiv.org/abs/1704.00518v1, http://arxiv.org/abs/1804.11303v3, http://arxiv.org/abs/1007.3932v2
+- แหล่งจริง: http://arxiv.org/abs/1007.3932v2, http://arxiv.org/abs/1704.00518v1, http://arxiv.org/abs/1804.11303v3
 - คำถามวิจัย: ความรู้จาก operators อธิบายปรากฏการณ์ใน Feynman diagram ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
 
 ## Superposition + Laws Of Thermodynamics
 - แม่สาขา: superposition, laws of thermodynamics
-- แหล่งจริง: http://arxiv.org/abs/2512.13568v1, http://arxiv.org/abs/1607.01454v2, http://arxiv.org/abs/1410.7336v2, http://arxiv.org/abs/2512.13568v1
+- แหล่งจริง: http://arxiv.org/abs/2512.13568v1, http://arxiv.org/abs/1607.01454v2, http://arxiv.org/abs/1410.7336v2
 - คำถามวิจัย: ความรู้จาก superposition อธิบายปรากฏการณ์ใน laws of thermodynamics ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
@@ -27,5 +27,12 @@
 - แม่สาขา: Bell state, telescope
 - แหล่งจริง: http://arxiv.org/abs/1707.09430v1, http://arxiv.org/abs/2302.05777v1, http://arxiv.org/abs/1108.0263v1, http://arxiv.org/abs/1707.09430v1
 - คำถามวิจัย: ความรู้จาก Bell state อธิบายปรากฏการณ์ใน telescope ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
+- วิธี: studies->compare->experiment->measure->publish
+- สถานะ: proposed (needs research)
+
+## Nonlocality + Dark Matter
+- แม่สาขา: nonlocality, dark matter
+- แหล่งจริง: http://arxiv.org/abs/1210.1754v3, http://arxiv.org/abs/2208.04731v5, http://arxiv.org/abs/1504.01601v2
+- คำถามวิจัย: ความรู้จาก nonlocality อธิบายปรากฏการณ์ใน dark matter ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
