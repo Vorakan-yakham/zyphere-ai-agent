@@ -7,15 +7,15 @@
 - Swiss Style (design)
 - Graphic communication
 - Graphic design
-- Poster
 - Typography
+- Peter Saville (graphic designer)
 - A Generic Fundus Image Enhancement Network Boosted by Frequency Self-supervised Representation Learning
 - Long-Horizon Analog Design Bench: Benchmarking Agents on Hours-Long Analog and Mixed-Signal Circuit Design Tasks
 - BINet: a binary inpainting network for deep patch-based image compression
 - Privacy Preserving Image Registration
 - AR-RAG: Autoregressive Retrieval Augmentation for Image Generation
 - Gemini 4 Neon
-- Unauthenticated remote code execution in Nginx
+- Ruby2ßhell: Pre-authentication RCE on stock Rails
 
 ## คำสั่งพัฒนาที่ระบบตั้งขึ้นเอง
 
