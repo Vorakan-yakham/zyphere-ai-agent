@@ -2,7 +2,7 @@
 
 - เป้าหมายจากแผนที่ระบบเขียนเอง: **book**
 - เครื่องมือที่เลือก: `ebook_design_team`
-- ผล: {"ok": true, "summary": {}}
+- ผล: {"ok": false, "summary": {}}
 - ถามทุกฝ่ายแล้ว: 12 คำถาม
 - แผนรอบหน้า: design, film, sound, qa, offline
 
