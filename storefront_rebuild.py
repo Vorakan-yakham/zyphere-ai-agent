@@ -133,14 +133,22 @@ h3{font-size:16px;margin:9px 0 6px}p{font-size:12px;color:#5d7380;line-height:1.
 .row button:hover{background:#075f75;transform:scale(1.04)}
 .sample{display:block;margin-top:12px;text-align:center;color:#0e7490;font-size:12px;text-decoration:none;border:1px dashed #bfe3ec;border-radius:10px;padding:8px}
 .sample:hover{background:#eef8fa}
+.acctbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.acctbar a,.acctbar button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:7px 14px;font:600 12px 'Noto Sans Thai';text-decoration:none;cursor:pointer}
+.acctbar a:hover,.acctbar button:hover{background:rgba(255,255,255,.26)}
+.acctbar .who{font:600 12px 'Noto Sans Thai';opacity:.92}
+#orderPanel{max-width:760px;margin:0 auto 28px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:16px}
+#orderPanel h3{margin:0 0 8px;color:var(--acc)}#orderPanel ul{margin:6px 0;padding-left:20px}#orderPanel li{font:400 13px 'Noto Sans Thai';margin:5px 0}
 footer{background:var(--dark);color:#cfe7ee;padding:36px 22px;text-align:center;line-height:2}
 </style></head><body>
 <header><div class="hero"><div class="kicker">ZYPHERE KNOWLEDGE LIBRARY</div>
 <h1>อ่านให้เข้าใจ<br>ไม่ใช่อ่านให้จบ</h1>
 <p>46 เล่ม จัดเป็น 6 หมวดความรู้ หน้าปกออกแบบใหม่จากเนื้อหาจริง
 อ่านตัวอย่างฟรีตรวจทานก่อนซื้อ — กดซื้อ ระบบสร้างรหัสประจำคำสั่งให้ทันที</p>
-<div class="stats"><span>46 เล่ม</span><span>6 หมวด</span><span>ราคา 80–480</span><span>PromptPay 0941939686</span></div>
+<div class="stats"><span>46 เล่ม</span><span>6 หมวด</span><span>ราคาตามเนื้อหาจริง</span><span>PromptPay 0941939686</span></div>
+<div class="acctbar" id="acctbar"><span class="who">กำลังตรวจสถานะบัญชี…</span></div>
 </div></header>
+<div id="orderPanel" style="display:none"></div>
 <main><div class="tabs"><button class="on" onclick="zyFilter(-1)">ทั้งหมด</button>
 <button onclick="zyFilter(0)">วิทยาศาสตร์</button><button onclick="zyFilter(1)">เทคโนโลยี</button>
 <button onclick="zyFilter(2)">สุขภาพ</button><button onclick="zyFilter(3)">สังคม/ศิลปะ</button>
@@ -153,9 +161,45 @@ function zyFilter(n){document.querySelectorAll('.card').forEach(function(c){
  c.style.display=(n<0||c.dataset.cat==n)?'flex':'none'});
  document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on')});
  event.target.classList.add('on')}
-async function zyBuy(title,price){
+
+const BK='https://zyphere-ai-agent.onrender.com';
+function zyToken(){try{return localStorage.getItem('zy_token')||''}catch(e){return ''}}
+async function zyLoadAccount(){
+ const bar=document.getElementById('acctbar');const tk=zyToken();
+ if(!tk){bar.innerHTML='<a href="./">เข้าสู่ระบบ →</a>';return}
+ try{
+  const r=await fetch(BK+'/api/store/me?token='+encodeURIComponent(tk));const j=await r.json();
+  if(!j.ok){bar.innerHTML='<a href="./">เข้าสู่ระบบ →</a>';return}
+  const me=j.me||{};const who=(me.email||me.name||'สมาชิก').split('@')[0];
+  bar.innerHTML='<span class="who">สวัสดี '+who+'</span>'+
+   '<button onclick="zyMyOrders()">คำสั่งซื้อของฉัน</button>'+
+   (me.is_owner?'<button onclick="zyOwner()">ดาวน์โหลด (เจ้าของ)</button>':'')+
+   '<button onclick="zyLogout()">ออกจากระบบ</button>';
+ }catch(e){bar.innerHTML='<span class="who">ตรวจบัญชีไม่ได้ — ลองใหม่</span>'}
+}
+async function zyMyOrders(){
+ const p=document.getElementById('orderPanel');p.style.display='block';
+ p.innerHTML='<h3>คำสั่งซื้อของฉัน</h3><p>กำลังโหลด…</p>';
+ try{const r=await fetch(BK+'/api/store/my-orders?token='+encodeURIComponent(zyToken()));const j=await r.json();
+  const os=j.orders||[];
+  p.innerHTML='<h3>คำสั่งซื้อของฉัน ('+os.length+')</h3>'+
+   (os.length?'<ul>'+os.map(o=>'<li>'+(o.book||o.title||'หนังสือ')+' · ฿'+(o.amount||o.price||'-')+' · '+(o.status||'-')+' · '+o.id+'</li>').join('')+'</ul>':'<p>ยังไม่มีคำสั่งซื้อ</p>');
+ }catch(e){p.innerHTML='<p>โหลดไม่ได้</p>'}
+}
+async function zyOwner(){
+ const r=await fetch(BK+'/api/store/owner/download',{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({token:zyToken()})});const j=await r.json();
+ if(j.ok&&j.url){window.open(j.url,'_blank')}else{alert(j.error||'เฉพาะเจ้าของ')}
+}
+async function zyLogout(){
+ const tk=zyToken();try{await fetch(BK+'/api/auth/logout?token='+encodeURIComponent(tk))}catch(e){}
+ try{localStorage.removeItem('zy_token')}catch(e){}
+ location.reload();
+}
+zyLoadAccount();
+ async function zyBuy(title,price){
  const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/order',{method:'POST',
- headers:{'Content-Type':'application/json'},body:JSON.stringify({book:title,price:price})});
+ headers:{'Content-Type':'application/json'},body:JSON.stringify({book:title,price:price,token:zyToken()})});
  const j=await r.json();if(!j.ok){alert('สร้างคำสั่งไม่ได้');return}const o=j.order;
  const box=document.getElementById('paybox');box.style.display='block';
  box.innerHTML='<h2>โอน PromptPay '+j.promptpay+'</h2><p><b>จำนวนเงินไม่ซ้ำ: ฿'+o.amount+'</b></p>'+

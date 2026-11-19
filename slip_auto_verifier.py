@@ -13,7 +13,7 @@ DATA = os.path.join(ROOT, "data", "slip_verifier.json")
 OUT = os.path.join(ROOT, "governance", "SELF_SERVE_PAYMENT.md")
 
 
-def new_order(base_price, book):
+def new_order(base_price, book, email=""):
     """Unique amount = base + 2-digit sequence, so two orders never collide."""
     seq = int(time.time()) % 89 + 10
     amount = float(base_price) + seq/100.0
@@ -21,6 +21,7 @@ def new_order(base_price, book):
     return {"id": "ZY-" + str(int(time.time()))[-8:],
             "book": book, "base": int(base_price), "amount": round(amount, 2),
             "code": code, "created": int(time.time()),
+            "email": str(email or "").lower(), "buyer": str(email or "").lower(),
             "status": "awaiting_payment"}
 
 

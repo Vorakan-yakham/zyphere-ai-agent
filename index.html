@@ -2255,7 +2255,8 @@ if(!window.__logoExpand){
 
 if(document.getElementById('amOwnerDl'))document.getElementById('amOwnerDl').onclick=async()=>{
  try{
-  const r=await api('/api/store/owner/download',{method:'POST',body:JSON.stringify({})});
+  const tk=(localStorage.getItem('zy_token')||getK('zy_token')||'');
+  const r=await api('/api/store/owner/download',{method:'POST',body:JSON.stringify({token:tk})});
   if(r&&r.ok&&r.url){window.open(r.url,'_blank');toast('owner download ready')}
   else toast('เฉพาะบัญชีเจ้าของครับ')
  }catch(e){toast('owner download ไม่ได้: '+redact(e.message))}

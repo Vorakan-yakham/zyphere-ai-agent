@@ -4535,9 +4535,19 @@ class Handler(SimpleHTTPRequestHandler):
             if not me:
                 self._send_json(401, {"ok": False, "error": "not logged in"})
                 return
-            em = me.get("email", "")
+            em = str(me.get("email", "")).lower()
             orders = [o for o in (STORE.all_orders() if STORE else [])
-                      if o.get("email") == em or o.get("buyer") == em]
+                      if str(o.get("email", "")).lower() == em or
+                         str(o.get("buyer", "")).lower() == em]
+            # include the self-serve PromptPay orders tied to this login
+            try:
+                import slip_auto_verifier as SV
+                extra = json.load(open(SV.DATA, encoding="utf-8")).get("orders", []) \
+                    if os.path.exists(SV.DATA) else []
+                orders += [o for o in extra
+                           if str(o.get("email", "")).lower() == em]
+            except Exception:
+                pass
             self._send_json(200, {"ok": True, "orders": orders})
             return
         if u.path == "/api/scholars/faculty":
@@ -5856,8 +5866,14 @@ class Handler(SimpleHTTPRequestHandler):
                 import slip_auto_verifier as SV
                 book = str(body.get("book") or "ebook")
                 price = float(body.get("price") or 190)
+                # attach the logged-in buyer so "my orders" works in the store
+                tok = str(body.get("token") or
+                          urllib.parse.parse_qs(u.query).get("token", [""])[0])
+                me = USERS.me(tok) if (USERS and tok) else None
+                email = str((me or {}).get("email") or "")
                 self._send_json(200, {"ok": True,
-                                      "order": SV.new_order(price, book),
+                                      "order": SV.new_order(price, book, email),
+                                      "email": email,
                                       "promptpay": "0941939686"})
             except Exception as e:
                 self._send_json(200, {"ok": False, "error": str(e)[:120]})
