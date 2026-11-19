@@ -4,7 +4,7 @@
 
 ## Wave Function + Bell State
 - แม่สาขา: wave function, Bell state
-- แหล่งจริง: https://doi.org/10.1103/physrevd.28.2960, https://openalex.org/W3112961938, https://doi.org/10.12693/aphyspola.86.97, http://arxiv.org/abs/1210.6607v2, http://arxiv.org/abs/1707.09430v1, http://arxiv.org/abs/2302.05777v1, http://arxiv.org/abs/1108.0263v1
+- แหล่งจริง: http://arxiv.org/abs/1210.6607v2, http://arxiv.org/abs/1302.2714v1, http://arxiv.org/abs/1410.3676v1, https://en.wikipedia.org/wiki/Bell_state, https://en.wikipedia.org/wiki/Liberty_Bell, https://en.wikipedia.org/wiki/Montgomery_Bell_State_Park, http://www.wikidata.org/entity/Q2898260
 - คำถามวิจัย: ความรู้จาก wave function อธิบายปรากฏการณ์ใน Bell state ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
@@ -18,14 +18,14 @@
 
 ## Superposition + Laws Of Thermodynamics
 - แม่สาขา: superposition, laws of thermodynamics
-- แหล่งจริง: https://doi.org/10.48550/arxiv.2209.10652, https://doi.org/10.48550/arxiv.quant-ph/0612146, https://doi.org/10.1103/physrevlett.119.230401, http://arxiv.org/abs/2512.13568v1, http://arxiv.org/abs/1612.02496v1, http://arxiv.org/abs/1305.5278v4, http://arxiv.org/abs/cond-mat/0410213v1
+- แหล่งจริง: https://en.wikipedia.org/wiki/Quantum_superposition, https://en.wikipedia.org/wiki/Linear_combination, https://en.wikipedia.org/wiki/Superposition_principle, http://www.wikidata.org/entity/Q27628, http://arxiv.org/abs/1612.02496v1, http://arxiv.org/abs/1305.5278v4, http://arxiv.org/abs/cond-mat/0410213v1
 - คำถามวิจัย: ความรู้จาก superposition อธิบายปรากฏการณ์ใน laws of thermodynamics ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
 
 ## Bell State + Telescope
 - แม่สาขา: Bell state, telescope
-- แหล่งจริง: http://arxiv.org/abs/1707.09430v1, http://arxiv.org/abs/2302.05777v1, http://arxiv.org/abs/1108.0263v1, http://arxiv.org/abs/1403.0644v1, http://arxiv.org/abs/1310.0647v1, http://arxiv.org/abs/astro-ph/9804043v1
+- แหล่งจริง: https://en.wikipedia.org/wiki/Bell_state, https://en.wikipedia.org/wiki/Liberty_Bell, https://en.wikipedia.org/wiki/Montgomery_Bell_State_Park, http://www.wikidata.org/entity/Q2898260, https://openalex.org/W1660219129, https://doi.org/10.1088/0004-637x/697/2/1071, https://doi.org/10.1088/0067-0049/194/2/41, http://arxiv.org/abs/1403.0644v1
 - คำถามวิจัย: ความรู้จาก Bell state อธิบายปรากฏการณ์ใน telescope ได้อย่างไร | สามารถทดสอบสมมติฐานร่วมด้วยข้อมูลจริงได้ไหม | ผลลัพธ์ที่วัดได้คืออะไร และวัดอย่างไร
 - วิธี: studies->compare->experiment->measure->publish
 - สถานะ: proposed (needs research)
