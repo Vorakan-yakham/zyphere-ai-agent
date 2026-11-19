@@ -5821,6 +5821,37 @@ class Handler(SimpleHTTPRequestHandler):
             except Exception as e:
                 self._send_json(200, {"ok": False, "error": str(e)[:180]})
             return
+        if u.path == "/api/pay/order":
+            try:
+                import slip_auto_verifier as SV
+                book = str(body.get("book") or "ebook")
+                price = float(body.get("price") or 190)
+                self._send_json(200, {"ok": True,
+                                      "order": SV.new_order(price, book),
+                                      "promptpay": "0941939686"})
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:120]})
+            return
+        if u.path == "/api/pay/declare":
+            try:
+                import slip_auto_verifier as SV
+                dbp = os.path.join(DATA_DIR, "slip_verifier.json")
+                orders = json.load(open(dbp, encoding="utf-8")).get("orders", []) if \
+                    os.path.exists(dbp) else []
+                res = SV.verify(orders, str(body.get("id") or ""),
+                                body.get("amount"), str(body.get("code") or ""))
+                if res.get("ok"):
+                    json.dump({"orders": orders}, open(dbp, "w", encoding="utf-8"),
+                              ensure_ascii=False, indent=2)
+                    # SECURITY: self-declaration is NOT payment proof.
+                    # File is released only after a PSP webhook or owner slip check.
+                    res["file"] = None
+                    res["status"] = "awaiting_payment_proof"
+                    res["note"] = "ยังไม่ส่งไฟล์ — ต้องรอหลักฐานจ่ายจาก PSP หรือเจ้าของตรวจสลิป"
+                self._send_json(200, res)
+            except Exception as e:
+                self._send_json(200, {"ok": False, "error": str(e)[:120]})
+            return
         if u.path == "/api/cinema/create":
             def _cinema_task(jid, brief, secs, lang):
                 try:

@@ -86,8 +86,8 @@ def build(rows):
             '<article class="card"><div class="cover">%s</div>'
             '<div class="body"><div class="tag">ZYPHERE · MUST-READ</div>'
             '<h3>%s</h3><p>เนื้อหาจากต้นฉบับจริง · ปรับปรุงใหม่โดยทีมวิศวกร</p>'
-            '<div class="row"><b>฿%d</b><span>พร้อมตรวจจ่าย</span></div></div></article>'
-            % (tiny_cover(title), title, price))
+            '<div class="row"><b>฿%d</b><button onclick="zyBuy(this.closest(\".card\").querySelector(\"h3\").textContent,%d)">ซื้อ</button></div></div></article>'
+            % (tiny_cover(title), title, price, price))
     return """<!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zyphere Store — หนังสือความรู้ 46 เล่ม</title>
@@ -116,6 +116,33 @@ footer{background:var(--dark);color:#d6eaf1;padding:30px 22px;text-align:center;
 <main><div class="grid">%s</div></main>
 <footer>สั่งซื้อ: โอน PromptPay 0941939686 แล้วแจ้ง Zyphere เพื่อตรวจจ่ายด้วยตนเอง<br>
 ไม่มีการอ้างยอดขาย — ทุกตัวเลขมาจากไฟล์จริงในระบบ</footer>
+
+<script>
+async function zyBuy(title, price){
+  const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/order',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({book:title,price:price})});const j=await r.json();
+  if(!j.ok){alert('สร้างคำสั่งไม่ได้: '+j.error);return}
+  const o=j.order;
+  const box=document.getElementById('paybox');
+  box.style.display='block';
+  box.innerHTML='<h2>โอน PromptPay '+j.promptpay+'</h2>'+
+   '<p><b>จำนวนเงินที่ต้องโอน: ฿'+o.amount+'</b> (ไม่ซ้ำกับคำสั่งอื่น)</p>'+
+   '<p>รหัสยืนยัน: <b>'+o.code+'</b> · order '+o.id+'</p>'+
+   '<p>โอนแล้วกดปุ่มนี้ ระบบจะจับคู่จำนวนเงิน+รหัสแล้วส่งไฟล์ให้ทันที</p>'+
+   '<button onclick="zyDone(\''+o.id+'\','+o.amount+',\''+o.code+'\')">แจ้งว่าโอนแล้ว</button>';
+}
+async function zyDone(id,amount,code){
+  const r=await fetch('https://zyphere-ai-agent.onrender.com/api/pay/declare',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:id,amount:amount,code:code})});const j=await r.json();
+  const box=document.getElementById('paybox');
+  if(j.ok){box.innerHTML='<h2>รับแจ้งแล้ว</h2><p>สถานะ: '+j.status+'</p>'+
+    '<p>ระบบจะส่งลิงก์ดาวน์โหลดเมื่อหลักฐานการจ่ายได้รับการยืนยันเท่านั้น '+
+    '(PSP webhook หรือเจ้าของตรวจสลิป) — ไม่มีการส่งไฟล์จากการกดแจ้งเพียงอย่างเดียว</p>'}
+  else{box.innerHTML='<h2>ยังไม่ผ่าน</h2><p>'+j.error+' (expected ฿'+j.expected+')</p>'}
+}
+</script><div id="paybox" style="display:none;max-width:760px;margin:20px auto;padding:24px;background:#eef8fa;border-radius:18px;color:#12222b"></div>
 </body></html>""" % (PALETTE["bg"], PALETTE["ink"], PALETTE["acc"], PALETTE["dark"],
                       PALETTE["card"], PALETTE["line"], "".join(cards))
 
