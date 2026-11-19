@@ -7,8 +7,8 @@
 
 ## สิ่งที่ระบบเลือกเอง
 - เป้าหมายที่แย่ที่สุด: **qa** (severity 1.07)
-- เครื่องมือที่เลือก: **cover_designer** (จากคะแนนความเชื่อ + exploration)
-- การให้คะแนน: [["cover_designer", 0.516], ["image_quality_loop", 0.448], ["poster_studio", 0.437], ["autonomous_scout", 0.423], ["own_brain", 0.404]]
+- เครื่องมือที่เลือก: **future_roadmap** (จากคะแนนความเชื่อ + exploration)
+- การให้คะแนน: [["future_roadmap", 0.578], ["cover_designer", 0.564], ["autonomous_scout", 0.523], ["image_quality_loop", 0.454], ["own_brain", 0.442]]
 
 ## ผลที่วัดได้
 - delta ของ `qa`: **+0**

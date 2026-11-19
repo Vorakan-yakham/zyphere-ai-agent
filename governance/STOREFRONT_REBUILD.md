@@ -2,6 +2,6 @@
 
 - ก่อน: gradient ม่วง, ราคา 430 ซ้ำทุกเล่ม, ปกภาพเดิม
 - หลัง: wind palette, ราคาตามเนื้อหาจริง, ปก motif เฉพาะเล่ม
-- จำนวนเล่ม: 46 · ราคา 20–50 · ราคาไม่ซ้ำ 4 แบบ
+- จำนวนเล่ม: 92 · ราคา 20–50 · ราคาไม่ซ้ำ 4 แบบ
 - ไฟล์: /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/STORE_FINAL.html
 - หน้าสาธารณะที่แทนที่: STORE.html
