@@ -5,6 +5,10 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
+concurrency:
+  group: zypher-autonomy
+  cancel-in-progress: true
+
 jobs:
   develop:
     runs-on: ubuntu-latest

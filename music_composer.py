@@ -105,6 +105,46 @@ def _add(buf, start, dur, freq, kind, vol):
         buf[i0+i] += vol * env * v
 
 
+def sing_note(buf, start, dur, freq, vol=0.06):
+    """3-formant synthetic vowel with vibrato + soft attack/release."""
+    f1, f2, f3 = 800.0, 1150.0, 2900.0
+    n = int(dur * SR)
+    i0 = max(0, int(start * SR))
+    for i in range(n):
+        if i0 + i >= len(buf):
+            break
+        x = i / SR
+        u = x / max(1e-6, dur)
+        env = min(1.0, u * 14) * min(1.0, (1 - u) * 9)
+        vib = 1.0 + 0.008 * math.sin(2 * math.pi * 5.2 * x)
+        f = freq * vib
+        v = (1.00 * math.sin(2*math.pi*f*x) +
+             0.52 * math.sin(2*math.pi*(f + f1)*x) +
+             0.28 * math.sin(2*math.pi*(f + f2)*x) +
+             0.12 * math.sin(2*math.pi*(f + f3)*x))
+        buf[i0 + i] += vol * env * v * 0.5
+
+
+def melody_contour(seed, n):
+    """Repeating-but-evolving motif from a fixed seed."""
+    motifs = [[0, 2, 4, 2], [0, 3, 5, 3], [4, 2, 0, 2],
+              [0, 1, 2, 4], [5, 4, 2, 0]]
+    m = motifs[seed % len(motifs)]
+    return [m[i % len(m)] + (1 if (i // len(m)) % 2 else 0) * (seed % 2)
+            for i in range(n)]
+
+
+def add_space(buf, delay_s=0.23, decay=0.22):
+    """Cheap slapback so the mix sounds less dry."""
+    d = int(delay_s * SR)
+    if d <= 0 or d >= len(buf):
+        return buf
+    out = list(buf)
+    for i in range(d, len(buf)):
+        out[i] += buf[i - d] * decay
+    return out
+
+
 def compose(text, apply=True):
     p = plan(text)
     beat = 60.0 / p["bpm"]
@@ -135,18 +175,22 @@ def compose(text, apply=True):
                  "bass" if b % 2 == 0 else "pluck", .10)
         # lead + synthetic voice melody from text rhythm
         idx = 0
+        contour = melody_contour(p["seed"] + bar, 32)
+        chorus = (bar % 4) in (2, 3)
         for rb in p["rhythm"]:
             if t + (idx+rb)*beat*.5 > t+4*beat:
                 break
-            deg = p["progression"][(bar+idx) % len(p["progression"])] + (idx % 3)
+            base = p["progression"][(bar+idx) % len(p["progression"])]
+            deg = base + contour[idx % len(contour)] + (1 if chorus else 0)
             dur = rb * beat * .5
-            _add(buf, t+idx*beat*.5, dur, hz(deg, 1), "lead", .09)
-            if bar >= 2:  # voice enters after intro/verse
-                _add(buf, t+idx*beat*.5, dur*.9, hz(deg, 1), "voice", .06)
+            _add(buf, t+idx*beat*.5, dur, hz(deg, 1), "lead", .085 if chorus else .07)
+            if bar >= 2:
+                sing_note(buf, t+idx*beat*.5, dur*.92, hz(deg, 1),
+                          .075 if chorus else .055)
             idx += rb
         t += 4*beat
         bar += 1
-    # normalise + write wav
+    buf = add_space(buf)
     peak = max(1e-6, max(abs(v) for v in buf))
     buf = [int(max(-1, min(1, v/peak*.88)) * 32767) for v in buf]
     out = {"ok": False, "plan": p}
@@ -159,7 +203,7 @@ def compose(text, apply=True):
         mp3 = MS.to_mp3(wav)
         out.update({"ok": True, "wav": wav, "mp3": mp3,
                     "seconds": round(total, 1),
-                    "voice": "synthetic vowel singing (not a human singer)"})
+                    "voice": "3-formant synthetic vowel melody + vibrato (not a trained singer)"})
         json.dump(out, open(wav+".json", "w", encoding="utf-8"),
                   ensure_ascii=False, indent=2, default=str)
     return out

@@ -38,7 +38,10 @@ def load_products():
                 seen.add(x.get("title"))
                 rows.append({"title": x.get("title"),
                              "price": x.get("price") or (79 + int(x.get("score", 10))*14),
-                             "score": x.get("score", 10)})
+                             "score": x.get("score", 10),
+                             "thai_chars": x.get("thai_chars", 0),
+                             "chapters": x.get("chapters", 0),
+                             "dup_ratio": x.get("dup_ratio", 0)})
         except Exception:
             pass
     # hard guarantee: exactly one row per real title
