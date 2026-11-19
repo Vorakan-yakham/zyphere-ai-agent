@@ -1,11 +1,11 @@
 # พัฒนากราฟฟิกและวิดีโอคู่ขนาน
 
-brief: Zyphere สายลมสร้างสรรค์ · 2026-11-19 01:59
+brief: Zyphere สายลมสร้างสรรค์ · 2026-11-19 02:05
 
 | ทีม | ผลจริง | ตัวเลข |
 |---|---|---|
-| กราฟิก | /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/photo_lab_1795053535.png | คมชัด 317.82 → 354.18 (+11.4%) |
-| วิดีโอ | /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_4fc14f70ea/cinema.mp4 | มีเสียง+ซับ |
+| กราฟิก | /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/photo_lab_1795053941.png | คมชัด 317.82 → 354.18 (+11.4%) |
+| วิดีโอ | /home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_8f138fbc02/cinema.mp4 | มีเสียง+ซับ |
 
 ไฟล์ตัดต่อ (frame/overlay/SRT):
-{"video": "/media/cinema_cinema_4fc14f70ea_cinema.mp4", "srt": "/media/cinema_cinema_4fc14f70ea_subtitles.srt", "frame_01": "/media/cinema_cinema_4fc14f70ea_frame_01.png", "frame_02": "/media/cinema_cinema_4fc14f70ea_frame_02.png", "frame_03": "/media/cinema_cinema_4fc14f70ea_frame_03.png", "overlay_01": "/media/cinema_cinema_4fc14f70ea_overlay_01.png", "overlay_02": "/media/cinema_cinema_4fc14f70ea_overlay_02.png", "overlay_03": "/media/cinema_cinema_4fc14f70ea_overlay_03.png"}
+{"video": "/media/cinema_cinema_8f138fbc02_cinema.mp4", "srt": "/media/cinema_cinema_8f138fbc02_subtitles.srt", "frame_01": "/media/cinema_cinema_8f138fbc02_frame_01.png", "frame_02": "/media/cinema_cinema_8f138fbc02_frame_02.png", "frame_03": "/media/cinema_cinema_8f138fbc02_frame_03.png", "overlay_01": "/media/cinema_cinema_8f138fbc02_overlay_01.png", "overlay_02": "/media/cinema_cinema_8f138fbc02_overlay_02.png", "overlay_03": "/media/cinema_cinema_8f138fbc02_overlay_03.png"}
