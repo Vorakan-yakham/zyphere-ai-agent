@@ -124,7 +124,12 @@ def cover_photo(title):
     """Fetch ONE real CC photo per subject and cache it locally."""
     import hashlib as _h
     os.makedirs(PHOTO_CACHE, exist_ok=True)
-    key = _h.md5(subject_query(title).encode()).hexdigest()[:14] + ".jpg"
+    try:
+        import cover_queries as CQ
+        q = CQ.query_for(title)
+    except Exception:
+        q = subject_query(title)
+    key = _h.md5(q.encode()).hexdigest()[:14] + ".jpg"
     fp = os.path.join(PHOTO_CACHE, key)
     meta_p = fp + ".json"
     if os.path.exists(fp):
@@ -134,7 +139,7 @@ def cover_photo(title):
             pass
     try:
         import poster_studio as PS
-        photo, credit = PS.fetch_photo(subject_query(title))
+        photo, credit = PS.fetch_photo(q)
         if photo is not None:
             photo.save(fp, quality=90)
             json.dump(credit or {}, open(meta_p, "w", encoding="utf-8"),

@@ -85,6 +85,14 @@ def static_checks():
         out.append(check("catalogue has exactly 46 unique books", ok46, evidence))
     except Exception as e:
         out.append(check("catalogue has exactly 46 unique books", False, str(e)[:120]))
+    try:
+        import cover_queries as CQ
+        vals = list(CQ.QUERIES.values())
+        out.append(check("46 distinct cover photo subjects",
+                         len(vals) >= 46 and len(set(vals)) == len(vals),
+                         "queries=%d unique=%d" % (len(vals), len(set(vals))))
+    except Exception as e:
+        out.append(check("46 distinct cover photo subjects", False, str(e)[:120]))
     out.append(check("admin cannot order (UI + backend)",
                      "zyApplyBuyVisibility" in store and
                      "Admin ไม่สามารถสั่งซื้อได้" in app,
