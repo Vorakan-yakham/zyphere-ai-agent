@@ -1,6 +1,6 @@
 # ทีมสำรวจ 12 แผนก — ออกไปดูโลกกันแล้ว
 
-สำเร็จ 12/12 แผนก
+สำเร็จ 10/12 แผนก
 
 | แผนก | สิ่งที่ศึกษา | งานที่นำกลับมาพัฒนา |
 |---|---|---|
@@ -13,8 +13,8 @@
 | หัวหน้าฝ่าย | team autonomy management pattern | หาวิธีกระตุ้นทีมโดยไม่ต้องสั่ง — อ้างอิง: Autonomy Corporation |
 | หัวหน้าแผนก | organizational accountability system | หาวิธีวัดผลงานแผนกจริง — อ้างอิง: Accountable care organization |
 | สมอง AI | persistent memory offline ai agent | หาวิธีจำและพัฒนาต่อโดยไม่พึ่ง API — อ้างอิง: Memetic warfare |
-| ดนตรี | music theory songwriting arrangement | ศึกษาโครงสร้างเพลงที่ฟังดี — อ้างอิง: The Wicked Farleys |
-| ภาพยนตร์ | film editing continuity character design | ศึกษาความต่อเนื่องของตัวละคร — อ้างอิง: An Attentional Theory of Continuity Editing |
+| ดนตรี | music theory songwriting arrangement | ศึกษาโครงสร้างเพลงที่ฟังดี |
+| ภาพยนตร์ | film editing continuity character design | ศึกษาความต่อเนื่องของตัวละคร |
 | บรรณาธิการ | editorial writing plain language thai | ศึกษาการเขียนให้อ่านง่ายและมีชีวิต — อ้างอิง: Teaching Argumentative Writing to Thai Students |
 
 ทุกแผนกต้องออกไปดูงานโลกแล้วนำมาพัฒนาตนเองทุก.rอบ — ห้ามรอป้อน
