@@ -5871,16 +5871,26 @@ class Handler(SimpleHTTPRequestHandler):
                           urllib.parse.parse_qs(u.query).get("token", [""])[0])
                 me = USERS.me(tok) if (USERS and tok) else None
                 email = str((me or {}).get("email") or "")
-                self._send_json(200, {"ok": True,
-                                      "order": SV.new_order(price, book, email),
-                                      "email": email,
+                order = SV.new_order(price, book, email)
+                # PERSIST — otherwise /api/pay/declare can never find the order
+                dbp = SV.DATA
+                saved = []
+                if os.path.exists(dbp):
+                    try:
+                        saved = json.load(open(dbp, encoding="utf-8")).get("orders", [])
+                    except Exception:
+                        saved = []
+                saved.append(order)
+                os.makedirs(os.path.dirname(dbp), exist_ok=True)
+                json.dump({"orders": saved[-200:]}, open(dbp, "w", encoding="utf-8"),
+                          ensure_ascii=False, indent=2)
+                self._send_json(200, {"ok": True, "order": order, "email": email,
                                       "promptpay": "0941939686"})
             except Exception as e:
                 self._send_json(200, {"ok": False, "error": str(e)[:120]})
             return
         if u.path == "/api/pay/declare":
             try:
-                import slip_auto_verifier as SV
                 import slip_auto_verifier as SV
                 dbp = SV.DATA  # single source of truth shared with /api/pay/order
                 orders = json.load(open(dbp, encoding="utf-8")).get("orders", []) if \
