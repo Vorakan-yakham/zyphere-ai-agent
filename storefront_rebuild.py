@@ -86,14 +86,20 @@ def build(rows):
         # Stable id from title so publisher + storefront always agree.
         sample = ("samples/s_" +
                   hashlib.md5(title.encode("utf-8")).hexdigest()[:10] + ".html")
+        # Transparent content facts — buyer can judge the price themselves.
+        nchap = int(r.get("chapters") or 0)
+        nchar = int(r.get("thai_chars") or 0)
+        facts = ("%d บท · %s ตัวอักษรไทย" % (nchap, format(nchar, ","))
+                 if nchar else "เนื้อหาจากต้นฉับจริง")
         cards.append(
           '<article class="card" data-cat="%d"><div class="cover">%s'
           '<span class="no">%02d</span></div>'
           '<div class="body"><div class="tag">ZYPHERE ORIGINAL</div>'
-          '<h3>%s</h3><p>เนื้อหาจากต้นฉบับจริง · ปรับปรุงโดยทีมวิศวกร</p>'
+          '<h3>%s</h3><p>%s · ฉบับ primer สั้น</p>'
           '<div class="row"><b>฿%d</b><button onclick="zyBuy(this.closest(\'.card\').querySelector(\'h3\').textContent,%d)">ซื้อเลย</button></div>'
           '<a class="sample" href="%s" target="_blank">อ่านตัวอย่างฟรี →</a>'
-          '</div></article>' % (i % 6, tiny_cover(title), i+1, title, price, price, sample))
+          '</div></article>' % (i % 6, tiny_cover(title), i+1, title, facts,
+                                price, price, sample))
     return """<!doctype html><html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zyphere Store — 46 เล่ม จัดหมวดชัด อ่านตัวอย่างได้</title>

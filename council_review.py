@@ -31,6 +31,17 @@ TOPICS = [
 
 
 def market_price(title):
+    # Measured real-content price wins over keyword marketing score.
+    # Written by book_value_fixer from the actual manuscript.
+    try:
+        _fair = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                            "data", "fair_prices.json"),
+                               encoding="utf-8"))
+        v = _fair.get(str(title))
+        if v:
+            return int(v["price"]), int(v.get("score", 0)), v.get("tier", "มาตรฐาน")
+    except Exception:
+        pass
     t = str(title).lower()
     d = sum(dw for k, dw, iw in TOPICS if k in t)
     m = sum(iw for k, dw, iw in TOPICS if k in t)
