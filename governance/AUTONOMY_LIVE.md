@@ -1,6 +1,6 @@
 # Zyphere ทำงานเองโดยไม่มีผู้ใช้สั่ง
 
-เวลา: 2026-11-19T04:28:25.423092Z
+เวลา: 2026-11-19T04:42:11.874896Z
 รันโดย: GitHub Actions autonomy.yml (cron 5 นาที + Render self-dispatch ทุก 60 วิ · 5 pulse ย่อย)โหมด: ทุกแผนกทำงานคู่ขนาน (max 8 workers) → ประกอบผลเป็นชิ้นเดียว
 
 | ฝ่าย | ผลที่เกิดจริง |
@@ -113,6 +113,6 @@
 | ebook_pulse5 | {"ok": true, "fix": null, "keep": null} |
 | editor_pulse5 | {"ok": false, "fix": null, "keep": null} |
 | diff_pulse5 | {"ok": true, "fix": null, "keep": null} |
-| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["qa", "offline", "compete", "sales", "book"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผนช |
+| assembly | {"ok": true, "store": {"books": 46, "price_min": 80, "price_max": 480, "unique_prices": 12}, "covers": 46, "next_plan": ["sound", "qa", "offline", "compete", "sales"], "note": "ทุกแผนกส่งงานแยกกัน → ประกอบเป็นร้าน+ปก+แผน |
 
 ถ้าฝ่ายไหนมี error ระบบจะเรียนรู้แล้วพยายามแก้ในรอบถัดไป
