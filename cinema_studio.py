@@ -347,17 +347,21 @@ def run(brief, seconds=18, lang="th", apply=True):
         except Exception:
             voice_all = None
         n = len(frames)
+        SHOT = 3          # seconds per shot (was 5)
+        FPS = 24
+        LOW = "1280x720"  # motion rendered small, upscaled once at the end
         cmd = [ff, "-y"]
         for fp in frames:
-            cmd += ["-loop", "1", "-t", "5", "-i", fp]
+            cmd += ["-loop", "1", "-t", str(SHOT), "-i", fp]
         if voice_all and os.path.exists(voice_all):
             cmd += ["-i", voice_all]
         filters = []
         for i in range(n):
             zoom = "zoom+0.06" if i % 2 == 0 else "zoom+0.10"
             filters.append(
-                "[%d:v]scale=4200:2360,zoompan=z='%s':d=125:s=3840x2160:fps=25,"
-                "trim=duration=5,setpts=PTS-STARTPTS[v%d]" % (i, zoom, i))
+                "[%d:v]scale=1600:900,zoompan=z='%s':d=%d:s=%s:fps=%d,"
+                "trim=duration=%d,setpts=PTS-STARTPTS[v%d]" %
+                (i, zoom, SHOT * FPS, LOW, FPS, SHOT, i))
         # REAL crossfade (xfade) between shots — the manifest no longer lies.
         # Each shot is 5s; overlaps 0.6s; offsets shift by (5 - 0.6).
         XF = 0.6
@@ -367,17 +371,19 @@ def run(brief, seconds=18, lang="th", apply=True):
         else:
             filters.append(
                 "[v0][v1]xfade=transition=fade:duration=%.2f:offset=%.2f[x1]" %
-                (XF, 5 - XF))
+                (XF, SHOT - XF))
             for i in range(2, n):
                 filters.append(
                     "[x%d][v%d]xfade=transition=fade:duration=%.2f:offset=%.2f[x%d]" %
-                    (i - 1, i, XF, i * (5 - XF), i))
+                    (i - 1, i, XF, i * (SHOT - XF), i))
             out_label = "[x%d]" % (n - 1)
         final = os.path.join(out, "cinema.mp4")
+        filters.append(out_label + "scale=3840:2160:flags=lanczos[hi]")
+        out_label = "[hi]"
         cmd += ["-filter_complex", ";".join(filters), "-map", out_label]
         if voice_all and os.path.exists(voice_all):
             cmd += ["-map", "%d:a" % n, "-c:a", "aac"]
-        cmd += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+        cmd += ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "23",
                 "-pix_fmt", "yuv420p", "-shortest", final]
         subprocess.run(cmd, capture_output=True, timeout=300)
         if os.path.exists(final):

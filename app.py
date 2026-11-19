@@ -4113,15 +4113,50 @@ async def synth_tts(text, voice, rate, pitch="+0Hz"):
     raise last if last else RuntimeError("TTS failed")
 
 
+ALLOWED_ORIGINS = {
+    "https://vorakan-yakham.github.io",
+}
+_RATE = {}
+_RATE_LOCK = threading.Lock()
+
+
+def _allowed_origin(self):
+    """Only our own Pages/local dev may read authenticated responses."""
+    o = str(self.headers.get("Origin") or "").rstrip("/")
+    if o in ALLOWED_ORIGINS:
+        return o
+    if re.match(r"^http://(localhost|127\.0\.0\.1)(:\d+)?$", o):
+        return o
+    return None
+
+
+def _rate_ok(self, limit=45, window=60):
+    ip = str(self.client_address[0]) if getattr(self, "client_address", None) else "?"
+    now = time.time()
+    with _RATE_LOCK:
+        hits = [t for t in _RATE.get(ip, []) if now - t < window]
+        if len(hits) >= limit:
+            return False
+        hits.append(now)
+        _RATE[ip] = hits[-limit:]
+        return True
+
+
 class Handler(SimpleHTTPRequestHandler):
     def _send_json(self, code, obj, extra_headers=None):
         data = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        origin = _allowed_origin(self)
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
         for k, v in (extra_headers or {}).items():
             self.send_header(k, v)
         self.end_headers()
@@ -4133,14 +4168,22 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_OPTIONS(self):
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        origin = _allowed_origin(self)
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
 
     def end_headers(self):
         if self.path == "/" or ".html" in self.path or "/libs/" in self.path:
             self.send_header("Cache-Control", "no-store, max-age=0")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Permissions-Policy", "geolocation=(), microphone=(self), camera=()")
         super().end_headers()
 
     def do_GET(self):
@@ -4156,7 +4199,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.send_header("Content-Length", str(len(data)))
-                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Origin", _allowed_origin(self) or "null")
                 self.end_headers()
                 self.wfile.write(data)
                 return
@@ -4171,7 +4214,7 @@ class Handler(SimpleHTTPRequestHandler):
                     self.send_response(200)
                     self.send_header("Content-Type", ctype)
                     self.send_header("Content-Length", str(len(data)))
-                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Access-Control-Allow-Origin", _allowed_origin(self) or "null")
                     self.end_headers()
                     self.wfile.write(data)
                 except Exception:
@@ -4585,7 +4628,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-Type", "image/png")
                 self.send_header("Content-Length", str(len(png)))
-                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Origin", _allowed_origin(self) or "null")
                 self.end_headers()
                 self.wfile.write(png)
             except Exception as e:
@@ -4667,7 +4710,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
-            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Origin", _allowed_origin(self) or "null")
             self.end_headers()
             self.wfile.write(data)
             return
@@ -5170,7 +5213,7 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/mpeg")
                 self.send_header("Content-Length", str(len(data)))
-                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Origin", _allowed_origin(self) or "null")
                 self.end_headers()
                 self.wfile.write(data)
             except Exception as e:
@@ -5547,6 +5590,9 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        if not _rate_ok(self):
+            self._send_json(429, {"ok": False, "error": "too many requests"})
+            return
         u = urllib.parse.urlparse(self.path)
         try:
             length = int(self.headers.get("Content-Length", "0") or 0)

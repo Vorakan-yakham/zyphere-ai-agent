@@ -67,6 +67,7 @@ jobs:
             ("progress", "department_progress", "run"),
             ("design", "system_design", "run"),
             ("it_review", "it_integration_review", "run"),
+            ("security", "security_audit", "run"),
             ("qa", "qa_audit_team", "run"),
           ]
           from concurrent.futures import ThreadPoolExecutor
@@ -138,6 +139,7 @@ jobs:
                                      ("storetest", "store_access_test", "run"),
                                      ("progress", "department_progress", "run"),
                                      ("design", "system_design", "run"),
+                                     ("security", "security_audit", "run"),
                                      ("it_review", "it_integration_review", "run")]:
                   try:
                       m = __import__(mod)

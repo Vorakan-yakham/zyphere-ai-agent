@@ -17,14 +17,16 @@ DATA = os.path.join(ROOT, "data", "cover_publisher.json")
 def run(apply=True):
     os.makedirs(DST, exist_ok=True)
     made, total = [], 0
-    # small palette PNG for embedding in the editorial-approved full book
+    # small palette PNGs for embedding in the editorial-approved full books
     # (GitHub Contents API refuses >1MB files)
-    src1 = os.path.join(SRC, "cover_01.png")
-    if os.path.exists(src1):
+    for k in range(1, 47):
+        src_e = os.path.join(SRC, "cover_%02d.png" % k)
+        if not os.path.exists(src_e):
+            continue
         try:
-            embed = Image.open(src1).convert("P", palette=Image.ADAPTIVE, colors=128)
+            embed = Image.open(src_e).convert("P", palette=Image.ADAPTIVE, colors=128)
             embed = embed.resize((400, 600), Image.Resampling.LANCZOS)
-            embed.save(os.path.join(DST, "cover_01_embed.png"), "PNG", optimize=True)
+            embed.save(os.path.join(DST, "cover_%02d_embed.png" % k), "PNG", optimize=True)
         except Exception:
             pass
     for i in range(1, 47):
