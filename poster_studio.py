@@ -38,7 +38,7 @@ def fetch_photo(query):
                    if w not in stop)
     tries = [query]
     if query:
-        tries += [query.split()[0], "graphic design", "abstract texture", "photography"]
+        tries += [query.split()[0], "photography", "nature landscape", "architecture"]
     for q in tries:
         try:
             r = requests.get("https://commons.wikimedia.org/w/api.php",

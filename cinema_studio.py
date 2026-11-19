@@ -209,6 +209,72 @@ def srt_time(t):
     return "%02d:%02d:%02d,%03d" % (h, m, s, ms)
 
 
+def subject_queries(brief, i=1):
+    """Photo search follows the ACTUAL brief, not a fixed generic list."""
+    t = str(brief).lower()
+    options = []
+    if any(k in t for k in ("ป่า", "forest", "เขา", "jungle", "ต้นไม้")):
+        options = ["misty forest sunlight", "deep jungle canopy", "forest path sunrise"]
+    elif any(k in t for k in ("วัด", "temple", "ศาสนา", "พระ")):
+        options = ["ancient temple sunrise", "buddhist temple architecture", "temple details"]
+    elif any(k in t for k in ("น้ำ", "ทะเล", "sea", "water", "ว่าย", "คลื่น")):
+        options = ["ocean waves aerial", "coastline sunset", "blue water texture"]
+    elif any(k in t for k in ("เมือง", "city", "ถนน", "urban", "office")):
+        options = ["city skyline night", "urban street light", "modern architecture aerial"]
+    elif any(k in t for k in ("อวกาศ", "space", "ดารา", "จักรวาล", "galaxy")):
+        options = ["nebula space nasa", "galaxy stars", "astronomy telescope"]
+    elif any(k in t for k in ("ควอนตัม", "quantum", "physics", "ฟิสิกส์")):
+        options = ["quantum optics laboratory", "particle accelerator", "science experiment light"]
+    elif any(k in t for k in ("ดนตรี", "music", "เสียง", "sound", "art")):
+        options = ["music studio instrument", "concert stage light", "abstract sound waves"]
+    else:
+        options = [str(brief)[:60], "cinematic landscape light", "professional creative work"]
+    return options[i - 1:] + options[:i - 1]  # try in order, starting at shot i
+
+
+def subject_photo(brief, i=1):
+    """On-topic PHOTOGRAPH (not paintings), cached; falls back to fetch_photo."""
+    import hashlib as _h
+    from PIL import Image
+    queries = subject_queries(brief, i)
+    if isinstance(queries, str):
+        queries = [queries]
+    cache = os.path.join(ROOT, "media", "cinema_photos")
+    os.makedirs(cache, exist_ok=True)
+    art_words = ("painting", "watercolor", "drawing", "illustration", "artwork",
+                 "sketch", "poster", "canvas", "abstract painting", "digital art")
+    for q in queries[:4]:
+        fp = os.path.join(cache, _h.md5(q.encode()).hexdigest()[:14] + ".jpg")
+        mp = fp + ".json"
+        if os.path.exists(fp):
+            try:
+                return Image.open(fp).convert("RGB"), json.load(open(mp, encoding="utf-8"))
+            except Exception:
+                pass
+        try:
+            import poster_studio as PS
+            photo, credit = PS.fetch_photo(q)
+        except Exception:
+            photo, credit = None, None
+        if photo is None:
+            try:
+                photo, credit = fetch_photo(q)
+            except Exception:
+                photo, credit = None, None
+        if photo is None:
+            continue
+        page = str((credit or {}).get("page", "")).lower()
+        if any(w in page for w in art_words):
+            continue  # reject paintings/illustrations for a photo-driven film
+        if photo.width < photo.height:
+            continue  # video wants landscape
+        photo.save(fp, quality=92)
+        json.dump(credit or {}, open(mp, "w", encoding="utf-8"), ensure_ascii=False)
+        return photo.convert("RGB"), credit
+    return None, None
+
+
+
 def run(brief, seconds=18, lang="th", apply=True):
     os.makedirs(MEDIA, exist_ok=True)
     job = "cinema_" + hashlib.md5((brief + str(time.time())).encode()).hexdigest()[:10]
@@ -234,9 +300,8 @@ def run(brief, seconds=18, lang="th", apply=True):
         manifest["fonts"][str(i)] = {"font": getattr(fnt, "path", "default"), "coverage": cov}
         # English, photography-style queries find far more real CC photos
         # than a Thai prose brief; attribution stays in the manifest.
-        photo_queries = ["cinematic aerial landscape nature", "macro detail technology light",
-                         "professional studio team creative work"]
-        photo, credit = fetch_photo(photo_queries[(i-1) % len(photo_queries)])
+        # on-topic photography from the real brief (cached, CC-attributed)
+        photo, credit = subject_photo(brief, i)
         bucket = "new" if photo and i % 2 else "archive"
         if photo:
             p = os.path.join(out, "photo_%02d.jpg" % i)
