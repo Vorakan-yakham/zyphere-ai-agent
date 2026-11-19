@@ -48,6 +48,12 @@ def run(apply=True):
     # 2) no stale hardcoded identity
     c("no hardcoded owner name", "vorakan_yakham" not in idx, "clean")
     c("identity loader exists", "zyApplyIdentity" in idx and 'id="acctName"' in idx)
+    c("voice control visible on empty chat",
+      "body.is-empty #voiceBtn{display:inline-flex!important}" in idx and
+      "body.is-empty #voiceBtn{display:none!important}" not in idx,
+      "voice button never hidden")
+    c("voice defaults on", "voiceOn=getK('zy_voice')!=='0'" in idx,
+      "auto voice enabled")
     c("logged-out label invites login",
       'id="acctName">เข้าสู่ระบบ<' in idx and "Guest" not in idx,
       "login prompt shown, no Guest")

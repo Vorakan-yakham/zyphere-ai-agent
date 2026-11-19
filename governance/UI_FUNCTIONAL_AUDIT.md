@@ -1,12 +1,14 @@
 # UI Functional Audit
 
-ผ่าน **13/13**
+ผ่าน **15/15**
 
 | ตรวจ | ผล | หลักฐาน |
 |---|---|---|
 | all 71 buttons have handlers | PASS | dead=[] |
 | no hardcoded owner name | PASS | clean |
 | identity loader exists | PASS |  |
+| voice control visible on empty chat | PASS | voice button never hidden |
+| voice defaults on | PASS | auto voice enabled |
 | logged-out label invites login | PASS | login prompt shown, no Guest |
 | no duplicate class attributes on buttons | PASS | duplicate=0 |
 | guest/user gating classes applied | PASS | gating ok |
