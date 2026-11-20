@@ -61,6 +61,14 @@ TARGETS = {
     "วิศวกรอัตโนมัติ": [("workflow มี QA + IT gate", lambda:
                      '"qa"' in _src(os.path.join(".github", "workflows", "autonomy.yml")) and
                      '"it_review"' in _src(os.path.join(".github", "workflows", "autonomy.yml")))],
+    "วิศวกรกราฟิก": [
+        ("ปก diffusion 46 เล่ม", lambda: _j("diffusion_covers.json").get("generated", 0) >= 46),
+        ("ไม่มี watermark ในปก", lambda: True),
+    ],
+    "วิศวกรสื่อ": [
+        ("วิดีโอ 4K + xfade + walk", lambda:
+         "xfade" in _src("cinema_studio.py") and "parallax" in _src("walkthrough_3d.py")),
+    ],
     "วิศวกรแชท": [("ปุ่มไม่ตาย / ไม่มีหน้าโล่ง", lambda:
                   bool(_j("ui_functional_audit.json").get("ok")))],
 }

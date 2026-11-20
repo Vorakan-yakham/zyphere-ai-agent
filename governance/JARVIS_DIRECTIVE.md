@@ -4,13 +4,13 @@
 
 | แผนก | คะแนน | เป้าที่ยังไม่ผ่าน | สิ่งที่ต้องทำต่อ | แหล่งเรียนรู้จริง |
 |---|---|---|---|---|
-| วิศวกรกราฟิก | 2/2 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://pillow.readthedocs.io/en/stable/reference/ImageFilter.html |
-| วิศวกรสื่อ | 2/2 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://ffmpeg.org/ffmpeg-filters.html#xfade |
+| วิศวกรกราฟิก | 1/2 | ปก diffusion 46 เล่ม | ศึกษา https://pillow.readthedocs.io/en/stable/reference/ImageFilter.ht | https://pillow.readthedocs.io/en/stable/reference/ImageFilter.html |
+| วิศวกรสื่อ | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://ffmpeg.org/ffmpeg-filters.html#xfade |
 | วิศวกรเสียง | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://en.wikipedia.org/wiki/Formant |
 | วิศวกรเพลง | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://en.wikipedia.org/wiki/Musical_form |
 | วิศวกรหนังสือ | 0/1 | book V2 ครบ 46 เล่ม | ศึกษา https://www.w3.org/WAI/WCAG22/Understanding/ แล้วปรับ book V2 คร | https://www.w3.org/WAI/WCAG22/Understanding/ |
 | วิศวกรร้านค้า | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://www.nngroup.com/articles/pricing-page/ |
-| วิศวกรQA | 1/2 | QA Supreme ผ่าน | ศึกษา https://en.wikipedia.org/wiki/Software_quality_assurance แล้วปรั | https://en.wikipedia.org/wiki/Software_quality_assurance |
+| วิศวกรQA | 2/2 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://en.wikipedia.org/wiki/Software_quality_assurance |
 | วิศวกรความปลอดภัย | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://owasp.org/www-project-top-ten/ |
 | วิศวกรฐานข้อมูล | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://redis.io/docs/latest/develop/data-types/strings/ |
 | วิศวกรอัตโนมัติ | 1/1 | - | คงมาตรฐาน — หาต่อแล้วพัฒนาเพิ่ม | https://docs.github.com/en/actions/writing-workflows |
