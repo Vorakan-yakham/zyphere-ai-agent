@@ -1,6 +1,6 @@
 # Diffusion Covers — international edition
 
-สร้าง **2/46** ปกด้วย AI diffusion
+สร้าง **3/46** ปกด้วย AI diffusion
 
 แหล่ง: Pollinations free diffusion endpoint (AI-generated art)
 

@@ -50,7 +50,7 @@ def generate(title, subject, seed):
         return Image.open(fp).convert("RGB"), key, True
     try:
         u = ENDPOINT + requests.utils.quote(prompt_for(title, subject))
-        u += "?width=640&height=960&seed=%d&nologo=true&model=flux" % seed
+        u += "?width=1200&height=1800&seed=%d&nologo=true&model=flux" % seed
         r = requests.get(u, timeout=180)
         if not r.ok or len(r.content) < 20000:
             return None, key, False
@@ -63,8 +63,11 @@ def generate(title, subject, seed):
 
 
 def international_cover(photo, title, subject, price, idx, accent=(232, 236, 242)):
+    # Free endpoint caps native output at ~627px wide. Lanczos + a final
+    # UnsharpMask is the honest best CPU sharpening available here (no ESRGAN).
     im = ImageOps.fit(photo, (W, H), method=Image.Resampling.LANCZOS,
                       centering=(0.5, 0.32))
+    im = im.filter(ImageFilter.UnsharpMask(radius=1.35, percent=130, threshold=2))
     # dark lower scrim for type
     scrim = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(scrim)
@@ -146,10 +149,16 @@ def run(apply=True, limit=46):
             small = small.resize((400, 600), Image.Resampling.LANCZOS)
             small.save(os.path.join(PUBLIC, "cover_%02d_embed.png" % i),
                        "PNG", optimize=True)
-        return {"i": i, "title": t, "ok": True, "art": key}
+        return {"i": i, "title": t, "ok": True, "art": key,
+                "native": list(photo.size)}
 
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(work, jobs))
+    # Free endpoint: 1 image / 45s per IP. One per pulse is enough because the
+    # autonomy loop fires every minute — never fire parallel (HTTP 402).
+    run_jobs = [j for j in jobs if not any(
+        r.get("i") == j[0] and r.get("ok") for r in
+        (json.load(open(DATA, encoding="utf-8")).get("results", [])
+         if os.path.exists(DATA) else []))][:1]
+    results = [work(j) for j in run_jobs]
     prev = []
     if os.path.exists(DATA):
         try:
