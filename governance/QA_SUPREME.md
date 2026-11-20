@@ -1,17 +1,17 @@
 # QA Supreme — ตา / หู / สมอง ตรวจเข้มกว่าแผนกอื่น
 
-ผล: **HOLD** · 4/5
+ผล: **PASS** · 5/5
 
 ## ตา: ปกไม่ซ้ำ — ผ่าน
 - unique=46/46
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
-## ตา: contrast/balance ผ่าน — **ไม่ผ่าน**
-- {'contrast_ratio': 1.79, 'balance': 0.976, 'hue_buckets': 41, 'ok': False}
+## ตา: contrast/balance ผ่าน — ผ่าน
+- {'contrast_ratio': 3.56, 'balance': 0.975, 'hue_buckets': 40, 'ok': True}
 - ผู้รับผิดชอบ: วิศวกรกราฟิก
 
 ## หู: เสียงมีจริง ไม่เงียบ — ผ่าน
-- {'ok': True, 'peak': 22804, 'rms': 7157.5, 'silence': 0.014, 'streams': ['Stream #0:0: Audio: mp3 (mp3float), 22050 Hz, mono, fltp, 160 kb/s, start 0.050113']}
+- {'ok': True, 'peak': 22995, 'rms': 5180.1, 'silence': 0.008, 'streams': ['Stream #0:0: Audio: mp3 (mp3float), 24000 Hz, mono, fltp, 160 kb/s, start 0.046042']}
 - ผู้รับผิดชอบ: วิศวกรเสียง
 
 ## สมอง: คำกล่าวตรงกับไฟล์จริง — ผ่าน
@@ -23,5 +23,3 @@
 - ผู้รับผิดชอบ: วิศวกรร้านค้า
 
 FAIL-CLOSED: ไม่สวย/ไม่ตรงหลัก/เสียงไม่จริง → ส่งกลับแก้ใหม่ก่อนออกสู่สายตาชาวโลก
-
-- สั่งแก้: วิศวกรกราฟิก → ตา: contrast/balance ผ่าน

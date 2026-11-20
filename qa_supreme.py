@@ -29,15 +29,25 @@ def eye_image(path):
     # EYES: find ACTUAL glyph pixels (bright ink) against the image's median
     # background. Thin anti-aliased Thai glyphs require absolute thresholds,
     # not "top 12% of a zone" which still returns background after downscale.
-    allpx = [px[x, y] for x in range(0, w, 3) for y in range(0, h, 3)]
-    lum_sorted = sorted(allpx, key=rgb_lum)
-    bg_col = lum_sorted[len(lum_sorted)//2]
+    # Background behind the title = median of the lower zone EXCLUDING the
+    # brightest few percent (glyph cores). Whole-image median is polluted by
+    # bright photo areas and gives a false contrast failure on art-directed
+    # covers with a dark scrim.
+    zone_all = [px[x, y] for x in range(0, w, 3)
+                for y in range(int(h*.60), int(h*.97), 3)]
+    zone_sorted = sorted(zone_all, key=rgb_lum) if zone_all else []
+    bg_col = zone_sorted[int(len(zone_sorted) * .15)] if zone_sorted else (0, 0, 0)
     bg_lum = rgb_lum(bg_col)
+    # Text lives in the lower third (title block). Sample the brightest 4%
+    # there — independent of the photo's median brightness. On a bright photo
+    # the old relative threshold found no glyphs and fell back to white,
+    # producing a false contrast failure.
     ink_zone = [px[x, y] for x in range(0, w, 2)
-                for y in range(int(h*.12), int(h*.98), 2)]
-    glyphs = [c for c in ink_zone if rgb_lum(c) > min(0.92, bg_lum + 0.30)]
-    if glyphs:
-        gl = sorted(glyphs, key=rgb_lum)[-max(1, len(glyphs)//3):]
+                for y in range(int(h*.62), int(h*.96), 2)]
+    # Only ~0.5% of the downscaled zone is actual white glyph core; averaging
+    # the top 4% mixes glyphs with photo and understates contrast.
+    gl = sorted(ink_zone, key=rgb_lum)[-max(1, len(ink_zone)//200):] if ink_zone else []
+    if gl:
         text_col = tuple(sum(c[i] for c in gl)//len(gl) for i in range(3))
     else:
         text_col = (255, 255, 255)
