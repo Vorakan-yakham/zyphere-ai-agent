@@ -67,6 +67,8 @@ def e03_dehaze(im):
     blur = im.filter(ImageFilter.GaussianBlur(26))
     detail = ImageEnhance.Contrast(im).enhance(1.10)
     return Image.blend(im, Image.blend(detail, blur, 0.18), 0.62)
+# Zyphere: own-brain user-correction: เพิ่มอีก 100 คนก็ไม่ช่วย ถ้าพัฒนาโค้ดช้า → เพิ่มความสามารถ/โมดulers ก่อนเพิ่มคน
+
 
 
 def e04_local_contrast(im):
