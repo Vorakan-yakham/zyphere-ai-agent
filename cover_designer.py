@@ -267,6 +267,7 @@ def make(title, price, author="Zyphere", rules=None):
     d = ImageDraw.Draw(im)
 
     # Layout variant by subject — avoids the "same template" look
+    idx = abs(h) % 90 + 10
     tl = str(title).lower()
     if any(k in tl for k in ("ดารา", "อวกาศ", "จักรวาล", "space", "energy", "นิวเคลียร์")):
         layout = 1  # centered cosmic
@@ -274,6 +275,8 @@ def make(title, price, author="Zyphere", rules=None):
         layout = 2  # art-house: title high, large negative space
     elif any(k in tl for k in ("เศรษฐ", "การเงิน", "การตลาด", "การจัดการ", "กฎหมาย", "รัฐศาสตร์")):
         layout = 3  # business: left band + rule
+    elif any(k in tl for k in ("จิตวิทยา", "ภาษา", "การสอน", "การเขียน", "ปรัชญา", "จริยธรรม")):
+        layout = 4  # editorial portrait-style
     else:
         layout = 0  # classic bottom-left
 
@@ -302,6 +305,17 @@ def make(title, price, author="Zyphere", rules=None):
             y += 92
         d.rectangle((70, y+16, 210, y+22), fill=accent)
         sub_y = y + 44
+    elif layout == 4:
+        # editorial: giant translucent index number behind, title low-left
+        ghost = font(560)
+        d.text((W*.55, H*.06), "%02d" % idx, font=ghost,
+               fill=(*accent, 34))
+        y = int(H*.66)
+        for ln in lines:
+            d.text((70, y), ln, font=f, fill=(255, 255, 255))
+            y += 92
+        d.rectangle((70, y+16, 210, y+22), fill=accent)
+        sub_y = y + 44
     else:
         y = int(H*.70)
         for ln in lines:
@@ -312,7 +326,6 @@ def make(title, price, author="Zyphere", rules=None):
 
     d.text((70, 104), "ZYPHERE  ·  KNOWLEDGE SERIES", font=font(25),
            fill=(224, 246, 252))
-    idx = abs(h) % 90 + 10
     d.text((W-140, 104), "%02d" % idx, font=font(24), fill=(190, 226, 238))
     d.line((70, 146, W-70, 146), fill=(*accent, 110), width=2)
     d.text((70, sub_y), "ฉบับสมบูรณ์ · เนื้อหาจากต้นฉับจริง", font=font(25),
