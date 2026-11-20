@@ -94,6 +94,10 @@ def static_checks():
         out.append(check("46 distinct cover photo subjects", ok_cover, evidence))
     except Exception as e:
         out.append(check("46 distinct cover photo subjects", False, str(e)[:120]))
+    out.append(check("assistant receives live 2026 context",
+                     "import live_context as LC" in app and
+                     "ไม่ได้จำกัด" in read("live_context.py"),
+                     "live context injected into system prompt"))
     out.append(check("admin cannot order (UI + backend)",
                      "zyApplyBuyVisibility" in store and
                      "Admin ไม่สามารถสั่งซื้อได้" in app,

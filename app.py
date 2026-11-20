@@ -5369,6 +5369,10 @@ class Handler(SimpleHTTPRequestHandler):
                 "Content-Disposition": 'attachment; filename="%s"' % name,
             })
             return
+        if u.path == "/api/live/context":
+            import live_context as LC
+            self._send_json(200, {"ok": True, "context": LC.context()})
+            return
         if u.path == "/api/storage":
             self._send_json(200, storage_public())
             return
@@ -7024,8 +7028,17 @@ class Handler(SimpleHTTPRequestHandler):
                         sys_p = (sys_p + "\n\n[-user preference learned]: " + g)[:6000]
                 except Exception:
                     pass
+            # Inject REAL fresh context so the assistant never claims a
+            # 2024 cutoff while autonomous pulses harvest current sources.
+            try:
+                import live_context as LC
+                fresh = LC.context()
+                if fresh:
+                    sys_p = (fresh + "\n\n" + sys_p)[:7000]
+            except Exception:
+                pass
             if sys_p:
-                clean.insert(0, {"role": "system", "content": sys_p[:6000]})
+                clean.insert(0, {"role": "system", "content": sys_p[:7000]})
             try:
                 from brain_ensemble import ensemble
                 res = ensemble(clean)
