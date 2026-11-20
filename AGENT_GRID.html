@@ -33,10 +33,10 @@ footer{border-top:1px solid var(--line);padding:10px;color:var(--mut);text-align
 <div class="stats"><div class="stat"><span>SERVERS</span><b id="sServers">—</b></div>
 <div class="stat pink"><span>DEPARTMENTS</span><b id="sDept">—</b></div>
 <div class="stat green"><span>QA / SEC</span><b id="sQA">—</b></div>
-<div class="stat"><span>COST</span><b id="sCost">—</b></div></div></header>
+<div class="stat"><span>COST</span><b id="sCost">—</b></div><div class="stat green"><span>LAST RUN</span><b id="sRun">—</b></div></div></header>
 <main>
 <div class="box"><h4>LIVE ORDER <em>real events</em></h4><div class="feed" id="feed">loading…</div></div>
-<div class="grid"><div class="box stage"><h4>ORCHESTRATION MAP <em id="mapmeta">—</em></h4><canvas id="net"></canvas></div>
+<div class="grid"><div class="box stage"><h4>ORCHESTRATION MAP <em id="mapmeta">—</em></h4><canvas id="net"></canvas><div id="detail" style="padding:6px 10px;color:#37e6d8;font-size:10px">click a node to inspect</div></div>
 <div class="box"><h4>MODULE REGISTRY <em id="regmeta">—</em></h4><div style="overflow:auto;max-height:410px"><table id="reg"></table></div></div></div>
 </main>
 <div class="rowgrid">
@@ -55,7 +55,7 @@ function draw(){
  ctx.fillStyle='#07070c';ctx.fillRect(0,0,W,H);
  if(!DATA)return;
  const nodes=DATA.nodes,n=nodes.length,cx=W*.5,cy=H*.5;
- const pos=nodes.map((x,i)=>{const a=i/n*Math.PI*2-Math.PI/2;return {x:cx+Math.cos(a)*W*.36,y:cy+Math.sin(a)*H*.35}});
+ const pos=window._gpos=nodes.map((x,i)=>{const a=i/n*Math.PI*2-Math.PI/2;return {x:cx+Math.cos(a)*W*.36,y:cy+Math.sin(a)*H*.35}});
  const pulse=(Date.now()/1000)%2;
  // arcs
  nodes.forEach((nd,i)=>{
@@ -89,6 +89,7 @@ async function load(){
   document.getElementById('sDept').textContent=s.active+'/'+s.departments;
   document.getElementById('sQA').textContent=s.qa+'/'+s.security;
   document.getElementById('sCost').textContent=s.cost;
+  document.getElementById('sRun').textContent=s.last_run||'-';
   document.getElementById('mapmeta').textContent=s.servers+' servers · '+s.departments+' depts';
   document.getElementById('regmeta').textContent=s.servers+' registered';
   document.getElementById('feed').innerHTML=d.feed.map(e=>
@@ -107,5 +108,13 @@ async function load(){
   draw();
  }catch(e){document.getElementById('feed').innerHTML='error: '+e.message}
 }
+document.getElementById('net').addEventListener('click',function(e){
+ const r=this.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+ if(!window._gpos||!DATA)return;
+ var best=-1,bd=1e9;
+ window._gpos.forEach(function(p,i){var d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;best=i}});
+ if(best>=0&&bd<40){var n=DATA.nodes[best];
+  document.getElementById('detail').textContent=n.id+' → '+n.group+' · tools: '+n.tools.join(', ')+' · target: '+n.target}
+});
 load();setInterval(load,5000);setInterval(draw,50);window.onresize=draw;
 </script></body></html>

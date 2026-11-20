@@ -58,8 +58,36 @@ def _numbers_from_gov():
     }
 
 
+def workflow_status():
+    """REAL latest GitHub Actions runs — true realtime telemetry."""
+    try:
+        import method_transfer as MT
+        tok = MT.token()
+        if not tok:
+            return {"ok": False, "reason": "no token"}
+        import requests
+        r = requests.get(
+            "https://api.github.com/repos/Vorakan-yakham/zyphere-ai-agent/actions/runs",
+            headers={"Authorization": "Bearer " + tok,
+                     "Accept": "application/vnd.github+json"},
+            params={"per_page": 8}, timeout=12)
+        if not r.ok:
+            return {"ok": False, "reason": "HTTP " + str(r.status_code)}
+        rows = []
+        for x in (r.json().get("workflow_runs") or [])[:8]:
+            rows.append({"name": x.get("name", "")[:34],
+                         "status": x.get("status"),
+                         "conclusion": x.get("conclusion"),
+                         "created": x.get("created_at"),
+                         "id": x.get("id")})
+        return {"ok": True, "runs": rows}
+    except Exception as e:
+        return {"ok": False, "reason": str(e)[:100]}
+
+
 def snapshot():
     gov = _numbers_from_gov()
+    wf = workflow_status()
     prog = _j("department_progress.json", {}) or {"rows": gov["rows"]}
     if not prog.get("rows"):
         prog = {"rows": gov["rows"]}
@@ -93,7 +121,15 @@ def snapshot():
         "qa": sum(1 for c in it.get("checks", []) if c.get("ok")),
         "security": sum(1 for c in sec.get("checks", []) if c.get("ok")),
         "league_rounds": len(rev.get("cycles", [])) if isinstance(rev.get("cycles"), list) else 0,
+        "last_run": (wf.get("runs") or [{}])[0].get("status", "-"),
+        "runs_visible": len(wf.get("runs", [])),
     }
+    for r in (wf.get("runs") or [])[:6]:
+        feed.append({"tag": "RUN", "text": r.get("name", ""),
+                     "detail": "%s / %s · %s" % (r.get("status"),
+                                                r.get("conclusion"), r.get("created")),
+                     "t": int(time.time())})
     return {"ok": True, "t": int(time.time()), "nodes": nodes, "links": links,
             "feed": feed[:16], "stats": stats, "autonomy": bool(auto),
+            "workflow": wf,
             "note": "real modules + real artefacts; not MCP telemetry"}
