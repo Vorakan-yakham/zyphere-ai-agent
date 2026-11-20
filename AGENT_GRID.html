@@ -20,7 +20,7 @@ main{padding:12px;display:grid;grid-template-columns:250px 1fr;gap:10px}
 .feed{height:460px;overflow:auto;padding:6px 9px}
 .ev{border-left:2px solid var(--pink);padding:4px 7px;margin:5px 0;background:#10101d;font-size:11px}
 .ev b{color:var(--pink)}.ev small{display:block;color:var(--mut);font-size:10px;margin-top:2px}
-.rowgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.rowgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
 .rowgrid .box{height:250px;overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}td,th{padding:4px 8px;border-bottom:1px solid #17172a;text-align:left}
 tr:hover td{background:#141428;color:var(--cyan)}th{color:var(--mut);font-weight:400}
@@ -42,7 +42,9 @@ footer{border-top:1px solid var(--line);padding:10px;color:var(--mut);text-align
 <div class="rowgrid">
 <div class="box"><h4>TOOL SCHEMA <em>github-mcp</em></h4><div class="code" id="schema">—</div></div>
 <div class="box"><h4>DATA PIPELINE <em>store / brain</em></h4><div class="code" id="pipe">—</div></div>
-<div class="box"><h4>REVENUE CHANNELS <em>prepared, not sales</em></h4><div class="code" id="rev">—</div></div></div>
+<div class="box"><h4>REVENUE CHANNELS <em>prepared, not sales</em></h4><div class="code" id="rev">—</div></div>
+<div class="box"><h4>GITHUB REPO <em>real telemetry</em></h4><div class="code" id="repo">—</div></div></div>
+<div id="ticker" style="border-top:1px solid #22223a;padding:6px 10px;color:#7d7d9a;font-size:9px;letter-spacing:1px;white-space:nowrap;overflow:hidden">loading…</div>
 <footer>ZYPHERE · ทุกตัวเลขมาจากไฟล์จริง — ไม่มี telemtery ปลอม · <a href="STAFF_LIVE.html" style="color:#37e6d8">STAFF LIVE →</a></footer>
 <script>
 const BK='https://zyphere-ai-agent.onrender.com';
@@ -66,6 +68,11 @@ function draw(){
   const t=(pulse+i/n)%1,qx=cx+(p.x-cx)*t,qy=cy+(p.y-cy)*t;
   ctx.fillStyle=i%2?'#37e6d8':'#ff4fa3';ctx.beginPath();ctx.arc(qx,qy,2.4,0,7);ctx.fill();
  });
+ // orbital rings
+ for(var o=1;o<=3;o++){
+  ctx.strokeStyle='rgba(255,79,163,'+(0.13-o*0.025)+')';ctx.lineWidth=1;
+  ctx.beginPath();ctx.ellipse(cx,cy,W*.30*o/2,H*.28*o/2,0,0,7);ctx.stroke();
+ }
  // core
  const g=ctx.createRadialGradient(cx,cy,2,cx,cy,55);
  g.addColorStop(0,'rgba(255,79,163,.9)');g.addColorStop(1,'rgba(255,79,163,0)');
@@ -94,8 +101,15 @@ async function load(){
   document.getElementById('regmeta').textContent=s.servers+' registered';
   document.getElementById('feed').innerHTML=d.feed.map(e=>
    '<div class="ev"><b>['+e.tag+']</b> '+e.text+'<small>'+e.detail+'</small></div>').join('');
+  var maxT=Math.max.apply(null,d.nodes.map(function(n){return n.tools.length}));
   document.getElementById('reg').innerHTML='<tr><th>module</th><th>group</th><th>tools</th></tr>'+
-   d.nodes.map(n=>'<tr><td>'+n.id+'</td><td>'+n.group+'</td><td>'+n.tools.length+'</td></tr>').join('');
+   d.nodes.map(function(n){var w=Math.round(n.tools.length/maxT*60);
+    return '<tr><td>'+n.id+'</td><td>'+n.group+'</td><td>'+n.tools.length+
+    ' <span style="color:#ff4fa3">'+'█'.repeat(Math.max(1,w/10|0))+'</span></td></tr>'}).join('');
+  var rp=d.repo||{};
+  document.getElementById('repo').innerHTML='size: '+s.repo_mb+' MB\nissues: '+s.issues+'\n'+
+   (rp.commits||[]).map(function(c){return '<span class="s">'+c.sha+'</span> '+c.msg}).join('\n');
+  document.getElementById('ticker').textContent='ZYPHERE GRID · '+s.servers+' MODULES · '+s.departments+' DEPARTMENTS · QA '+s.qa+'/25 · SEC '+s.security+'/8 · LAST RUN '+s.last_run+' · REPO '+s.repo_mb+' MB · NO FAKE TELEMETRY';
   document.getElementById('schema').innerHTML='<span class="k">class</span> ZypherGrid:\\n'+
    '  servers = '+s.servers+'\\n  departments = '+s.departments+'\\n'+
    '  qa_gates = '+s.qa+'\\n  security_gates = '+s.security+'\\n'+

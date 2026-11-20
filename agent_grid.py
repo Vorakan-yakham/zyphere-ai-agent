@@ -85,9 +85,43 @@ def workflow_status():
         return {"ok": False, "reason": str(e)[:100]}
 
 
+def repo_telemetry():
+    """REAL GitHub repository facts — commits, issues, size, latest commit."""
+    try:
+        import method_transfer as MT
+        import requests
+        tok = MT.token()
+        h = {"Authorization": "Bearer " + tok,
+             "Accept": "application/vnd.github+json"}
+        base = "https://api.github.com/repos/Vorakan-yakham/zyphere-ai-agent"
+        r = requests.get(base, headers=h, timeout=12)
+        size_kb = r.json().get("size", 0) if r.ok else 0
+        c = requests.get(base + "/commits", headers=h,
+                         params={"per_page": 5}, timeout=12)
+        commits = []
+        if c.ok:
+            for x in (c.json() or [])[:5]:
+                commits.append({"sha": x.get("sha", "")[:7],
+                                "msg": str(x.get("commit", {}).get("message", ""))[:70],
+                                "date": x.get("commit", {}).get("author", {}).get("date", "")})
+        i = requests.get(base + "/issues", headers=h,
+                         params={"state": "open", "per_page": 5}, timeout=12)
+        issues = []
+        if i.ok:
+            for x in (i.json() or [])[:5]:
+                issues.append({"title": str(x.get("title", ""))[:60],
+                               "number": x.get("number"), "url": x.get("html_url", "")})
+        return {"ok": True, "size_mb": round(size_kb / 1024, 1),
+                "commits": commits, "open_issues": issues,
+                "issues_count": len(issues)}
+    except Exception as e:
+        return {"ok": False, "reason": str(e)[:100]}
+
+
 def snapshot():
     gov = _numbers_from_gov()
     wf = workflow_status()
+    repo = repo_telemetry()
     prog = _j("department_progress.json", {}) or {"rows": gov["rows"]}
     if not prog.get("rows"):
         prog = {"rows": gov["rows"]}
@@ -123,13 +157,18 @@ def snapshot():
         "league_rounds": len(rev.get("cycles", [])) if isinstance(rev.get("cycles"), list) else 0,
         "last_run": (wf.get("runs") or [{}])[0].get("status", "-"),
         "runs_visible": len(wf.get("runs", [])),
+        "repo_mb": repo.get("size_mb", 0),
+        "issues": repo.get("issues_count", 0),
     }
     for r in (wf.get("runs") or [])[:6]:
         feed.append({"tag": "RUN", "text": r.get("name", ""),
                      "detail": "%s / %s · %s" % (r.get("status"),
                                                 r.get("conclusion"), r.get("created")),
                      "t": int(time.time())})
+    for c in (repo.get("commits") or [])[:3]:
+        feed.append({"tag": "GIT", "text": c.get("sha", "") + " " + c.get("msg", ""),
+                     "detail": c.get("date", ""), "t": int(time.time())})
     return {"ok": True, "t": int(time.time()), "nodes": nodes, "links": links,
             "feed": feed[:16], "stats": stats, "autonomy": bool(auto),
-            "workflow": wf,
+            "workflow": wf, "repo": repo,
             "note": "real modules + real artefacts; not MCP telemetry"}
