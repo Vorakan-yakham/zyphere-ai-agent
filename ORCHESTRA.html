@@ -1,0 +1,72 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ZYPHERE · ORCHESTRA</title>
+<style>
+:root{--bg:#06060a;--p:#ff4fa3;--c:#37e6d8;--y:#ffc857;--g:#6ee35e;--txt:#e6e6f2;--m:#767692}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:11px Consolas,monospace}
+header{display:flex;align-items:center;gap:18px;border-bottom:1px solid #1d1d2e;padding:10px 18px;flex-wrap:wrap}
+h1{margin:0;font-size:18px;color:#fff}h1 b{color:var(--p)}
+.stat{font-size:9px;color:var(--m)}.stat b{display:block;font-size:15px;color:var(--c)}
+main{padding:12px;display:grid;grid-template-columns:250px 1fr 260px;gap:10px}
+.bot{border:1px solid #1d1d2e;background:#0b0a12;padding:10px;margin-bottom:10px}
+.bot h3{margin:0 0 5px;font-size:12px;color:var(--y)}.bot .st{float:right;font-size:9px;color:var(--g)}
+.bot p{margin:4px 0;color:var(--m);font-size:10px;line-height:1.6}
+.stage{height:470px;border:1px solid #1d1d2e;position:relative;background:radial-gradient(ellipse at center,#13101c,#06060a 70%)}
+canvas{width:100%;height:100%;display:block}
+.cap{position:absolute;top:10px;left:12px;color:var(--p);font-size:12px;letter-spacing:2px}
+.gate{border-bottom:1px solid #12121e;padding:7px 2px;display:flex;justify-content:space-between;font-size:10px}
+.gate b.ok{color:var(--g)}.gate b.no{color:var(--p)}
+.bottom{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin-top:10px}
+.box{border:1px solid #1d1d2e;background:#0b0a12;padding:8px;height:230px;overflow:auto}
+.box h4{margin:0 0 6px;color:var(--y);font-size:10px;letter-spacing:2px}
+.line{padding:3px 0;border-bottom:1px solid #12121e;font-size:10px;color:#8b8ba5}
+.line b{color:var(--c)}
+.repo{padding:6px;border:1px solid #1d1d2e;margin:5px 0;font-size:10px}
+footer{border-top:1px solid #1d1d2e;padding:9px;text-align:center;color:var(--m);font-size:9px;letter-spacing:2px}
+a{color:var(--c)}</style></head><body>
+<header><h1><b>ZYPHERE</b> · ORCHESTRA</h1>
+<div class="stat">BOTS<b id="sBots">—</b></div><div class="stat">GATES<b id="sGates">—</b></div>
+<div class="stat">REPOS<b id="sRepos">—</b></div><div class="stat">TECH SIGNALS<b id="sTech">—</b></div>
+<div class="stat">SOURCES<b id="sSrc">—</b></div></header>
+<main>
+<div><div id="bots"></div></div>
+<div class="stage"><div class="cap">LIVE AGENT NETWORK · 12 DEPARTMENTS</div><canvas id="g"></canvas></div>
+<div class="box" style="height:auto"><h4>QUALITY GATES</h4><div id="gates"></div>
+<h4 style="margin-top:14px">REPOS</h4><div id="repos"></div></div>
+</main>
+<div class="bottom"><div class="box"><h4>LIVE LOG · real events</h4><div id="log"></div></div>
+<div class="box"><h4>ORCHESTRA NOTE</h4><div style="color:var(--m);line-height:1.9;font-size:10px">
+SCOUT → หาข้อมูลจากแหล่งจริง<br>AUDITOR → ตรวจไฟล์/ภาพ/เสียง<br>TESTER → รัน gate ก่อนปล่อยของ<br><br>
+<span style="color:var(--g)">ทุกแผนกทำงานต่อเองทุก 1 นาที<br>ไม่ต้องรอคำสั่ง</span><br><br>
+<a href="AGENT_GRID.html">AGENT GRID →</a> · <a href="PROMPT_LAB.html">PROMPT LAB →</a>
+</div></div></div>
+<footer>ZYPHERE · ตัวเลขจากไฟล์จริง — ไม่มี telemetry ปลอม</footer>
+<script>
+const BK='https://zyphere-ai-agent.onrender.com';let D=null;
+function draw(){const c=document.getElementById('g'),x=c.getContext('2d'),W=c.clientWidth,H=c.clientHeight;
+ c.width=W*devicePixelRatio;c.height=H*devicePixelRatio;x.scale(devicePixelRatio,devicePixelRatio);
+ if(!D)return;const ns=D.nodes,cx=W*.5,cy=H*.5,t=Date.now()/1000;
+ for(let i=0;i<420;i++){let a=i*2.399,r=Math.sqrt(i/420)*W*.42;x.fillStyle='rgba(255,79,163,.10)';x.fillRect(cx+Math.cos(a+t*.02)*r,cy+Math.sin(a+t*.02)*r*.75,1.2,1.2)}
+ ns.forEach((n,i)=>{if(i===0)return;let a=(i-1)/(ns.length-1)*Math.PI*2-Math.PI/2;
+  let px=cx+Math.cos(a)*W*.32,py=cy+Math.sin(a)*H*.34;
+  x.strokeStyle='rgba(55,230,216,.25)';x.beginPath();x.moveTo(cx,cy);x.lineTo(px,py);x.stroke();
+  let q=((t*.18+i/ns.length)%1);x.fillStyle=i%2?'#ff4fa3':'#37e6d8';
+  x.beginPath();x.arc(cx+(px-cx)*q,cy+(py-cy)*q,2.2,0,7);x.fill();
+  x.strokeStyle=n.group==='up'?'#6ee35e':'#ff4fa3';x.beginPath();x.arc(px,py,9,0,7);x.stroke();
+  x.fillStyle='#e6e6f2';x.font='9px Consolas';x.textAlign='center';x.fillText(n.id,px,py+21);
+ });
+ let g=x.createRadialGradient(cx,cy,2,cx,cy,70);g.addColorStop(0,'rgba(255,79,163,.8)');g.addColorStop(1,'rgba(255,79,163,0)');
+ x.fillStyle=g;x.beginPath();x.arc(cx,cy,70,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(cx,cy,10,0,7);x.fill();
+ x.fillStyle='#ff4fa3';x.fillText('ZYPHERE',cx,cy+28);}
+async function load(){try{const r=await fetch(BK+'/api/orchestra');const d=await r.json();if(!d.ok)throw new Error('x');D=d;
+ const s=d.stats;document.getElementById('sBots').textContent=s.bots;
+ document.getElementById('sGates').textContent=s.gates_pass+'/'+s.gates_total;
+ document.getElementById('sRepos').textContent=s.repos;
+ document.getElementById('sTech').textContent=s.tech;
+ document.getElementById('sSrc').textContent=s.sources;
+ document.getElementById('bots').innerHTML=d.bots.map(b=>'<div class="bot"><h3>'+b.id+'<span class="st">'+b.status+'</span></h3><p>'+b.role+'</p><p>'+b.detail+'</p></div>').join('');
+ document.getElementById('gates').innerHTML=d.gates.map(g=>'<div class="gate"><span>'+g.name+'</span><b class="'+(g.ok?'ok':'no')+'">'+(g.ok?'PASS':'FAIL')+'</b></div>').join('');
+ document.getElementById('repos').innerHTML=d.repos.map(r=>'<div class="repo">'+r.name+' <span style="color:var(--g)">'+r.status+'</span></div>').join('');
+ document.getElementById('log').innerHTML=d.log.map(l=>'<div class="line"><b>['+l.bot+']</b> '+l.t+' '+l.text+'</div>').join('');
+ draw();}catch(e){document.getElementById('log').innerHTML='error '+e.message}}
+load();setInterval(load,5000);setInterval(draw,50);window.onresize=draw;
+</script></body></html>
