@@ -1,0 +1,111 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ZYPHERE · AGENT GRID</title>
+<style>
+:root{--bg:#07070c;--panel:#0b0b16;--line:#22223a;--pink:#ff4fa3;--cyan:#37e6d8;--green:#6ee35e;--amber:#ffc857;--mut:#7d7d9a;--txt:#d8d8ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:12px 'Consolas',monospace}
+header{display:flex;align-items:stretch;border-bottom:1px solid var(--line);height:62px}
+.brand{background:var(--pink);color:#0a0a10;padding:12px 22px;font-weight:800;font-size:18px;display:flex;align-items:center;letter-spacing:1px}
+.sub{padding:12px 22px;display:flex;flex-direction:column;justify-content:center;letter-spacing:3px;color:#aaa}
+.sub b{color:#fff;font-size:15px;letter-spacing:2px}
+.stats{margin-left:auto;display:flex;gap:0}
+.stat{border-left:1px solid var(--line);padding:10px 18px;text-align:right;min-width:88px}
+.stat span{display:block;color:var(--mut);font-size:9px;letter-spacing:2px}
+.stat b{color:var(--cyan);font-size:16px}.stat.pink b{color:var(--pink)}.stat.green b{color:var(--green)}
+main{padding:12px;display:grid;grid-template-columns:250px 1fr;gap:10px}
+.grid{display:grid;grid-template-columns:1fr 300px;gap:10px}
+.box{border:1px solid var(--line);background:var(--panel);position:relative;min-height:0}
+.box h4{margin:0;padding:7px 10px;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:2px;color:var(--amber);display:flex;justify-content:space-between}
+.box h4 em{font-style:normal;color:var(--mut)}
+.stage{height:460px}#net{width:100%;height:100%;display:block}
+.feed{height:460px;overflow:auto;padding:6px 9px}
+.ev{border-left:2px solid var(--pink);padding:4px 7px;margin:5px 0;background:#10101d;font-size:11px}
+.ev b{color:var(--pink)}.ev small{display:block;color:var(--mut);font-size:10px;margin-top:2px}
+.rowgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+.rowgrid .box{height:250px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}td,th{padding:4px 8px;border-bottom:1px solid #17172a;text-align:left}
+tr:hover td{background:#141428;color:var(--cyan)}th{color:var(--mut);font-weight:400}
+.code{padding:8px 10px;color:var(--green);white-space:pre-wrap;font-size:10.5px;line-height:1.6}
+.code .k{color:var(--pink)}.code .s{color:var(--amber)}
+footer{border-top:1px solid var(--line);padding:10px;color:var(--mut);text-align:center;letter-spacing:2px;font-size:10px}
+</style></head><body>
+<header><div class="brand">ZYPHERE · AGENT GRID</div>
+<div class="sub"><b>MODULE SERVERS THE DEPARTMENTS TALK TO</b><span>live orchestration · real artefacts only</span></div>
+<div class="stats"><div class="stat"><span>SERVERS</span><b id="sServers">—</b></div>
+<div class="stat pink"><span>DEPARTMENTS</span><b id="sDept">—</b></div>
+<div class="stat green"><span>QA / SEC</span><b id="sQA">—</b></div>
+<div class="stat"><span>COST</span><b id="sCost">—</b></div></div></header>
+<main>
+<div class="box"><h4>LIVE ORDER <em>real events</em></h4><div class="feed" id="feed">loading…</div></div>
+<div class="grid"><div class="box stage"><h4>ORCHESTRATION MAP <em id="mapmeta">—</em></h4><canvas id="net"></canvas></div>
+<div class="box"><h4>MODULE REGISTRY <em id="regmeta">—</em></h4><div style="overflow:auto;max-height:410px"><table id="reg"></table></div></div></div>
+</main>
+<div class="rowgrid">
+<div class="box"><h4>TOOL SCHEMA <em>github-mcp</em></h4><div class="code" id="schema">—</div></div>
+<div class="box"><h4>DATA PIPELINE <em>store / brain</em></h4><div class="code" id="pipe">—</div></div>
+<div class="box"><h4>REVENUE CHANNELS <em>prepared, not sales</em></h4><div class="code" id="rev">—</div></div></div>
+<footer>ZYPHERE · ทุกตัวเลขมาจากไฟล์จริง — ไม่มี telemtery ปลอม · <a href="STAFF_LIVE.html" style="color:#37e6d8">STAFF LIVE →</a></footer>
+<script>
+const BK='https://zyphere-ai-agent.onrender.com';
+const TK=()=>{try{return localStorage.getItem('zy_token')||''}catch(e){return ''}};
+var DATA=null;
+function draw(){
+ const c=document.getElementById('net'),ctx=c.getContext('2d');
+ const w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;
+ ctx.scale(devicePixelRatio,devicePixelRatio);const W=c.clientWidth,H=c.clientHeight;
+ ctx.fillStyle='#07070c';ctx.fillRect(0,0,W,H);
+ if(!DATA)return;
+ const nodes=DATA.nodes,n=nodes.length,cx=W*.5,cy=H*.5;
+ const pos=nodes.map((x,i)=>{const a=i/n*Math.PI*2-Math.PI/2;return {x:cx+Math.cos(a)*W*.36,y:cy+Math.sin(a)*H*.35}});
+ const pulse=(Date.now()/1000)%2;
+ // arcs
+ nodes.forEach((nd,i)=>{
+  const p=pos[i],dx=p.x-cx,dy=p.y-cy;
+  ctx.strokeStyle='rgba(255,79,163,'+(0.25+0.2*Math.sin(pulse*3+i))+')';ctx.lineWidth=1.3;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.quadraticCurveTo((cx+p.x)/2+dy*.12,(cy+p.y)/2-dx*.12,p.x,p.y);ctx.stroke();
+  // travelling packet
+  const t=(pulse+i/n)%1,qx=cx+(p.x-cx)*t,qy=cy+(p.y-cy)*t;
+  ctx.fillStyle=i%2?'#37e6d8':'#ff4fa3';ctx.beginPath();ctx.arc(qx,qy,2.4,0,7);ctx.fill();
+ });
+ // core
+ const g=ctx.createRadialGradient(cx,cy,2,cx,cy,55);
+ g.addColorStop(0,'rgba(255,79,163,.9)');g.addColorStop(1,'rgba(255,79,163,0)');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,55,0,7);ctx.fill();
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,7,0,7);ctx.fill();
+ ctx.fillStyle='#ff4fa3';ctx.font='11px monospace';ctx.textAlign='center';ctx.fillText('ZYPHERE CORE',cx,cy+26);
+ // nodes
+ nodes.forEach((nd,i)=>{
+  const p=pos[i];const col=nd.group==='creative'?'#ffc857':nd.group==='web'?'#6ee35e':'#37e6d8';
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,15,0,7);ctx.stroke();
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fill();
+  ctx.fillStyle='#d8d8ee';ctx.font='10px monospace';ctx.fillText(nd.id,p.x,p.y+28);
+ });
+}
+async function load(){
+ try{
+  const r=await fetch(BK+'/api/agent/grid?token='+encodeURIComponent(TK()));const d=await r.json();
+  if(!d.ok)throw new Error(d.error||'x');DATA=d;
+  const s=d.stats;
+  document.getElementById('sServers').textContent=s.servers;
+  document.getElementById('sDept').textContent=s.active+'/'+s.departments;
+  document.getElementById('sQA').textContent=s.qa+'/'+s.security;
+  document.getElementById('sCost').textContent=s.cost;
+  document.getElementById('mapmeta').textContent=s.servers+' servers · '+s.departments+' depts';
+  document.getElementById('regmeta').textContent=s.servers+' registered';
+  document.getElementById('feed').innerHTML=d.feed.map(e=>
+   '<div class="ev"><b>['+e.tag+']</b> '+e.text+'<small>'+e.detail+'</small></div>').join('');
+  document.getElementById('reg').innerHTML='<tr><th>module</th><th>group</th><th>tools</th></tr>'+
+   d.nodes.map(n=>'<tr><td>'+n.id+'</td><td>'+n.group+'</td><td>'+n.tools.length+'</td></tr>').join('');
+  document.getElementById('schema').innerHTML='<span class="k">class</span> ZypherGrid:\\n'+
+   '  servers = '+s.servers+'\\n  departments = '+s.departments+'\\n'+
+   '  qa_gates = '+s.qa+'\\n  security_gates = '+s.security+'\\n'+
+   '  cost = "'+s.cost+'"';
+  document.getElementById('pipe').innerHTML='source → <span class="s">fetch</span> → brain\\n'+
+   'brain → <span class="s">reasoning</span> → team\\n'+
+   'team → <span class="s">QA</span> → artefact\\nartefact → GitHub / Pages';
+  document.getElementById('rev').innerHTML='Gumroad · Ko-fi · itch.io\\nDev.to · YouTube · Sponsors\\n'+
+   '<span class="s">status: prepared — no fake sales</span>';
+  draw();
+ }catch(e){document.getElementById('feed').innerHTML='error: '+e.message}
+}
+load();setInterval(load,5000);setInterval(draw,50);window.onresize=draw;
+</script></body></html>
