@@ -176,6 +176,56 @@ def finish_cover(im, accent, seed):
     return im.filter(_IF.UnsharpMask(radius=1.15, percent=118, threshold=2))
 
 
+def tech_overlay(im, title, accent, seed):
+    """Algorithm/data-structure visual: glowing graph + grid over real photo.
+
+    Procedural geometry (binary tree + edges), not a fake AI face — adds real
+    information-design detail to computing/algorithm covers.
+    """
+    import random as _r
+    from PIL import ImageFilter as _IF
+    t = str(title).lower()
+    tech = any(k in t for k in ("อัลกอริทึม", "algorithm", "ข้อมูล", "data",
+                                "ปัญญาประดิษฐ์", "โปรแกรม", "software", "logic",
+                                "ตรรกะ", " ai"))
+    if not tech:
+        return im
+    W0, H0 = im.size
+    layer = Image.new("RGBA", (W0, H0), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    rnd = _r.Random(seed % 9999)
+    # faint measurement grid
+    for gx in range(0, W0, 120):
+        d.line((gx, int(H0*.16), gx, int(H0*.66)), fill=(*accent, 22), width=1)
+    for gy in range(int(H0*.16), int(H0*.66), 90):
+        d.line((70, gy, W0-70, gy), fill=(*accent, 18), width=1)
+    # binary-tree / graph layout
+    levels = [[(W0//2, int(H0*.24))],
+              [(int(W0*.32), int(H0*.37)), (int(W0*.68), int(H0*.37))],
+              [(int(W0*.20), int(H0*.50)), (int(W0*.43), int(H0*.50)),
+               (int(W0*.57), int(H0*.50)), (int(W0*.80), int(H0*.50))]]
+    nodes = [n for lv in levels for n in lv]
+    for li in range(len(levels)-1):
+        for x, y in levels[li]:
+            for nx, ny in levels[li+1]:
+                if abs(nx - x) < W0*.3:
+                    d.line((x, y, nx, ny), fill=(*accent, 105), width=3)
+    for x, y in nodes:
+        r = 15
+        d.ellipse((x-r-6, y-r-6, x+r+6, y+r+6), fill=(*accent, 45))
+        d.ellipse((x-r, y-r, x+r, y+r), fill=(3, 14, 20, 235),
+                  outline=(*accent, 230), width=3)
+        d.ellipse((x-5, y-5, x+5, y+5), fill=(*accent, 255))
+    # a few floating data points
+    for _ in range(18):
+        x = rnd.randrange(90, W0-90)
+        y = rnd.randrange(int(H0*.18), int(H0*.62))
+        d.ellipse((x, y, x+3, y+3), fill=(190, 240, 250, 130))
+    glow = layer.filter(_IF.GaussianBlur(11))
+    im = Image.alpha_composite(im.convert("RGBA"), glow)
+    return Image.alpha_composite(im, layer).convert("RGB")
+
+
 def make(title, price, author="Zyphere", rules=None):
     h = int(hashlib.md5(title.encode()).hexdigest(), 16)
     hue = 170 + (h % 55)
@@ -208,6 +258,8 @@ def make(title, price, author="Zyphere", rules=None):
     im = Image.alpha_composite(im.convert("RGBA"), scrim).convert("RGB")
     d = ImageDraw.Draw(im)
     motif(d, title, accent)
+    im = tech_overlay(im, title, accent, h)
+    d = ImageDraw.Draw(im)
     d.rectangle((70, 74, 196, 80), fill=accent)
     d.text((70, 104), "ZYPHERE  ·  KNOWLEDGE SERIES", font=font(27),
            fill=(224, 246, 252))
