@@ -194,11 +194,11 @@ def tech_overlay(im, title, accent, seed):
     layer = Image.new("RGBA", (W0, H0), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
     rnd = _r.Random(seed % 9999)
-    # faint measurement grid
-    for gx in range(0, W0, 120):
-        d.line((gx, int(H0*.16), gx, int(H0*.66)), fill=(*accent, 22), width=1)
-    for gy in range(int(H0*.16), int(H0*.66), 90):
-        d.line((70, gy, W0-70, gy), fill=(*accent, 18), width=1)
+    # subtle dotted guide — no hard boxes (boxes looked algorithmic/cheap)
+    for gx in range(0, W0, 150):
+        d.line((gx, int(H0*.14), gx, int(H0*.14) + 26), fill=(*accent, 40), width=2)
+    for gy in range(int(H0*.14), int(H0*.62), 130):
+        d.line((70, gy, 110, gy), fill=(*accent, 35), width=2)
     # binary-tree / graph layout
     levels = [[(W0//2, int(H0*.24))],
               [(int(W0*.32), int(H0*.37)), (int(W0*.68), int(H0*.37))],
@@ -211,13 +211,13 @@ def tech_overlay(im, title, accent, seed):
                 if abs(nx - x) < W0*.3:
                     d.line((x, y, nx, ny), fill=(*accent, 105), width=3)
     for x, y in nodes:
-        r = 15
+        r = 10
         d.ellipse((x-r-6, y-r-6, x+r+6, y+r+6), fill=(*accent, 45))
         d.ellipse((x-r, y-r, x+r, y+r), fill=(3, 14, 20, 235),
                   outline=(*accent, 230), width=3)
         d.ellipse((x-5, y-5, x+5, y+5), fill=(*accent, 255))
     # a few floating data points
-    for _ in range(18):
+    for _ in range(10):
         x = rnd.randrange(90, W0-90)
         y = rnd.randrange(int(H0*.18), int(H0*.62))
         d.ellipse((x, y, x+3, y+3), fill=(190, 240, 250, 130))
@@ -250,35 +250,78 @@ def make(title, price, author="Zyphere", rules=None):
             d0.line((0, y, W, y),
                     fill=tuple(int((7, 24, 36)[i]*(1-t) + (10, 48, 62)[i]*t)
                                for i in range(3)))
+    # Art-directed scrim: full-bleed photo, darkness concentrated at bottom
     scrim = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     sd = ImageDraw.Draw(scrim)
-    for y in range(int(H*.34), H):
-        t = (y - H*.34) / (H*.66)
-        sd.line((0, y, W, y), fill=(3, 12, 20, int(232*t)))
+    for y in range(int(H*.28), H):
+        t = max(0.0, (y - H*.28) / (H*.72))
+        sd.line((0, y, W, y), fill=(3, 12, 20, int(238 * (t ** 1.25))))
+    # top scrim so brand text stays readable over bright skies
+    for y in range(0, 190):
+        a = int(150 * (1 - y / 190))
+        sd.line((0, y, W, y), fill=(3, 12, 20, a))
     im = Image.alpha_composite(im.convert("RGBA"), scrim).convert("RGB")
     d = ImageDraw.Draw(im)
     motif(d, title, accent)
     im = tech_overlay(im, title, accent, h)
     d = ImageDraw.Draw(im)
-    d.rectangle((70, 74, 196, 80), fill=accent)
-    d.text((70, 104), "ZYPHERE  ·  KNOWLEDGE SERIES", font=font(27),
+
+    # Layout variant by subject — avoids the "same template" look
+    tl = str(title).lower()
+    if any(k in tl for k in ("ดารา", "อวกาศ", "จักรวาล", "space", "energy", "นิวเคลียร์")):
+        layout = 1  # centered cosmic
+    elif any(k in tl for k in ("ศิลปะ", "ดนตรี", "ภาพยนตร์", "การออกแบบ", "สถาปัตยกรรม", "วรรณกรรม")):
+        layout = 2  # art-house: title high, large negative space
+    elif any(k in tl for k in ("เศรษฐ", "การเงิน", "การตลาด", "การจัดการ", "กฎหมาย", "รัฐศาสตร์")):
+        layout = 3  # business: left band + rule
+    else:
+        layout = 0  # classic bottom-left
+
+    f = font(78)
+    lines = wrap(d, title[:60], f, W - 150)[:3]
+    if layout == 1:
+        y = int(H*.66)
+        for ln in lines:
+            w = d.textlength(ln, font=f)
+            d.text(((W - w) / 2, y), ln, font=f, fill=(255, 255, 255))
+            y += 92
+        d.rectangle((W/2-70, y+18, W/2+70, y+24), fill=accent)
+        sub_y = y + 46
+    elif layout == 2:
+        y = int(H*.20)
+        for ln in lines:
+            d.text((80, y), ln, font=f, fill=(255, 255, 255))
+            y += 92
+        d.rectangle((80, y+12, 220, y+18), fill=accent)
+        sub_y = y + 40
+    elif layout == 3:
+        d.rectangle((0, int(H*.60), 16, H), fill=accent)
+        y = int(H*.64)
+        for ln in lines:
+            d.text((70, y), ln, font=f, fill=(255, 255, 255))
+            y += 92
+        d.rectangle((70, y+16, 210, y+22), fill=accent)
+        sub_y = y + 44
+    else:
+        y = int(H*.70)
+        for ln in lines:
+            d.text((70, y), ln, font=f, fill=(255, 255, 255))
+            y += 92
+        d.rectangle((70, y+16, 210, y+22), fill=accent)
+        sub_y = y + 44
+
+    d.text((70, 104), "ZYPHERE  ·  KNOWLEDGE SERIES", font=font(25),
            fill=(224, 246, 252))
     idx = abs(h) % 90 + 10
-    d.text((W-150, 104), "%02d" % idx, font=font(26), fill=(190, 226, 238))
-    d.line((70, 152, W-70, 152), fill=(*accent, 130), width=2)
-    y = int(H*.70)
-    f = font(74)
-    for ln in wrap(d, title[:60], f, W-140)[:3]:
-        d.text((70, y), ln, font=f, fill=(255, 255, 255))
-        y += 90
-    d.rectangle((70, y+16, 210, y+22), fill=accent)
-    d.text((70, y+44), "ฉบับสมบูรณ์ · เนื้อหาจากต้นฉับจริง", font=font(27),
+    d.text((W-140, 104), "%02d" % idx, font=font(24), fill=(190, 226, 238))
+    d.line((70, 146, W-70, 146), fill=(*accent, 110), width=2)
+    d.text((70, sub_y), "ฉบับสมบูรณ์ · เนื้อหาจากต้นฉับจริง", font=font(25),
            fill=(198, 230, 240))
-    d.text((70, H-120), author + "   ·   ฿" + str(price), font=font(38),
+    d.text((70, H-118), author + "   ·   ฿" + str(price), font=font(36),
            fill=(232, 248, 252))
     if credit and credit.get("creator"):
-        d.text((70, H-66), "photo: " + str(credit["creator"])[:52] + " · " +
-               str(credit.get("license", ""))[:18], font=font(18),
+        d.text((70, H-64), "photo: " + str(credit["creator"])[:52] + " · " +
+               str(credit.get("license", ""))[:18], font=font(17),
                fill=(170, 202, 214))
     im = finish_cover(im, accent, h)
     return im
