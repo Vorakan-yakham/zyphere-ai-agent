@@ -94,6 +94,11 @@ def static_checks():
         out.append(check("46 distinct cover photo subjects", ok_cover, evidence))
     except Exception as e:
         out.append(check("46 distinct cover photo subjects", False, str(e)[:120]))
+    out.append(check("covers use local EDSR super-resolution",
+                     "SR.upscale" in
+                     open(os.path.join(ROOT, "diffusion_covers.py"),
+                          encoding="utf-8").read(),
+                     "627px endpoint output reconstructed with EDSR x4"))
     out.append(check("assistant receives live 2026 context",
                      "import live_context as LC" in app and
                      "ไม่ได้จำกัด" in read("live_context.py"),

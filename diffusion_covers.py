@@ -63,11 +63,14 @@ def generate(title, subject, seed):
 
 
 def international_cover(photo, title, subject, price, idx, accent=(232, 236, 242)):
-    # Free endpoint caps native output at ~627px wide. Lanczos + a final
-    # UnsharpMask is the honest best CPU sharpening available here (no ESRGAN).
-    im = ImageOps.fit(photo, (W, H), method=Image.Resampling.LANCZOS,
-                      centering=(0.5, 0.32))
-    im = im.filter(ImageFilter.UnsharpMask(radius=1.35, percent=130, threshold=2))
+    # Free endpoint caps native output at ~627px. Local EDSR x4 reconstructs
+    # detail before the final fit — genuinely sharper than a plain Lanczos.
+    try:
+        import superres as SR
+        im = SR.upscale(photo, (W, H))
+    except Exception:
+        im = ImageOps.fit(photo, (W, H), method=Image.Resampling.LANCZOS)
+        im = im.filter(ImageFilter.UnsharpMask(radius=1.35, percent=130, threshold=2))
     # dark lower scrim for type
     scrim = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(scrim)
