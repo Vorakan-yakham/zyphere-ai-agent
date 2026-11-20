@@ -4188,7 +4188,7 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
                       "/GROWTH.html", "/ZY_TEMPLATE.html",
                       "/PROGRESS.html", "/ACCOUNT.html", "/STUDIO.html",
-                      "/CATEGORIES.html", "/STAFF_LIVE.html", "/AGENT_GRID.html"):
+                      "/CATEGORIES.html", "/STAFF_LIVE.html", "/AGENT_GRID.html", "/PROMPT_LAB.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()
@@ -5368,6 +5368,10 @@ class Handler(SimpleHTTPRequestHandler):
             self._send_json(200, backup_bundle(), {
                 "Content-Disposition": 'attachment; filename="%s"' % name,
             })
+            return
+        if u.path == "/api/prompt/lab":
+            import prompt_lab as PL
+            self._send_json(200, PL.snapshot())
             return
         if u.path == "/api/agent/grid":
             import agent_grid as AG

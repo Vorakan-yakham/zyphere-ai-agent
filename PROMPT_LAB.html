@@ -1,0 +1,80 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ZYPHERE · PROMPT LAB</title>
+<style>
+:root{--bg:#08070d;--p:#ff4fa3;--c:#37e6d8;--m:#6b6b85;--t:#e7e7f2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:11px Consolas,monospace}
+header{padding:18px 24px 12px;border-bottom:1px solid #1d1d2e}
+h1{margin:0;font-size:22px;color:#fff}h1 small{font-size:12px;color:var(--p);letter-spacing:2px}
+p.sub{color:var(--m);margin:6px 0 14px;max-width:760px;line-height:1.7}
+.seg{display:flex;gap:3px;height:22px}
+.seg div{flex:1;background:#171724;color:#7f7f99;font-size:9px;display:flex;align-items:center;justify-content:center;letter-spacing:1px;cursor:pointer}
+.seg div.on{background:var(--p);color:#0b0710;font-weight:700}
+main{padding:12px 18px}
+.stage{height:430px;border:1px solid #1d1d2e;position:relative;background:radial-gradient(ellipse at center,#160d1c 0%,#08070d 70%)}
+canvas{width:100%;height:100%;display:block}
+.sec{position:absolute;top:10px;left:14px;color:var(--p);font-size:15px;letter-spacing:2px}
+.sec small{display:block;color:var(--m);font-size:9px;letter-spacing:1px}
+.panels{display:grid;grid-template-columns:1.1fr .9fr .9fr 1.1fr .8fr 1.2fr;gap:8px;margin-top:10px}
+.p{border:1px solid #1d1d2e;background:#0b0a12;padding:8px;min-height:210px}
+.p h4{margin:0 0 6px;color:var(--p);font-size:9px;letter-spacing:2px;display:flex;justify-content:space-between}
+.p h4 em{font-style:normal;color:var(--m)}
+.line{font-size:9px;color:#8b8ba5;padding:2px 0;border-bottom:1px solid #12121e;display:flex;justify-content:space-between}
+.line b{color:var(--c);font-weight:400}
+.bar{height:6px;background:#171724;margin:3px 0;position:relative}
+.bar i{display:block;height:100%;background:var(--p)}
+.heat{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
+.heat i{height:9px;background:#171724}.heat i.on{background:var(--c)}
+.gauge{width:90px;height:90px;border-radius:50%;border:9px solid #171724;border-top-color:var(--p);border-right-color:var(--p);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin:6px auto}
+.code{font-size:9px;color:var(--c);white-space:pre-wrap;max-height:180px;overflow:auto}
+footer{border-top:1px solid #1d1d2e;padding:10px;color:var(--m);text-align:center;font-size:9px;letter-spacing:2px}
+</style></head><body>
+<header><h1><small>ZYPHERE / 03</small> PROMPT LAB</h1>
+<p class="sub">ภาพรวมว่าบทบาท เป้าหมาย บริบท กฎ การตรวจ และการทำงาน ประกอบกันอย่างไร — ตัวเลขทั้งหมดอ่านจากไฟล์จริงในระบบ</p>
+<div class="seg" id="seg"></div></header>
+<main>
+<div class="stage"><div class="sec">PROMPT CONTEXT<small>visual knowledge graph · live</small></div><canvas id="g"></canvas></div>
+<div class="panels">
+<div class="p"><h4>CRAWL LOG <em>files read</em></h4><div id="crawl"></div></div>
+<div class="p"><h4>SECTIONS <em>real counts</em></h4><div id="sections"></div></div>
+<div class="p"><h4>COVERAGE RADAR <em>signal</em></h4><div id="radar"></div></div>
+<div class="p"><h4>WORD HEAT <em>keyword bands</em></h4><div class="heat" id="heat"></div></div>
+<div class="p"><h4>SPEC SCORE <em>QA pass</em></h4><div class="gauge" id="score">0</div><div style="text-align:center;color:var(--m);font-size:9px">gates passed / total</div></div>
+<div class="p"><h4>LIVE CONTEXT <em>system prompt</em></h4><div class="code" id="code"></div></div>
+</div></main>
+<footer>ZYPHERE · โครงสร้างจากข้อมูลจริง — ไม่มีตัวเลขตกแต่ง · <a href="AGENT_GRID.html" style="color:var(--c)">AGENT GRID →</a></footer>
+<script>
+const BK='https://zyphere-ai-agent.onrender.com';let D=null;
+function segs(){document.getElementById('seg').innerHTML=(D?D.segments:[]).map((x,i)=>'<div class="'+(i===2?'on':'')+'">'+x.toUpperCase()+'</div>').join('')}
+function draw(){
+ const c=document.getElementById('g'),ctx=c.getContext('2d'),W=c.clientWidth,H=c.clientHeight;
+ c.width=W*devicePixelRatio;c.height=H*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);
+ if(!D)return;const ns=D.nodes,cx=W*.47,cy=H*.52;
+ // faint cloud dots
+ ctx.fillStyle='rgba(255,79,163,.12)';for(let i=0;i<500;i++){let a=i*2.399,r=Math.sqrt(i/500)*W*.38;ctx.fillRect(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.8,1.2,1.2)}
+ ns.forEach((n,i)=>{if(i===0)return;let a=(i-1)/(ns.length-1)*Math.PI*2,x=cx+Math.cos(a)*W*.27,y=cy+Math.sin(a)*H*.3;
+  n._x=x;n._y=y;
+  ctx.strokeStyle='rgba(255,79,163,.35)';ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
+  ctx.strokeStyle=n.group==='pink'?'#ff4fa3':'#37e6d8';ctx.beginPath();ctx.arc(x,y,6+Math.min(8,n.n/8),0,7);ctx.stroke();
+  ctx.fillStyle='#e7e7f2';ctx.font='10px Consolas';ctx.textAlign='center';
+  ctx.fillText(n.id,x,y+24);ctx.fillStyle='#ff4fa3';ctx.fillText(n.n+' refs',x,y+36);
+ });
+ let g=ctx.createRadialGradient(cx,cy,2,cx,cy,60);g.addColorStop(0,'rgba(55,230,216,.75)');g.addColorStop(1,'rgba(55,230,216,0)');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,60,0,7);ctx.fill();
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,9,0,7);ctx.fill();
+ ctx.fillStyle='#37e6d8';ctx.fillText('PROMPT',cx,cy+28);
+}
+async function load(){
+ try{const r=await fetch(BK+'/api/prompt/lab');const d=await r.json();if(!d.ok)throw new Error('x');D=d;segs();draw();
+  const mx=Math.max(...Object.values(d.sections),1);
+  document.getElementById('crawl').innerHTML=d.crawl.map(x=>'<div class="line"><span>'+x.file+'</span><b>'+x.lines+'L</b></div>').join('');
+  document.getElementById('sections').innerHTML=Object.entries(d.sections).map(([k,v])=>
+   '<div style="font-size:9px;color:#8b8ba5">'+k+' <b style="color:#37e6d8;float:right">'+v+'</b></div>'+
+   '<div class="bar"><i style="width:'+(v/mx*100)+'%"></i></div>').join('');
+  document.getElementById('radar').innerHTML='<div style="color:#37e6d8;font-size:22px">'+d.coverage+'k</div><div style="color:#6b6b85;font-size:9px">keyword signals indexed</div>';
+  document.getElementById('heat').innerHTML=d.heat.map(h=>'<i class="'+(h.v>mx*.5?'on':'')+'" title="'+h.band+': '+h.v+'"></i>').repeat(6).join('');
+  document.getElementById('score').textContent=d.score;
+  document.getElementById('code').textContent=d.code;
+ }catch(e){document.getElementById('crawl').innerHTML='error '+e.message}
+}
+load();window.onresize=draw;
+</script></body></html>
