@@ -228,8 +228,26 @@ def tech_overlay(im, title, accent, seed):
 
 def make(title, price, author="Zyphere", rules=None):
     h = int(hashlib.md5(title.encode()).hexdigest(), 16)
-    hue = 170 + (h % 55)
-    accent = (hue % 90 + 30, 180 + (h % 50), 220)
+    tl0 = str(title).lower()
+    # Distinct palette per knowledge family — covers must not all look teal.
+    if any(k in tl0 for k in ("เศรษฐ", "การเงิน", "การตลาด", "การจัดการ",
+                              "บัญชี", "กฎหมาย", "ประวัติศาสตร์", "รัฐศาสตร์")):
+        accent = (236, 178, 86)      # warm gold
+    elif any(k in tl0 for k in ("จิตวิทยา", "ปรัชญา", "จริยธรรม", "ภาษา",
+                                "วรรณกรรม", "การสอน", "การเขียน")):
+        accent = (178, 140, 232)     # violet
+    elif any(k in tl0 for k in ("ภูมิอากาศ", "สิ่งแวดล้อม", "เกษตร", "อาหาร",
+                                "น้ำ", "ชีว", "พันธุ", "เซลล์", "ภูมิคุ้มกัน")):
+        accent = (86, 206, 150)      # organic green
+    elif any(k in tl0 for k in ("พลังงาน", "นิวเคลียร์", "ภาพยนตร์", "ดนตรี",
+                                "ศิลปะ", "การออกแบบ", "สถาปัตยกรรม")):
+        accent = (245, 130, 92)      # warm coral
+    elif any(k in tl0 for k in ("ความมั่นคง", "ไซเบอร์", "หุ่นยนต์", "อัลกอริทึม",
+                                "ปัญญาประดิษฐ์", "ฐานข้อมูล", "ซอฟต์แวร์")):
+        accent = (96, 224, 232)      # electric cyan
+    else:
+        accent = (86, 186, 232)      # science blue
+    hue = accent[0]
     photo, credit = cover_photo(title)
     if photo is not None:
         im = ImageOps.fit(photo, (W, H), method=Image.LANCZOS, centering=(0.5, 0.32))
