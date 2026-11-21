@@ -4450,11 +4450,13 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/dialogue":
             import continuous_dialogue as CD
             d = CD.run(apply=False)
-            data = CD._j("continuous_dialogue.json")
-            self._send_json(200, {"ok": True, "t": data.get("t", 0),
-                                  "total": len(data.get("turns", [])),
+            # data/ is gitignored on Render — use the freshly computed result,
+            # not a file that does not exist in the deployed container.
+            stored = CD._j("continuous_dialogue.json")
+            self._send_json(200, {"ok": True, "t": int(time.time()),
+                                  "total": len(stored.get("turns", [])) + d.get("turns", 0),
                                   "round": d.get("turns", 0),
-                                  "last": data.get("last", [])})
+                                  "last": d.get("last") or stored.get("last") or []})
             return
         if u.path == "/api/dialogue/status":
             self._send_json(200, DD.status() if DD

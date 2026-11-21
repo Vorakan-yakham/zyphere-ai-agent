@@ -98,7 +98,8 @@ def run(apply=True):
             "\n".join("### [%s] %s\n%s\n" % (x["tag"], x["who"], x["text"])
                       for x in new_turns) +
             "\n\n" + rec["rule"] + "\n")
-    return {"ok": True, "turns": len(new_turns), "total": len(turns)}
+    return {"ok": True, "turns": len(new_turns), "total": len(turns),
+            "last": new_turns}
 
 
 if __name__ == "__main__":
