@@ -141,7 +141,7 @@ class LayoutV3:
 @page{{size:A5;margin:20mm 18mm}}
 *{{box-sizing:border-box}}
 body{{margin:0;background:#eceef4;color:#20242e;font-family:'Noto Sans Thai',Tahoma,sans-serif}}
-.book{{max-width:790px;margin:30px auto;background:#fff;padding:72px 78px;box-shadow:0 12px 46px rgba(0,0,0,.09)}}}
+.book{{max-width:790px;margin:30px auto;background:#fff;padding:72px 78px;box-shadow:0 12px 46px rgba(0,0,0,.09)}}
 .cover{{text-align:center;padding:70px 0 50px;border-bottom:3px solid #4f46e5}}
 .brand{{font:600 12px Inter;letter-spacing:2px;color:#6b7280}}
 .cover h1{{font-size:34px;line-height:1.4;color:#312e81;margin:22px 0}}

@@ -1,4 +1,4 @@
-﻿import json, os, random, re, shutil, subprocess, sys, tempfile, time, urllib.request
+import json, os, random, re, shutil, subprocess, sys, tempfile, time, urllib.request
 PORT = str(random.randint(8300, 8900))
 BASE = "http://127.0.0.1:" + PORT
 

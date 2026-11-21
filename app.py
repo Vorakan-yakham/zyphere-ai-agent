@@ -4188,7 +4188,7 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path in ("/STORE_ADMIN.html", "/LEARNING.html", "/GOVERNANCE.html",
                       "/GROWTH.html", "/ZY_TEMPLATE.html",
                       "/PROGRESS.html", "/ACCOUNT.html", "/STUDIO.html",
-                      "/CATEGORIES.html", "/STAFF_LIVE.html", "/AGENT_GRID.html", "/PROMPT_LAB.html", "/ORCHESTRA.html"):
+                      "/CATEGORIES.html", "/STAFF_LIVE.html", "/AGENT_GRID.html", "/PROMPT_LAB.html", "/ORCHESTRA.html", "/DIALOGUE.html"):
             fp = os.path.join(BASE_DIR, os.path.basename(u.path))
             if os.path.exists(fp):
                 data = open(fp, "rb").read()
@@ -4446,6 +4446,15 @@ class Handler(SimpleHTTPRequestHandler):
         if u.path == "/api/debate/status":
             self._send_json(200, CD.status() if CD
                             else {"ok": False, "error": "unavailable"})
+            return
+        if u.path == "/api/dialogue":
+            import continuous_dialogue as CD
+            d = CD.run(apply=False)
+            data = CD._j("continuous_dialogue.json")
+            self._send_json(200, {"ok": True, "t": data.get("t", 0),
+                                  "total": len(data.get("turns", [])),
+                                  "round": d.get("turns", 0),
+                                  "last": data.get("last", [])})
             return
         if u.path == "/api/dialogue/status":
             self._send_json(200, DD.status() if DD
