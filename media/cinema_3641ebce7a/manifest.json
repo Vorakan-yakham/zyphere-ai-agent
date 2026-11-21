@@ -1,0 +1,95 @@
+{
+  "job": "cinema_3641ebce7a",
+  "brief": "Zyphere สายลมสร้างสรรค์",
+  "lang": "th",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "new": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/photo_01.jpg",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/photo_03.jpg"
+  ],
+  "archive": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/photo_02.jpg"
+  ],
+  "cuts": [
+    {
+      "shot": 1,
+      "camera": "wide / establishing",
+      "start": 0.0,
+      "end": 4.03,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/frame_01.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/overlay_01.png",
+      "transition": "cut"
+    },
+    {
+      "shot": 2,
+      "camera": "medium / detail",
+      "start": 4.03,
+      "end": 7.17,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/frame_02.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/overlay_02.png",
+      "transition": "xfade(fade,0.6s)"
+    },
+    {
+      "shot": 3,
+      "camera": "close / conclusion",
+      "start": 7.17,
+      "end": 10.17,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/frame_03.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/overlay_03.png",
+      "transition": "xfade(fade,0.6s)"
+    }
+  ],
+  "fonts": {
+    "1": {
+      "font": "<_io.BytesIO object at 0x729d2a51e110>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "2": {
+      "font": "<_io.BytesIO object at 0x729d271ce660>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "3": {
+      "font": "<_io.BytesIO object at 0x729d271ce930>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    }
+  },
+  "credits": [
+    {
+      "creator": "Alexey V. Kurochkin",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Agfa F28mm ver 01 02.jpg",
+      "query": "photography"
+    },
+    {
+      "creator": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Dülmen, Dernekamp, Sonnenaufgang -- 2021 -- 6973-5 (cinematic).jpg",
+      "source": "wikimedia",
+      "query": "cinematic landscape light"
+    },
+    {
+      "creator": "Bob Harvey ",
+      "license": "CC BY-SA 2.0",
+      "page": "File:A professional at work - geograph.org.uk - 4004053.jpg",
+      "source": "wikimedia",
+      "query": "professional creative work"
+    }
+  ],
+  "status": "done",
+  "subtitles": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/subtitles.srt",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3641ebce7a/cinema.mp4",
+  "music": "/media/song_calm_1795288256.mp3",
+  "music_result": "{'ok': True, 'wav': '/media/song_calm_1795288256.wav', 'seconds': 50.4, 'style': 'calm', 'mp3': '/media/song_calm_1795288256.mp3', 'bytes': 1009937}"
+}
