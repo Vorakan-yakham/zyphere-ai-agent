@@ -1,0 +1,96 @@
+{
+  "job": "cinema_3ea3278d26",
+  "brief": "geometric motif from concept | สร้างคลิปแบบไหน",
+  "lang": "th",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "new": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/photo_01.jpg",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/photo_03.jpg"
+  ],
+  "archive": [
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/photo_02.jpg"
+  ],
+  "cuts": [
+    {
+      "shot": 1,
+      "camera": "wide / establishing",
+      "start": 0.0,
+      "end": 4.99,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/frame_01.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/overlay_01.png",
+      "transition": "cut"
+    },
+    {
+      "shot": 2,
+      "camera": "medium / detail",
+      "start": 4.99,
+      "end": 8.13,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/frame_02.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/overlay_02.png",
+      "transition": "xfade(fade,0.6s)"
+    },
+    {
+      "shot": 3,
+      "camera": "close / conclusion",
+      "start": 8.13,
+      "end": 11.13,
+      "frame": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/frame_03.png",
+      "overlay": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/overlay_03.png",
+      "transition": "xfade(fade,0.6s)"
+    }
+  ],
+  "fonts": {
+    "1": {
+      "font": "<_io.BytesIO object at 0x75894871e160>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "2": {
+      "font": "<_io.BytesIO object at 0x758946395490>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    },
+    "3": {
+      "font": "<_io.BytesIO object at 0x7589457228e0>",
+      "coverage": {
+        "ok": true,
+        "missing": []
+      }
+    }
+  },
+  "credits": [
+    {
+      "creator": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Dülmen, Dernekamp, Sonnenaufgang -- 2021 -- 6973-5 (cinematic).jpg",
+      "source": "wikimedia",
+      "query": "cinematic landscape light"
+    },
+    {
+      "creator": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "page": "File:Dülmen, Dernekamp, Sonnenaufgang -- 2021 -- 6973-5 (cinematic).jpg",
+      "source": "wikimedia",
+      "query": "cinematic landscape light"
+    },
+    {
+      "creator": "Bob Harvey ",
+      "license": "CC BY-SA 2.0",
+      "page": "File:A professional at work - geograph.org.uk - 4004053.jpg",
+      "source": "wikimedia",
+      "query": "professional creative work"
+    }
+  ],
+  "status": "done",
+  "subtitles": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/subtitles.srt",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_3ea3278d26/cinema.mp4",
+  "music": "/media/song_calm_1795430087.mp3",
+  "music_result": "{'ok': True, 'wav': '/media/song_calm_1795430087.wav', 'seconds': 50.4, 'style': 'calm', 'mp3': '/media/song_calm_1795430087.mp3', 'bytes': 1009937}"
+}
