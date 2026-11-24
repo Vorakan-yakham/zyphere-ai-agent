@@ -1,47 +1,47 @@
 {
   "ok": true,
-  "job": "cinema_054bb25e09",
-  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/cinema.mp4",
+  "job": "cinema_d81af1028d",
+  "video": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/cinema.mp4",
   "frames": [
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/frame_01.png",
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/frame_02.png",
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/frame_03.png"
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/frame_01.png",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/frame_02.png",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/frame_03.png"
   ],
   "overlays": [
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/overlay_01.png",
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/overlay_02.png",
-    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/overlay_03.png"
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/overlay_01.png",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/overlay_02.png",
+    "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/overlay_03.png"
   ],
-  "srt": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/subtitles.srt",
-  "music": "/media/song_calm_1795513821.mp3",
-  "manifest": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_054bb25e09/manifest.json",
+  "srt": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/subtitles.srt",
+  "music": "/media/song_calm_1795558972.mp3",
+  "manifest": "/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/manifest.json",
   "urls": {
-    "video": "/media/cinema_cinema_054bb25e09_cinema.mp4",
-    "srt": "/media/cinema_cinema_054bb25e09_subtitles.srt",
-    "frame_01": "/media/cinema_cinema_054bb25e09_frame_01.png",
-    "frame_02": "/media/cinema_cinema_054bb25e09_frame_02.png",
-    "frame_03": "/media/cinema_cinema_054bb25e09_frame_03.png",
-    "overlay_01": "/media/cinema_cinema_054bb25e09_overlay_01.png",
-    "overlay_02": "/media/cinema_cinema_054bb25e09_overlay_02.png",
-    "overlay_03": "/media/cinema_cinema_054bb25e09_overlay_03.png"
+    "video": "/media/cinema_cinema_d81af1028d_cinema.mp4",
+    "srt": "/media/cinema_cinema_d81af1028d_subtitles.srt",
+    "frame_01": "/media/cinema_cinema_d81af1028d_frame_01.png",
+    "frame_02": "/media/cinema_cinema_d81af1028d_frame_02.png",
+    "frame_03": "/media/cinema_cinema_d81af1028d_frame_03.png",
+    "overlay_01": "/media/cinema_cinema_d81af1028d_overlay_01.png",
+    "overlay_02": "/media/cinema_cinema_d81af1028d_overlay_02.png",
+    "overlay_03": "/media/cinema_cinema_d81af1028d_overlay_03.png"
   },
   "coverage": {
     "1": {
-      "font": "<_io.BytesIO object at 0x7e883d31dd00>",
+      "font": "<_io.BytesIO object at 0x745c8171e2f0>",
       "coverage": {
         "ok": true,
         "missing": []
       }
     },
     "2": {
-      "font": "<_io.BytesIO object at 0x7e8839ffa570>",
+      "font": "<_io.BytesIO object at 0x745c7e662700>",
       "coverage": {
         "ok": true,
         "missing": []
       }
     },
     "3": {
-      "font": "<_io.BytesIO object at 0x7e8839ffb290>",
+      "font": "<_io.BytesIO object at 0x745c7e6634c0>",
       "coverage": {
         "ok": true,
         "missing": []

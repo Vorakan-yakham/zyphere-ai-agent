@@ -1,0 +1,3 @@
+file '/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/voice_01.mp3'
+file '/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/voice_02.mp3'
+file '/home/runner/work/zyphere-ai-agent/zyphere-ai-agent/media/cinema_d81af1028d/voice_03.mp3'
